@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2026-08-16">
+
+<title>Five Words You Will Use All Semester – Advanced Topics in Network Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../m01-euler_tour/02-coding.html" rel="next">
+<link href="../m01-euler_tour/01-concepts.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "|"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script defer="" src="../assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/anim.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">M01: Euler Tour</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01b-vocabulary.html">Five Words You Will Use All Semester</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to SSIE 641</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Set up your machine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">M01: Euler Tour</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">M02: Small World</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">M03: Robustness</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">M04: Friendship Paradox</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">M05: Clustering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">M07: Random Walks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#walk-trail-path" id="toc-walk-trail-path" class="nav-link active" data-scroll-target="#walk-trail-path">Walk, trail, path</a></li>
+  <li><a href="#circuit-and-cycle" id="toc-circuit-and-cycle" class="nav-link" data-scroll-target="#circuit-and-cycle">Circuit and cycle</a></li>
+  <li><a href="#three-ways-to-write-a-network-down" id="toc-three-ways-to-write-a-network-down" class="nav-link" data-scroll-target="#three-ways-to-write-a-network-down">Three ways to write a network down</a></li>
+  <li><a href="#the-adjacency-matrix-and-what-its-powers-count" id="toc-the-adjacency-matrix-and-what-its-powers-count" class="nav-link" data-scroll-target="#the-adjacency-matrix-and-what-its-powers-count">The adjacency matrix, and what its powers count</a></li>
+  <li><a href="#when-a-network-falls-apart" id="toc-when-a-network-falls-apart" class="nav-link" data-scroll-target="#when-a-network-falls-apart">When a network falls apart</a>
+  <ul class="collapse">
+  <li><a href="#the-giant-component" id="toc-the-giant-component" class="nav-link" data-scroll-target="#the-giant-component">The giant component</a></li>
+  <li><a href="#finding-components-by-flood-fill" id="toc-finding-components-by-flood-fill" class="nav-link" data-scroll-target="#finding-components-by-flood-fill">Finding components by flood fill</a></li>
+  <li><a href="#connectivity-when-edges-have-direction" id="toc-connectivity-when-edges-have-direction" class="nav-link" data-scroll-target="#connectivity-when-edges-have-direction">Connectivity when edges have direction</a></li>
+  </ul></li>
+  <li><a href="#what-you-can-now-do" id="toc-what-you-can-now-do" class="nav-link" data-scroll-target="#what-you-can-now-do">What you can now do</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m01-euler_tour/01b-vocabulary.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m01-euler_tour/01-concepts.html">M01: Euler Tour</a></li><li class="breadcrumb-item"><a href="../m01-euler_tour/01b-vocabulary.html">Five Words You Will Use All Semester</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Five Words You Will Use All Semester</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 16, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Euler’s proof needed exactly one technical word: <em>degree</em>. Everything after this module needs five more — <strong>walk</strong>, <strong>trail</strong>, <strong>path</strong>, <strong>circuit</strong>, <strong>cycle</strong> — and two objects, the <strong>adjacency matrix</strong> and the <strong>connected component</strong>. They look like housekeeping. They are not: every later module is phrased in them, and this is the page you will come back to.</p>
+<section id="walk-trail-path" class="level2">
+<h2 class="anchored" data-anchor-id="walk-trail-path">Walk, trail, path</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Walk</strong></td>
+<td style="text-align: left;">A sequence of steps along edges. Both edges and nodes may repeat.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Trail</strong></td>
+<td style="text-align: left;">A walk that never repeats an <strong>edge</strong>. Nodes may repeat.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Path</strong></td>
+<td style="text-align: left;">A walk that never repeats a <strong>node</strong> — and therefore never repeats an edge either.</td>
+</tr>
+</tbody>
+</table>
+<p>The road-trip version: a walk is a casual drive that may go down the same street twice; a trail is a mail route, which never covers the same street twice but may pass the same intersection again; a path is a tour of cities in which every city is new.</p>
+<p>The three are nested. Every path is a trail, and every trail is a walk; the restrictions only ever get tighter.</p>
+</section>
+<section id="circuit-and-cycle" class="level2">
+<h2 class="anchored" data-anchor-id="circuit-and-cycle">Circuit and cycle</h2>
+<p>A journey that ends where it began is <strong>closed</strong>. Closing the two stricter kinds gives two more words.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Circuit</strong></td>
+<td style="text-align: left;">A <strong>trail</strong> that starts and ends at the same node.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Cycle</strong></td>
+<td style="text-align: left;">A <strong>path</strong> that starts and ends at the same node — the start node being the one permitted repeat.</td>
+</tr>
+</tbody>
+</table>
+<p>With this vocabulary, Königsberg becomes precise:</p>
+<ul>
+<li>An <strong>Eulerian trail</strong> uses every edge of the graph exactly once. It is very often called an <em>Euler path</em>, including in the title of this module, but it is a trail rather than a path: it may return to a node, as the Kneiphof island forces you to.</li>
+<li>An <strong>Eulerian circuit</strong> is an Eulerian trail that comes back to its starting node.</li>
+</ul>
+<p>The citizens of Königsberg wanted an Eulerian circuit, which requires <em>every</em> node to have even degree. Their city had four odd nodes, so they wanted the impossible — and after the war it had two odd nodes, which is enough for a trail but still not for a circuit.</p>
+</section>
+<section id="three-ways-to-write-a-network-down" class="level2">
+<h2 class="anchored" data-anchor-id="three-ways-to-write-a-network-down">Three ways to write a network down</h2>
+<p>A graph is a mathematical object; a computer needs a data structure. There are three standard ones, and the <a href="../m01-euler_tour/02-coding.html">hands-on notebook</a> builds all three. Take the Königsberg graph and number its nodes A = 0, B = 1, C = 2, D = 3.</p>
+<p><strong>Edge list.</strong> One pair per edge, and nothing else:</p>
+<pre><code>(0,1) (0,1) (0,2) (0,2) (0,3) (1,3) (2,3)</code></pre>
+<p>Seven pairs for seven bridges. The two parallel pairs are simply listed twice — an edge list handles a multigraph without any extra machinery.</p>
+<p><strong>Adjacency list.</strong> For each node, the list of its neighbours:</p>
+<pre><code>0: 1, 1, 2, 2, 3
+1: 0, 0, 3
+2: 0, 0, 3
+3: 0, 1, 2</code></pre>
+<p>The degree of a node is now the length of its row: 5, 3, 3, 3 — the four numbers Euler’s proof turned on.</p>
+<p><strong>Adjacency matrix.</strong> An <span class="math inline">N \times N</span> table <span class="math inline">{\bf A}</span> where <span class="math inline">A_{ij}</span> is the number of edges between nodes <span class="math inline">i</span> and <span class="math inline">j</span> (so <span class="math inline">0</span> or <span class="math inline">1</span> in a graph without parallel edges):</p>
+<p><span class="math display">
+{\bf A} =
+\begin{pmatrix}
+0 &amp; 2 &amp; 2 &amp; 1\\
+2 &amp; 0 &amp; 0 &amp; 1\\
+2 &amp; 0 &amp; 0 &amp; 1\\
+1 &amp; 1 &amp; 1 &amp; 0
+\end{pmatrix}
+</span></p>
+<p>Read the first row: node 0 (the island A) has two edges to node 1 (the south bank B), two to node 2 (the north bank C), one to node 3 (the east island D). Sum a row and you get that node’s degree again: 5, 3, 3, 3.</p>
+<p>The three are not interchangeable in cost, and choosing between them is a real decision:</p>
+<ul>
+<li><em>“Is there an edge between node 47 and node 912?”</em> — one lookup in the matrix, a scan in the other two.</li>
+<li><em>“Who are node 47’s neighbours?”</em> — one row of the adjacency list, versus a scan of the entire edge list.</li>
+<li>The matrix stores every <strong>non</strong>-edge explicitly. A network of a million nodes needs <span class="math inline">10^{12}</span> entries, almost all of them zero, which is why real code stores it in a compressed form — see the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</li>
+</ul>
+</section>
+<section id="the-adjacency-matrix-and-what-its-powers-count" class="level2">
+<h2 class="anchored" data-anchor-id="the-adjacency-matrix-and-what-its-powers-count">The adjacency matrix, and what its powers count</h2>
+<p>The adjacency matrix looks like nothing more than a table of small integers. Its power is that ordinary matrix multiplication, applied to it, counts journeys.</p>
+<p>Start with a question you can answer with the map in front of you. <strong>How many two-step walks run from the north bank C to the south bank B?</strong> Such a walk leaves C, lands somewhere, and goes on to B. From C you can only reach A (two ways: bridges <em>c</em> and <em>d</em>) or D (one way: <em>g</em>). From A there are two bridges on to B; from D there is one. So the answer is <span class="math inline">2 \times 2 + 1 \times 1 = 5</span>.</p>
+<p>Now get the same number from the matrix without thinking about bridges at all. Take row C, <span class="math inline">(2,0,0,1)</span>, and column B, <span class="math inline">(2,0,0,1)</span>, multiply them entry by entry and add:</p>
+<p><span class="math display">
+2\cdot 2 + 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 1 = 5 .
+</span></p>
+<p>Multiplying a row by a column and adding <em>is</em> matrix multiplication, so that number is the entry <span class="math inline">\left({\bf A}^2\right)_{CB}</span>. The same argument works for any number of steps.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Key concept: matrix powers count walks">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Key concept: matrix powers count walks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math display">
+\left({\bf A}^k\right)_{ij} = \text{the number of walks of length } k \text{ from } i \text{ to } j .
+</span></p>
+</div>
+</div>
+<p>The two-line derivation is in the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</p>
+<p>Note what it counts: <strong>walks</strong>, not trails and not paths. Nodes and edges may repeat, which is exactly why the formula is so simple. Counting paths, where repetition is forbidden, is vastly harder, and no matrix product does it.</p>
+<p>Two consequences we will use later. First, the diagonal entry <span class="math inline">\left({\bf A}^2\right)_{ii}</span> counts out-and-back trips from node <span class="math inline">i</span>: in a graph with no parallel edges that is just the degree of <span class="math inline">i</span>, while in Königsberg <span class="math inline">\left({\bf A}^2\right)_{AA} = 2^2 + 2^2 + 1^2 = 9</span>, because you may leave the island by bridge <em>a</em> and come back by bridge <em>b</em>. Second, a <strong>triangle</strong> is a set of three nodes each joined to the other two — Königsberg has one in A, B, D (bridges <em>a</em>, <em>f</em>, <em>e</em>) and another in A, C, D (bridges <em>c</em>, <em>g</em>, <em>e</em>). In a graph with no parallel edges, <span class="math inline">\left({\bf A}^3\right)_{ii}</span> is <em>twice</em> the number of triangles containing <span class="math inline">i</span>, since each triangle can be walked in two directions. Module 2 turns that count into a measure of how cliquish a network is.</p>
+</section>
+<section id="when-a-network-falls-apart" class="level2">
+<h2 class="anchored" data-anchor-id="when-a-network-falls-apart">When a network falls apart</h2>
+<p>Euler’s condition begins with the word <em>connected</em>, and it has to: if you cannot get from one part of the network to another, no single walk can possibly cover all the edges.</p>
+<ul>
+<li>A graph is <strong>connected</strong> if there is a path between every pair of nodes.</li>
+<li>A <strong>disconnected</strong> graph breaks into separate islands of nodes, called <strong>connected components</strong>. More precisely, a connected component is a <em>maximal</em> set of mutually reachable nodes — maximal meaning you cannot add another node without breaking that property.</li>
+</ul>
+<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/connected-component.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Three connected components: the eight nodes 0–7 form one, nodes 8 and 9 form another, and node 10 sits alone as a component of size one.
+</figcaption>
+</figure>
+</div>
+<section id="the-giant-component" class="level3">
+<h3 class="anchored" data-anchor-id="the-giant-component">The giant component</h3>
+<p>Real networks are almost never neatly connected, but they are rarely evenly broken either. What you typically find is one enormous component holding most of the nodes, surrounded by a scatter of tiny fragments and isolated nodes. That dominant piece is called the <strong>giant component</strong>.</p>
+<p>“Giant” is a claim about <em>proportion</em>, not head count. A component is giant when it holds a fixed share of all the nodes — say 90% — and goes on holding roughly that share as the network grows. A component of 1,000 nodes is giant in a network of 1,200 and negligible in a network of 10 million.</p>
+<p>This matters practically, because the giant component is usually the object we analyze. Average path length is undefined across disconnected pieces; centrality computed on an isolated pair of nodes tells you nothing. In practice one extracts the giant component and works there — and asking <em>when a giant component exists at all</em>, and <em>what it takes to destroy it</em>, is the entire subject of Module 3.</p>
+</section>
+<section id="finding-components-by-flood-fill" class="level3">
+<h3 class="anchored" data-anchor-id="finding-components-by-flood-fill">Finding components by flood fill</h3>
+<p>Reading components off a picture is easy; doing it on a million nodes needs an algorithm. The idea is simple enough to run by hand:</p>
+<ol type="1">
+<li>Pick any unvisited node and mark it as visited.</li>
+<li>Look at its neighbours. Any that are unvisited, visit them too.</li>
+<li>Repeat until nothing new can be reached. Everything you touched is one component.</li>
+<li>If unvisited nodes remain, pick one and start again — that is the next component.</li>
+</ol>
+<p>Whether you always extend the most recently discovered node (<strong>depth-first search</strong>, DFS) or sweep outward one layer at a time (<strong>breadth-first search</strong>, BFS) changes the order of visits but not the resulting component. BFS gives you something extra for free: because it explores layer by layer, the layer at which it first reaches a node is the <em>shortest path length</em> to that node, which is how Module 2 measures how small the world is.</p>
+<p>Either way, each node is visited once and each edge is looked at a constant number of times. The work therefore grows in proportion to the number of nodes plus the number of edges, not to the square of the number of nodes: double the size of the network and you roughly double the work. That is why splitting a network into components stays practical at any scale you are likely to meet.</p>
+</section>
+<section id="connectivity-when-edges-have-direction" class="level3">
+<h3 class="anchored" data-anchor-id="connectivity-when-edges-have-direction">Connectivity when edges have direction</h3>
+<p>What if edges run one way, like one-way streets? We call these <strong>directed graphs</strong>, and they have two flavours of connectivity:</p>
+<ul>
+<li><strong>Weakly connected</strong>: the graph would be connected if you ignored the arrows. You can get from A to B, but perhaps not from B to A.</li>
+<li><strong>Strongly connected</strong>: there is a directed path from every node to every other node. Wherever you start, you can reach anywhere else by following the arrows.</li>
+</ul>
+<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A directed graph with three nodes shaded to mark a strongly connected component.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/connected-component-directed.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A directed graph with three nodes shaded to mark a strongly connected component.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Nodes 1, 2 and 3 form a strongly connected component: following the arrows, each can reach the other two. Node 0 reaches them but nothing comes back to it, so node 0 belongs to the same weakly connected component and not to the strong one.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="what-you-can-now-do" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-can-now-do">What you can now do</h2>
+<ul>
+<li>Say precisely which of walk, trail, path, circuit and cycle a given route is.</li>
+<li>Write the same network as an edge list, an adjacency list and an adjacency matrix, and read a degree off each one.</li>
+<li>Read <span class="math inline">\left({\bf A}^k\right)_{ij}</span> as a count of walks rather than an opaque product.</li>
+<li>Split a network into connected components by hand, and say what makes one of them giant.</li>
+</ul>
+<p>Now do it in code: the <a href="../m01-euler_tour/02-coding.html">hands-on notebook</a> builds all three representations and a component finder, and the <a href="../m01-euler_tour/03-exercises.html">exercises</a> ask you to decide, for a network you have never seen, whether an Eulerian trail exists.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../m01-euler_tour/01-concepts.html" class="pagination-link" aria-label="A Stroll, Seven Bridges, and a Mathematical Revolution">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../m01-euler_tour/02-coding.html" class="pagination-link" aria-label="Hands-on: Three Ways to Store a Network">
+        <span class="nav-page-text">Hands-on: Three Ways to Store a Network</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2024, Sadamori Kojaku</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m01-euler_tour/01b-vocabulary.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/skojaku/adv-net-sci">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

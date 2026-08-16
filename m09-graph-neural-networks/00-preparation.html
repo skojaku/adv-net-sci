@@ -2,60 +2,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-10-06">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Preparation - Image processing – Advanced Topics in Network Science</title>
+<title>How a Camera Finds an Edge – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script defer="" src="../assets/katex/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -119,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    });
 }}});
   </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -132,7 +103,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -148,7 +119,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
 <body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
@@ -159,7 +130,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -172,7 +144,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -182,192 +154,78 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -387,12 +245,9 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">Preparation - Image processing</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">How a Camera Finds an Edge</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -400,13 +255,14 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -419,7 +275,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -430,26 +286,32 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -466,7 +328,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -474,7 +336,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -488,20 +350,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -518,13 +386,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,7 +404,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -553,13 +421,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -571,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -588,19 +456,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -617,19 +491,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -646,19 +526,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -675,19 +561,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -704,25 +596,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -739,31 +631,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -773,14 +665,34 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#edge-detection-finding-a-boundary-by-subtraction" id="toc-edge-detection-finding-a-boundary-by-subtraction" class="nav-link active" data-scroll-target="#edge-detection-finding-a-boundary-by-subtraction">Edge detection: finding a boundary by subtraction</a>
+  <ul class="collapse">
+  <li><a href="#six-by-six-pixels-with-a-bright-stripe-down-the-middle" id="toc-six-by-six-pixels-with-a-bright-stripe-down-the-middle" class="nav-link" data-scroll-target="#six-by-six-pixels-with-a-bright-stripe-down-the-middle">Six by six pixels with a bright stripe down the middle</a></li>
+  <li><a href="#one-small-table-of-weights-slid-over-every-pixel" id="toc-one-small-table-of-weights-slid-over-every-pixel" class="nav-link" data-scroll-target="#one-small-table-of-weights-slid-over-every-pixel">One small table of weights, slid over every pixel</a></li>
+  </ul></li>
+  <li><a href="#every-row-of-pixels-is-a-stack-of-waves" id="toc-every-row-of-pixels-is-a-stack-of-waves" class="nav-link" data-scroll-target="#every-row-of-pixels-is-a-stack-of-waves">Every row of pixels is a stack of waves</a>
+  <ul class="collapse">
+  <li><a href="#the-same-convolution-done-by-multiplying" id="toc-the-same-convolution-done-by-multiplying" class="nav-link" data-scroll-target="#the-same-convolution-done-by-multiplying">The same convolution, done by multiplying</a></li>
+  </ul></li>
+  <li><a href="#take-a-photograph-apart-into-waves" id="toc-take-a-photograph-apart-into-waves" class="nav-link" data-scroll-target="#take-a-photograph-apart-into-waves">Take a photograph apart into waves</a>
+  <ul class="collapse">
+  <li><a href="#a-real-photograph-taken-apart-into-waves" id="toc-a-real-photograph-taken-apart-into-waves" class="nav-link" data-scroll-target="#a-real-photograph-taken-apart-into-waves">A real photograph, taken apart into waves</a></li>
+  </ul></li>
+  <li><a href="#the-one-sentence-to-carry-to-the-next-page" id="toc-the-one-sentence-to-carry-to-the-next-page" class="nav-link" data-scroll-target="#the-one-sentence-to-carry-to-the-next-page">The one sentence to carry to the next page</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m09-graph-neural-networks/00-preparation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">Preparation - Image processing</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">M09: Graph Neural Networks</a></li><li class="breadcrumb-item"><a href="../m09-graph-neural-networks/00-preparation.html">How a Camera Finds an Edge</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Preparation - Image processing</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">How a Camera Finds an Edge</h1>
 </div>
 
 
@@ -797,7 +709,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 6, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -809,33 +721,14 @@ window.Quarto = {
 </header>
 
 
-<section id="preliminaries-image-processing" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="preliminaries-image-processing"><span class="header-section-number">1</span> Preliminaries: Image Processing</h2>
-<p>Graph Neural Networks are a type of neural network for graph data. node2vec and deepwalk stem from the idea of language modeling. In this module, we will focus on another branch of graph neural networks that stem from image processing.</p>
-<section id="pen-and-paper-exercises" class="level3">
-<h3 class="anchored" data-anchor-id="pen-and-paper-exercises">Pen and paper exercises</h3>
-<ul>
-<li><a href="pen-and-paper/exercise.pdf">✍️ Pen and paper exercises</a></li>
-</ul>
-<p>The pen and paper exercises will help you understand the mathematical foundations of graph neural networks, including:</p>
-<ol type="1">
-<li><strong>Spectral Graph Theory</strong>: Understanding eigenvalues and eigenvectors of graph matrices</li>
-<li><strong>Fourier Analysis on Graphs</strong>: Extending classical signal processing to graph domains</li>
-<li><strong>Convolution Operations</strong>: Defining convolution for irregular graph structures</li>
-<li><strong>Message Passing</strong>: Mathematical formulation of information aggregation in graphs</li>
-<li><strong>Network Architecture Design</strong>: Principles for designing effective GNN architectures</li>
-</ol>
-<p>These exercises provide the theoretical foundation necessary to understand how graph neural networks process and learn from graph-structured data.</p>
-</section>
-</section>
-<section id="edge-detection-problem-in-image-processing" class="level2 page-columns page-full" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="edge-detection-problem-in-image-processing"><span class="header-section-number">2</span> Edge Detection Problem in Image Processing</h2>
+<p>Graph neural networks are neural networks for graph data, and they come from two different places. One branch grew out of language modeling: that is where node2vec and DeepWalk of Module 8 come from, where a random walk on the network is treated as a sentence. This module follows the other branch, which grew out of image processing.</p>
+<p>So this page contains no graphs at all. You will detect an edge in a six-by-six picture by hand, discover that the operation you just performed has a name — <em>convolution</em> — and then see that the same operation can be described as <em>keeping some waves and discarding others</em>. That last sentence is the one we carry over to networks on the next page.</p>
+<section id="edge-detection-finding-a-boundary-by-subtraction" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="edge-detection-finding-a-boundary-by-subtraction">Edge detection: finding a boundary by subtraction</h2>
 <p>Edge detection is a classical problem in image processing. The goal is to identify the boundaries of objects in an image.</p>
-<p><img src="https://media.geeksforgeeks.org/wp-content/uploads/20240616211411/Screenshot-(85).webp" class="img-fluid"></p>
-<p>To approach the problem, let us first remind that an image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image can be represented as a 2D matrix, where each element in the matrix represents the brightness of a pixel.</p>
-<p><img src="https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png" class="img-fluid"></p>
-<section id="an-example" class="level3">
-<h3 class="anchored" data-anchor-id="an-example">An example</h3>
+<p>An image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image is a 2D matrix, where each element is the brightness of one pixel.</p>
+<section id="six-by-six-pixels-with-a-bright-stripe-down-the-middle" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="six-by-six-pixels-with-a-bright-stripe-down-the-middle">Six by six pixels with a bright stripe down the middle</h3>
 <p>Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a <em>significant brightness change between adjacent pixels</em>. To be more concrete, let’s consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.</p>
 <p><span class="math display">
 X = \begin{bmatrix}
@@ -847,21 +740,26 @@ X = \begin{bmatrix}
 10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10
 \end{bmatrix}
 </span></p>
-<p>Let’s zoom on the pixel at (3, 3) and its surrounding pixels.</p>
+<p>Let’s zoom on the pixel at row 3, column 2 — the pixel immediately to the left of the bright stripe — together with its eight surrounding pixels.</p>
 <p><span class="math display">
 Z = \begin{bmatrix}
-10 &amp; 80 &amp; 10 \\
-\textcolor{blue}{10} &amp; \textcolor{red}{80} &amp; \textcolor{purple}{10} \\
-10 &amp; 80 &amp; 10
+10 &amp; 10 &amp; 80 \\
+\textcolor{#593196}{10} &amp; 10 &amp; \textcolor{#c2410c}{80} \\
+10 &amp; 10 &amp; 80
 \end{bmatrix}
 </span></p>
-<p>where the central pixel is highlighted in red. Since we are interested in the edge which is a sudden change in brightness along the horizontal direction, we take a derivative at the central pixel by</p>
+<p>The center of this <span class="math inline">3 \times 3</span> block, <span class="math inline">Z_{22} = 10</span>, is our pixel; its left neighbor is colored and so is its right one. An edge is a sudden change of brightness as we move <em>sideways</em>, so we take a derivative at the central pixel by subtracting the right neighbor from the left one:</p>
 <p><span class="math display">
-\nabla Z_{22} = \textcolor{blue}{Z_{2,1}} - \textcolor{purple}{Z_{2,3}}
+\nabla Z_{22} = \textcolor{#593196}{Z_{2,1}} - \textcolor{#c2410c}{Z_{2,3}} = 10 - 80 = -70.
 </span></p>
-<p>Following the same process, we can compute the derivative at all pixels, which gives us the (horizontal) derivative of the image.</p>
+<p>A number of size 70 where the flat parts of the picture give 0: the operator has noticed the stripe.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>We name an operator by the direction in which it differentiates. This one compares a left neighbor with a right neighbor, so it is the <em>horizontal</em> derivative. Note the consequence, which trips everyone up once: the horizontal derivative is what lights up a <strong>vertical</strong> stripe, because a vertical stripe is what changes as you move horizontally.</p>
+</div></div><p>Following the same process at every pixel gives us the horizontal derivative of the whole image.</p>
 <p><span class="math display">
 \begin{bmatrix}
+- &amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - \\
 - &amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - \\
 - &amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - \\
 - &amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - \\
@@ -869,8 +767,9 @@ Z = \begin{bmatrix}
 - &amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; -
 \end{bmatrix}
 </span></p>
-<p>The symbol <code>-</code> indicates that the derivative is not defined because one of the neighboring pixels is out of the image boundary. We observe that the derivative is high at the edge and low elsewhere. This is a simple but effective way to detect edges in an image.</p>
-<p>We can consider a derivative operator along the vertical direction that computes the difference between the vertical neighboring pixels.</p>
+<p>The symbol <code>-</code> indicates that the derivative is not defined because one of the neighboring pixels is out of the image boundary.</p>
+<p>Read the row: <span class="math inline">0</span> in the flat regions, and a pair of large responses <span class="math inline">-70</span> and <span class="math inline">+70</span> in the two columns <em>flanking</em> the stripe. On the stripe itself (column 3) the answer is <span class="math inline">0</span>, because there the left and right neighbors are both <span class="math inline">10</span> and the operator only ever compares those two. A bright line therefore shows up not as one big number but as a matched pair of opposite sign, one on each shoulder. What matters is the <em>magnitude</em>: it is <span class="math inline">70</span> next to the boundary and <span class="math inline">0</span> everywhere else.</p>
+<p>We can also build a derivative operator along the vertical direction, which subtracts the pixel below from the pixel above.</p>
 <p><span class="math display">
 \nabla Z_{22} = Z_{1,2} - Z_{3,2}
 </span></p>
@@ -881,19 +780,20 @@ Z = \begin{bmatrix}
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
 - &amp; - &amp; - &amp; - &amp; - &amp; -
 \end{bmatrix}
 </span></p>
-<p>The all entries are zero, meaning that there is no edge in the vertical direction.</p>
+<p>Every defined entry is zero. Nothing in this picture changes as you move <em>down</em> a column — every row is identical — so the vertical derivative finds nothing at all. The stripe is invisible to it.</p>
 <p>We can combine the horizontal and vertical derivatives to get the gradient of the image. For example,</p>
 <p><span class="math display">
 \nabla Z_{22} = Z_{12} - Z_{32} + Z_{21} - Z_{23}
 </span></p>
-<p>When applied to the entire image, the result is the same as the horizontal derivative.</p>
+<p>On this picture the vertical part contributes nothing, so wherever all four neighbors exist the result is exactly the horizontal derivative computed above.</p>
 </section>
-<section id="convolution" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="convolution">Convolution</h3>
-<p>We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.</p>
+<section id="one-small-table-of-weights-slid-over-every-pixel" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="one-small-table-of-weights-slid-over-every-pixel">One small table of weights, slid over every pixel</h3>
+<p>We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighboring pixels, with the same weights at every pixel. This motivates us to generalize the operation to a more general form.</p>
 <p><span class="math display">
 \nabla Z_{22} = \sum_{i=-1}^1 \sum_{j=-1}^1 K_{h-(i+1),w-(j+1)} Z_{2+i, 2+j}
 </span></p>
@@ -926,7 +826,7 @@ Z_{31} K_{13} &amp; Z_{32} K_{12} &amp; Z_{33} K_{11}
 </span></p>
 <p>and sum up all the elements to get the new pixel value <span class="math inline">\nabla Z_{22}</span>. Why do we reverse the kernel? This is to match with the mathematical definition of convolution, which will be introduced later.</p>
 </div><div class="">
-<p>In the previous example, we used a <span class="math inline">3 \times 3</span> kernels called the Prewitt operator, which in terms of <span class="math inline">K</span> is</p>
+<p>The kernel used in the example above is a <span class="math inline">3 \times 3</span> <strong>Prewitt operator</strong>, which in terms of <span class="math inline">K</span> is</p>
 <p><span class="math display">
 K_h = \begin{bmatrix}
 -1 &amp; 0 &amp; 1 \\
@@ -940,7 +840,7 @@ K_v = \begin{bmatrix}
 1 &amp; 1 &amp; 1
 \end{bmatrix}
 </span></p>
-<p>where <span class="math inline">K_h</span> is the horizontal Prewitt operator and <span class="math inline">K_v</span> is the vertical Prewitt operator.</p>
+<p>where <span class="math inline">K_h</span> is the horizontal Prewitt operator (it differentiates left-to-right, so it finds vertical edges) and <span class="math inline">K_v</span> is the vertical one (it differentiates top-to-bottom, so it finds horizontal edges).</p>
 </div></div>
 <p>A kernel represents a local pattern we want to detect. The new pixel value after the convolution is maximized when the pattern is most similar to the kernel in terms of the inner product. This can be confirmed by:</p>
 <p><span class="math display">
@@ -952,10 +852,405 @@ K_v = \begin{bmatrix}
 <p>Check out this awesome interactive demo to see how different kernels work: <a href="https://setosa.io/ev/image-kernels/">Demo</a></p>
 </div></div></section>
 </section>
-<section id="fourier-transform" class="level2 page-columns page-full" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="fourier-transform"><span class="header-section-number">3</span> Fourier Transform</h2>
-<p><img src="https://miro.medium.com/v2/resize:fit:1400/1*D6iRfzDkz-sEzyjYoVZ73w.gif" class="img-fluid"></p>
+<section id="every-row-of-pixels-is-a-stack-of-waves" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="every-row-of-pixels-is-a-stack-of-waves">Every row of pixels is a stack of waves</h2>
 <p>Convolution computes the new pixel values by sliding a kernel over an image. How is the resulting image related to the original image?</p>
+<p>Before answering that, watch the sliding itself. Below is one row of the picture above — six numbers, with the bright stripe at position 3 — and the three-weight kernel <span class="math inline">[-1, 0, 1]</span>. Four positions, three multiplications each; that is the whole operation. Step it, then take the window yourself.</p>
+<style>
+/* --------------------------------------------------------------------------
+   The sliding window (m09 preparation) — only the rules this one widget needs.
+   The paper, the panels, the buttons, the knob and the motion primitives all
+   come from assets/anim.css; the sequencer from assets/anim.js. Every colour
+   here is a kit token, and the pixel fills are interpolated between two of
+   them in JS.
+   -------------------------------------------------------------------------- */
+/* A six-cell strip with a label column needs the whole half-width; the kit's
+   310px default is sized for a dozen-node diagram. */
+#conv-slide [data-cs-strip] { --anim-svg-max: 100%; }
+
+#conv-slide .cs-cell { stroke: var(--_ink); stroke-width: 1.4; }
+#conv-slide .cs-num  { font-family: var(--_hand); font-size: 12px; text-anchor: middle;
+                       fill: var(--_ink); }
+#conv-slide .cs-tag  { font-family: var(--_hand); font-size: 8.5px; fill: var(--_ink-soft); }
+/* The window and the kernel are the operator; the output and the drop line
+   that ties one to the other are the answer. Accent for the operator, amber
+   for the answer, and nothing else gets a colour. */
+#conv-slide .cs-win   { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+#conv-slide .cs-kcell { fill: var(--_white); stroke: var(--_accent); stroke-width: 1.6; }
+#conv-slide .cs-knum  { font-family: var(--_hand); font-size: 12px; font-weight: 700;
+                        text-anchor: middle; fill: var(--_accent); }
+#conv-slide .cs-out   { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.4; }
+#conv-slide .cs-live  { stroke: var(--_amber); stroke-width: 2.4; }
+#conv-slide .cs-drop  { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+#conv-slide .cs-rule  { height: 0; margin: 0.35rem 0 0.3rem; border: 0;
+                        border-top: 1.6px solid var(--_rule); }
+</style>
+
+<figure class="anim-stage figure" id="conv-slide">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step=""></div>
+    <div class="anim-dots" data-anim-dots=""></div>
+    <button class="anim-btn" type="button" data-anim-prev="" aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play="">⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next="" aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay="">↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas="">
+    <div data-anim-clear="" data-cs-strip=""></div>
+    <div data-anim-clear="" data-cs-side=""></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note=""></figcaption>
+</figure>
+
+<script>
+/* One window, four positions. Markup above, scenes below, and nothing in
+   between: everything a scene calls arrives on `ctx` — see assets/anim.js.
+   The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Four numbers, and you can check every one of them in your head. The row
+     and the kernel are the ones the prose uses:
+
+       X = [10, 10, 80, 10, 10, 10]      K = [-1, 0, 1]
+
+     Convolution lays the kernel down REVERSED — [K3, K2, K1] = [1, 0, -1] —
+     which is the convention the margin note beside this figure explains. At
+     window position p the answer is
+
+       X[p]*1 + X[p+1]*0 + X[p+2]*(-1),
+
+     so   p=0: 10 - 80 = -70    p=1: 10 - 10 =  0
+          p=2: 80 - 10 =  70    p=3: 10 - 10 =  0
+
+     which is OUT below, and is exactly the four defined entries of one row of
+     the horizontal derivative computed by hand at the top of this page.
+     ------------------------------------------------------------------------ */
+  const X = [10, 10, 80, 10, 10, 10];
+  const KF = [1, 0, -1];                       /* the kernel, already flipped */
+  const OUT = [-70, 0, 70, 0];
+  const POSN = 4;                              /* the knob: window 0 … 3 */
+  const PARK = 1;                              /* where the auto-sweep stops */
+
+  /* the strip's geometry, in viewBox units */
+  const X0 = 44, W = 30;
+  const Y_PIX = 18, Y_KER = 62, Y_OUT = 116, H = 30;
+  const cx = (i) => X0 + i * W + W / 2;        /* centre of cell i */
+  const ox = (p) => X0 + (p + 1) * W;          /* output cell p, left edge */
+  const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v);
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "One row of the picture",
+      note: "Six numbers, taken from one row of the six-by-six picture above. Five of them are 10 and one is 80 — that single 80 is the bright stripe, drawn darker here because darker means larger.",
+      async run(ctx) {
+        ctx.draw();
+        await ctx.sleep(1800);
+        const c = ctx.card("one row, six numbers");
+        [["numbers in the row", "6"], ["the stripe", "80"],
+         ["everything else", "10"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "nothing has happened yet: this is the input"));
+        await ctx.sleep(2400);
+      }
+    },
+    {
+      label: "Flip the kernel, lay it down",
+      note: "The kernel is three weights, −1, 0 and +1. Convolution lays it down reversed, so the window reads +1, 0, −1 from left to right. Multiply each covered number by the weight under it and add the three up.",
+      async run(ctx) {
+        const c = ctx.card("the kernel");
+        c.appendChild(ctx.el("div", "anim-tally",
+          "<span>K, as written</span><b>&minus;1 &nbsp; 0 &nbsp; +1</b>"));
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>K, laid down</span><b>+1 &nbsp; 0 &nbsp; &minus;1</b>"));
+        c.appendChild(ctx.el("div", "anim-caption",
+          "reversed &mdash; the convention explained in the margin"));
+        await ctx.sleep(1400);
+
+        ctx.showKernel(true);
+        ctx.slideTo(0);
+        await ctx.sleep(1200);
+        await ctx.terms(c, 0);
+        ctx.fill(0);
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "Slide it along",
+      note: "Move the window one pixel to the right and do it again. Three more multiplications, one more number underneath. Four positions on a row of six, and the output is built one position at a time.",
+      async run(ctx) {
+        ctx.showKernel(true);
+        for (let p = 1; p < POSN; p++) {
+          const c = ctx.card("window at pixels " + (p + 1) + "–" + (p + 3));
+          ctx.slideTo(p);
+          await ctx.sleep(700);
+          await ctx.terms(c, p);
+          ctx.fill(p);
+          await ctx.sleep(p < POSN - 1 ? 1500 : 900);
+        }
+        const c = ctx.card("all four positions");
+        c.appendChild(ctx.el("div", "anim-tally",
+          "<span>output</span><b>&minus;70 &nbsp; 0 &nbsp; 70 &nbsp; 0</b>"));
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "six numbers in, four numbers out: the window needs three pixels " +
+          "under it, and only four places on a row of six give it three."));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Now you slide it",
+      note: "Take the window. Watch where the answer lands: the position sitting right on top of the 80 gives 0, because the kernel never looks at the middle pixel. The stripe shows up on its two shoulders, as −70 and +70.",
+      async run(ctx) {
+        const c = ctx.card("now you slide it");
+        ctx.showKernel(true);
+        ctx.fill(-1);                          /* all four, they are computed */
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          '<span style="color:var(--_accent)">pixels <b data-w>1&ndash;3</b></span>' +
+          '<span style="color:var(--_amber)">sum <b data-s>&minus;70</b></span>');
+        c.appendChild(read);
+
+        const rows = ctx.el("div");
+        c.appendChild(rows);
+        const verdict = ctx.el("div", "anim-quote anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outW = read.querySelector("[data-w]");
+        const outS = read.querySelector("[data-s]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the strip is yours
+           until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: POSN - 1, step: 1, value: 0,
+          label: "Window position",
+          format: (p) => "pixels " + (p + 1) + " to " + (p + 3),
+          onGrab: () => ctx.pause(),
+          onInput: (p) => {
+            outW.textContent = (p + 1) + "–" + (p + 3);
+            outS.innerHTML = sign(OUT[p]);
+            ctx.slideTo(p);
+            rows.textContent = "";
+            for (let j = 0; j < 3; j++) {
+              rows.appendChild(ctx.el("div", "anim-tally",
+                "<span>" + X[p + j] + " &times; " +
+                sign(KF[j]) + "</span><b>" +
+                sign(X[p + j] * KF[j]) + "</b>"));
+            }
+          }
+        });
+        dial.set(0);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipped to, or read with motion off: land on the position that makes
+           the point, because that position is what this figure is about. */
+        if (ctx.fast()) {
+          dial.set(PARK);
+          say("centred on the stripe, and the answer is <b>0</b>.");
+          return;
+        }
+
+        await ctx.sleep(900);
+        dial.set(PARK);
+        await ctx.sleep(1200);
+        say("centred on the stripe, and the answer is <b>0</b>: the kernel " +
+            "compares the two <em>neighbours</em>, and both of them are 10.");
+        await ctx.sleep(3400);
+
+        for (let p = PARK + 1; p < POSN; p++) { dial.set(p); await ctx.sleep(1100); }
+        say("so a bright line is not one big number. It is a matched pair, " +
+            "&minus;70 and +70, one on each shoulder.");
+        await ctx.sleep(3600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("conv-slide"), scenes, {
+    stepsLabel: "Convolution steps",
+
+    /* The two things only this animation has: a strip that persists across all
+       four scenes, and a card on the right that each scene rewrites. Built
+       once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const strip = ctx.$("[data-cs-strip]");
+      const side = ctx.$("[data-cs-side]");
+      const S = {};
+
+      /* ---- the colour of a number ----------------------------------------
+         Pale accent for 10, full accent for 80, both read off the stage so
+         the ramp follows the theme. The literals are the fallbacks
+         assets/anim.css declares, reached only if a browser hands back
+         something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (t) => "rgb(" +
+        LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+
+      /* ---- the drawing ---------------------------------------------------
+         Scene 1 builds it; scenes 2–4 only ever mutate it. Separate <g>s so
+         the window frame lands over the cells and the drop line under the
+         output, with no z fiddling. */
+      function draw() {
+        strip.textContent = "";
+        const svg = ctx.svgRoot("0 0 236 164");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gPix = g(), gOut = g(), gDrop = g(), gWin = g();
+        const slow = !ctx.fast();
+
+        const text = (x, y, s, cls, fill) => {
+          const t = ctx.svgEl("text", { x: x, y: y, "class": cls });
+          if (fill) t.style.fill = fill;
+          t.textContent = s;
+          return t;
+        };
+
+        [[Y_PIX + 20, "pixels"], [Y_KER + 20, "kernel"], [Y_OUT + 20, "output"]]
+          .forEach((r) => svg.appendChild(text(3, r[0], r[1], "cs-tag")));
+
+        X.forEach((v, i) => {
+          const t = v / 100;
+          const r = ctx.svgEl("rect", {
+            x: X0 + i * W, y: Y_PIX, width: W, height: H, rx: 3,
+            "class": "cs-cell" + (slow ? " anim-fade" : "")
+          });
+          r.style.fill = hue(t);
+          if (slow) r.style.animationDelay = (0.15 + i * 0.13) + "s";
+          gPix.appendChild(r);
+          const n = text(cx(i), Y_PIX + 20, String(v),
+            "cs-num" + (slow ? " anim-fade" : ""), t > 0.5 ? "#fff" : "");
+          if (slow) n.style.animationDelay = (0.15 + i * 0.13) + "s";
+          gPix.appendChild(n);
+        });
+
+        S.out = [];
+        S.outN = [];
+        for (let p = 0; p < POSN; p++) {
+          const r = ctx.svgEl("rect", {
+            x: ox(p), y: Y_OUT, width: W, height: H, rx: 3, "class": "cs-out"
+          });
+          gOut.appendChild(r);
+          const n = text(cx(p + 1), Y_OUT + 20, "", "cs-num");
+          gOut.appendChild(n);
+          S.out.push(r);
+          S.outN.push(n);
+        }
+
+        S.drop = ctx.svgEl("line", {
+          x1: cx(1), y1: Y_KER + H, x2: cx(1), y2: Y_OUT, "class": "cs-drop"
+        });
+        S.drop.style.opacity = 0;
+        gDrop.appendChild(S.drop);
+
+        /* Window frame and kernel cells ride in one group, so "the operator"
+           is a single thing that moves. Base coordinates are position 0; the
+           group is translated 30 units per step. */
+        const win = ctx.svgEl("g", { "class": "anim-glide" });
+        win.appendChild(ctx.svgEl("rect", {
+          x: X0 - 2, y: Y_PIX - 3, width: 3 * W + 4, height: H + 6, rx: 5,
+          "class": "cs-win"
+        }));
+        KF.forEach((w, j) => {
+          win.appendChild(ctx.svgEl("rect", {
+            x: X0 + j * W + 3, y: Y_KER, width: W - 6, height: H, rx: 3,
+            "class": "cs-kcell"
+          }));
+          const t = ctx.svgEl("text", {
+            x: X0 + j * W + W / 2, y: Y_KER + 20, "class": "cs-knum"
+          });
+          t.textContent = sign(w);
+          win.appendChild(t);
+        });
+        win.style.opacity = 0;
+        gWin.appendChild(win);
+        S.win = win;
+
+        strip.appendChild(svg);
+        strip.appendChild(ctx.el("div", "anim-caption",
+          "one row of the picture. Darker means a larger number, so the single " +
+          "dark cell is the bright stripe."));
+      }
+
+      const showKernel = (on) => {
+        S.win.style.opacity = on ? 1 : 0;
+        S.drop.style.opacity = on ? 1 : 0;
+      };
+
+      /* ---- put the operator at position p ---- */
+      function windowAt(p) {
+        S.win.style.transform = "translate(" + (p * W) + "px,0px)";
+        S.drop.setAttribute("x1", cx(p + 1));
+        S.drop.setAttribute("x2", cx(p + 1));
+        S.out.forEach((r, k) => {
+          r.setAttribute("class", "cs-out" + (k === p ? " cs-live" : ""));
+        });
+      }
+
+      /* ---- write the answer into output cell p; p < 0 writes all four ---- */
+      function fill(p) {
+        S.outN.forEach((n, k) => {
+          if (p < 0 || k <= p) n.textContent = sign(OUT[k]);
+        });
+      }
+
+      /* ---- the three multiplications, one line at a time ---- */
+      async function terms(c, p) {
+        const rule = ctx.el("hr", "cs-rule");
+        for (let j = 0; j < 3; j++) {
+          c.appendChild(ctx.el("div", "anim-tally anim-fade",
+            "<span>" + X[p + j] + " &times; " +
+            sign(KF[j]) + "</span><b>" +
+            sign(X[p + j] * KF[j]) + "</b>"));
+          await ctx.sleep(520);
+        }
+        c.appendChild(rule);
+        c.appendChild(ctx.el("div", "anim-tally anim-fade",
+          "<span>sum</span><b>" + sign(OUT[p]) + "</b>"));
+        await ctx.sleep(400);
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by draw(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { draw, showKernel, slideTo: windowAt, fill, terms, card };
+    }
+  });
+});
+</script>
 <p>To answer this question, let us consider a row of an image and convolve it with a kernel <span class="math inline">K</span>.</p>
 <p><span class="math display">
 \begin{aligned}
@@ -973,8 +1268,8 @@ X * K = \begin{bmatrix}
 X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_4 K_2 + X_5 K_1 &amp; X_4 K_3 + X_5 K_2 + X_6 K_1
 \end{bmatrix}
 </span></p>
-<p>…which is complicated, right? 😅 So let’s make it simple by using a useful theorem called <strong>the convolution theorem</strong>.</p>
-<p>The convolution theorem gives us a simpler way to think about convolution. Instead of doing the complex sliding window operation in the original domain (like pixel values), we can:</p>
+<p>Written out, convolution is bookkeeping: four different sums, each one a shifted copy of the same three multiplications. That is awkward to compute and, worse, awkward to <em>think</em> about. A theorem called <strong>the convolution theorem</strong> replaces the whole thing with a single multiplication, at the price of first changing coordinates.</p>
+<p>Instead of doing the sliding-window operation on the pixel values, we can:</p>
 <ol type="1">
 <li>Transform both signals to the frequency domain using Fourier transform</li>
 <li>Multiply them together (much simpler!)</li>
@@ -986,196 +1281,112 @@ X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_
 <li><span class="math inline">\mathcal{F}(X) \cdot \mathcal{F}(K)</span> - Multiply the transformed signals</li>
 <li><span class="math inline">\mathcal{F}^{-1}(\mathcal{F}(X) \cdot \mathcal{F}(K))</span> - Transform back to get <span class="math inline">X * K</span></li>
 </ol>
-<p>where <span class="math inline">\mathcal{F}^{-1}</span> is the inverse Fourier transform that brings us back to the original domain. This is much easier than computing the convolution directly!</p>
-<p>For a discrete signal <span class="math inline">x[n]</span> with <span class="math inline">N</span> points, the Fourier transform <span class="math inline">\mathcal{F}</span> is defined as:</p>
-<p><span class="math display">
-\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-2\pi i \frac{nk}{N}}
-</span></p>
-<p>where <span class="math inline">i</span> is the imaginary unit. Or equivalently,</p>
-<p><span class="math display">
-\mathcal{F}(x)[k] = \sum_{n=0}^{N-1} x[n] \cdot \left[ \cos\left(2\pi \frac{nk}{N}\right) - i \sin\left(2\pi \frac{nk}{N}\right) \right]
-</span></p>
-<p>using Euler’s formula <span class="math inline">e^{ix} = \cos(x) + i\sin(x)</span>.</p>
+<p>where <span class="math inline">\mathcal{F}^{-1}</span> is the inverse Fourier transform that brings us back to the original domain.</p>
+<p>What does <span class="math inline">\mathcal{F}</span> actually do? It takes a signal — our row of six pixel values — and reports how much of each <em>wave</em> that signal is made of: a slow wave that rises and falls once across the row, a faster one that does it twice, and so on up to the fastest wave six pixels can carry. A row of constant brightness is pure slow wave. A row that alternates bright, dark, bright, dark is pure fast wave. Our row <code>[10, 10, 80, 10, 10, 10]</code> is a bit of everything, because a single sharp spike needs many waves to build.</p>
+<p>That is all you need to carry forward. The formula that computes those weights uses complex exponentials, and it is written out in the <a href="../m09-graph-neural-networks/04-appendix.html">appendix</a> for anyone who wants it; nothing on the next page depends on reading it. What does matter is the one-sentence version:</p>
+<blockquote class="blockquote">
+<p>The Fourier transform re-describes a signal by <em>which waves it is made of</em>, and the convolution theorem says that convolving with a kernel simply <em>rescales each of those waves</em>.</p>
+</blockquote>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>Complex number can be thought of as a way to represent a 2D vector using a single value (which is a computer science perspective; mathematically, it is a bit more subtle). For example, <span class="math inline">e^{i\pi/2} = \cos(\pi/2) + i\sin(\pi/2)</span> represents the 2D vector <span class="math inline">(\cos(\pi/2), \sin(\pi/2))</span>. In the context of Fourier transform, we interpret <span class="math inline">e^{-2\pi i \frac{nk}{N}}</span> as two <em>base waves</em>, i.e., sine and cosine, with phase <span class="math inline">\frac{2\pi k}{N}</span>.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Euler%27s_formula.svg/360px-Euler%27s_formula.svg.png" class="img-fluid"></p>
-</div></div><p>In simple terms, <span class="math inline">\mathcal{F}</span> takes a signal (like our row of pixel values) and breaks it down into sine and cosine waves of different frequencies. Each frequency component <span class="math inline">k</span> tells us “how much” of that frequency exists in our original signal. Don’t worry too much about the complex math. The key idea is that <span class="math inline">\mathcal{F}</span> represents a signal as a sum of multiple waves with different frequencies, so we can understand the signal in terms of its frequencies rather than its original values.</p>
-<p><img src="https://devincody.github.io/Blog/post/an_intuitive_interpretation_of_the_fourier_transform/img/FFT-Time-Frequency-View_hu24c1c8fe894ecd0dad24174b2bed08c9_99850_800x0_resize_lanczos_2.png" class="img-fluid"></p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>3Blue1Brown makes a beautiful video explaining Fourier transform: <a href="https://www.youtube.com/watch?v=spUNpyF58BY">Video</a>. Here is a great interactive demo on Fourier transform by Jez Swanson: <a href="https://www.jezzamon.com/fourier/">Demo</a>.</p>
-</div></div><section id="an-example-for-the-fourier-transform" class="level3">
-<h3 class="anchored" data-anchor-id="an-example-for-the-fourier-transform">An example for the Fourier transform</h3>
-<p>Now, let’s perform the convolution using the Fourier transform using an example.</p>
-<p>Let us first perform the convolution directly.</p>
-<div id="d4714864" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>array([-70.,   0.,  70.,   0.])</code></pre>
-</div>
-</div>
-<p>Let us now perform the convolution using the Fourier transform. We compute the Fourier transform of <span class="math inline">X</span> and <span class="math inline">K</span>.</p>
-<div id="c65b475f" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Transform X and K to frequency domain</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>FX <span class="op">=</span> np.fft.fft(X)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad K with zeros to match the length of X before FFT</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>K_padded <span class="op">=</span> np.pad(K, (<span class="dv">0</span>, <span class="bu">len</span>(X) <span class="op">-</span> <span class="bu">len</span>(K)), <span class="st">'constant'</span>) <span class="co"># [-1  0  1  0  0  0]</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>FK <span class="op">=</span> np.fft.fft(K_padded)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FX:"</span>, FX)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>FX: [130.+0.00000000e+00j -35.-6.06217783e+01j -35.+6.06217783e+01j
-  70.+7.10542736e-15j -35.-6.06217783e+01j -35.+6.06217783e+01j]</code></pre>
-</div>
-</div>
-<ul>
-<li>We add zeros to <span class="math inline">K</span> to make it the same length as <span class="math inline">X</span> before applying the Fourier transform. This is necessary because the convolution theorem requires the signals to have the same length.</li>
-<li><code>FX</code> is the Fourier transform of <span class="math inline">X</span>, which is a complex number. Each entry <span class="math inline">FX[k]</span> represents the weight of the cosine wave in its real part and the weight of the sine wave in its imaginary part, with phase <span class="math inline">2\pi k / N</span>. Similarly for <code>FK</code>.</li>
-</ul>
-<p>Next, we multiply the transformed signals.</p>
-<div id="47a61548" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>FXKconv <span class="op">=</span> FX <span class="op">*</span> FK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This is the convolution in the frequency domain. Finally, we transform back to get the convolution.</p>
-<div id="352d09cd" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> np.real(np.fft.ifft(FXKconv))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>array([ 2.84957243e-15,  3.05036092e-15, -7.00000000e+01,  1.88737914e-15,
-        7.00000000e+01, -1.05195948e-15])</code></pre>
-</div>
-</div>
-<ul>
-<li>We take the real part. The imaginary part is due to numerical artifacts that do not matter in practice.</li>
-<li>The Fourier transform convolution produces a longer output than direct convolution because it includes partial overlaps between K and X at the boundaries. Since we only want the full overlaps, we need to truncate the first two elements of <code>XKconv_ft</code> (as K has length 3) to match the length of the direct convolution result.</li>
-<li>For example, let’s look at what happens at the beginning of the convolution:
-<ul>
-<li>At position -2: Only the last element of K overlaps with X: <code>[0, 0, 10] * [-1, 0, 1] = 10</code></li>
-<li>At position -1: Two elements of K overlap with X: <code>[0, 10, 10] * [-1, 0, 1] = 10</code></li>
-<li>At position 0: Full overlap begins: <code>[10, 10, 80] * [-1, 0, 1] = 70</code></li>
-</ul>
-The Fourier transform method gives us all these positions (-2, -1, 0, …), but we only want the full overlaps starting from position 0, which is why we truncate the first two elements.</li>
-</ul>
-<div id="9cd02ea5" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> XKconv_ft[<span class="dv">2</span>:]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>array([-7.00000000e+01,  1.88737914e-15,  7.00000000e+01, -1.05195948e-15])</code></pre>
-</div>
-</div>
-<p>This gives us the same result as the direct convolution up to numerical errors.</p>
-</section>
-</section>
-<section id="fourier-transform-of-images" class="level2 page-columns page-full" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="fourier-transform-of-images"><span class="header-section-number">4</span> Fourier Transform of Images</h2>
-<p>Let’s extend the above example to an image which is a 2D matrix. The idea is the same: we take the Fourier transform of each row and column of the image, and then multiply them together to get the convolution in the frequency domain. More specifically, for an image <span class="math inline">X</span> with size <span class="math inline">H \times W</span>, the Fourier transform of <span class="math inline">X</span> is</p>
+<p>3Blue1Brown makes a beautiful video explaining the Fourier transform: <a href="https://www.youtube.com/watch?v=spUNpyF58BY">Video</a>. Here is a great interactive demo by Jez Swanson: <a href="https://www.jezzamon.com/fourier/">Demo</a>.</p>
+</div></div><section id="the-same-convolution-done-by-multiplying" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-convolution-done-by-multiplying">The same convolution, done by multiplying</h3>
+<p>Take the row and the kernel we already have, <span class="math inline">X = [10, 10, 80, 10, 10, 10]</span> and <span class="math inline">K = [-1, 0, 1]</span>.</p>
+<p>Done directly, the sliding window gives four numbers:</p>
 <p><span class="math display">
-\begin{aligned}
-\mathcal{F}(X)[h, w] &amp;= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] \cdot e^{-2\pi i \frac{hk}{H}} \cdot e^{-2\pi i \frac{w\ell}{W}} \\
-&amp;= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X[k, \ell] e^{-2\pi i \left(\frac{hk}{H} + \frac{w\ell}{W}\right)}
-\end{aligned}
+X * K = \begin{bmatrix} -70 &amp; 0 &amp; 70 &amp; 0 \end{bmatrix}
 </span></p>
-<p>Comparing with the 1D case, we see that the 2D Fourier transform is <em>functionally</em> the same as the 1D Fourier transform, except that we now have two indices <span class="math inline">h</span> and <span class="math inline">w</span> to represent the frequency in both dimensions. The basis waves are 2D waves as shown below.</p>
-<p><strong>Cosine waves</strong></p>
-<div id="46c2210d" class="cell" data-execution_count="7">
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+<p>which are exactly the four defined entries of one row of the horizontal derivative we computed by hand at the start of this page.</p>
+<p>Done through the convolution theorem, we first pad <span class="math inline">K</span> with zeros to <span class="math inline">[-1, 0, 1, 0, 0, 0]</span>, because entrywise multiplication needs the two signals to have the same length. Transforming both, multiplying, and transforming back returns six numbers:</p>
+<p><span class="math display">
+\mathcal{F}^{-1}\left(\mathcal{F}(X) \cdot \mathcal{F}(K)\right) = \begin{bmatrix} 0 &amp; 0 &amp; -70 &amp; 0 &amp; 70 &amp; 0 \end{bmatrix}
+</span></p>
+<p>The first two are the positions where the kernel hangs off the left end of the row and wraps around to the other side — the transform treats the row as a loop. Drop those two and what remains is <span class="math inline">[-70, 0, 70, 0]</span>: the direct convolution, to the last digit.</p>
+<p>Two routes, one answer. The second route is the one that will survive the move to networks, because it never mentions “left” or “right”.</p>
+</section>
+</section>
+<section id="take-a-photograph-apart-into-waves" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="take-a-photograph-apart-into-waves">Take a photograph apart into waves</h2>
+<p>An image is a 2D matrix, and the 2D Fourier transform is just the 1D one applied twice: transform every row, then transform every column of the result. The convolution theorem is unchanged — multiply <span class="math inline">\mathcal{F}(X)</span> by <span class="math inline">\mathcal{F}(K)</span> entry by entry and transform back. (The formula is in the <a href="../m09-graph-neural-networks/04-appendix.html">appendix</a>.)</p>
+<p>What changes is the basis. In 1D the waves are ripples along a line; in 2D they are corrugations across a plane, indexed by <em>two</em> frequencies, one for each direction.</p>
+<div id="fig-m09prep-fig-00" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-00-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-00.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-00-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The 256 cosine basis images for a <span class="math inline">16 \times 16</span> picture. The top-left tile is flat — no variation at all. Moving right makes the pattern vary faster from left to right, giving finer vertical stripes; moving down makes it vary faster from top to bottom, giving finer horizontal stripes.
+</figcaption>
 </figure>
 </div>
+<div id="fig-m09prep-fig-01" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-01.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
 </div>
-</div>
-<p><strong>Sine waves</strong></p>
-<div id="3cb51482" class="cell" data-execution_count="8">
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: The matching sine basis images, in the same layout. Each frequency needs both a cosine and a sine so that the wave can be slid to any position.
+</figcaption>
 </figure>
 </div>
+<p>Any grayscale picture, however complicated, is a weighted sum of these — and the Fourier transform is the list of weights.</p>
+<section id="a-real-photograph-taken-apart-into-waves" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="a-real-photograph-taken-apart-into-waves">A real photograph, taken apart into waves</h3>
+<p>Here is a real photograph, converted to grayscale.</p>
+<div id="fig-m09prep-fig-02" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-02.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
 </div>
-</div>
-<p>The Fourier transform of an image is a decomposition of an image into the sum of these basis waves.</p>
-<section id="an-example-of-fourier-transform" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="an-example-of-fourier-transform">An example of Fourier transform</h3>
-<p>Let us apply the Fourier transform to an image.</p>
-<div id="f1917570" class="cell" data-execution_count="9">
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: A grayscale photograph. To the Fourier transform this is not a lawn and some buildings; it is a recipe of a few hundred thousand waves.
+</figcaption>
 </figure>
 </div>
+<p>Its Fourier transform is a matrix the same size as the photograph, one weight per basis wave. Plotted as an image (on a log scale, because the weights span many orders of magnitude), the weights concentrate overwhelmingly in the low frequencies at the corners: most of a photograph is slow, smooth variation, and only the object boundaries need fast waves.</p>
+<div id="fig-m09prep-fig-03" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-03.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:55.0%">
 </div>
-</div>
-<p>Take the Fourier transform of the image.</p>
-<div id="d4e2e5cc" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ft_img_gray <span class="op">=</span> np.fft.fft2(img_gray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This decomposes the image into a sum of basis waves. Let’s see the weights of the basis waves.</p>
-<div id="1325e2fc" class="cell" data-execution_count="11">
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: The magnitude of the photograph’s Fourier transform. Bright means “a lot of this wave”.
+</figcaption>
 </figure>
 </div>
+<div id="fig-m09prep-fig-04" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-04.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
 </div>
-</div>
-<p>The corresponding basis waves look like this:</p>
-<div id="ba7f523f" class="cell" data-execution_count="12">
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>Text(0.5, 0.98, 'Imaginary Part of Basis Functions')</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-13-output-2.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: The sine half of the same basis, re-indexed so the slowest wave sits at the middle of the grid rather than at a corner.
+</figcaption>
 </figure>
 </div>
+<p>Now convolve the photograph with the <em>vertical</em> Prewitt operator <span class="math inline">K_v</span> — the one that differentiates down the columns, and therefore responds to horizontal edges. By the convolution theorem we can do it by multiplying, so look first at the kernel’s own transform.</p>
+<div id="fig-m09prep-fig-05" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-05.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:55.0%">
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-13-output-3.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: The magnitude of the Prewitt operator’s Fourier transform. It is exactly zero for waves that do not vary down the columns, and largest for waves that change over a few pixels.
+</figcaption>
 </figure>
 </div>
+<p>This is the crucial picture. The kernel’s transform acts as a <strong>filter</strong>: multiplying <span class="math inline">\mathcal{F}(X)</span> by <span class="math inline">\mathcal{F}(K)</span> entrywise scales every wave in the photograph by the corresponding number in this plot. Waves that do not vary vertically are multiplied by zero and disappear — including the flat one, which is why the overall brightness of the picture is deleted. Fast vertical variation survives. In other words, the Prewitt kernel <em>is</em> a high-pass filter, written in the pixel domain.</p>
+<div id="fig-m09prep-fig-06" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m09prep-fig-06-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figs/m09prep-fig-06.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
 </div>
-</div>
-<p>Now, let’s see the convolution of the image with a Prewitt operator.</p>
-<div id="68af6639" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]]) <span class="co"># Prewitt operator</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>K_padd <span class="op">=</span> np.zeros((img_gray.shape[<span class="dv">0</span>], img_gray.shape[<span class="dv">1</span>]))</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>K_padd[:K.shape[<span class="dv">0</span>], :K.shape[<span class="dv">1</span>]] <span class="op">=</span> K</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># convolution</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>FK <span class="op">=</span> np.fft.fft2(K_padd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The Fourier transform of the Prewitt operator looks like this:</p>
-<div id="be4240bf" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(np.<span class="bu">abs</span>(FK), cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> plt.colorbar()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m09prep-fig-06-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: The result: the smooth interiors are gone and the horizontal boundaries remain.
+</figcaption>
 </figure>
 </div>
-</div>
-</div>
-<p>We can think of the frequency domain of the kernel as a <strong>filter</strong> that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel <code>FK</code> has a low value around the center of the image. The product <span class="math inline">FX \cdot FK</span> then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.</p>
-<p>Let’s see the convolution result.</p>
-<div id="a729e04b" class="cell" data-execution_count="15">
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="00-preparation_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>We observe that the horizontal edges are highlighted.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>A widespread application of the 2D Fourier transform is JPEG format. Here’s how it works:</p>
@@ -1188,17 +1399,28 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 <p>These steps make the file much smaller while still looking good to us.</p>
 </div></div></section>
 </section>
-<section id="a-key-lesson-from-image-processing" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="a-key-lesson-from-image-processing"><span class="header-section-number">5</span> A key lesson from image processing</h2>
-<p>We have seen an equivalence between convolution in the pixel (spatial) domain and multiplication in the frequency domain. Using the Fourier transform, an image is decomposed into a sum of basis waves. The <em>kernel</em> can be thought of as <em>a filter</em> that suppresses some basis waves and allows others to pass through.</p>
-<p>This idea is the key to understand graph convolutional networks we will see in the next page.</p>
+<section id="the-one-sentence-to-carry-to-the-next-page" class="level2">
+<h2 class="anchored" data-anchor-id="the-one-sentence-to-carry-to-the-next-page">The one sentence to carry to the next page</h2>
+<p>Convolving with a kernel in the pixel domain is the same thing as multiplying wave by wave in the frequency domain. An image is a sum of basis waves; a <strong>kernel is a filter</strong> that turns some of those waves down and lets others through. Edge detection is not really about edges — it is about keeping the fast waves.</p>
+<p>Now notice what that sentence does <em>not</em> mention. It says nothing about “left neighbor”, “the pixel above”, or a <span class="math inline">3 \times 3</span> square. It only needs a set of basis waves and one number per wave.</p>
+<p>A network has no rows and no columns, so “the pixel above” means nothing on a network. But a network does have basis waves — that is the next page’s first job — and once we have them, everything above transfers.</p>
+<p><strong>What you can now do</strong></p>
+<ul>
+<li>Detect an edge in a small image by hand, and say why the response sits <em>beside</em> a bright line rather than on it.</li>
+<li>Write any local pixel operation as a kernel, and name what pattern that kernel is looking for.</li>
+<li>State the convolution theorem and say what it buys: one multiplication instead of a sliding sum.</li>
+<li>Explain what makes a kernel a low-pass or a high-pass filter.</li>
+</ul>
+<p>Next: <a href="../m09-graph-neural-networks/01-concepts.html">Every Node Asks Its Neighbors</a>, where the same three ideas are rebuilt on a network.</p>
 
-
-<!-- -->
 
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1250,13 +1472,14 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1268,57 +1491,6 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1651,568 +1823,16 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m08-embedding/04-appendix.html" class="pagination-link" aria-label="Advanced Topics in Network Science">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Advanced Topics in Network Science</span>
+      <a href="../m08-embedding/04-appendix.html" class="pagination-link" aria-label="Appendix: Where the Eigenvectors Come From">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Appendix: Where the Eigenvectors Come From</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m09-graph-neural-networks/01-concepts.html" class="pagination-link" aria-label="Concepts - From image to graph">
-        <span class="nav-page-text">Concepts - From image to graph</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m09-graph-neural-networks/01-concepts.html" class="pagination-link" aria-label="Every Node Asks Its Neighbors">
+        <span class="nav-page-text">Every Node Asks Its Neighbors</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Preparation - Image processing"</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preliminaries: Image Processing</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>Graph Neural Networks are a type of neural network for graph data. node2vec and deepwalk stem from the idea of language modeling.</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>In this module, we will focus on another branch of graph neural networks that stem from image processing.</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pen and paper exercises</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">✍️ Pen and paper exercises</span><span class="co">](pen-and-paper/exercise.pdf)</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>The pen and paper exercises will help you understand the mathematical foundations of graph neural networks, including:</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Spectral Graph Theory**: Understanding eigenvalues and eigenvectors of graph matrices</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fourier Analysis on Graphs**: Extending classical signal processing to graph domains</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Convolution Operations**: Defining convolution for irregular graph structures</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Message Passing**: Mathematical formulation of information aggregation in graphs</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Network Architecture Design**: Principles for designing effective GNN architectures</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>These exercises provide the theoretical foundation necessary to understand how graph neural networks process and learn from graph-structured data.</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## Edge Detection Problem in Image Processing</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>Edge detection is a classical problem in image processing. The goal is to identify the boundaries of objects in an image.</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>![](https://media.geeksforgeeks.org/wp-content/uploads/20240616211411/Screenshot-(85).webp)</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>To approach the problem, let us first remind that an image is a matrix of pixels. Each pixel has RGB values, each of which represents the intensity of red, green, and blue color. To simplify the problem, we focus on grayscale images, in which each pixel has only one value representing the brightness. In this case, an image can be represented as a 2D matrix, where each element in the matrix represents the brightness of a pixel.</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://ai.stanford.edu/~syyeung/cvweb/Pictures1/imagematrix.png)</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="fu">### An example</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>Human eyes are very sensitive to brightness changes. An edge in an image appears when there is a *significant brightness change between adjacent pixels*. To be more concrete, let's consider a small example consisting of 6x6 pixels, with a vertical line from the top to the bottom, where the brightness is higher than the neighboring pixels. This is an edge we want to detect.</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>X = \begin{bmatrix}</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>10 &amp; 10 &amp; 80 &amp; 10 &amp; 10 &amp; 10</span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>Let's zoom on the pixel at (3, 3) and its surrounding pixels.</span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>Z = \begin{bmatrix}</span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>10 &amp; 80 &amp; 10 <span class="sc">\\</span></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>\textcolor{blue}{10} &amp; \textcolor{red}{80} &amp; \textcolor{purple}{10} <span class="sc">\\</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>10 &amp; 80 &amp; 10</span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>where the central pixel is highlighted in red. Since we are interested in the edge which is a sudden change in brightness along the horizontal direction, we take a derivative at the central pixel by</span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>\nabla Z_{22} = \textcolor{blue}{Z_{2,1}} - \textcolor{purple}{Z_{2,3}}</span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a>Following the same process, we can compute the derivative at all pixels, which gives us the (horizontal) derivative of the image.</span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - <span class="sc">\\</span></span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - <span class="sc">\\</span></span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - <span class="sc">\\</span></span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; - <span class="sc">\\</span></span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; -70 &amp; 0 &amp; 70 &amp; 0 &amp; -</span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a>The symbol <span class="in">`-`</span> indicates that the derivative is not defined because one of the neighboring pixels is out of the image boundary.</span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a>We observe that the derivative is high at the edge and low elsewhere. This is a simple but effective way to detect edges in an image.</span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>We can consider a derivative operator along the vertical direction that computes the difference between the vertical neighboring pixels.</span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a>\nabla Z_{22} = Z_{1,2} - Z_{3,2}</span>
-<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a>And, when applied to the entire image, the result is</span>
-<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
-<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; - &amp; - &amp; - &amp; -  &amp; - <span class="sc">\\</span></span>
-<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a>0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 <span class="sc">\\</span></span>
-<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a>0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 <span class="sc">\\</span></span>
-<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a>0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 <span class="sc">\\</span></span>
-<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>&amp; - &amp; - &amp; - &amp; - &amp; -</span>
-<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a>The all entries are zero, meaning that there is no edge in the vertical direction.</span>
-<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a>We can combine the horizontal and vertical derivatives to get the gradient of the image. For example,</span>
-<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>\nabla Z_{22} = Z_{12} - Z_{32} + Z_{21} - Z_{23}</span>
-<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a>When applied to the entire image, the result is the same as the horizontal derivative.</span>
-<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### Convolution</span></span>
-<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a>We observe that there is a repeated pattern in the derivative computation: we are taking addition and subtraction of neighbiring pixels. This motivates us to generalize the operation to a more general form.</span>
-<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a>\nabla Z_{22} = \sum_{i=-1}^1 \sum_{j=-1}^1 K_{h-(i+1),w-(j+1)} Z_{2+i, 2+j}</span>
-<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a>where $K$ is a $3 \times 3$ matrix, and $w=h=3$ represent the width and height of the kernel.</span>
-<span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-123"><a href="#cb13-123" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a>K = \begin{bmatrix}</span>
-<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a>K_{11} &amp; K_{12} &amp; K_{13} <span class="sc">\\</span></span>
-<span id="cb13-126"><a href="#cb13-126" aria-hidden="true" tabindex="-1"></a>K_{21} &amp; K_{22} &amp; K_{23} <span class="sc">\\</span></span>
-<span id="cb13-127"><a href="#cb13-127" aria-hidden="true" tabindex="-1"></a>K_{31} &amp; K_{32} &amp; K_{33}</span>
-<span id="cb13-128"><a href="#cb13-128" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-129"><a href="#cb13-129" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-130"><a href="#cb13-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-131"><a href="#cb13-131" aria-hidden="true" tabindex="-1"></a>The matrix $K$ is called a **kernel**, and applying it to the image is called **convolution**.</span>
-<span id="cb13-132"><a href="#cb13-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>The index of the kernel is conventionally reversed. Namely, we reorder the entries of the kernel such that</span>
-<span id="cb13-135"><a href="#cb13-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-136"><a href="#cb13-136" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-137"><a href="#cb13-137" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
-<span id="cb13-138"><a href="#cb13-138" aria-hidden="true" tabindex="-1"></a>K_{33} &amp; K_{32} &amp; K_{31} <span class="sc">\\</span></span>
-<span id="cb13-139"><a href="#cb13-139" aria-hidden="true" tabindex="-1"></a>K_{23} &amp; K_{22} &amp; K_{21} <span class="sc">\\</span></span>
-<span id="cb13-140"><a href="#cb13-140" aria-hidden="true" tabindex="-1"></a>K_{13} &amp; K_{12} &amp; K_{11}</span>
-<span id="cb13-141"><a href="#cb13-141" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-142"><a href="#cb13-142" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-143"><a href="#cb13-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-144"><a href="#cb13-144" aria-hidden="true" tabindex="-1"></a>Then, take the element-wise product with $Z$</span>
-<span id="cb13-145"><a href="#cb13-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-146"><a href="#cb13-146" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-147"><a href="#cb13-147" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
-<span id="cb13-148"><a href="#cb13-148" aria-hidden="true" tabindex="-1"></a>Z_{11} K_{33} &amp; Z_{12} K_{32} &amp; Z_{13} K_{31} <span class="sc">\\</span></span>
-<span id="cb13-149"><a href="#cb13-149" aria-hidden="true" tabindex="-1"></a>Z_{21} K_{23} &amp; Z_{22} K_{22} &amp; Z_{23} K_{21} <span class="sc">\\</span></span>
-<span id="cb13-150"><a href="#cb13-150" aria-hidden="true" tabindex="-1"></a>Z_{31} K_{13} &amp; Z_{32} K_{12} &amp; Z_{33} K_{11}</span>
-<span id="cb13-151"><a href="#cb13-151" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-152"><a href="#cb13-152" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-153"><a href="#cb13-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-154"><a href="#cb13-154" aria-hidden="true" tabindex="-1"></a>and sum up all the elements to get the new pixel value $\nabla Z_{22}$.</span>
-<span id="cb13-155"><a href="#cb13-155" aria-hidden="true" tabindex="-1"></a>Why do we reverse the kernel? This is to match with the mathematical definition of convolution, which will be introduced later.</span>
-<span id="cb13-156"><a href="#cb13-156" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-157"><a href="#cb13-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-158"><a href="#cb13-158" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-159"><a href="#cb13-159" aria-hidden="true" tabindex="-1"></a>In the previous example, we used a $3 \times 3$ kernels called the Prewitt operator, which in terms of $K$ is</span>
-<span id="cb13-160"><a href="#cb13-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-161"><a href="#cb13-161" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-162"><a href="#cb13-162" aria-hidden="true" tabindex="-1"></a>K_h = \begin{bmatrix}</span>
-<span id="cb13-163"><a href="#cb13-163" aria-hidden="true" tabindex="-1"></a>-1 &amp; 0 &amp; 1 <span class="sc">\\</span></span>
-<span id="cb13-164"><a href="#cb13-164" aria-hidden="true" tabindex="-1"></a>-1 &amp; 0 &amp; 1 <span class="sc">\\</span></span>
-<span id="cb13-165"><a href="#cb13-165" aria-hidden="true" tabindex="-1"></a>-1 &amp; 0 &amp; 1</span>
-<span id="cb13-166"><a href="#cb13-166" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-167"><a href="#cb13-167" aria-hidden="true" tabindex="-1"></a>\quad \text{or} \quad</span>
-<span id="cb13-168"><a href="#cb13-168" aria-hidden="true" tabindex="-1"></a>K_v = \begin{bmatrix}</span>
-<span id="cb13-169"><a href="#cb13-169" aria-hidden="true" tabindex="-1"></a>-1 &amp; -1 &amp; -1 <span class="sc">\\</span></span>
-<span id="cb13-170"><a href="#cb13-170" aria-hidden="true" tabindex="-1"></a>0 &amp; 0 &amp; 0 <span class="sc">\\</span></span>
-<span id="cb13-171"><a href="#cb13-171" aria-hidden="true" tabindex="-1"></a>1 &amp; 1 &amp; 1</span>
-<span id="cb13-172"><a href="#cb13-172" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-173"><a href="#cb13-173" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-174"><a href="#cb13-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-175"><a href="#cb13-175" aria-hidden="true" tabindex="-1"></a>where $K_h$ is the horizontal Prewitt operator and $K_v$ is the vertical Prewitt operator.</span>
-<span id="cb13-176"><a href="#cb13-176" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-177"><a href="#cb13-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-178"><a href="#cb13-178" aria-hidden="true" tabindex="-1"></a>A kernel represents a local pattern we want to detect. The new pixel value after the convolution is maximized when the pattern is most similar to the kernel in terms of the inner product. This can be confirmed by:</span>
-<span id="cb13-179"><a href="#cb13-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-180"><a href="#cb13-180" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-181"><a href="#cb13-181" aria-hidden="true" tabindex="-1"></a>\nabla Z_{22} = \sum_{i=-1}^1 \sum_{j=-1}^1 K_{h-(i+1),w-(j+1)} Z_{2+i, 2+j} = \langle \hat K, Z \rangle</span>
-<span id="cb13-182"><a href="#cb13-182" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-183"><a href="#cb13-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-184"><a href="#cb13-184" aria-hidden="true" tabindex="-1"></a>where $\langle \cdot, \cdot \rangle$ is the inner product, and $\hat K$ is the order-reversed kernel.</span>
-<span id="cb13-185"><a href="#cb13-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-186"><a href="#cb13-186" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-187"><a href="#cb13-187" aria-hidden="true" tabindex="-1"></a>Check out this awesome interactive demo to see how different kernels work: <span class="co">[</span><span class="ot">Demo</span><span class="co">](https://setosa.io/ev/image-kernels/)</span></span>
-<span id="cb13-188"><a href="#cb13-188" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-189"><a href="#cb13-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-190"><a href="#cb13-190" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fourier Transform</span></span>
-<span id="cb13-191"><a href="#cb13-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-192"><a href="#cb13-192" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://miro.medium.com/v2/resize:fit:1400/1*D6iRfzDkz-sEzyjYoVZ73w.gif)</span></span>
-<span id="cb13-193"><a href="#cb13-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-194"><a href="#cb13-194" aria-hidden="true" tabindex="-1"></a>Convolution computes the new pixel values by sliding a kernel over an image. How is the resulting image related to the original image?</span>
-<span id="cb13-195"><a href="#cb13-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-196"><a href="#cb13-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-197"><a href="#cb13-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-198"><a href="#cb13-198" aria-hidden="true" tabindex="-1"></a>To answer this question, let us consider a row of an image and convolve it with a kernel $K$.</span>
-<span id="cb13-199"><a href="#cb13-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-200"><a href="#cb13-200" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-201"><a href="#cb13-201" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb13-202"><a href="#cb13-202" aria-hidden="true" tabindex="-1"></a>X &amp;= \begin{bmatrix}</span>
-<span id="cb13-203"><a href="#cb13-203" aria-hidden="true" tabindex="-1"></a>X_1 &amp; X_2 &amp; X_3 &amp; X_4 &amp; X_5 &amp; X_6</span>
-<span id="cb13-204"><a href="#cb13-204" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} <span class="sc">\\</span></span>
-<span id="cb13-205"><a href="#cb13-205" aria-hidden="true" tabindex="-1"></a>K &amp;= \begin{bmatrix}</span>
-<span id="cb13-206"><a href="#cb13-206" aria-hidden="true" tabindex="-1"></a>K_1 &amp; K_2 &amp; K_3</span>
-<span id="cb13-207"><a href="#cb13-207" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-208"><a href="#cb13-208" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb13-209"><a href="#cb13-209" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-210"><a href="#cb13-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-211"><a href="#cb13-211" aria-hidden="true" tabindex="-1"></a>The convolution of $X$ and $K$ is</span>
-<span id="cb13-212"><a href="#cb13-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-213"><a href="#cb13-213" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-214"><a href="#cb13-214" aria-hidden="true" tabindex="-1"></a>X * K = \begin{bmatrix}</span>
-<span id="cb13-215"><a href="#cb13-215" aria-hidden="true" tabindex="-1"></a>X_1 K_3 + X_2 K_2 + X_3 K_1 &amp; X_2 K_3 + X_3 K_2 + X_4 K_1 &amp; X_3 K_3 + X_4 K_2 + X_5 K_1 &amp; X_4 K_3 + X_5 K_2 + X_6 K_1</span>
-<span id="cb13-216"><a href="#cb13-216" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb13-217"><a href="#cb13-217" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-218"><a href="#cb13-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-219"><a href="#cb13-219" aria-hidden="true" tabindex="-1"></a>...which is complicated, right? 😅 So let's make it simple by using a useful theorem called **the convolution theorem**.</span>
-<span id="cb13-220"><a href="#cb13-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-221"><a href="#cb13-221" aria-hidden="true" tabindex="-1"></a>The convolution theorem gives us a simpler way to think about convolution. Instead of doing the complex sliding window operation in the original domain (like pixel values), we can:</span>
-<span id="cb13-222"><a href="#cb13-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-223"><a href="#cb13-223" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Transform both signals to the frequency domain using Fourier transform</span>
-<span id="cb13-224"><a href="#cb13-224" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Multiply them together (much simpler!)</span>
-<span id="cb13-225"><a href="#cb13-225" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Transform back to get the same result</span>
-<span id="cb13-226"><a href="#cb13-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-227"><a href="#cb13-227" aria-hidden="true" tabindex="-1"></a>Mathematically, the above steps can be written as:</span>
-<span id="cb13-228"><a href="#cb13-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-229"><a href="#cb13-229" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\mathcal{F}(X), \mathcal{F}(K)$ - Transform both signals to frequency domain (Fourier transform)</span>
-<span id="cb13-230"><a href="#cb13-230" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\mathcal{F}(X) \cdot \mathcal{F}(K)$ - Multiply the transformed signals</span>
-<span id="cb13-231"><a href="#cb13-231" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$\mathcal{F}^{-1}(\mathcal{F}(X) \cdot \mathcal{F}(K))$ - Transform back to get $X * K$</span>
-<span id="cb13-232"><a href="#cb13-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-233"><a href="#cb13-233" aria-hidden="true" tabindex="-1"></a>where $\mathcal{F}^{-1}$ is the inverse Fourier transform that brings us back to the original domain. This is much easier than computing the convolution directly!</span>
-<span id="cb13-234"><a href="#cb13-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-235"><a href="#cb13-235" aria-hidden="true" tabindex="-1"></a>For a discrete signal $x<span class="co">[</span><span class="ot">n</span><span class="co">]</span>$ with $N$ points, the Fourier transform $\mathcal{F}$ is defined as:</span>
-<span id="cb13-236"><a href="#cb13-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-237"><a href="#cb13-237" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-238"><a href="#cb13-238" aria-hidden="true" tabindex="-1"></a>\mathcal{F}(x)<span class="co">[</span><span class="ot">k</span><span class="co">]</span> = \sum_{n=0}^{N-1} x<span class="co">[</span><span class="ot">n</span><span class="co">]</span> \cdot e^{-2\pi i \frac{nk}{N}}</span>
-<span id="cb13-239"><a href="#cb13-239" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-240"><a href="#cb13-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-241"><a href="#cb13-241" aria-hidden="true" tabindex="-1"></a>where $i$ is the imaginary unit. Or equivalently,</span>
-<span id="cb13-242"><a href="#cb13-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-243"><a href="#cb13-243" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-244"><a href="#cb13-244" aria-hidden="true" tabindex="-1"></a>\mathcal{F}(x)<span class="co">[</span><span class="ot">k</span><span class="co">]</span> = \sum_{n=0}^{N-1} x<span class="co">[</span><span class="ot">n</span><span class="co">]</span> \cdot \left<span class="co">[</span><span class="ot"> \cos\left(2\pi \frac{nk}{N}\right) - i \sin\left(2\pi \frac{nk}{N}\right) \right</span><span class="co">]</span></span>
-<span id="cb13-245"><a href="#cb13-245" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-246"><a href="#cb13-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-247"><a href="#cb13-247" aria-hidden="true" tabindex="-1"></a>using Euler's formula $e^{ix} = \cos(x) + i\sin(x)$.</span>
-<span id="cb13-248"><a href="#cb13-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-249"><a href="#cb13-249" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-250"><a href="#cb13-250" aria-hidden="true" tabindex="-1"></a>Complex number can be thought of as a way to represent a 2D vector using a single value (which is a computer science perspective; mathematically, it is a bit more subtle). For example, $e^{i\pi/2} = \cos(\pi/2) + i\sin(\pi/2)$ represents the 2D vector $(\cos(\pi/2), \sin(\pi/2))$. In the context of Fourier transform, we interpret $e^{-2\pi i \frac{nk}{N}}$ as two *base waves*, i.e., sine and cosine, with phase $\frac{2\pi k}{N}$.</span>
-<span id="cb13-251"><a href="#cb13-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-252"><a href="#cb13-252" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Euler%27s_formula.svg/360px-Euler%27s_formula.svg.png)</span></span>
-<span id="cb13-253"><a href="#cb13-253" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-254"><a href="#cb13-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-255"><a href="#cb13-255" aria-hidden="true" tabindex="-1"></a>In simple terms, $\mathcal{F}$ takes a signal (like our row of pixel values) and breaks it down into sine and cosine waves of different frequencies. Each frequency component $k$ tells us "how much" of that frequency exists in our original signal.</span>
-<span id="cb13-256"><a href="#cb13-256" aria-hidden="true" tabindex="-1"></a>Don't worry too much about the complex math. The key idea is that $\mathcal{F}$ represents a signal as a sum of multiple waves with different frequencies, so we can understand the signal in terms of its frequencies rather than its original values.</span>
-<span id="cb13-257"><a href="#cb13-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-258"><a href="#cb13-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-259"><a href="#cb13-259" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://devincody.github.io/Blog/post/an_intuitive_interpretation_of_the_fourier_transform/img/FFT-Time-Frequency-View_hu24c1c8fe894ecd0dad24174b2bed08c9_99850_800x0_resize_lanczos_2.png)</span></span>
-<span id="cb13-260"><a href="#cb13-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-261"><a href="#cb13-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-262"><a href="#cb13-262" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-263"><a href="#cb13-263" aria-hidden="true" tabindex="-1"></a>3Blue1Brown makes a beautiful video explaining Fourier transform: <span class="co">[</span><span class="ot">Video</span><span class="co">](https://www.youtube.com/watch?v=spUNpyF58BY)</span>. Here is a great interactive demo on Fourier transform by Jez Swanson: <span class="co">[</span><span class="ot">Demo</span><span class="co">](https://www.jezzamon.com/fourier/)</span>.</span>
-<span id="cb13-264"><a href="#cb13-264" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-265"><a href="#cb13-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-266"><a href="#cb13-266" aria-hidden="true" tabindex="-1"></a><span class="fu">### An example for the Fourier transform</span></span>
-<span id="cb13-267"><a href="#cb13-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-268"><a href="#cb13-268" aria-hidden="true" tabindex="-1"></a>Now, let's perform the convolution using the Fourier transform using an example.</span>
-<span id="cb13-269"><a href="#cb13-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-272"><a href="#cb13-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-273"><a href="#cb13-273" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-274"><a href="#cb13-274" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-275"><a href="#cb13-275" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">80</span>, <span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">10</span>])</span>
-<span id="cb13-276"><a href="#cb13-276" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span>
-<span id="cb13-277"><a href="#cb13-277" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-278"><a href="#cb13-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-279"><a href="#cb13-279" aria-hidden="true" tabindex="-1"></a>Let us first perform the convolution directly.</span>
-<span id="cb13-280"><a href="#cb13-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-283"><a href="#cb13-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-284"><a href="#cb13-284" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-285"><a href="#cb13-285" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad X with zeros on both sides to handle boundary</span></span>
-<span id="cb13-286"><a href="#cb13-286" aria-hidden="true" tabindex="-1"></a>n_conv <span class="op">=</span> <span class="bu">len</span>(X) <span class="op">-</span> <span class="bu">len</span>(K) <span class="op">+</span> <span class="dv">1</span>  <span class="co"># Now we get full length output</span></span>
-<span id="cb13-287"><a href="#cb13-287" aria-hidden="true" tabindex="-1"></a>XKconv <span class="op">=</span> np.zeros(n_conv)</span>
-<span id="cb13-288"><a href="#cb13-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-289"><a href="#cb13-289" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_conv):</span>
-<span id="cb13-290"><a href="#cb13-290" aria-hidden="true" tabindex="-1"></a>    XKconv[i] <span class="op">=</span> np.<span class="bu">sum</span>(X[i:(i<span class="op">+</span><span class="bu">len</span>(K))] <span class="op">*</span> K[::<span class="op">-</span><span class="dv">1</span>]) <span class="co"># Reverse the kernel and take element-wise product and sum up</span></span>
-<span id="cb13-291"><a href="#cb13-291" aria-hidden="true" tabindex="-1"></a>XKconv</span>
-<span id="cb13-292"><a href="#cb13-292" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-293"><a href="#cb13-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-294"><a href="#cb13-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-295"><a href="#cb13-295" aria-hidden="true" tabindex="-1"></a>Let us now perform the convolution using the Fourier transform. We compute the Fourier transform of $X$ and $K$.</span>
-<span id="cb13-296"><a href="#cb13-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-299"><a href="#cb13-299" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-300"><a href="#cb13-300" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Transform X and K to frequency domain</span></span>
-<span id="cb13-301"><a href="#cb13-301" aria-hidden="true" tabindex="-1"></a>FX <span class="op">=</span> np.fft.fft(X)</span>
-<span id="cb13-302"><a href="#cb13-302" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad K with zeros to match the length of X before FFT</span></span>
-<span id="cb13-303"><a href="#cb13-303" aria-hidden="true" tabindex="-1"></a>K_padded <span class="op">=</span> np.pad(K, (<span class="dv">0</span>, <span class="bu">len</span>(X) <span class="op">-</span> <span class="bu">len</span>(K)), <span class="st">'constant'</span>) <span class="co"># [-1  0  1  0  0  0]</span></span>
-<span id="cb13-304"><a href="#cb13-304" aria-hidden="true" tabindex="-1"></a>FK <span class="op">=</span> np.fft.fft(K_padded)</span>
-<span id="cb13-305"><a href="#cb13-305" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FX:"</span>, FX)</span>
-<span id="cb13-306"><a href="#cb13-306" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-307"><a href="#cb13-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-308"><a href="#cb13-308" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We add zeros to $K$ to make it the same length as $X$ before applying the Fourier transform. This is necessary because the convolution theorem requires the signals to have the same length.</span>
-<span id="cb13-309"><a href="#cb13-309" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`FX`</span> is the Fourier transform of $X$, which is a complex number. Each entry $FX<span class="co">[</span><span class="ot">k</span><span class="co">]</span>$ represents the weight of the cosine wave in its real part and the weight of the sine wave in its imaginary part, with phase $2\pi k / N$. Similarly for <span class="in">`FK`</span>.</span>
-<span id="cb13-310"><a href="#cb13-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-311"><a href="#cb13-311" aria-hidden="true" tabindex="-1"></a>Next, we multiply the transformed signals.</span>
-<span id="cb13-312"><a href="#cb13-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-315"><a href="#cb13-315" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-316"><a href="#cb13-316" aria-hidden="true" tabindex="-1"></a>FXKconv <span class="op">=</span> FX <span class="op">*</span> FK</span>
-<span id="cb13-317"><a href="#cb13-317" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-318"><a href="#cb13-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-319"><a href="#cb13-319" aria-hidden="true" tabindex="-1"></a>This is the convolution in the frequency domain. Finally, we transform back to get the convolution.</span>
-<span id="cb13-320"><a href="#cb13-320" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-323"><a href="#cb13-323" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-324"><a href="#cb13-324" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> np.real(np.fft.ifft(FXKconv))</span>
-<span id="cb13-325"><a href="#cb13-325" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span>
-<span id="cb13-326"><a href="#cb13-326" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-327"><a href="#cb13-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-328"><a href="#cb13-328" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We take the real part. The imaginary part is due to numerical artifacts that do not matter in practice.</span>
-<span id="cb13-329"><a href="#cb13-329" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The Fourier transform convolution produces a longer output than direct convolution because it includes partial overlaps between K and X at the boundaries. Since we only want the full overlaps, we need to truncate the first two elements of <span class="in">`XKconv_ft`</span> (as K has length 3) to match the length of the direct convolution result.</span>
-<span id="cb13-330"><a href="#cb13-330" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>For example, let's look at what happens at the beginning of the convolution:</span>
-<span id="cb13-331"><a href="#cb13-331" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>At position -2: Only the last element of K overlaps with X: <span class="in">`[0, 0, 10] * [-1, 0, 1] = 10`</span></span>
-<span id="cb13-332"><a href="#cb13-332" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>At position -1: Two elements of K overlap with X: <span class="in">`[0, 10, 10] * [-1, 0, 1] = 10`</span></span>
-<span id="cb13-333"><a href="#cb13-333" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>At position 0: Full overlap begins: <span class="in">`[10, 10, 80] * [-1, 0, 1] = 70`</span></span>
-<span id="cb13-334"><a href="#cb13-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-335"><a href="#cb13-335" aria-hidden="true" tabindex="-1"></a>  The Fourier transform method gives us all these positions (-2, -1, 0, ...), but we only want the full overlaps starting from position 0, which is why we truncate the first two elements.</span>
-<span id="cb13-336"><a href="#cb13-336" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-339"><a href="#cb13-339" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-340"><a href="#cb13-340" aria-hidden="true" tabindex="-1"></a>XKconv_ft <span class="op">=</span> XKconv_ft[<span class="dv">2</span>:]</span>
-<span id="cb13-341"><a href="#cb13-341" aria-hidden="true" tabindex="-1"></a>XKconv_ft</span>
-<span id="cb13-342"><a href="#cb13-342" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-343"><a href="#cb13-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-344"><a href="#cb13-344" aria-hidden="true" tabindex="-1"></a>This gives us the same result as the direct convolution up to numerical errors.</span>
-<span id="cb13-345"><a href="#cb13-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-346"><a href="#cb13-346" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fourier Transform of Images</span></span>
-<span id="cb13-347"><a href="#cb13-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-348"><a href="#cb13-348" aria-hidden="true" tabindex="-1"></a>Let's extend the above example to an image which is a 2D matrix.</span>
-<span id="cb13-349"><a href="#cb13-349" aria-hidden="true" tabindex="-1"></a>The idea is the same: we take the Fourier transform of each row and column of the image, and then multiply them together to get the convolution in the frequency domain.</span>
-<span id="cb13-350"><a href="#cb13-350" aria-hidden="true" tabindex="-1"></a>More specifically, for an image $X$ with size $H \times W$, the Fourier transform of $X$ is</span>
-<span id="cb13-351"><a href="#cb13-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-352"><a href="#cb13-352" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-353"><a href="#cb13-353" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb13-354"><a href="#cb13-354" aria-hidden="true" tabindex="-1"></a>\mathcal{F}(X)<span class="co">[</span><span class="ot">h, w</span><span class="co">]</span> &amp;= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X<span class="co">[</span><span class="ot">k, \ell</span><span class="co">]</span> \cdot e^{-2\pi i \frac{hk}{H}} \cdot e^{-2\pi i \frac{w\ell}{W}} <span class="sc">\\</span></span>
-<span id="cb13-355"><a href="#cb13-355" aria-hidden="true" tabindex="-1"></a>&amp;= \sum_{k=0}^{H-1} \sum_{\ell=0}^{W-1} X<span class="co">[</span><span class="ot">k, \ell</span><span class="co">]</span> e^{-2\pi i \left(\frac{hk}{H} + \frac{w\ell}{W}\right)}</span>
-<span id="cb13-356"><a href="#cb13-356" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb13-357"><a href="#cb13-357" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb13-358"><a href="#cb13-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-359"><a href="#cb13-359" aria-hidden="true" tabindex="-1"></a>Comparing with the 1D case, we see that the 2D Fourier transform is *functionally* the same as the 1D Fourier transform, except that we now have two indices $h$ and $w$ to represent the frequency in both dimensions.</span>
-<span id="cb13-360"><a href="#cb13-360" aria-hidden="true" tabindex="-1"></a>The basis waves are 2D waves as shown below.</span>
-<span id="cb13-361"><a href="#cb13-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-362"><a href="#cb13-362" aria-hidden="true" tabindex="-1"></a>**Cosine waves**</span>
-<span id="cb13-363"><a href="#cb13-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-366"><a href="#cb13-366" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-367"><a href="#cb13-367" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-368"><a href="#cb13-368" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-369"><a href="#cb13-369" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb13-370"><a href="#cb13-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-371"><a href="#cb13-371" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> basis_function(img_size<span class="op">=</span><span class="dv">256</span>, u<span class="op">=</span><span class="dv">0</span>, v<span class="op">=</span><span class="dv">0</span>):</span>
-<span id="cb13-372"><a href="#cb13-372" aria-hidden="true" tabindex="-1"></a>  <span class="co">'''</span></span>
-<span id="cb13-373"><a href="#cb13-373" aria-hidden="true" tabindex="-1"></a><span class="co">  img_size : square size of image f(x,y)</span></span>
-<span id="cb13-374"><a href="#cb13-374" aria-hidden="true" tabindex="-1"></a><span class="co">  u,v : spatial space indice</span></span>
-<span id="cb13-375"><a href="#cb13-375" aria-hidden="true" tabindex="-1"></a><span class="co">  '''</span></span>
-<span id="cb13-376"><a href="#cb13-376" aria-hidden="true" tabindex="-1"></a>  N <span class="op">=</span> img_size</span>
-<span id="cb13-377"><a href="#cb13-377" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> np.linspace(<span class="dv">0</span>, N<span class="op">-</span><span class="dv">1</span>, N)</span>
-<span id="cb13-378"><a href="#cb13-378" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> np.linspace(<span class="dv">0</span>, N<span class="op">-</span><span class="dv">1</span>, N)</span>
-<span id="cb13-379"><a href="#cb13-379" aria-hidden="true" tabindex="-1"></a>  x_, y_ <span class="op">=</span> np.meshgrid(x, y)</span>
-<span id="cb13-380"><a href="#cb13-380" aria-hidden="true" tabindex="-1"></a>  bf <span class="op">=</span> np.exp(<span class="op">-</span><span class="ot">1j</span><span class="op">*</span><span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>(u<span class="op">*</span>x_<span class="op">/</span>N<span class="op">+</span>v<span class="op">*</span>y_<span class="op">/</span>N))</span>
-<span id="cb13-381"><a href="#cb13-381" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> u <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> v <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb13-382"><a href="#cb13-382" aria-hidden="true" tabindex="-1"></a>    bf <span class="op">=</span> np.<span class="bu">round</span>(bf)</span>
-<span id="cb13-383"><a href="#cb13-383" aria-hidden="true" tabindex="-1"></a>  real <span class="op">=</span> np.real(bf) <span class="co"># The cosine part</span></span>
-<span id="cb13-384"><a href="#cb13-384" aria-hidden="true" tabindex="-1"></a>  imag <span class="op">=</span> np.imag(bf) <span class="co"># The sine part</span></span>
-<span id="cb13-385"><a href="#cb13-385" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> real, imag</span>
-<span id="cb13-386"><a href="#cb13-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-387"><a href="#cb13-387" aria-hidden="true" tabindex="-1"></a>size <span class="op">=</span> <span class="dv">16</span></span>
-<span id="cb13-388"><a href="#cb13-388" aria-hidden="true" tabindex="-1"></a>bf_arr_real <span class="op">=</span> np.zeros((size<span class="op">*</span>size,size,size))</span>
-<span id="cb13-389"><a href="#cb13-389" aria-hidden="true" tabindex="-1"></a>bf_arr_imag <span class="op">=</span> np.zeros((size<span class="op">*</span>size,size,size))</span>
-<span id="cb13-390"><a href="#cb13-390" aria-hidden="true" tabindex="-1"></a>ind <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-391"><a href="#cb13-391" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> <span class="bu">range</span>(size):</span>
-<span id="cb13-392"><a href="#cb13-392" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(size):</span>
-<span id="cb13-393"><a href="#cb13-393" aria-hidden="true" tabindex="-1"></a>    re,imag <span class="op">=</span> basis_function(img_size<span class="op">=</span>size, u<span class="op">=</span>row, v<span class="op">=</span>col)</span>
-<span id="cb13-394"><a href="#cb13-394" aria-hidden="true" tabindex="-1"></a>    bf_arr_real[ind] <span class="op">=</span> re</span>
-<span id="cb13-395"><a href="#cb13-395" aria-hidden="true" tabindex="-1"></a>    bf_arr_imag[ind] <span class="op">=</span> imag</span>
-<span id="cb13-396"><a href="#cb13-396" aria-hidden="true" tabindex="-1"></a>    ind <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb13-397"><a href="#cb13-397" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-398"><a href="#cb13-398" aria-hidden="true" tabindex="-1"></a><span class="co"># real part</span></span>
-<span id="cb13-399"><a href="#cb13-399" aria-hidden="true" tabindex="-1"></a>_, axs <span class="op">=</span> plt.subplots(size, size, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">7</span>))</span>
-<span id="cb13-400"><a href="#cb13-400" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> axs.flatten()</span>
-<span id="cb13-401"><a href="#cb13-401" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> img, ax <span class="kw">in</span> <span class="bu">zip</span>(bf_arr_real, axs):</span>
-<span id="cb13-402"><a href="#cb13-402" aria-hidden="true" tabindex="-1"></a>  ax.set_axis_off()</span>
-<span id="cb13-403"><a href="#cb13-403" aria-hidden="true" tabindex="-1"></a>  ax.imshow(img,cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-404"><a href="#cb13-404" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-405"><a href="#cb13-405" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-406"><a href="#cb13-406" aria-hidden="true" tabindex="-1"></a>**Sine waves**</span>
-<span id="cb13-407"><a href="#cb13-407" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-410"><a href="#cb13-410" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-411"><a href="#cb13-411" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-412"><a href="#cb13-412" aria-hidden="true" tabindex="-1"></a><span class="co"># imaginary part</span></span>
-<span id="cb13-413"><a href="#cb13-413" aria-hidden="true" tabindex="-1"></a>_, axs <span class="op">=</span> plt.subplots(size, size, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">7</span>))</span>
-<span id="cb13-414"><a href="#cb13-414" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> axs.flatten()</span>
-<span id="cb13-415"><a href="#cb13-415" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> img, ax <span class="kw">in</span> <span class="bu">zip</span>(bf_arr_imag, axs):</span>
-<span id="cb13-416"><a href="#cb13-416" aria-hidden="true" tabindex="-1"></a>  ax.set_axis_off()</span>
-<span id="cb13-417"><a href="#cb13-417" aria-hidden="true" tabindex="-1"></a>  ax.imshow(img,cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-418"><a href="#cb13-418" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-419"><a href="#cb13-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-420"><a href="#cb13-420" aria-hidden="true" tabindex="-1"></a>The Fourier transform of an image is a decomposition of an image into the sum of these basis waves.</span>
-<span id="cb13-421"><a href="#cb13-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-422"><a href="#cb13-422" aria-hidden="true" tabindex="-1"></a><span class="fu">### An example of Fourier transform</span></span>
-<span id="cb13-423"><a href="#cb13-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-424"><a href="#cb13-424" aria-hidden="true" tabindex="-1"></a>Let us apply the Fourier transform to an image.</span>
-<span id="cb13-425"><a href="#cb13-425" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-428"><a href="#cb13-428" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-429"><a href="#cb13-429" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-430"><a href="#cb13-430" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb13-431"><a href="#cb13-431" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb13-432"><a href="#cb13-432" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> BytesIO</span>
-<span id="cb13-433"><a href="#cb13-433" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb13-434"><a href="#cb13-434" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb13-435"><a href="#cb13-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-436"><a href="#cb13-436" aria-hidden="true" tabindex="-1"></a><span class="co"># Read image from URL</span></span>
-<span id="cb13-437"><a href="#cb13-437" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_jpeg_from_url(url):</span>
-<span id="cb13-438"><a href="#cb13-438" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url)</span>
-<span id="cb13-439"><a href="#cb13-439" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> Image.<span class="bu">open</span>(BytesIO(response.content))</span>
-<span id="cb13-440"><a href="#cb13-440" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert to RGB mode if needed (in case it's RGBA)</span></span>
-<span id="cb13-441"><a href="#cb13-441" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> img.mode <span class="op">!=</span> <span class="st">'RGB'</span>:</span>
-<span id="cb13-442"><a href="#cb13-442" aria-hidden="true" tabindex="-1"></a>        img <span class="op">=</span> img.convert(<span class="st">'RGB'</span>)</span>
-<span id="cb13-443"><a href="#cb13-443" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> img</span>
-<span id="cb13-444"><a href="#cb13-444" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-445"><a href="#cb13-445" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> image_to_numpy(img):</span>
-<span id="cb13-446"><a href="#cb13-446" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(img)</span>
-<span id="cb13-447"><a href="#cb13-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-448"><a href="#cb13-448" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_gray_scale(img_np):</span>
-<span id="cb13-449"><a href="#cb13-449" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(img_np, axis<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb13-450"><a href="#cb13-450" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-451"><a href="#cb13-451" aria-hidden="true" tabindex="-1"></a><span class="co"># URL of the image</span></span>
-<span id="cb13-452"><a href="#cb13-452" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://www.binghamton.edu/news/images/uploads/features/20180815_peacequad02_jwc.jpg"</span></span>
-<span id="cb13-453"><a href="#cb13-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-454"><a href="#cb13-454" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> read_jpeg_from_url(url)</span>
-<span id="cb13-455"><a href="#cb13-455" aria-hidden="true" tabindex="-1"></a>img_np <span class="op">=</span> image_to_numpy(img)</span>
-<span id="cb13-456"><a href="#cb13-456" aria-hidden="true" tabindex="-1"></a>img_gray <span class="op">=</span> to_gray_scale(img_np)</span>
-<span id="cb13-457"><a href="#cb13-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-458"><a href="#cb13-458" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_gray, cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-459"><a href="#cb13-459" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-460"><a href="#cb13-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-461"><a href="#cb13-461" aria-hidden="true" tabindex="-1"></a>Take the Fourier transform of the image.</span>
-<span id="cb13-462"><a href="#cb13-462" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-465"><a href="#cb13-465" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-466"><a href="#cb13-466" aria-hidden="true" tabindex="-1"></a>ft_img_gray <span class="op">=</span> np.fft.fft2(img_gray)</span>
-<span id="cb13-467"><a href="#cb13-467" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-468"><a href="#cb13-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-469"><a href="#cb13-469" aria-hidden="true" tabindex="-1"></a>This decomposes the image into a sum of basis waves. Let's see the weights of the basis waves.</span>
-<span id="cb13-470"><a href="#cb13-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-473"><a href="#cb13-473" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-474"><a href="#cb13-474" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-475"><a href="#cb13-475" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb13-476"><a href="#cb13-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-477"><a href="#cb13-477" aria-hidden="true" tabindex="-1"></a>weight <span class="op">=</span> np.<span class="bu">abs</span>(ft_img_gray)</span>
-<span id="cb13-478"><a href="#cb13-478" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-479"><a href="#cb13-479" aria-hidden="true" tabindex="-1"></a><span class="co"># real part</span></span>
-<span id="cb13-480"><a href="#cb13-480" aria-hidden="true" tabindex="-1"></a>fig1, ax1 <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
-<span id="cb13-481"><a href="#cb13-481" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-482"><a href="#cb13-482" aria-hidden="true" tabindex="-1"></a>ax1.imshow(weight, cmap<span class="op">=</span><span class="st">'gray'</span>, norm<span class="op">=</span>matplotlib.colors.LogNorm(), aspect<span class="op">=</span><span class="st">'equal'</span>)</span>
-<span id="cb13-483"><a href="#cb13-483" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> fig1.colorbar(ax1.images[<span class="dv">0</span>], ax<span class="op">=</span>ax1, orientation<span class="op">=</span><span class="st">'horizontal'</span>)</span>
-<span id="cb13-484"><a href="#cb13-484" aria-hidden="true" tabindex="-1"></a>cbar.set_label(<span class="st">'Fourier transform magnitude'</span>)</span>
-<span id="cb13-485"><a href="#cb13-485" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-486"><a href="#cb13-486" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-487"><a href="#cb13-487" aria-hidden="true" tabindex="-1"></a>The corresponding basis waves look like this:</span>
-<span id="cb13-488"><a href="#cb13-488" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-491"><a href="#cb13-491" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-492"><a href="#cb13-492" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-493"><a href="#cb13-493" aria-hidden="true" tabindex="-1"></a>size <span class="op">=</span> <span class="dv">16</span></span>
-<span id="cb13-494"><a href="#cb13-494" aria-hidden="true" tabindex="-1"></a>bf_arr_real <span class="op">=</span> np.zeros((size<span class="op">*</span>size,size,size))</span>
-<span id="cb13-495"><a href="#cb13-495" aria-hidden="true" tabindex="-1"></a>bf_arr_imag <span class="op">=</span> np.zeros((size<span class="op">*</span>size,size,size))</span>
-<span id="cb13-496"><a href="#cb13-496" aria-hidden="true" tabindex="-1"></a>ind <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-497"><a href="#cb13-497" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> <span class="bu">range</span>(<span class="op">-</span>size<span class="op">//</span><span class="dv">2</span>, size<span class="op">//</span><span class="dv">2</span>):</span>
-<span id="cb13-498"><a href="#cb13-498" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="op">-</span>size<span class="op">//</span><span class="dv">2</span>, size<span class="op">//</span><span class="dv">2</span>):</span>
-<span id="cb13-499"><a href="#cb13-499" aria-hidden="true" tabindex="-1"></a>    re,imag <span class="op">=</span> basis_function(img_size<span class="op">=</span>size, u<span class="op">=</span>row, v<span class="op">=</span>col)</span>
-<span id="cb13-500"><a href="#cb13-500" aria-hidden="true" tabindex="-1"></a>    bf_arr_real[ind] <span class="op">=</span> re</span>
-<span id="cb13-501"><a href="#cb13-501" aria-hidden="true" tabindex="-1"></a>    bf_arr_imag[ind] <span class="op">=</span> imag</span>
-<span id="cb13-502"><a href="#cb13-502" aria-hidden="true" tabindex="-1"></a>    ind <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb13-503"><a href="#cb13-503" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-504"><a href="#cb13-504" aria-hidden="true" tabindex="-1"></a><span class="co"># real part</span></span>
-<span id="cb13-505"><a href="#cb13-505" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(size, size, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">7</span>))</span>
-<span id="cb13-506"><a href="#cb13-506" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> axs.flatten()</span>
-<span id="cb13-507"><a href="#cb13-507" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> img, ax <span class="kw">in</span> <span class="bu">zip</span>(bf_arr_real, axs):</span>
-<span id="cb13-508"><a href="#cb13-508" aria-hidden="true" tabindex="-1"></a>  ax.set_axis_off()</span>
-<span id="cb13-509"><a href="#cb13-509" aria-hidden="true" tabindex="-1"></a>  ax.imshow(img,cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-510"><a href="#cb13-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-511"><a href="#cb13-511" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Real Part of Basis Functions'</span>)</span>
-<span id="cb13-512"><a href="#cb13-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-513"><a href="#cb13-513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-514"><a href="#cb13-514" aria-hidden="true" tabindex="-1"></a><span class="co"># imaginary part</span></span>
-<span id="cb13-515"><a href="#cb13-515" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(size, size, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">7</span>))</span>
-<span id="cb13-516"><a href="#cb13-516" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> axs.flatten()</span>
-<span id="cb13-517"><a href="#cb13-517" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> img, ax <span class="kw">in</span> <span class="bu">zip</span>(bf_arr_imag, axs):</span>
-<span id="cb13-518"><a href="#cb13-518" aria-hidden="true" tabindex="-1"></a>  ax.set_axis_off()</span>
-<span id="cb13-519"><a href="#cb13-519" aria-hidden="true" tabindex="-1"></a>  ax.imshow(img,cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-520"><a href="#cb13-520" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-521"><a href="#cb13-521" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Imaginary Part of Basis Functions'</span>)</span>
-<span id="cb13-522"><a href="#cb13-522" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-523"><a href="#cb13-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-524"><a href="#cb13-524" aria-hidden="true" tabindex="-1"></a>Now, let's see the convolution of the image with a Prewitt operator.</span>
-<span id="cb13-525"><a href="#cb13-525" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-528"><a href="#cb13-528" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-529"><a href="#cb13-529" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> np.array([[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]]) <span class="co"># Prewitt operator</span></span>
-<span id="cb13-530"><a href="#cb13-530" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-531"><a href="#cb13-531" aria-hidden="true" tabindex="-1"></a>K_padd <span class="op">=</span> np.zeros((img_gray.shape[<span class="dv">0</span>], img_gray.shape[<span class="dv">1</span>]))</span>
-<span id="cb13-532"><a href="#cb13-532" aria-hidden="true" tabindex="-1"></a>K_padd[:K.shape[<span class="dv">0</span>], :K.shape[<span class="dv">1</span>]] <span class="op">=</span> K</span>
-<span id="cb13-533"><a href="#cb13-533" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-534"><a href="#cb13-534" aria-hidden="true" tabindex="-1"></a><span class="co"># convolution</span></span>
-<span id="cb13-535"><a href="#cb13-535" aria-hidden="true" tabindex="-1"></a>FK <span class="op">=</span> np.fft.fft2(K_padd)</span>
-<span id="cb13-536"><a href="#cb13-536" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-537"><a href="#cb13-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-538"><a href="#cb13-538" aria-hidden="true" tabindex="-1"></a>The Fourier transform of the Prewitt operator looks like this:</span>
-<span id="cb13-539"><a href="#cb13-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-542"><a href="#cb13-542" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-543"><a href="#cb13-543" aria-hidden="true" tabindex="-1"></a>plt.imshow(np.<span class="bu">abs</span>(FK), cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-544"><a href="#cb13-544" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> plt.colorbar()</span>
-<span id="cb13-545"><a href="#cb13-545" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-546"><a href="#cb13-546" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-547"><a href="#cb13-547" aria-hidden="true" tabindex="-1"></a>We can think of the frequency domain of the kernel as a **filter** that suppresses some frequencies and allows others to pass through. In the example of the Prewitt operator, the kernel <span class="in">`FK`</span> has a low value around the center of the image. The product $FX \cdot FK$ then suppresses the low-frequency components of the image, and we are left with the high-frequency components that correspond to the horizontal edges. We can think of this as a high-pass filter that only allows high-frequency components to pass through.</span>
-<span id="cb13-548"><a href="#cb13-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-549"><a href="#cb13-549" aria-hidden="true" tabindex="-1"></a>Let's see the convolution result.</span>
-<span id="cb13-550"><a href="#cb13-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-553"><a href="#cb13-553" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb13-554"><a href="#cb13-554" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb13-555"><a href="#cb13-555" aria-hidden="true" tabindex="-1"></a>FX <span class="op">=</span> np.fft.fft2(img_gray)</span>
-<span id="cb13-556"><a href="#cb13-556" aria-hidden="true" tabindex="-1"></a>conv_img_gray <span class="op">=</span> np.real(np.fft.ifft2(FX <span class="op">*</span> FK))</span>
-<span id="cb13-557"><a href="#cb13-557" aria-hidden="true" tabindex="-1"></a>plt.imshow(conv_img_gray, cmap<span class="op">=</span><span class="st">'gray'</span>)</span>
-<span id="cb13-558"><a href="#cb13-558" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-559"><a href="#cb13-559" aria-hidden="true" tabindex="-1"></a>We observe that the horizontal edges are highlighted.</span>
-<span id="cb13-560"><a href="#cb13-560" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-561"><a href="#cb13-561" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb13-562"><a href="#cb13-562" aria-hidden="true" tabindex="-1"></a>A widespread application of the 2D Fourier transform is JPEG format. Here's how it works:</span>
-<span id="cb13-563"><a href="#cb13-563" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-564"><a href="#cb13-564" aria-hidden="true" tabindex="-1"></a>(1) It first breaks the image into small 8x8 squares.</span>
-<span id="cb13-565"><a href="#cb13-565" aria-hidden="true" tabindex="-1"></a>(2) It converts each square into frequencies using the Discrete Cosine Transform. The sine part is discarded for compression.</span>
-<span id="cb13-566"><a href="#cb13-566" aria-hidden="true" tabindex="-1"></a>(3) It keeps the important low frequencies that our eyes can see well.</span>
-<span id="cb13-567"><a href="#cb13-567" aria-hidden="true" tabindex="-1"></a>(4) It throws away most of the high frequencies that our eyes don't notice much.</span>
-<span id="cb13-568"><a href="#cb13-568" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-569"><a href="#cb13-569" aria-hidden="true" tabindex="-1"></a>These steps make the file much smaller while still looking good to us.</span>
-<span id="cb13-570"><a href="#cb13-570" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb13-571"><a href="#cb13-571" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-572"><a href="#cb13-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-573"><a href="#cb13-573" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-574"><a href="#cb13-574" aria-hidden="true" tabindex="-1"></a><span class="fu">## A key lesson from image processing</span></span>
-<span id="cb13-575"><a href="#cb13-575" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-576"><a href="#cb13-576" aria-hidden="true" tabindex="-1"></a>We have seen an equivalence between convolution in the pixel (spatial) domain and multiplication in the frequency domain.</span>
-<span id="cb13-577"><a href="#cb13-577" aria-hidden="true" tabindex="-1"></a>Using the Fourier transform, an image is decomposed into a sum of basis waves.</span>
-<span id="cb13-578"><a href="#cb13-578" aria-hidden="true" tabindex="-1"></a>The *kernel* can be thought of as *a filter* that suppresses some basis waves and allows others to pass through.</span>
-<span id="cb13-579"><a href="#cb13-579" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-580"><a href="#cb13-580" aria-hidden="true" tabindex="-1"></a>This idea is the key to understand graph convolutional networks we will see in the next page.</span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -2221,7 +1841,7 @@ The Fourier transform method gives us all these positions (-2, -1, 0, …), but 
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m09-graph-neural-networks/00-preparation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m09-graph-neural-networks/00-preparation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

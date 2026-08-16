@@ -2,19 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-09-22">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Coding - Centrality – Advanced Topics in Network Science</title>
+<title>Hands-on: Who Is Important, and In What Sense – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -22,45 +28,10 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -103,11 +74,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script defer="" src="../assets/katex/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -122,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    });
 }}});
   </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +103,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -151,10 +119,10 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -162,7 +130,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -175,7 +144,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -185,192 +154,78 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -390,12 +245,9 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/02-coding.html">Coding - Centrality</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/02-coding.html">Hands-on: Who Is Important, and In What Sense</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -403,13 +255,14 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -422,7 +275,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -433,26 +286,32 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -469,7 +328,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -477,7 +336,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -491,20 +350,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -521,13 +386,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -539,7 +404,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -556,13 +421,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -574,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -591,19 +456,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -620,19 +491,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -649,19 +526,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -678,19 +561,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -707,25 +596,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -742,31 +631,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -776,13 +665,22 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-you-will-build" id="toc-what-you-will-build" class="nav-link active" data-scroll-target="#what-you-will-build">What you will build</a></li>
+  <li><a href="#what-to-watch-for" id="toc-what-to-watch-for" class="nav-link" data-scroll-target="#what-to-watch-for">What to watch for</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m06-centrality/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/02-coding.html">Coding - Centrality</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/02-coding.html">Hands-on: Who Is Important, and In What Sense</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Coding - Centrality</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Hands-on: Who Is Important, and In What Sense</h1>
 </div>
 
 
@@ -799,7 +697,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 22, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -811,290 +709,48 @@ window.Quarto = {
 </header>
 
 
-<section id="computing-centrality-with-python" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Computing centrality with Python</h1>
-<section id="network-of-university-students" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="network-of-university-students"><span class="header-section-number">1.1</span> Network of university students</h2>
-<p>Let’s compute the centrality of the network using Python igraph.</p>
-<div id="7f3cb3bc" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment if you use Colab</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install igraph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Seven centralities on one network, and the interesting part is where they disagree.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<div id="471e4528" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> [</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sarah"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mike"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Emma"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Alex"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Olivia"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"James"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sophia"</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ethan"</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ava"</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Noah"</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lily"</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lucas"</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Henry"</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> [</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">2</span>),</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">2</span>, <span class="dv">3</span>),</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">4</span>),</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">5</span>),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">6</span>),</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">4</span>, <span class="dv">5</span>),</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">7</span>),</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">8</span>),</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">9</span>),</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">7</span>, <span class="dv">8</span>),</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">7</span>, <span class="dv">9</span>),</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">8</span>, <span class="dv">9</span>),</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">10</span>),</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">11</span>),</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">12</span>),</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph()</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">13</span>)</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>g.vs[<span class="st">"name"</span>] <span class="op">=</span> names</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list)</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_label<span class="op">=</span>g.vs[<span class="st">"name"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Where the code lives
 </div>
 </div>
-</div>
-<p><code>igraph</code> offers a wide range of centrality measures as methods of the <code>igraph.Graph</code> class.</p>
-<ul>
-<li><strong>Degree centrality</strong>: <code>igraph.Graph.degree()</code></li>
-<li><strong>Closeness centrality</strong>: <code>igraph.Graph.closeness()</code></li>
-<li><strong>Betweenness centrality</strong>: <code>igraph.Graph.betweenness()</code></li>
-<li><strong>Harmonic centrality</strong>: <code>igraph.Graph.harmonic_centrality()</code></li>
-<li><strong>Eccentricity</strong>: <code>igraph.Graph.eccentricity()</code></li>
-<li><strong>Eigenvector centrality</strong>: <code>igraph.Graph.eigenvector_centrality()</code></li>
-<li><strong>PageRank centrality</strong>: <code>igraph.Graph.personalized_pagerank()</code></li>
-</ul>
-<p>For example, the closeness centrality is computed by</p>
-<div id="f95c4d6d" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>g.closeness()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
-<pre><code>[0.3,
- 0.3,
- 0.4,
- 0.5217391304347826,
- 0.36363636363636365,
- 0.36363636363636365,
- 0.5454545454545454,
- 0.42857142857142855,
- 0.42857142857142855,
- 0.48,
- 0.3333333333333333,
- 0.3333333333333333,
- 0.3333333333333333]</code></pre>
+<div class="callout-body-container callout-body">
+<p>This course keeps its lecture note free of runnable code. Everything you execute lives in a marimo notebook, so it stays interactive and reactive instead of being a wall of output frozen into a web page.</p>
+<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first load takes a few seconds while Python itself is downloaded.</p>
+<p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/coding.py"><code>notebooks/m06-centrality/coding.py</code></a>. Run it with <code>marimo edit notebooks/m06-centrality/coding.py</code>.</p>
 </div>
 </div>
-<section id="computing-katz-centrality" class="level3">
-<h3 class="anchored" data-anchor-id="computing-katz-centrality">Computing Katz centrality</h3>
-<p>Let’s compute the Katz centrality without using igraph. Let us first define the adjacency matrix of the graph</p>
-<div id="eef40cfd" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>which is the scipy CSR sparse matrix. The Katz centrality is given by</p>
-<p><span class="math display">
-\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}
-</span></p>
-<p>So, how do we solve this? We can use a linear solver but here we will use a simple method:</p>
+<section id="what-you-will-build" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-will-build">What you will build</h2>
+<p>The notebook hands you the networks and a worked closeness and Katz cell. The rest is yours to write.</p>
 <ol type="1">
-<li>Initialize <span class="math inline">\mathbf{c}</span> with a random vector.</li>
-<li>Compute the right hand side of the equation and update <span class="math inline">\mathbf{c}</span>.</li>
-<li>Repeat the process until <span class="math inline">\mathbf{c}</span> converges.</li>
+<li>Compute degree, closeness, harmonic, betweenness, eigenvector, Katz and PageRank on a small social network.</li>
+<li>Implement Katz centrality yourself, including choosing a safe value for the attenuation factor.</li>
+<li>Apply the measures to the Roman road network and map the results geographically.</li>
+<li>Compute the correlation matrix between centralities and interpret it.</li>
 </ol>
-<p>Let’s implement this.</p>
-<div id="3d651cc1" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>alpha, beta <span class="op">=</span> <span class="fl">0.1</span>, <span class="fl">0.05</span> <span class="co"># Hyperparameters</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount() <span class="co"># number of nodes</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.random.rand(n_nodes, <span class="dv">1</span>) <span class="co"># column random vector</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    c_next <span class="op">=</span> beta <span class="op">*</span> np.ones((n_nodes, <span class="dv">1</span>)) <span class="op">+</span> alpha <span class="op">*</span> A <span class="op">*</span> c</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(c_next <span class="op">-</span> c) <span class="op">&lt;</span> <span class="fl">1e-6</span>:</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c_next</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[0.06338729]
- [0.06338729]
- [0.07048542]
- [0.07807918]
- [0.06423107]
- [0.06423107]
- [0.08184309]
- [0.07474495]
- [0.07474495]
- [0.09085937]
- [0.05908602]
- [0.05908602]
- [0.05908602]]</code></pre>
-</div>
-</div>
+</section>
+<section id="what-to-watch-for" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h2>
 <ul>
-<li>Does the centrality converge?</li>
-<li>Change the hyperparameter and see how the result changes 😉 If the centrality diverges, think about why it diverges.</li>
+<li>Find the node whose betweenness rank is far above its degree rank. Look at where it sits — that is a broker.</li>
+<li>Set the attenuation factor above <span class="math inline">1/\lambda_{\max}</span> in your Katz implementation and watch it break. Understanding the failure is the point.</li>
+<li>Compute the correlations on a star graph and on a path graph. Near-total agreement in one, near-total disagreement in the other.</li>
 </ul>
-<p><em>Hint</em>: Katz centrality can be analytically computed by</p>
-<p><span class="math display">
-\mathbf{c} = \beta \left(\mathbf{I} -  \alpha \mathbf{A} \right)^{-1} \mathbf{1}
-</span></p>
-</section>
-<section id="exercise-optional" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-optional">Exercise (Optional)</h3>
-<p>Compute the PageRank centrality of this graph</p>
-<div id="79a4af7f" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-</section>
-<section id="network-of-ancient-roman-roads" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="network-of-ancient-roman-roads"><span class="header-section-number">1.2</span> Network of ancient Roman roads</h2>
-<section id="load-the-data-construct-the-network" class="level3">
-<h3 class="anchored" data-anchor-id="load-the-data-construct-the-network">Load the data &amp; construct the network</h3>
-<div id="223200a5" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>root <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/skojaku/adv-net-sci/main/data/roman-roads"</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>node_table <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>root<span class="sc">}</span><span class="ss">/node_table.csv"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>edge_table <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>root<span class="sc">}</span><span class="ss">/edge_table.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The node table:</p>
-<div id="9d2817cf" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>node_table.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
-<div>
 
 
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">node_id</th>
-<th data-quarto-table-cell-role="th">lon</th>
-<th data-quarto-table-cell-role="th">lat</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>0</td>
-<td>12.506</td>
-<td>41.875</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
-<td>12.470</td>
-<td>41.904</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2</td>
-<td>12.471</td>
-<td>41.881</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>The edge table:</p>
-<div id="ea82cd21" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>edge_table.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">src</th>
-<th data-quarto-table-cell-role="th">trg</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1785</td>
-<td>358</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1785</td>
-<td>1771</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>1771</td>
-<td>350</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>Let’s construct a network from the node and edge tables.</p>
-<div id="1c97e9b2" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph() <span class="co"># create an empty graph</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>g.add_vertices(node_table[<span class="st">"node_id"</span>].values) <span class="co"># add nodes</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>g.add_edges(<span class="bu">list</span>(<span class="bu">zip</span>(edge_table[<span class="st">"src"</span>].values, edge_table[<span class="st">"trg"</span>].values))) <span class="co"># add edges</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>which looks like this:</p>
-<div id="3b8c53c0" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>coord <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>(node_table[<span class="st">"lon"</span>].values, <span class="op">-</span>node_table[<span class="st">"lat"</span>].values))</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, layout <span class="op">=</span> coord, vertex_size <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-12-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="exercise" class="level3">
-<h3 class="anchored" data-anchor-id="exercise">Exercise 🏛️</h3>
-<ol type="1">
-<li>Compute the following centrality measures:
-<ul>
-<li>Degree centrality 🔢</li>
-<li>Eigenvector centrality</li>
-<li>PageRank centrality</li>
-<li>Katz centrality</li>
-<li>Betweenness centrality</li>
-<li>Closeness centrality</li>
-</ul></li>
-<li>Plot the centrality measures on the map and see in which centrality Rome is the most important node. 🗺️🏛️ (as beautiful as possible!!)</li>
-</ol>
-
-
-<!-- -->
-
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1146,13 +802,14 @@ window.Quarto = {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1164,57 +821,6 @@ window.Quarto = {
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1547,205 +1153,16 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m06-centrality/01-concepts.html" class="pagination-link" aria-label="Centrality Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Centrality Concepts</span>
+      <a href="../m06-centrality/01-concepts.html" class="pagination-link" aria-label="Who Is the Most Important Node? It Depends What You Ask">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Who Is the Most Important Node? It Depends What You Ask</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Exercises &amp; Assignments">
-        <span class="nav-page-text">Exercises &amp; Assignments</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Exercises and Assignments">
+        <span class="nav-page-text">Exercises and Assignments</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Coding - Centrality"</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu"># Computing centrality with Python</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network of university students</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>Let's compute the centrality of the network using Python igraph.</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment if you use Colab</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install igraph</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> [</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sarah"</span>,</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mike"</span>,</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Emma"</span>,</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Alex"</span>,</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Olivia"</span>,</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"James"</span>,</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sophia"</span>,</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ethan"</span>,</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ava"</span>,</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Noah"</span>,</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lily"</span>,</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lucas"</span>,</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Henry"</span>,</span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> [</span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">2</span>),</span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">2</span>, <span class="dv">3</span>),</span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">4</span>),</span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">5</span>),</span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">6</span>),</span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">4</span>, <span class="dv">5</span>),</span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">7</span>),</span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">8</span>),</span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">6</span>, <span class="dv">9</span>),</span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">7</span>, <span class="dv">8</span>),</span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">7</span>, <span class="dv">9</span>),</span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">8</span>, <span class="dv">9</span>),</span>
-<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">10</span>),</span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">11</span>),</span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">9</span>, <span class="dv">12</span>),</span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph()</span>
-<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">13</span>)</span>
-<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>g.vs[<span class="st">"name"</span>] <span class="op">=</span> names</span>
-<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list)</span>
-<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_label<span class="op">=</span>g.vs[<span class="st">"name"</span>])</span>
-<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="in">`igraph`</span> offers a wide range of centrality measures as methods of the <span class="in">`igraph.Graph`</span> class.</span>
-<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Degree centrality**: <span class="in">`igraph.Graph.degree()`</span></span>
-<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Closeness centrality**: <span class="in">`igraph.Graph.closeness()`</span></span>
-<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Betweenness centrality**: <span class="in">`igraph.Graph.betweenness()`</span></span>
-<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Harmonic centrality**: <span class="in">`igraph.Graph.harmonic_centrality()`</span></span>
-<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Eccentricity**: <span class="in">`igraph.Graph.eccentricity()`</span></span>
-<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Eigenvector centrality**: <span class="in">`igraph.Graph.eigenvector_centrality()`</span></span>
-<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**PageRank centrality**: <span class="in">`igraph.Graph.personalized_pagerank()`</span></span>
-<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>For example, the closeness centrality is computed by</span>
-<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>g.closeness()</span>
-<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing Katz centrality</span></span>
-<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a>Let's compute the Katz centrality without using igraph.</span>
-<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a>Let us first define the adjacency matrix of the graph</span>
-<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a>which is the scipy CSR sparse matrix. The Katz centrality is given by</span>
-<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a>\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}</span>
-<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a>So, how do we solve this? We can use a linear solver but here we will use a simple method:</span>
-<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Initialize $\mathbf{c}$ with a random vector.</span>
-<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Compute the right hand side of the equation and update $\mathbf{c}$.</span>
-<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Repeat the process until $\mathbf{c}$ converges.</span>
-<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>Let's implement this.</span>
-<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a>alpha, beta <span class="op">=</span> <span class="fl">0.1</span>, <span class="fl">0.05</span> <span class="co"># Hyperparameters</span></span>
-<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount() <span class="co"># number of nodes</span></span>
-<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.random.rand(n_nodes, <span class="dv">1</span>) <span class="co"># column random vector</span></span>
-<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
-<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>    c_next <span class="op">=</span> beta <span class="op">*</span> np.ones((n_nodes, <span class="dv">1</span>)) <span class="op">+</span> alpha <span class="op">*</span> A <span class="op">*</span> c</span>
-<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.linalg.norm(c_next <span class="op">-</span> c) <span class="op">&lt;</span> <span class="fl">1e-6</span>:</span>
-<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
-<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c_next</span>
-<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span>
-<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Does the centrality converge?</span>
-<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Change the hyperparameter and see how the result changes 😉</span>
-<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>If the centrality diverges, think about why it diverges.</span>
-<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a>*Hint*: Katz centrality can be analytically computed by</span>
-<span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a>\mathbf{c} = \beta \left(\mathbf{I} -  \alpha \mathbf{A} \right)^{-1} \mathbf{1}</span>
-<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise (Optional)</span></span>
-<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a>Compute the PageRank centrality of this graph</span>
-<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
-<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network of ancient Roman roads</span></span>
-<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a><span class="fu">### Load the data &amp; construct the network</span></span>
-<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a>root <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/skojaku/adv-net-sci/main/data/roman-roads"</span></span>
-<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a>node_table <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>root<span class="sc">}</span><span class="ss">/node_table.csv"</span>)</span>
-<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a>edge_table <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>root<span class="sc">}</span><span class="ss">/edge_table.csv"</span>)</span>
-<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a>The node table:</span>
-<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a>node_table.head(<span class="dv">3</span>)</span>
-<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a>The edge table:</span>
-<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a>edge_table.head(<span class="dv">3</span>)</span>
-<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a>Let's construct a network from the node and edge tables.</span>
-<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb14-183"><a href="#cb14-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph() <span class="co"># create an empty graph</span></span>
-<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a>g.add_vertices(node_table[<span class="st">"node_id"</span>].values) <span class="co"># add nodes</span></span>
-<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a>g.add_edges(<span class="bu">list</span>(<span class="bu">zip</span>(edge_table[<span class="st">"src"</span>].values, edge_table[<span class="st">"trg"</span>].values))) <span class="co"># add edges</span></span>
-<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a>which looks like this:</span>
-<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a>coord <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>(node_table[<span class="st">"lon"</span>].values, <span class="op">-</span>node_table[<span class="st">"lat"</span>].values))</span>
-<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, layout <span class="op">=</span> coord, vertex_size <span class="op">=</span> <span class="dv">5</span>)</span>
-<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 🏛️</span></span>
-<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Compute the following centrality measures:</span>
-<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Degree centrality 🔢</span>
-<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Eigenvector centrality</span>
-<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>PageRank centrality</span>
-<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Katz centrality</span>
-<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Betweenness centrality</span>
-<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Closeness centrality</span>
-<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Plot the centrality measures on the map and see in which centrality Rome is the most important node. 🗺️🏛️ (as beautiful as possible!!)</span>
-<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a></span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1754,7 +1171,7 @@ window.Quarto = {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m06-centrality/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m06-centrality/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

@@ -2,60 +2,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-14">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Appendix - Brief Introduction to igraph – Advanced Topics in Network Science</title>
+<title>Appendix: Why a Random Network Is Already Small – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script defer="" src="../assets/katex/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -119,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    });
 }}});
   </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -132,7 +103,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -148,10 +119,10 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -159,7 +130,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -172,7 +144,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -182,192 +154,78 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -387,12 +245,9 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/04-appendix.html">Appendix - Brief Introduction to igraph</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/04-appendix.html">Appendix: Why a Random Network Is Already Small</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -400,13 +255,14 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -419,7 +275,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -430,26 +286,32 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -466,7 +328,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -474,7 +336,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -488,20 +350,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -518,13 +386,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -536,7 +404,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -553,13 +421,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -571,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -588,19 +456,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -617,19 +491,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -646,19 +526,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -675,19 +561,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -704,25 +596,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -739,31 +631,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -773,13 +665,24 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-erdős-rényi-random-graph" id="toc-the-erdős-rényi-random-graph" class="nav-link active" data-scroll-target="#the-erdős-rényi-random-graph">The Erdős-Rényi Random Graph</a></li>
+  <li><a href="#writing-local-clustering-with-the-adjacency-matrix" id="toc-writing-local-clustering-with-the-adjacency-matrix" class="nav-link" data-scroll-target="#writing-local-clustering-with-the-adjacency-matrix">Writing Local Clustering with the Adjacency Matrix</a></li>
+  <li><a href="#why-a-random-graphs-clustering-is-exactly-p" id="toc-why-a-random-graphs-clustering-is-exactly-p" class="nav-link" data-scroll-target="#why-a-random-graphs-clustering-is-exactly-p">Why a Random Graph’s Clustering Is Exactly p</a></li>
+  <li><a href="#why-distances-in-a-random-graph-grow-only-logarithmically" id="toc-why-distances-in-a-random-graph-grow-only-logarithmically" class="nav-link" data-scroll-target="#why-distances-in-a-random-graph-grow-only-logarithmically">Why Distances in a Random Graph Grow Only Logarithmically</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/04-appendix.html">Appendix - Brief Introduction to igraph</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/04-appendix.html">Appendix: Why a Random Network Is Already Small</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Appendix - Brief Introduction to igraph</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Appendix: Why a Random Network Is Already Small</h1>
 </div>
 
 
@@ -796,7 +699,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 14, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -808,41 +711,68 @@ window.Quarto = {
 </header>
 
 
-<section id="erdős-rényi-random-graphs" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="erdős-rényi-random-graphs"><span class="header-section-number">1</span> Erdős-Rényi Random Graphs</h2>
-<p>The Erdős-Rényi random graph model is one of the fundamental models in network science, serving as our baseline for understanding what makes small-world networks special. There are two variants of this model: <span class="math inline">G(n,m)</span> which creates <span class="math inline">n</span> vertices with exactly <span class="math inline">m</span> randomly chosen edges, and <span class="math inline">G(n,p)</span> which creates <span class="math inline">n</span> vertices where each possible edge exists with probability <span class="math inline">p</span>. We focus on the <span class="math inline">G(n,p)</span> model because it provides better analytical tractability for deriving mathematical properties.</p>
-<div id="fig-erdos-renyi" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-erdos-renyi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Critical_1000-vertex_Erd%C5%91s%E2%80%93R%C3%A9nyi%E2%80%93Gilbert_graph.svg" class="img-fluid figure-img" style="width:30.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-erdos-renyi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Erdős-Rényi random graph model.
-</figcaption>
-</figure>
-</div>
+<p>The main text uses three results without proving them: that the local clustering coefficient can be written with the adjacency matrix, that a random graph’s clustering is exactly <span class="math inline">p</span>, and that its distances grow like <span class="math inline">\log n</span>. Here are the derivations. Nothing on this page is needed to <em>use</em> the small-world index — it is here for readers who want to see where the baseline numbers come from.</p>
+<section id="the-erdős-rényi-random-graph" class="level2">
+<h2 class="anchored" data-anchor-id="the-erdős-rényi-random-graph">The Erdős-Rényi Random Graph</h2>
+<p>The Erdős-Rényi random graph is the structureless baseline against which everything else in the module is measured. It comes in two variants: <span class="math inline">G(n,m)</span> creates <span class="math inline">n</span> nodes and places exactly <span class="math inline">m</span> edges at random, while <span class="math inline">G(n,p)</span> creates <span class="math inline">n</span> nodes and joins each of the <span class="math inline">\binom{n}{2}</span> possible pairs independently with probability <span class="math inline">p</span>. We work with <span class="math inline">G(n,p)</span>, because independence is what makes the algebra below go through.</p>
+<p>Its average degree is <span class="math inline">\langle k \rangle = p(n-1)</span>: node <span class="math inline">i</span> has <span class="math inline">n-1</span> possible partners and takes each with probability <span class="math inline">p</span>.</p>
 </section>
-<section id="clustering-coefficient" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="clustering-coefficient"><span class="header-section-number">2</span> Clustering Coefficient</h2>
-<p>The clustering coefficient measures the probability that two neighbors of a node are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically by exploiting the independence of edge formation.</p>
-<p>Consider a node <span class="math inline">i</span> with degree <span class="math inline">k_i</span> in an Erdős-Rényi graph <span class="math inline">G(n,p)</span>. The local clustering coefficient is defined as <span class="math inline">C_i = \frac{2e_i}{k_i(k_i-1)}</span>, where <span class="math inline">e_i</span> is the number of edges between neighbors of node <span class="math inline">i</span>. The key insight is that in the <span class="math inline">G(n,p)</span> model, each possible edge exists with probability <span class="math inline">p</span> independently of all other edges.</p>
-<p>For a node with <span class="math inline">k</span> neighbors, there are <span class="math inline">\binom{k}{2} = \frac{k(k-1)}{2}</span> possible edges between its neighbors. Since each potential edge exists with probability <span class="math inline">p</span>, the expected number of edges between neighbors is <span class="math inline">E[e_i | k_i = k] = \frac{k(k-1)}{2} \cdot p</span>. Therefore, the expected local clustering coefficient for a node with degree <span class="math inline">k</span> becomes:</p>
-<p><span class="math display">E[C_i | k_i = k] = \frac{2 \cdot \frac{k(k-1)}{2} \cdot p}{k(k-1)} = p</span></p>
-<p>This result shows that the expected local clustering coefficient is simply <span class="math inline">p</span>, independent of the node degree. Since this holds for all vertices regardless of their degree, the expected global clustering coefficient is also <span class="math inline">E[C] = p = \frac{\langle k \rangle}{n-1}</span>, where <span class="math inline">\langle k \rangle = p(n-1)</span> is the expected degree.</p>
+<section id="writing-local-clustering-with-the-adjacency-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="writing-local-clustering-with-the-adjacency-matrix">Writing Local Clustering with the Adjacency Matrix</h2>
+<p>The main text defines the local clustering coefficient by counting:</p>
+<p><span class="math display">
+C_i = \frac{e_i}{k_i(k_i-1)/2}
+</span></p>
+<p>where <span class="math inline">e_i</span> is the number of edges among the neighbors of node <span class="math inline">i</span>. The same quantity is often written with the adjacency matrix <span class="math inline">A</span>:</p>
+<p><span class="math display">
+C_i = \frac{\sum_{j}\sum_{\ell} A_{ij}A_{j\ell} A_{\ell i} }{k_i(k_i-1)}
+</span></p>
+<p>The two agree. The product <span class="math inline">A_{ij}A_{j\ell}A_{\ell i}</span> equals 1 exactly when <span class="math inline">i</span>, <span class="math inline">j</span> and <span class="math inline">\ell</span> form a triangle, and 0 otherwise. Summing it over all <span class="math inline">j</span> and all <span class="math inline">\ell</span> counts each triangle at <span class="math inline">i</span> twice, once as <span class="math inline">i \rightarrow j \rightarrow \ell \rightarrow i</span> and once as <span class="math inline">i \rightarrow \ell \rightarrow j \rightarrow i</span>, so the numerator equals <span class="math inline">2e_i</span>. The denominator <span class="math inline">k_i(k_i-1)</span> is likewise twice the number of neighbor pairs <span class="math inline">\binom{k_i}{2} = k_i(k_i-1)/2</span>. The factors of 2 cancel and the two expressions are the same number.</p>
 </section>
-<section id="average-path-length-derivation" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="average-path-length-derivation"><span class="header-section-number">3</span> Average Path Length Derivation</h2>
-<p>The average path length in Erdős-Rényi graphs can be derived using a tree-expansion argument that reveals why these networks exhibit the small-world property of short distances.</p>
-<p>Consider an Erdős-Rényi model with average degree <span class="math inline">k = p(n-1)</span>. We can analyze the network structure by imagining a breadth-first expansion from any starting node, treating the resulting structure as a tree (this approximation works well because triangles and cycles are rare in sparse random graphs). From the root node, we can reach approximately <span class="math inline">1 + k</span> nodes in the first step. In the second step, each of these <span class="math inline">k</span> nodes connects to roughly <span class="math inline">k</span> new nodes (avoiding already-visited nodes), giving us <span class="math inline">1 + k + k^2</span> total reachable nodes. Continuing this pattern, after <span class="math inline">h</span> steps we can reach approximately <span class="math inline">1 + k + k^2 + \ldots + k^h \approx k^h</span> nodes.</p>
-<p>The critical insight is that since Erdős-Rényi random graphs have few triangles and local clusters, most nodes in the network are reached only at the final step of this expansion process. When the expansion covers the entire network, we have <span class="math inline">k^h \approx n</span>. Solving for <span class="math inline">h</span>: <span class="math inline">h \approx \log_{k}(n) = \frac{\log(n)}{\log(k)} = \frac{\log(n)}{\log(p(n-1))}</span>.</p>
-<p>This derivation reveals that the average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size: <span class="math inline">\langle d \rangle \approx \frac{\log(n)}{\log(k)}</span>. This logarithmic scaling demonstrates the “small-world” property inherent even in random graphs: even in large networks, the typical distance between nodes grows only logarithmically with network size, making the world surprisingly small despite its size.</p>
+<section id="why-a-random-graphs-clustering-is-exactly-p" class="level2">
+<h2 class="anchored" data-anchor-id="why-a-random-graphs-clustering-is-exactly-p">Why a Random Graph’s Clustering Is Exactly p</h2>
+<p>Consider a node <span class="math inline">i</span> with degree <span class="math inline">k_i = k</span> in <span class="math inline">G(n,p)</span>. Between its <span class="math inline">k</span> neighbors there are <span class="math inline">\binom{k}{2} = \frac{k(k-1)}{2}</span> possible edges. Here is the point of using <span class="math inline">G(n,p)</span>: whether any one of those edges exists is independent of the edges that made these nodes neighbors of <span class="math inline">i</span> in the first place. Each one is present with probability <span class="math inline">p</span>, so</p>
+<p><span class="math display">
+E[e_i \mid k_i = k] = \frac{k(k-1)}{2} \cdot p .
+</span></p>
+<p>Dividing by the number of pairs gives the expected local clustering coefficient:</p>
+<p><span class="math display">
+E[C_i \mid k_i = k] = \frac{\frac{k(k-1)}{2} \cdot p}{\frac{k(k-1)}{2}} = p .
+</span></p>
+<p>The degree cancels out entirely, so the answer is <span class="math inline">p</span> for every node no matter how many friends it has. Averaging over nodes therefore also gives <span class="math inline">p</span>, and substituting <span class="math inline">\langle k \rangle = p(n-1)</span> produces the reference value quoted in the main text:</p>
+<p><span class="math display">
+\overline{C}_{\text{random}} = p = \frac{\langle k \rangle}{n-1} .
+</span></p>
+<p>With <span class="math inline">n = 1{,}000</span> and <span class="math inline">\langle k \rangle = 10</span> this is <span class="math inline">0.010</span> — a hundredth. Any real network with clustering in the tenths is doing something a random graph does not.</p>
+</section>
+<section id="why-distances-in-a-random-graph-grow-only-logarithmically" class="level2">
+<h2 class="anchored" data-anchor-id="why-distances-in-a-random-graph-grow-only-logarithmically">Why Distances in a Random Graph Grow Only Logarithmically</h2>
+<p>Now the other baseline. Write <span class="math inline">\langle k \rangle = k</span> for the average degree and imagine exploring the network outward from one node, one layer at a time.</p>
+<ul>
+<li>Step 1 reaches roughly <span class="math inline">k</span> new nodes — the starting node’s neighbors.</li>
+<li>Step 2: each of those <span class="math inline">k</span> nodes has about <span class="math inline">k</span> neighbors of its own, giving about <span class="math inline">k^2</span> new nodes.</li>
+<li>After <span class="math inline">h</span> steps you have reached about <span class="math inline">1 + k + k^2 + \ldots + k^h \approx k^h</span> nodes.</li>
+</ul>
+<p>The counting assumes that each step lands on nodes you have not already seen — that the exploration branches like a tree rather than looping back on itself. That is a good approximation in a <em>sparse</em> random graph precisely because we just showed its clustering is <span class="math inline">p = \langle k \rangle / (n-1)</span>, which is tiny: a neighbor of a neighbor is almost never someone you have already met.</p>
+<p>The expansion stops when it has covered the network, that is when <span class="math inline">k^h \approx n</span>. Solving for <span class="math inline">h</span>:</p>
+<p><span class="math display">
+h \approx \log_{k}(n) = \frac{\log n}{\log k} .
+</span></p>
+<p>So the number of steps needed to reach the whole network — and hence the typical distance between two nodes — grows only like <span class="math inline">\log n</span>:</p>
+<p><span class="math display">
+\overline{L}_{\text{random}} \approx \frac{\log n}{\log \langle k \rangle} .
+</span></p>
+<p>Strictly, the quantity this argument bounds is the depth of the exploration, which is closer to the network’s <em>diameter</em> (the largest distance) than to the average. But in a random graph the two are within a constant factor of each other, because almost every node is reached on the very last layer, and the <span class="math inline">\log n / \log \langle k \rangle</span> formula is the standard estimate for both.</p>
+<p>The consequence is the one that reframes the whole module. Multiplying the number of nodes by a thousand adds only <span class="math inline">\log 1000 / \log \langle k \rangle</span> steps — for <span class="math inline">\langle k \rangle = 10</span>, three of them. A random graph of 1,000 nodes with average degree 10 has typical distance <span class="math inline">6.91/2.30 = 3.0</span>; grow it to a million and you get 6; grow it to a billion and you get 9. <strong>Short paths are free.</strong> Every network that is merely well-mixed already has them, which is why the surprising part of the small-world phenomenon is not the six degrees — it is that we get six degrees while still living in dense little clusters of friends.</p>
 
-
-<!-- -->
 
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -894,13 +824,14 @@ Figure&nbsp;1: Erdős-Rényi random graph model.
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -912,57 +843,6 @@ Figure&nbsp;1: Erdős-Rényi random graph model.
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1300,53 +1180,11 @@ Figure&nbsp;1: Erdős-Rényi random graph model.
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m03-robustness/01-concepts.html" class="pagination-link" aria-label="Core Concepts">
-        <span class="nav-page-text">Core Concepts</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m03-robustness/01-concepts.html" class="pagination-link" aria-label="Build It Cheap, Then Watch It Break">
+        <span class="nav-page-text">Build It Cheap, Then Watch It Break</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Appendix - Brief Introduction to igraph"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Erdős-Rényi Random Graphs</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>The Erdős-Rényi random graph model is one of the fundamental models in network science, serving as our baseline for understanding what makes small-world networks special. There are two variants of this model: $G(n,m)$ which creates $n$ vertices with exactly $m$ randomly chosen edges, and $G(n,p)$ which creates $n$ vertices where each possible edge exists with probability $p$. We focus on the $G(n,p)$ model because it provides better analytical tractability for deriving mathematical properties.</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>::: {#fig-erdos-renyi}</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://upload.wikimedia.org/wikipedia/commons/6/6e/Critical_1000-vertex_Erd%C5%91s%E2%80%93R%C3%A9nyi%E2%80%93Gilbert_graph.svg)</span>{width=30%}</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Erdős-Rényi random graph model.</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Clustering Coefficient</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>The clustering coefficient measures the probability that two neighbors of a node are also connected to each other. For Erdős-Rényi random graphs, we can derive the expected clustering coefficient analytically by exploiting the independence of edge formation.</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Consider a node $i$ with degree $k_i$ in an Erdős-Rényi graph $G(n,p)$. The local clustering coefficient is defined as $C_i = \frac{2e_i}{k_i(k_i-1)}$, where $e_i$ is the number of edges between neighbors of node $i$. The key insight is that in the $G(n,p)$ model, each possible edge exists with probability $p$ independently of all other edges.</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>For a node with $k$ neighbors, there are $\binom{k}{2} = \frac{k(k-1)}{2}$ possible edges between its neighbors. Since each potential edge exists with probability $p$, the expected number of edges between neighbors is $E<span class="co">[</span><span class="ot">e_i | k_i = k</span><span class="co">]</span> = \frac{k(k-1)}{2} \cdot p$. Therefore, the expected local clustering coefficient for a node with degree $k$ becomes:</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>$$E<span class="co">[</span><span class="ot">C_i | k_i = k</span><span class="co">]</span> = \frac{2 \cdot \frac{k(k-1)}{2} \cdot p}{k(k-1)} = p$$</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>This result shows that the expected local clustering coefficient is simply $p$, independent of the node degree. Since this holds for all vertices regardless of their degree, the expected global clustering coefficient is also $E<span class="co">[</span><span class="ot">C</span><span class="co">]</span> = p = \frac{\langle k \rangle}{n-1}$, where $\langle k \rangle = p(n-1)$ is the expected degree.</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## Average Path Length Derivation</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>The average path length in Erdős-Rényi graphs can be derived using a tree-expansion argument that reveals why these networks exhibit the small-world property of short distances.</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>Consider an Erdős-Rényi model with average degree $k = p(n-1)$. We can analyze the network structure by imagining a breadth-first expansion from any starting node, treating the resulting structure as a tree (this approximation works well because triangles and cycles are rare in sparse random graphs). From the root node, we can reach approximately $1 + k$ nodes in the first step. In the second step, each of these $k$ nodes connects to roughly $k$ new nodes (avoiding already-visited nodes), giving us $1 + k + k^2$ total reachable nodes. Continuing this pattern, after $h$ steps we can reach approximately $1 + k + k^2 + \ldots + k^h \approx k^h$ nodes.</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>The critical insight is that since Erdős-Rényi random graphs have few triangles and local clusters, most nodes in the network are reached only at the final step of this expansion process. When the expansion covers the entire network, we have $k^h \approx n$. Solving for $h$: $h \approx \log_{k}(n) = \frac{\log(n)}{\log(k)} = \frac{\log(n)}{\log(p(n-1))}$.</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>This derivation reveals that the average shortest path length (diameter) of an Erdős-Rényi graph scales logarithmically with network size: $\langle d \rangle \approx \frac{\log(n)}{\log(k)}$. This logarithmic scaling demonstrates the "small-world" property inherent even in random graphs: even in large networks, the typical distance between nodes grows only logarithmically with network size, making the world surprisingly small despite its size.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1355,7 +1193,7 @@ Figure&nbsp;1: Erdős-Rényi random graph model.
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

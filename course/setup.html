@@ -2,19 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-09-03">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Setup – Advanced Topics in Network Science</title>
+<title>Set up your machine – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -67,18 +73,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../course/how-to-submit-assignment.html" rel="next">
-<link href="../course/minidora-usage.html" rel="prev">
+<link href="../course/pair-notebook.html" rel="next">
+<link href="../course/discord.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -105,10 +111,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -116,7 +122,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -129,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -139,192 +146,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -344,12 +237,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/welcome.html">Course Information</a></li><li class="breadcrumb-item"><a href="../course/setup.html">Setup</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/welcome.html">Course Information</a></li><li class="breadcrumb-item"><a href="../course/setup.html">Set up your machine</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -357,13 +247,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -376,7 +267,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -387,26 +278,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -423,7 +320,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -431,7 +328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -445,20 +342,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -475,13 +378,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -493,7 +396,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -510,13 +413,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -528,7 +431,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -545,19 +448,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -574,19 +483,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -603,19 +518,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -632,19 +553,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -661,25 +588,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -696,31 +623,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -730,14 +657,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#open-a-terminal" id="toc-open-a-terminal" class="nav-link active" data-scroll-target="#open-a-terminal">1. Open a terminal</a></li>
+  <li><a href="#install-the-tools" id="toc-install-the-tools" class="nav-link" data-scroll-target="#install-the-tools">2. Install the tools</a></li>
+  <li><a href="#sign-in-to-github" id="toc-sign-in-to-github" class="nav-link" data-scroll-target="#sign-in-to-github">3. Sign in to GitHub</a></li>
+  <li><a href="#set-your-course-api-key" id="toc-set-your-course-api-key" class="nav-link" data-scroll-target="#set-your-course-api-key">4. Set your course API key</a></li>
+  <li><a href="#how-your-work-is-collected" id="toc-how-your-work-is-collected" class="nav-link" data-scroll-target="#how-your-work-is-collected">5. How your work is collected</a></li>
+  <li><a href="#you-are-set.-what-now" id="toc-you-are-set.-what-now" class="nav-link" data-scroll-target="#you-are-set.-what-now">You are set. What now?</a></li>
+  <li><a href="#optional-run-a-module-notebook-on-your-own-machine" id="toc-optional-run-a-module-notebook-on-your-own-machine" class="nav-link" data-scroll-target="#optional-run-a-module-notebook-on-your-own-machine">Optional: run a module notebook on your own machine</a></li>
+  <li><a href="#optional-github-copilot" id="toc-optional-github-copilot" class="nav-link" data-scroll-target="#optional-github-copilot">Optional: GitHub Copilot</a></li>
+  <li><a href="#if-something-goes-wrong" id="toc-if-something-goes-wrong" class="nav-link" data-scroll-target="#if-something-goes-wrong">If something goes wrong</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/course/setup.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/welcome.html">Course Information</a></li><li class="breadcrumb-item"><a href="../course/setup.html">Setup</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/welcome.html">Course Information</a></li><li class="breadcrumb-item"><a href="../course/setup.html">Set up your machine</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Setup</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Set up your machine</h1>
 </div>
 
 
@@ -754,7 +696,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 3, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -766,155 +708,266 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="python-and-virtual-environments" class="level2 page-columns page-full" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="python-and-virtual-environments"><span class="header-section-number">1</span> Python and Virtual Environments</h2>
-<p>We’ll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.</p>
-<p>We strongly recommend using <strong>virtual environments</strong> to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Don’t confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.</p>
-</div></div><ul>
-<li><strong>Reproducibility</strong>: Your code will work consistently across different machines and over time</li>
-<li><strong>Flexibility</strong>: You can use different versions of packages for different projects without conflicts</li>
-<li><strong>Prevent project interference</strong>: Changes to one project won’t break another project’s dependencies</li>
-</ul>
-<div id="fig-python-ecosystem" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-python-ecosystem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg" class="img-fluid figure-img">
+<p>Reading these notes needs nothing, and neither does the code in them: every hands-on page carries a <strong>Run this notebook</strong> link that opens in your browser and fetches Python for you.</p>
+<p>This page is for the work you <strong>hand in</strong>. The <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">group mini-project</a> both live in a GitHub repository on your own computer, and both need the same things: a terminal, git, a GitHub login, two small runtimes, and one environment variable.</p>
+<p>About twenty minutes, once per machine. Do it before the second week. Getting stuck here is not part of any assignment — ask in <code>#network-science</code> on <a href="../course/discord.html">Discord</a>.</p>
+<section id="open-a-terminal" class="level2">
+<h2 class="anchored" data-anchor-id="open-a-terminal">1. Open a terminal</h2>
+<p>A terminal is an app where you type commands instead of clicking. Every command on this page goes in one.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">macOS</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Windows</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Press <code>⌘</code> + <code>Space</code>, type <strong>Terminal</strong>, press enter. The shell it opens is <code>zsh</code>, which is what the commands below assume.</p>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-python-ecosystem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.
-</figcaption>
-</figure>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Start menu → type <strong>Terminal</strong> → open <strong>Windows Terminal</strong> (it starts PowerShell).</p>
+<p>Step 2 also installs <strong>Git Bash</strong>, a second terminal that understands the same commands as macOS. Everything on this site is written for Git Bash, so once you have it, prefer it: Start menu → type <strong>Git Bash</strong>. Your home folder there is <code>/c/Users/&lt;you&gt;</code>. Where a command differs between the two, this page says so.</p>
 </div>
-<p>We recommend using <a href="https://mamba.readthedocs.io/">mamba</a> and <a href="https://docs.astral.sh/uv/">uv</a>. Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects. uv is a fast Python package and project manager. While we won’t be running uv commands directly in this course, you’ll need uv to properly run Marimo notebooks, which provides a much better development experience. <a href="https://docs.astral.sh/uv/getting-started/installation/#installation-methods">See here for installation instructions</a>.</p>
-<p>Follow the following steps to install mamba, uv, along with the minimum Python packages required for this course.</p>
+</div>
+</div>
+<p>Five commands get you anywhere:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pwd</code></td>
+<td>prints which folder you are in right now</td>
+</tr>
+<tr class="even">
+<td><code>ls</code></td>
+<td>lists what is in that folder (<code>dir</code> in PowerShell)</td>
+</tr>
+<tr class="odd">
+<td><code>cd some-folder</code></td>
+<td>goes into <code>some-folder</code></td>
+</tr>
+<tr class="even">
+<td><code>cd ..</code></td>
+<td>goes back up one folder</td>
+</tr>
+<tr class="odd">
+<td><code>cd ~</code></td>
+<td>goes to your home folder</td>
+</tr>
+</tbody>
+</table>
+<p>Two habits that save a lot of typing: press <strong>Tab</strong> to finish a name you have half-typed, and press <strong>↑</strong> to bring back the command you just ran. To paste, use <code>⌘</code> + <code>V</code> on macOS and <code>Ctrl</code> + <code>Shift</code> + <code>V</code> (or a right-click) on Windows.</p>
+</section>
+<section id="install-the-tools" class="level2">
+<h2 class="anchored" data-anchor-id="install-the-tools">2. Install the tools</h2>
+<p>Four installs, whatever your operating system. Run the command for your system in the terminal you just opened.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Install</th>
+<th>What it is for</th>
+<th>Windows</th>
+<th>macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://git-scm.com">git</a></td>
+<td>keeps the history of your work, and hands it in</td>
+<td><code>winget install Git.Git</code></td>
+<td><code>xcode-select --install</code></td>
+</tr>
+<tr class="even">
+<td><a href="https://cli.github.com">GitHub CLI</a></td>
+<td>signs git in to GitHub</td>
+<td><code>winget install GitHub.cli</code></td>
+<td><code>brew install gh</code></td>
+</tr>
+<tr class="odd">
+<td><a href="https://nodejs.org">Node.js</a> 24+</td>
+<td>your AI tutor runs on it</td>
+<td><code>winget install OpenJS.NodeJS</code></td>
+<td><code>brew install node</code></td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a></td>
+<td>fetches Python and runs the notebooks</td>
+<td><code>winget install astral-sh.uv</code></td>
+<td><code>brew install uv</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>winget</code> ships with Windows 11, so a Windows machine is ready to run those four commands as they stand.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="macOS: `brew: command not found`">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>macOS: <code>brew: command not found</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>brew</code> is <a href="https://brew.sh">Homebrew</a>, and it is <strong>not</strong> on a new Mac. Install it once — paste this in, press enter, and answer the prompts (it asks for your password and takes a few minutes):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/bin/bash</span> <span class="at">-c</span> <span class="st">"</span><span class="va">$(</span><span class="ex">curl</span> <span class="at">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="va">)</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The installer finishes by printing two or three commands to run — run them, or <code>brew</code> will still be missing in your next terminal. Then:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install gh node uv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Prefer not to install Homebrew? Every tool has an installer of its own: Node.js has a macOS <code>.pkg</code> at <a href="https://nodejs.org">nodejs.org</a>, uv installs with <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>, <code>gh</code> has a <code>.pkg</code> on its <a href="https://github.com/cli/cli/releases">releases page</a>, and <code>git</code> comes with <code>xcode-select --install</code>.</p>
+</div>
+</div>
+<p><strong>Close the terminal and open a new one</strong> — a terminal never notices programs that were installed after it started. Then check all four:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">--version</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> <span class="at">--version</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">--version</span>   <span class="co"># v24 or newer</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Four version numbers means you are done. <code>command not found</code> means either the install did not finish, or this window was open while it ran.</p>
+</section>
+<section id="sign-in-to-github" class="level2">
+<h2 class="anchored" data-anchor-id="sign-in-to-github">3. Sign in to GitHub</h2>
 <ol type="1">
-<li><a href="https://github.com/conda-forge/miniforge">Install mamba</a></li>
-<li>Run the following command to create a new environment with the minimum Python packages required for this course.</li>
+<li><p>Create an account at <a href="https://github.com">github.com</a> if you do not have one. Pick a username you do not mind classmates seeing: your assignment repositories are named after it.</p></li>
+<li><p>Watch your Binghamton email for an invitation to the course’s GitHub organization, and accept it. <strong>Until you do, no grade can reach you</strong>: enrollment here is GitHub membership, not the class list.</p></li>
+<li><p>Sign git in to GitHub, once per machine:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth login</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Answer <strong>GitHub.com</strong> → <strong>HTTPS</strong> → <strong>Login with a web browser</strong>, and paste the code it shows into the page it opens. This is what makes <code>git clone</code> and <code>git push</code> work silently. GitHub stopped accepting account passwords from git in 2021, so without this step a push fails with a confusing authentication error.</p></li>
+<li><p>Tell git whose commits these are:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@binghamton.edu"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol start="3" type="1">
-<li>Activate the environment.</li>
-</ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> activate advnetsci</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol start="4" type="1">
-<li>Pip install marimo.</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<iframe width="250" height="125" src="https://www.youtube.com/embed/bwRgYxmCqLI?si=-PMkEhKuFW4IyMXW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
-</iframe>
-</div></div><section id="other-options" class="level4">
-<h4 class="anchored" data-anchor-id="other-options">Other Options</h4>
-<p>If you prefer tools other than uv, here are some alternatives:</p>
+</section>
+<section id="set-your-course-api-key" class="level2">
+<h2 class="anchored" data-anchor-id="set-your-course-api-key">4. Set your course API key</h2>
+<p>An <strong>environment variable</strong> is a named value your terminal hands to every program it starts. Your AI tutor reads one called <code>NETSCI_API_KEY</code>; that key is how it reaches the course’s language models, so you never need an account or a credit card of your own.</p>
+<p><strong>Where the key comes from.</strong> The instructor issues one key per student and sends it to your Binghamton email in the first week. It looks like <code>sk-nsci-…</code>, and it is yours alone — its usage is logged against your name. If it has not arrived before your first Pair Notebook session, or you have lost it, email the instructor: keys are reissued, never looked up.</p>
+<p>Set it once, in the file your shell reads at startup, so every future terminal has it.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">macOS / Git Bash</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">PowerShell</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>Add this line to the end of <code>~/.zshrc</code> (macOS) or <code>~/.bashrc</code> (Git Bash), with your own key in place of the dots:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">NETSCI_API_KEY</span><span class="op">=</span><span class="st">"sk-nsci-..."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Rather not open an editor? This appends the same line for you, creating the file if it does not exist. Put your own key in first, then paste the whole command:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export NETSCI_API_KEY="sk-nsci-..."'</span> <span class="op">&gt;&gt;</span> ~/.zshrc   <span class="co"># ~/.bashrc in Git Bash</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then open a <strong>new</strong> terminal and check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$NETSCI_API_KEY</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Run this once. <code>setx</code> only affects terminals opened <em>afterwards</em>, so the window you type it in will not see it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode powershell no-fold code-with-copy"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>setx NETSCI_API_KEY <span class="st">"sk-nsci-..."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then close the window, open a <strong>new</strong> one, and check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode powershell no-fold code-with-copy"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">echo</span> <span class="va">$env</span><span class="op">:</span><span class="va">NETSCI_API_KEY</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>Your key printed back means it is set. Nothing printed means either this window was open before you set it, or the line went into a file this shell does not read.</p>
+<p>Paste the key on <strong>one line</strong>, with nothing around it. A key that arrives in an email is often wrapped onto two lines; join it back up.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Never put the key in a file inside an assignment folder">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Never put the key in a file inside an assignment folder
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You hand in assignments by pushing that folder to GitHub. A key committed there is a key that has to be revoked and reissued. Keeping it in your shell profile — which lives in your home folder, not in any repository — keeps it out of your history.</p>
+</div>
+</div>
+</section>
+<section id="how-your-work-is-collected" class="level2">
+<h2 class="anchored" data-anchor-id="how-your-work-is-collected">5. How your work is collected</h2>
+<p>The course uses <strong><a href="https://classroom50.org">Classroom 50</a></strong> to hand out and collect assignments. Accepting one creates a <strong>private GitHub repository</strong> that belongs to you. You copy it to your computer, work in it, and push it back. There is no upload button anywhere.</p>
+<p>Copy it down once per assignment:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="op">&lt;</span>the repository URL Classroom 50 created for you<span class="op">&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="op">&lt;</span>the folder it made<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then, every time you want to save and send what you have done:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span>                     <span class="co"># take every file you changed</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"what I did"</span>     <span class="co"># save a snapshot, with a note</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push                       <span class="co"># send the snapshots to GitHub</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>git status</code> prints what has changed and whether it has been sent yet. Run it whenever you are unsure.</p>
+<p>Three things worth knowing:</p>
 <ul>
-<li><a href="https://docs.python.org/3/library/venv.html">venv</a>: The standard library for creating virtual environments;</li>
-<li><a href="https://github.com/pyenv/pyenv">pyenv</a>: Great for managing multiple Python versions;</li>
-<li><a href="https://docs.conda.io/">Conda</a>: Popular in data science, includes non-Python packages;</li>
-<li><a href="https://mamba.readthedocs.io/">Mamba</a>: Faster drop-in replacement for conda;</li>
-<li><a href="https://github.com/conda-forge/miniforge">Miniforge</a>: Community-driven conda distribution with mamba included;</li>
+<li><strong>Committing saves; pushing sends.</strong> Work you committed but never pushed is on your laptop only, and nobody else can see it.</li>
+<li><strong>Push often.</strong> The history shows <em>when</em> the work happened, and for the Pair Notebook that is part of what is read: three short sittings count exactly as much as one long one.</li>
+<li><strong>In a Pair Notebook session you never type these.</strong> You say <code>hand it in</code> to your tutor and it runs all three for you.</li>
+</ul>
+<!-- TODO(anim): commit vs push — a file changes on the laptop, a commit stacks one snapshot on a local pile, a push copies the pile to GitHub; nothing leaves the laptop until the third step. -->
+</section>
+<section id="you-are-set.-what-now" class="level2">
+<h2 class="anchored" data-anchor-id="you-are-set.-what-now">You are set. What now?</h2>
+<ul>
+<li><strong><a href="../course/pair-notebook.html">Pair Notebook</a></strong> — your first assignment. One more command (<code>node setup-pi.mjs</code>) inside the folder you clone, and then a single word starts every session.</li>
+<li><strong><a href="../course/mini-project.html">Group Mini-Project</a></strong> — the in-class team assignment, and the one rule about accepting it that decides whether your team is a team.</li>
 </ul>
 </section>
+<section id="optional-run-a-module-notebook-on-your-own-machine" class="level2">
+<h2 class="anchored" data-anchor-id="optional-run-a-module-notebook-on-your-own-machine">Optional: run a module notebook on your own machine</h2>
+<p>The <strong>Run this notebook</strong> link on each hands-on page needs nothing installed. If you would rather run one locally, uv does the rest — it fetches Python and the packages listed inside the notebook itself:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/skojaku/adv-net-sci.git</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> adv-net-sci</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> notebooks/m02-small-world/coding.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>uvx</code> runs a tool without installing it permanently, and <code>--sandbox</code> builds a throwaway environment from the dependency list at the top of the notebook, so nothing is added to your system Python. The first run takes a minute while Python and the packages arrive; later runs are instant.</p>
+<p><a href="https://marimo.io">marimo</a> is a reactive notebook: change one cell and every cell that depends on it recomputes, so what you see on screen is always what the code says. It is also a plain <code>.py</code> file, which is why git can track it.</p>
 </section>
-<section id="marimo-notebook" class="level2 page-columns page-full" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="marimo-notebook"><span class="header-section-number">2</span> Marimo Notebook</h2>
-<p>We’ll use <a href="https://marimo.io/">Marimo</a> (<a href="https://github.com/marimo-team/marimo">GitHub</a>) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<iframe width="250" height="150" src="https://www.youtube.com/embed/3N6lInzq5MI?si=8WXcexm56zn86WkW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
-</iframe>
-</div></div><p>Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.</p>
-<p>Creating a sandboxed notebook:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> my_notebook.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This command installs marimo in a temporary environment, tracks your dependencies and stores them in the notebook file, and automatically downloads any existing dependencies.</p>
-<p>Running sandboxed notebooks:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run my_notebook.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.</p>
-<section id="alternative-installation" class="level4">
-<h4 class="anchored" data-anchor-id="alternative-installation">Alternative Installation</h4>
-<p>If you’re not using uv, you can install marimo with pip:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="optional-github-copilot" class="level2">
+<h2 class="anchored" data-anchor-id="optional-github-copilot">Optional: GitHub Copilot</h2>
+<p>Students get <a href="https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro">GitHub Copilot Pro for free</a>. It suggests code as you type in VS Code and in marimo (<a href="https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot">how to enable it</a>). Using it is entirely up to you — the Pair Notebook is read for your reasoning, which no autocomplete can supply.</p>
 </section>
-<section id="running-marimo" class="level4">
-<h4 class="anchored" data-anchor-id="running-marimo">Running Marimo</h4>
-<p>To start a new marimo notebook:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>To open an existing marimo notebook:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit notebook.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="github-and-github-copilot" class="level2 page-columns page-full" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="github-and-github-copilot"><span class="header-section-number">3</span> Github and GitHub Copilot</h2>
-<p>We’ll use GitHub for assignment collection and auto-grading in this course.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<iframe width="250" height="150" src="https://www.youtube.com/embed/tRZGeaHPoaw?si=1zN_yNTx7O8bQYJJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
-</iframe>
-</div></div><section id="minimum-requirements" class="level3">
-<h3 class="anchored" data-anchor-id="minimum-requirements">Minimum Requirements</h3>
-<p>At the minimum level, you only need to:</p>
-<ol type="1">
-<li>Create a GitHub account at <a href="https://github.com">github.com</a></li>
-<li>Know how to upload files to GitHub</li>
-</ol>
-<p>Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this <a href="https://github.com/sk-classroom/starter">assignment example</a> to get familiar with the format.</p>
-</section>
-<section id="subscribing-to-github-copilot" class="level3">
-<h3 class="anchored" data-anchor-id="subscribing-to-github-copilot">Subscribing to GitHub Copilot</h3>
-<p>We strongly encourage you to use <a href="https://github.com/features/copilot">GitHub Copilot</a>, an AI-powered coding assistant that helps you write code faster and more efficiently. GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in code editor, including VS Code and Marimo.</p>
-<p>Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the <a href="https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro">GitHub Copilot Pro free access page</a> to get started.</p>
-<p>Marimo notebook supports GitHub Copilot out of the box. <a href="https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot">See the instruction</a> to enable it. If you are using VS Code, you can also install the <a href="https://marketplace.visualstudio.com/items?itemName=GitHub.copilot">GitHub Copilot extension</a> to get the same experience.</p>
-</section>
-<section id="for-students-interested-in-learning-more" class="level3 unnumbered page-columns page-full">
-<h3 class="unnumbered anchored" data-anchor-id="for-students-interested-in-learning-more">For Students Interested in Learning More</h3>
-<p>Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Git(Hub) and AI tools are like a pair of best friends. Git ensures that all edits are tracked and can be reverted. GitHub makes it easy for you to collaborate with (multiple) AI agents with you.</p>
-<iframe width="250" height="150" src="https://www.youtube.com/embed/vygKnE5M6as?si=UB54u4asmVzmv9M6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
-</iframe>
-<iframe width="250" height="150" src="https://www.youtube.com/embed/NKkO8JL6IJg?si=Yv57-uVHLRQrtT5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
-</iframe>
-</div></div><section id="github-desktop-recommended-for-beginners" class="level4">
-<h4 class="anchored" data-anchor-id="github-desktop-recommended-for-beginners">GitHub Desktop (Recommended for Beginners)</h4>
-<p>If you want to learn more about version control, start with <a href="https://desktop.github.com/">GitHub Desktop</a>, a user-friendly graphical interface:</p>
-<ol type="1">
-<li>Go to <a href="https://desktop.github.com/">desktop.github.com</a></li>
-<li>Download for your operating system</li>
-<li>Install and sign in with your GitHub account</li>
-</ol>
-</section>
-<section id="understanding-git-and-version-control" class="level4">
-<h4 class="anchored" data-anchor-id="understanding-git-and-version-control">Understanding Git and Version Control</h4>
-<p>Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated “save” system that:</p>
-<ul>
-<li>Keeps a complete history of all changes to your files</li>
-<li>Lets you go back to any previous version</li>
-<li>Allows multiple people to work on the same project simultaneously</li>
-<li>Helps you manage different versions or “branches” of your work</li>
-</ul>
-<p>GitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.</p>
-</section>
-<section id="learning-resources" class="level4">
-<h4 class="anchored" data-anchor-id="learning-resources">Learning Resources</h4>
-<p>Essential resources to understand Git concepts:</p>
-<ul>
-<li><a href="https://learngitbranching.js.org/">Interactive Git Tutorial</a> - Visual, hands-on learning</li>
-<li><a href="https://docs.github.com/en/desktop">GitHub Desktop Documentation</a> - Official desktop app guide</li>
-<li><a href="https://www.atlassian.com/git/tutorials">Atlassian Git Tutorials</a> - Detailed tutorials with examples</li>
-</ul>
+<section id="if-something-goes-wrong" class="level2">
+<h2 class="anchored" data-anchor-id="if-something-goes-wrong">If something goes wrong</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>What you see</th>
+<th>What it means</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>command not found</code> right after installing something</td>
+<td>this terminal was open while the install ran</td>
+<td>close it, open a new one</td>
+</tr>
+<tr class="even">
+<td><code>brew: command not found</code> (macOS)</td>
+<td>Homebrew is not installed</td>
+<td>the box in step 2</td>
+</tr>
+<tr class="odd">
+<td>git asks for a username and password when you push</td>
+<td>git is not signed in to GitHub</td>
+<td><code>gh auth login</code></td>
+</tr>
+<tr class="even">
+<td><code>repository not found</code> when cloning</td>
+<td>you are signed in as the wrong account, or you never accepted the assignment</td>
+<td><code>gh auth status</code>, then accept the assignment again</td>
+</tr>
+<tr class="odd">
+<td><code>echo $NETSCI_API_KEY</code> prints nothing</td>
+<td>the variable is not set in <em>this</em> window</td>
+<td>reread step 4, then open a new terminal</td>
+</tr>
+<tr class="even">
+<td><code>winget</code> is not recognized (Windows 10)</td>
+<td><code>winget</code> ships with Windows 11</td>
+<td>install <a href="https://apps.microsoft.com/detail/9nblggh4nns1">App Installer</a> from the Microsoft Store, or use each tool’s own installer</td>
+</tr>
+</tbody>
+</table>
+<p>Anything else: ask on <a href="../course/discord.html">Discord</a>. Setup problems are not part of any assignment, and someone else has usually hit the same one.</p>
 
 
-<!-- -->
-
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -966,13 +1019,14 @@ Figure&nbsp;1: Without virtual environments, you risk dependency hell where pack
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -984,57 +1038,6 @@ Figure&nbsp;1: Without virtual environments, you risk dependency hell where pack
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1367,215 +1370,16 @@ Figure&nbsp;1: Without virtual environments, you risk dependency hell where pack
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../course/minidora-usage.html" class="pagination-link" aria-label="Using Minidora">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Using Minidora</span>
+      <a href="../course/discord.html" class="pagination-link" aria-label="Discord">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Discord</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../course/how-to-submit-assignment.html" class="pagination-link" aria-label="How to submit assignment">
-        <span class="nav-page-text">How to submit assignment</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../course/pair-notebook.html" class="pagination-link" aria-label="Pair Notebook">
+        <span class="nav-page-text">Pair Notebook</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb9" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Setup</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="an">filters:</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">    - marimo-team/marimo</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Python and Virtual Environments</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>We'll use Python to work with data throughout this course. Python is an excellent choice for network science for its rich ecosystem of libraries, readable and intuitive syntax, and well-documented documentation.</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>We strongly recommend using **virtual environments** to manage your Python packages. Virtual environments create isolated Python installations for each project, avoiding dependency hell and providing several key benefits:</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>Don't confuse Python virtual environments with virtual machines (VMs). Python virtual environments are lightweight isolation tools that only separate Python packages and dependencies within the same operating system. Virtual machines, on the other hand, create complete isolated operating systems.</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Reproducibility**: Your code will work consistently across different machines and over time</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Flexibility**: You can use different versions of packages for different projects without conflicts</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Prevent project interference**: Changes to one project won't break another project's dependencies</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>::: {#fig-python-ecosystem}</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://cdn-media-1.freecodecamp.org/images/1*i4QK4sSGX7Q4RRgOytkSuw.jpeg)</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>Without virtual environments, you risk dependency hell where package conflicts make your projects unusable.</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>We recommend using <span class="co">[</span><span class="ot">mamba</span><span class="co">](https://mamba.readthedocs.io/)</span> and <span class="co">[</span><span class="ot">uv</span><span class="co">](https://docs.astral.sh/uv/)</span>.</span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>Mamba is a tool for quickly installing Python and other packages, and for creating isolated environments for your projects.</span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>uv is a fast Python package and project manager. While we won't be running uv commands directly in this course, you'll need uv to properly run Marimo notebooks, which provides a much better development experience. <span class="co">[</span><span class="ot">See here for installation instructions</span><span class="co">](https://docs.astral.sh/uv/getting-started/installation/#installation-methods)</span>.</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>Follow the following steps to install mamba, uv, along with the minimum Python packages required for this course.</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="co">[</span><span class="ot">Install mamba</span><span class="co">](https://github.com/conda-forge/miniforge)</span></span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Run the following command to create a new environment with the minimum Python packages required for this course.</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> advnetsci python==3.11 matplotlib scipy numpy pandas seaborn uv</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Activate the environment.</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> activate advnetsci</span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Pip install marimo.</span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"125"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/bwRgYxmCqLI?si=-PMkEhKuFW4IyMXW"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Other Options</span></span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>If you prefer tools other than uv, here are some alternatives:</span>
-<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">venv</span><span class="co">](https://docs.python.org/3/library/venv.html)</span>: The standard library for creating virtual environments;</span>
-<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">pyenv</span><span class="co">](https://github.com/pyenv/pyenv)</span>: Great for managing multiple Python versions;</span>
-<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Conda</span><span class="co">](https://docs.conda.io/)</span>: Popular in data science, includes non-Python packages;</span>
-<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Mamba</span><span class="co">](https://mamba.readthedocs.io/)</span>: Faster drop-in replacement for conda;</span>
-<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Miniforge</span><span class="co">](https://github.com/conda-forge/miniforge)</span>: Community-driven conda distribution with mamba included;</span>
-<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a><span class="fu">## Marimo Notebook</span></span>
-<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>We'll use <span class="co">[</span><span class="ot">Marimo</span><span class="co">](https://marimo.io/)</span> (<span class="co">[</span><span class="ot">GitHub</span><span class="co">](https://github.com/marimo-team/marimo)</span>) notebooks for assignments and interactive exercises throughout the course. Marimo is a reactive Python notebook that automatically updates when you change code, making it perfect for exploring network data and seeing results in real-time.</span>
-<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/3N6lInzq5MI?si=8WXcexm56zn86WkW"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>Marimo integrates especially tightly with uv and provides a package sandbox feature that lets you inline dependencies directly in notebook files. This is the easiest way to get started - no prior uv knowledge required.</span>
-<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>Creating a sandboxed notebook:</span>
-<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> my_notebook.py</span>
-<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a>This command installs marimo in a temporary environment, tracks your dependencies and stores them in the notebook file, and automatically downloads any existing dependencies.</span>
-<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>Running sandboxed notebooks:</span>
-<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run my_notebook.py</span>
-<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a>Benefits: Dependencies are embedded in the notebook file itself, perfect reproducibility, and no need to manage separate dependency files.</span>
-<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Alternative Installation</span></span>
-<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a>If you're not using uv, you can install marimo with pip:</span>
-<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install marimo</span>
-<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Running Marimo</span></span>
-<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a>To start a new marimo notebook:</span>
-<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit</span>
-<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>To open an existing marimo notebook:</span>
-<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a><span class="ex">marimo</span> edit notebook.py</span>
-<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## Github and GitHub Copilot</span></span>
-<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a>We'll use GitHub for assignment collection and auto-grading in this course.</span>
-<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/tRZGeaHPoaw?si=1zN_yNTx7O8bQYJJ"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a><span class="fu">### Minimum Requirements</span></span>
-<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>At the minimum level, you only need to:</span>
-<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Create a GitHub account at <span class="co">[</span><span class="ot">github.com</span><span class="co">](https://github.com)</span></span>
-<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Know how to upload files to GitHub</span>
-<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>Detailed instructions on how to upload your assignments to GitHub will be provided separately - advanced Git features are not required for the course. See this <span class="co">[</span><span class="ot">assignment example</span><span class="co">](https://github.com/sk-classroom/starter)</span> to get familiar with the format.</span>
-<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a><span class="fu">### Subscribing to GitHub Copilot</span></span>
-<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a>We strongly encourage you to use <span class="co">[</span><span class="ot">GitHub Copilot</span><span class="co">](https://github.com/features/copilot)</span>, an AI-powered coding assistant that helps you write code faster and more efficiently.</span>
-<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a>GitHub Copilot is an AI pair programmer that provides intelligent code suggestions, completions, and explanations directly in code editor, including VS Code and Marimo.</span>
-<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>Students can get free access to GitHub Copilot Pro, which includes enhanced features and priority access. Visit the <span class="co">[</span><span class="ot">GitHub Copilot Pro free access page</span><span class="co">](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro)</span> to get started.</span>
-<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>Marimo notebook supports GitHub Copilot out of the box. <span class="co">[</span><span class="ot">See the instruction</span><span class="co">](https://docs.marimo.io/guides/editor_features/ai_completion/#github-copilot)</span> to enable it. If you are using VS Code, you can also install the <span class="co">[</span><span class="ot">GitHub Copilot extension</span><span class="co">](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)</span> to get the same experience.</span>
-<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Students Interested in Learning More {.unnumbered}</span></span>
-<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a>Understanding Git and GitHub is useful for seamlessly working with assignments and will benefit your programming workflow. Additionally, Git and GitHub integrate nicely with AI tools for productivity improvement, making your development process more efficient.</span>
-<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>Git(Hub) and AI tools are like a pair of best friends. Git ensures that all edits are tracked and can be reverted. GitHub makes it easy for you to collaborate with (multiple) AI agents with you.</span>
-<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/vygKnE5M6as?si=UB54u4asmVzmv9M6"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> width</span><span class="op">=</span><span class="st">"250"</span><span class="ot"> height</span><span class="op">=</span><span class="st">"150"</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://www.youtube.com/embed/NKkO8JL6IJg?si=Yv57-uVHLRQrtT5w"</span><span class="ot"> title</span><span class="op">=</span><span class="st">"YouTube video player"</span><span class="ot"> frameborder</span><span class="op">=</span><span class="st">"0"</span><span class="ot"> allow</span><span class="op">=</span><span class="st">"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</span><span class="ot"> referrerpolicy</span><span class="op">=</span><span class="st">"strict-origin-when-cross-origin"</span><span class="ot"> allowfullscreen</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span>
-<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a><span class="fu">#### GitHub Desktop (Recommended for Beginners)</span></span>
-<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a>If you want to learn more about version control, start with <span class="co">[</span><span class="ot">GitHub Desktop</span><span class="co">](https://desktop.github.com/)</span>, a user-friendly graphical interface:</span>
-<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Go to <span class="co">[</span><span class="ot">desktop.github.com</span><span class="co">](https://desktop.github.com/)</span></span>
-<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Download for your operating system</span>
-<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Install and sign in with your GitHub account</span>
-<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Understanding Git and Version Control</span></span>
-<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>Git is a version control system that tracks changes in your code over time. Think of it as a sophisticated "save" system that:</span>
-<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Keeps a complete history of all changes to your files</span>
-<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lets you go back to any previous version</span>
-<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Allows multiple people to work on the same project simultaneously</span>
-<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Helps you manage different versions or "branches" of your work</span>
-<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a>GitHub is a cloud-based platform that hosts Git repositories and adds collaboration features.</span>
-<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Learning Resources</span></span>
-<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a>Essential resources to understand Git concepts:</span>
-<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Interactive Git Tutorial</span><span class="co">](https://learngitbranching.js.org/)</span> - Visual, hands-on learning</span>
-<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">GitHub Desktop Documentation</span><span class="co">](https://docs.github.com/en/desktop)</span> - Official desktop app guide</span>
-<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Atlassian Git Tutorials</span><span class="co">](https://www.atlassian.com/git/tutorials)</span> - Detailed tutorials with examples</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1584,7 +1388,7 @@ Figure&nbsp;1: Without virtual environments, you risk dependency hell where pack
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/course/setup.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/course/setup.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

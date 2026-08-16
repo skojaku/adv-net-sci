@@ -2,60 +2,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-08-14">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Efficient Network Representation and Computing Paths – Advanced Topics in Network Science</title>
+<title>Hands-on: Measuring How Small the World Is – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -105,10 +76,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -116,7 +87,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -129,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -139,192 +111,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -344,12 +202,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/02-coding.html">Efficient Network Representation and Computing Paths</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/02-coding.html">Hands-on: Measuring How Small the World Is</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -357,13 +212,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -376,7 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -387,26 +243,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -423,7 +285,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -431,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -445,20 +307,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -475,13 +343,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -493,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -510,13 +378,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -528,7 +396,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -545,19 +413,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -574,19 +448,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -603,19 +483,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -632,19 +518,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -661,25 +553,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -696,31 +588,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -730,14 +622,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-you-will-build" id="toc-what-you-will-build" class="nav-link active" data-scroll-target="#what-you-will-build">What you will build</a></li>
+  <li><a href="#what-to-watch-for" id="toc-what-to-watch-for" class="nav-link" data-scroll-target="#what-to-watch-for">What to watch for</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/02-coding.html">Efficient Network Representation and Computing Paths</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/02-coding.html">Hands-on: Measuring How Small the World Is</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Efficient Network Representation and Computing Paths</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Hands-on: Measuring How Small the World Is</h1>
 </div>
 
 
@@ -754,7 +654,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 14, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -766,420 +666,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="convenient-libraries-for-network-analysis" class="level2 page-columns page-full" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="convenient-libraries-for-network-analysis"><span class="header-section-number">1</span> Convenient libraries for network analysis</h2>
-<p>The Python ecosystem offers several powerful libraries for network analysis, each with distinct strengths:</p>
-<ul>
-<li><a href="https://networkx.org/">networkx</a> - a beginner-friendly library for network analysis</li>
-<li><a href="https://igraph.org/python/">igraph</a> - a mature library with a wide range of algorithms</li>
-<li><a href="https://graph-tool.skewed.de/">graph-tool</a> - specialized for stochastic block models</li>
-<li><a href="https://scipy.org/">scipy</a> - efficient tools for analyzing large networks</li>
-</ul>
-<p>Throughout this course, we’ll primarily use <code>igraph</code>, a mature and robust library originally developed for R and later ported to Python. While <code>networkx</code> is by far the most popular library, <code>igraph</code> offers several compelling advantages for serious network analysis: it provides more reliable algorithm implementations (avoiding persistent bugs found in some <code>networkx</code> functions like LFR benchmark and weighted degree assortativity), and its optimized C core delivers the performance needed for large-scale network computations.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p><strong>Installing igraph</strong></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pip (with plotting support)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph cairocffi</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Using conda (recommended)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge igraph cairocffi</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative plotting backend</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph pycairo</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># For development version</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/igraph/python-igraph.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Note: igraph requires compiled C libraries and plotting needs <code>cairocffi</code> or <code>pycairo</code>. Use conda for easier installation.</p>
-</div></div><p>For advanced users comfortable with <code>scipy</code>, the <code>csgraph</code> submodule provides an excellent alternative that leverages one of Python’s most well-tested and optimized libraries. For example, <code>csgraph.shortest_path</code> and <code>csgraph.connected_components</code> offer high-performance implementations.</p>
-<p><img src="../figs/scipy.jpg" class="img-fluid"></p>
-<section id="create-a-graph" class="level3">
-<h3 class="anchored" data-anchor-id="create-a-graph">Create a graph</h3>
-<p>Let us create a graph of 4 nodes and 4 edges. Our edge list is given by</p>
-<div id="0c609252" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You now know what average path length and clustering mean. Here you measure them, on networks whose answers you can check by hand and on networks large enough that you cannot.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p><code>igraph</code> has an object <code>Graph</code> that stores a graph and provides methods to manipulate and analyze the graph. To create a graph from an edge list, we can use the <code>add_edges</code> method.</p>
-<div id="6df98d84" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph() <span class="co"># Create an empty graph</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">4</span>) <span class="co"># Add 4 vertices</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list) <span class="co"># Add edges to the graph</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">150</span>, <span class="dv">150</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">4</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Where the code lives
 </div>
 </div>
-</div>
-</section>
-<section id="shortest-paths" class="level3">
-<h3 class="anchored" data-anchor-id="shortest-paths">Shortest Paths</h3>
-<p>Let’s compute the paths between nodes 2 and 3.</p>
-<div id="12aff202" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>g.get_all_simple_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>[[2, 0, 3], [2, 1, 0, 3]]</code></pre>
+<div class="callout-body-container callout-body">
+<p>This course keeps its lecture note free of runnable code. Everything you execute lives in a marimo notebook, so it stays interactive and reactive instead of being a wall of output frozen into a web page.</p>
+<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first load takes a few seconds while Python itself is downloaded.</p>
+<p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/coding.py"><code>notebooks/m02-small-world/coding.py</code></a>. Run it with <code>marimo edit notebooks/m02-small-world/coding.py</code>.</p>
 </div>
 </div>
-<p>This method enumerates all possible simple paths between two nodes. This is OK for small networks but quickly becomes impractical for larger networks, as the number of paths increases exponentially with the size of the network.</p>
-<p>Often, we are interested in the shortest path, which is the path with the smallest number of edges. The shortest path can be computed by using the <code>get_shortest_paths</code> method.</p>
-<div id="5e61a930" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>[[2, 0, 3]]</code></pre>
-</div>
-</div>
-<p>Note that there can be multiple shortest paths between two nodes. If we are interested in the “length” instead of the path itself, there is a more efficient function <code>distances</code>.</p>
-<div id="b3c5c122" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g.distances(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>[[2]]</code></pre>
-</div>
-</div>
-</section>
-<section id="connected-components" class="level3">
-<h3 class="anchored" data-anchor-id="connected-components">Connected Components</h3>
-<p>In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:</p>
-<div id="4dbbef54" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The <code>components</code> is a special object called <a href="https://python.igraph.org/en/0.11.6/api/igraph.VertexClustering.html">VertexClustering</a> in <code>igraph</code>. It has the following useful functions and attributes:</p>
-<div id="10b4051d" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"membership: "</span>, components.membership)  <span class="co"># the IDs of the component each node belongs to.</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sizes: "</span>, <span class="bu">list</span>(components.sizes()))  <span class="co"># the number of nodes in each component.</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"giant: "</span>, components.giant())  <span class="co"># a subgraph of the largest connected component.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>membership:  [0, 0, 0, 0]
-sizes:  [4]
-giant:  IGRAPH U--- 4 4 --
-+ edges:
-0--1 1--2 0--2 0--3</code></pre>
-</div>
-</div>
-<section id="exercise-01" class="level5">
-<h5 class="anchored" data-anchor-id="exercise-01">Exercise 01 🏋️‍♀️💪🧠</h5>
+<section id="what-you-will-build" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-will-build">What you will build</h2>
 <ol type="1">
-<li><p>Now, let us add two nodes that are not connected to the existing graph, and call <code>connected_components</code> again. 🔗➕</p></li>
-<li><p>Call <code>get_shortest_paths</code> between the two new nodes in different connected components. 🛣️🔍</p></li>
-<li><p>Get the largest connected component. 🌐🏆</p></li>
+<li>Build a graph in <a href="https://python.igraph.org/en/stable/">igraph</a> from an edge list, then compute shortest paths and pull out connected components. The library is new; the concepts are the ones from Module 1 and from the previous page.</li>
+<li>Compute local, average-local and global clustering, and reconcile the three by hand on the small graph before trusting the function.</li>
+<li>Generate ring lattices, Erdős-Rényi random graphs and Watts-Strogatz networks, and compare their clustering and path length side by side.</li>
 </ol>
 </section>
-</section>
-<section id="directed-networks" class="level3">
-<h3 class="anchored" data-anchor-id="directed-networks">Directed networks</h3>
-<p>Let’s extend these ideas about paths and connected components to directed graphs.</p>
-<div id="3e7aa35d" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span>[(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">2</span>, <span class="dv">1</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">5</span>), (<span class="dv">3</span>, <span class="dv">1</span>), (<span class="dv">3</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">5</span>), (<span class="dv">4</span>, <span class="dv">5</span>), (<span class="dv">5</span>, <span class="dv">3</span>)]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph(directed<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">6</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">250</span>, <span class="dv">250</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">6</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-9-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</p>
-<div id="db200292" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"From 0 to 3"</span>, g.get_all_simple_paths(<span class="dv">0</span>, to<span class="op">=</span><span class="dv">3</span>))</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"From 3 to 0"</span>, g.get_all_simple_paths(<span class="dv">3</span>, to<span class="op">=</span><span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>From 0 to 3 [[0, 1, 2, 3], [0, 1, 2, 5, 3]]
-From 3 to 0 []</code></pre>
-</div>
-</div>
-<p>The shortest path from 4 to 1 must take a longer route due to edge directions.</p>
-<div id="c48c9490" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">4</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>[[4, 5, 3, 1]]</code></pre>
-</div>
-</div>
-<p>Directed networks have two kinds of connected components.</p>
+<section id="what-to-watch-for" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h2>
 <ul>
-<li><strong>Strongly connected components:</strong> Strongly connected means that there exists a direct path between every pair of nodes, i.e., that from any node to any other nodes while respecting the edge directionality.</li>
-<li><strong>Weakly connected components:</strong> Weakly connected means that there exists a path between every pair of nodes when ignoring the edge directionality.</li>
+<li>Average local clustering and global clustering will disagree. Work out which nodes cause the gap before reading on — the six-node example on the <a href="../m02-small-world/01-concepts.html">concepts page</a> gives 0.70 and 0.43 for the same network.</li>
+<li>The ring lattice and the random graph sit at opposite extremes. Note how far each is from the network you would actually want to live in.</li>
 </ul>
-<div id="7ffc4293" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(g.connected_components(mode<span class="op">=</span><span class="st">"strong"</span>)))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(g.connected_components(mode<span class="op">=</span><span class="st">"weak"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[0], [1, 2, 3, 4, 5]]
-[[0, 1, 2, 3, 4, 5]]</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="clustering-coefficients" class="level2 page-columns page-full" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="clustering-coefficients"><span class="header-section-number">2</span> Clustering Coefficients</h2>
-<p>Now let’s see how to compute the clustering coefficients you learned about using igraph.</p>
-<p>Let’s create a more interesting graph to demonstrate clustering:</p>
-<div id="cbd5cc86" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a graph with some triangles</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">2</span>),  <span class="co"># Triangle: 0-1-2</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">3</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">5</span>),  <span class="co"># Node 3 with two neighbors (4,5)</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">4</span>, <span class="dv">5</span>),                  <span class="co"># Triangle: 3-4-5</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span>, <span class="dv">6</span>), (<span class="dv">6</span>, <span class="dv">7</span>)]          <span class="co"># Linear extension</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>g_cluster <span class="op">=</span> igraph.Graph()</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>g_cluster.add_vertices(<span class="dv">8</span>)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>g_cluster.add_edges(edges)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>igraph.plot(g_cluster, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">8</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-13-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<section id="local-clustering-coefficient" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="local-clustering-coefficient">Local Clustering Coefficient</h3>
-<p>The <code>transitivity_local_undirected()</code> function computes the local clustering coefficient for each node, returning a list of float values (one per node). It returns <code>NaN</code> for nodes with degree &lt; 2.</p>
-<div id="df157e15" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Local clustering coefficient for each node</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>local_clustering <span class="op">=</span> g_cluster.transitivity_local_undirected()</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Local clustering coefficients:"</span>)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, coeff <span class="kw">in</span> <span class="bu">enumerate</span>(local_clustering):</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>coeff<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Local clustering coefficients:
-Node 0: 0.333
-Node 1: 0.333
-Node 2: 1.000
-Node 3: 0.333
-Node 4: 1.000
-Node 5: 1.000
-Node 6: 0.000
-Node 7: nan</code></pre>
-</div>
-</div>
 
-<div class="no-row-height column-margin column-container"><div class="">
-<p><strong>Understanding the values:</strong> - 1.0 = All neighbors are connected (perfect local clustering) - 0.0 = No neighbors are connected - NaN = Node has degree &lt; 2 (clustering undefined)</p>
-</div></div><p>Analyze how clustering values relate to actual neighborhood connectivity:</p>
-<div id="2b553f45" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze clustering for specific nodes</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> <span class="bu">range</span>(g_cluster.vcount()):</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    neighbors <span class="op">=</span> g_cluster.neighbors(node)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    degree <span class="op">=</span> <span class="bu">len</span>(neighbors)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    clustering <span class="op">=</span> local_clustering[node]</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Node </span><span class="sc">{</span>node<span class="sc">}</span><span class="ss">: degree=</span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss">, neighbors=</span><span class="sc">{</span>neighbors<span class="sc">}</span><span class="ss">, clustering=</span><span class="sc">{</span>clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> degree <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Count actual triangles</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        possible_edges <span class="op">=</span> degree <span class="op">*</span> (degree <span class="op">-</span> <span class="dv">1</span>) <span class="op">//</span> <span class="dv">2</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        actual_edges <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(neighbors)):</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(neighbors)):</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> g_cluster.are_adjacent(neighbors[i], neighbors[j]):</span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>                    actual_edges <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"  -&gt; </span><span class="sc">{</span>actual_edges<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>possible_edges<span class="sc">}</span><span class="ss"> neighbor pairs connected"</span>)</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Node 0: degree=3, neighbors=[1, 2, 3], clustering=0.333
-  -&gt; 1/3 neighbor pairs connected
-
-Node 1: degree=3, neighbors=[0, 2, 6], clustering=0.333
-  -&gt; 1/3 neighbor pairs connected
-
-Node 2: degree=2, neighbors=[0, 1], clustering=1.000
-  -&gt; 1/1 neighbor pairs connected
-
-Node 3: degree=3, neighbors=[0, 4, 5], clustering=0.333
-  -&gt; 1/3 neighbor pairs connected
-
-Node 4: degree=2, neighbors=[3, 5], clustering=1.000
-  -&gt; 1/1 neighbor pairs connected
-
-Node 5: degree=2, neighbors=[3, 4], clustering=1.000
-  -&gt; 1/1 neighbor pairs connected
-
-Node 6: degree=2, neighbors=[1, 7], clustering=0.000
-  -&gt; 0/1 neighbor pairs connected
-
-Node 7: degree=1, neighbors=[6], clustering=nan
-</code></pre>
-</div>
-</div>
-</section>
-<section id="average-local-clustering" class="level3">
-<h3 class="anchored" data-anchor-id="average-local-clustering">Average Local Clustering</h3>
-<p>The <code>transitivity_avglocal_undirected()</code> function computes the average local clustering coefficient directly, returning a single float value. It automatically ignores NaN values from low-degree nodes.</p>
-<div id="b6a20362" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Average local clustering (mean of local values)</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>avg_local_clustering <span class="op">=</span> g_cluster.transitivity_avglocal_undirected()</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average local clustering: </span><span class="sc">{</span>avg_local_clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify by manual calculation</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>manual_avg <span class="op">=</span> np.nanmean(local_clustering)  <span class="co"># nanmean ignores NaN values</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Manual calculation: </span><span class="sc">{</span>manual_avg<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Average local clustering: 0.571
-Manual calculation: 0.571</code></pre>
-</div>
-</div>
-</section>
-<section id="global-clustering-coefficient" class="level3">
-<h3 class="anchored" data-anchor-id="global-clustering-coefficient">Global Clustering Coefficient</h3>
-<p>The <code>transitivity_undirected()</code> function computes the global clustering coefficient (transitivity), returning a single float value.</p>
-<div id="a8166263" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Global clustering coefficient</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>global_clustering <span class="op">=</span> g_cluster.transitivity_undirected()</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering: </span><span class="sc">{</span>global_clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's understand this calculation using supporting functions</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co"># list_triangles() returns all triangles in the graph</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>triangles_count <span class="op">=</span> <span class="bu">len</span>(g_cluster.list_triangles())</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of triangles: </span><span class="sc">{</span>triangles_count<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Triangles in graph: </span><span class="sc">{</span>g_cluster<span class="sc">.</span>list_triangles()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Count connected triples (paths of length 2)</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># degree(node) returns the degree of a specific node</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>triples <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> <span class="bu">range</span>(g_cluster.vcount()):</span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    degree <span class="op">=</span> g_cluster.degree(node)</span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Each node with degree d contributes d*(d-1)/2 triples</span></span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> degree <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>        triples <span class="op">+=</span> degree <span class="op">*</span> (degree <span class="op">-</span> <span class="dv">1</span>) <span class="op">//</span> <span class="dv">2</span></span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Connected triples: </span><span class="sc">{</span>triples<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering = 3 * </span><span class="sc">{</span>triangles_count<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span>triples<span class="sc">}</span><span class="ss"> = </span><span class="sc">{</span><span class="dv">3</span> <span class="op">*</span> triangles_count <span class="op">/</span> triples<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Global clustering: 0.462
-Number of triangles: 2
-Triangles in graph: [(0, 1, 2), (3, 4, 5)]
-Connected triples: 13
-Global clustering = 3 * 2 / 13 = 0.462</code></pre>
-</div>
-</div>
-</section>
-<section id="comparing-different-networks" class="level3">
-<h3 class="anchored" data-anchor-id="comparing-different-networks">Comparing Different Networks</h3>
-<p>We can use igraph’s built-in network generators: <code>Graph.Full()</code> creates complete graphs, <code>Graph.Erdos_Renyi()</code> creates random graphs, and <code>Graph.Lattice()</code> creates regular lattices.</p>
-<div id="0bc5d40f" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create different network types for comparison</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Complete graph (everyone connected to everyone)</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>n_complete <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>g_complete <span class="op">=</span> igraph.Graph.Full(n_complete)</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Random graph (Erdős–Rényi)</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>n_random <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>p_random <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>g_random <span class="op">=</span> igraph.Graph.Erdos_Renyi(n_random, p_random)</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Regular ring lattice (each node connected to k nearest neighbors)</span></span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>n_ring <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>k_ring <span class="op">=</span> <span class="dv">4</span></span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>g_ring <span class="op">=</span> igraph.Graph.Lattice(dim<span class="op">=</span>[n_ring], circular<span class="op">=</span><span class="va">True</span>, nei<span class="op">=</span>k_ring<span class="op">//</span><span class="dv">2</span>)</span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>networks <span class="op">=</span> {</span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Complete"</span>: g_complete,</span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Random"</span>: g_random,</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ring Lattice"</span>: g_ring,</span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Our Example"</span>: g_cluster</span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Clustering Comparison:"</span>)</span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="st">'Network'</span><span class="sc">:&lt;15}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Avg Local'</span><span class="sc">:&lt;12}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Global'</span><span class="sc">:&lt;12}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Nodes'</span><span class="sc">:&lt;8}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Edges'</span><span class="sc">:&lt;8}</span><span class="ss">"</span>)</span>
-<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span>
-<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, graph <span class="kw">in</span> networks.items():</span>
-<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>    avg_local <span class="op">=</span> graph.transitivity_avglocal_undirected()</span>
-<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>    global_clust <span class="op">=</span> graph.transitivity_undirected()</span>
-<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>    nodes <span class="op">=</span> graph.vcount()</span>
-<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>    edges <span class="op">=</span> graph.ecount()</span>
-<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:&lt;15}</span><span class="ss"> </span><span class="sc">{</span>avg_local<span class="sc">:&lt;12.3f}</span><span class="ss"> </span><span class="sc">{</span>global_clust<span class="sc">:&lt;12.3f}</span><span class="ss"> </span><span class="sc">{</span>nodes<span class="sc">:&lt;8}</span><span class="ss"> </span><span class="sc">{</span>edges<span class="sc">:&lt;8}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Clustering Comparison:
-------------------------------------------------------------
-Network         Avg Local    Global       Nodes    Edges   
-------------------------------------------------------------
-Complete        1.000        1.000        6        15      
-Random          0.178        0.125        20       32      
-Ring Lattice    0.500        0.500        20       40      
-Our Example     0.571        0.462        8        9       </code></pre>
-</div>
-</div>
-</section>
-<section id="small-world-network-example" class="level3">
-<h3 class="anchored" data-anchor-id="small-world-network-example">Small-World Network Example</h3>
-<p>The <code>Graph.Watts_Strogatz()</code> function creates small-world networks using the Watts-Strogatz model. The <code>average_path_length()</code> function computes the mean shortest path length across all node pairs.</p>
-<div id="0b31a161" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a small-world network (Watts-Strogatz model)</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with ring lattice, then rewire some edges randomly</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>n_ws <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>k_ws <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>p_rewire <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>g_smallworld <span class="op">=</span> igraph.Graph.Watts_Strogatz(dim<span class="op">=</span><span class="dv">1</span>, size<span class="op">=</span>n_ws, nei<span class="op">=</span>k_ws<span class="op">//</span><span class="dv">2</span>, p<span class="op">=</span>p_rewire)</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Small-World Network Analysis:"</span>)</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Nodes: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>vcount()<span class="sc">}</span><span class="ss">, Edges: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>ecount()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average local clustering: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>transitivity_avglocal_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>transitivity_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average path length: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>average_path_length()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare with random graph of same size and density</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>g_random_compare <span class="op">=</span> igraph.Graph.Erdos_Renyi(n_ws, g_smallworld.ecount() <span class="op">*</span> <span class="dv">2</span> <span class="op">/</span> (n_ws <span class="op">*</span> (n_ws <span class="op">-</span> <span class="dv">1</span>)))</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Compared to random graph with same density:"</span>)</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random avg local clustering: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>transitivity_avglocal_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random global clustering: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>transitivity_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random average path length: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>average_path_length()<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Small-World Network Analysis:
-Nodes: 30, Edges: 90
-Average local clustering: 0.361
-Global clustering: 0.319
-Average path length: 2.149
-
-Compared to random graph with same density:
-Random avg local clustering: 0.234
-Random global clustering: 0.202
-Random average path length: 2.048</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="exercise-02" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="exercise-02"><span class="header-section-number">3</span> Exercise 02 🏋️‍♀️💪🧠</h2>
-<p>Let’s compute the average path length of a network from pre-existing data and check if how long on average it takes to go from any node to any other node.</p>
-<ol type="1">
-<li>Select a network of your choice from <a href="https://networks.skewed.de/">Netzschleuder</a>. For convenience, choose a network of nodes less than 5000.</li>
-<li>Download the csv version of the data by clicking something like “3KiB” under <code>csv</code> column.</li>
-<li>Unzip the file and find “edges.csv”, open it with a text editor to familiarize yourself with the format.</li>
-<li>Load the data using <code>pandas</code>.</li>
-<li>Get the source and target nodes from the data to create an edge list.</li>
-<li>Construct a graph from the edge list, either using <code>igraph</code> or <code>scipy</code>.</li>
-<li>Compute the average path length</li>
-</ol>
-<p><strong>Hint:</strong> Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the “estimate” by sampling many pairs of nodes uniformly at random and computing the average path length.</p>
-
-
-<!-- -->
 
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1231,13 +756,14 @@ Random average path length: 2.048</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1249,57 +775,6 @@ Random average path length: 2.048</code></pre>
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1632,8 +1107,8 @@ Random average path length: 2.048</code></pre>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m02-small-world/01-concepts.html" class="pagination-link" aria-label="Core Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Core Concepts</span>
+      <a href="../m02-small-world/01-concepts.html" class="pagination-link" aria-label="Six Handshakes to a Stranger">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Six Handshakes to a Stranger</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1641,348 +1116,7 @@ Random average path length: 2.048</code></pre>
         <span class="nav-page-text">Exercises and Assignments</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb33" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Efficient Network Representation and Computing Paths"</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Convenient libraries for network analysis</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>The Python ecosystem offers several powerful libraries for network analysis, each with distinct strengths:</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">networkx</span><span class="co">](https://networkx.org/)</span> - a beginner-friendly library for network analysis</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">igraph</span><span class="co">](https://igraph.org/python/)</span> - a mature library with a wide range of algorithms</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">graph-tool</span><span class="co">](https://graph-tool.skewed.de/)</span> - specialized for stochastic block models</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">scipy</span><span class="co">](https://scipy.org/)</span> - efficient tools for analyzing large networks</span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>Throughout this course, we'll primarily use <span class="in">`igraph`</span>, a mature and robust library originally developed for R and later ported to Python. While <span class="in">`networkx`</span> is by far the most popular library, <span class="in">`igraph`</span> offers several compelling advantages for serious network analysis: it provides more reliable algorithm implementations (avoiding persistent bugs found in some <span class="in">`networkx`</span> functions like LFR benchmark and weighted degree assortativity), and its optimized C core delivers the performance needed for large-scale network computations.</span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
-<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pip (with plotting support)</span></span>
-<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph cairocffi</span>
-<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Using conda (recommended)</span></span>
-<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge igraph cairocffi</span>
-<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative plotting backend</span></span>
-<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph pycairo</span>
-<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a><span class="co"># For development version</span></span>
-<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/igraph/python-igraph.git</span>
-<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>Note: igraph requires compiled C libraries and plotting needs <span class="in">`cairocffi`</span> or <span class="in">`pycairo`</span>. Use conda for easier installation.</span>
-<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a>For advanced users comfortable with <span class="in">`scipy`</span>, the <span class="in">`csgraph`</span> submodule provides an excellent alternative that leverages one of Python's most well-tested and optimized libraries. For example, <span class="in">`csgraph.shortest_path`</span> and <span class="in">`csgraph.connected_components`</span> offer high-performance implementations.</span>
-<span id="cb33-40"><a href="#cb33-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-41"><a href="#cb33-41" aria-hidden="true" tabindex="-1"></a><span class="al">![](../figs/scipy.jpg)</span></span>
-<span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a><span class="fu">### Create a graph</span></span>
-<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a>Let us create a graph of 4 nodes and 4 edges. Our edge list is given by</span>
-<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>)]</span>
-<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-53"><a href="#cb33-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-54"><a href="#cb33-54" aria-hidden="true" tabindex="-1"></a><span class="in">`igraph`</span> has an object <span class="in">`Graph`</span> that stores a graph and provides methods to manipulate and analyze the graph. To create a graph from an edge list, we can use the <span class="in">`add_edges`</span> method.</span>
-<span id="cb33-55"><a href="#cb33-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-58"><a href="#cb33-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-59"><a href="#cb33-59" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb33-60"><a href="#cb33-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-61"><a href="#cb33-61" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph() <span class="co"># Create an empty graph</span></span>
-<span id="cb33-62"><a href="#cb33-62" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">4</span>) <span class="co"># Add 4 vertices</span></span>
-<span id="cb33-63"><a href="#cb33-63" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list) <span class="co"># Add edges to the graph</span></span>
-<span id="cb33-64"><a href="#cb33-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-65"><a href="#cb33-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
-<span id="cb33-66"><a href="#cb33-66" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">150</span>, <span class="dv">150</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">4</span>)))</span>
-<span id="cb33-67"><a href="#cb33-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-68"><a href="#cb33-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-69"><a href="#cb33-69" aria-hidden="true" tabindex="-1"></a><span class="fu">### Shortest Paths</span></span>
-<span id="cb33-70"><a href="#cb33-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-71"><a href="#cb33-71" aria-hidden="true" tabindex="-1"></a>Let's compute the paths between nodes 2 and 3.</span>
-<span id="cb33-72"><a href="#cb33-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-75"><a href="#cb33-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-76"><a href="#cb33-76" aria-hidden="true" tabindex="-1"></a>g.get_all_simple_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb33-77"><a href="#cb33-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-78"><a href="#cb33-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-79"><a href="#cb33-79" aria-hidden="true" tabindex="-1"></a>This method enumerates all possible simple paths between two nodes. This is OK for small networks but quickly becomes impractical for larger networks, as the number of paths increases exponentially with the size of the network.</span>
-<span id="cb33-80"><a href="#cb33-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-81"><a href="#cb33-81" aria-hidden="true" tabindex="-1"></a>Often, we are interested in the shortest path, which is the path with the smallest number of edges. The shortest path can be computed by using the <span class="in">`get_shortest_paths`</span> method.</span>
-<span id="cb33-82"><a href="#cb33-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-85"><a href="#cb33-85" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-86"><a href="#cb33-86" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">2</span>, to<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb33-87"><a href="#cb33-87" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-88"><a href="#cb33-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-89"><a href="#cb33-89" aria-hidden="true" tabindex="-1"></a>Note that there can be multiple shortest paths between two nodes. If we are interested in the "length" instead of the path itself, there is a more efficient function <span class="in">`distances`</span>.</span>
-<span id="cb33-90"><a href="#cb33-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-93"><a href="#cb33-93" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-94"><a href="#cb33-94" aria-hidden="true" tabindex="-1"></a>g.distances(<span class="dv">2</span>, <span class="dv">3</span>)</span>
-<span id="cb33-95"><a href="#cb33-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-96"><a href="#cb33-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-97"><a href="#cb33-97" aria-hidden="true" tabindex="-1"></a><span class="fu">### Connected Components</span></span>
-<span id="cb33-98"><a href="#cb33-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-99"><a href="#cb33-99" aria-hidden="true" tabindex="-1"></a>In the simple network above, we can see that for every pair of nodes, we can find a path connecting them. This is the definition of a connected graph. We can check this property for a given graph:</span>
-<span id="cb33-100"><a href="#cb33-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-103"><a href="#cb33-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-104"><a href="#cb33-104" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
-<span id="cb33-105"><a href="#cb33-105" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-106"><a href="#cb33-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-107"><a href="#cb33-107" aria-hidden="true" tabindex="-1"></a>The <span class="in">`components`</span> is a special object called <span class="co">[</span><span class="ot">VertexClustering</span><span class="co">](https://python.igraph.org/en/0.11.6/api/igraph.VertexClustering.html)</span> in <span class="in">`igraph`</span>.</span>
-<span id="cb33-108"><a href="#cb33-108" aria-hidden="true" tabindex="-1"></a>It has the following useful functions and attributes:</span>
-<span id="cb33-109"><a href="#cb33-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-112"><a href="#cb33-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-113"><a href="#cb33-113" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"membership: "</span>, components.membership)  <span class="co"># the IDs of the component each node belongs to.</span></span>
-<span id="cb33-114"><a href="#cb33-114" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sizes: "</span>, <span class="bu">list</span>(components.sizes()))  <span class="co"># the number of nodes in each component.</span></span>
-<span id="cb33-115"><a href="#cb33-115" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"giant: "</span>, components.giant())  <span class="co"># a subgraph of the largest connected component.</span></span>
-<span id="cb33-116"><a href="#cb33-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-117"><a href="#cb33-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-118"><a href="#cb33-118" aria-hidden="true" tabindex="-1"></a><span class="fu">##### Exercise 01 🏋️‍♀️💪🧠</span></span>
-<span id="cb33-119"><a href="#cb33-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-120"><a href="#cb33-120" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Now, let us add two nodes that are not connected to the existing graph, and call <span class="in">`connected_components`</span> again. 🔗➕</span>
-<span id="cb33-121"><a href="#cb33-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-122"><a href="#cb33-122" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Call <span class="in">`get_shortest_paths`</span> between the two new nodes in different connected components. 🛣️🔍</span>
-<span id="cb33-123"><a href="#cb33-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-124"><a href="#cb33-124" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Get the largest connected component. 🌐🏆</span>
-<span id="cb33-125"><a href="#cb33-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-128"><a href="#cb33-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-129"><a href="#cb33-129" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-130"><a href="#cb33-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-131"><a href="#cb33-131" aria-hidden="true" tabindex="-1"></a><span class="fu">### Directed networks</span></span>
-<span id="cb33-132"><a href="#cb33-132" aria-hidden="true" tabindex="-1"></a>Let's extend these ideas about paths and connected components to directed graphs.</span>
-<span id="cb33-133"><a href="#cb33-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-136"><a href="#cb33-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-137"><a href="#cb33-137" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span>[(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">2</span>, <span class="dv">1</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">5</span>), (<span class="dv">3</span>, <span class="dv">1</span>), (<span class="dv">3</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">5</span>), (<span class="dv">4</span>, <span class="dv">5</span>), (<span class="dv">5</span>, <span class="dv">3</span>)]</span>
-<span id="cb33-138"><a href="#cb33-138" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph(directed<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb33-139"><a href="#cb33-139" aria-hidden="true" tabindex="-1"></a>g.add_vertices(<span class="dv">6</span>)</span>
-<span id="cb33-140"><a href="#cb33-140" aria-hidden="true" tabindex="-1"></a>g.add_edges(edge_list)</span>
-<span id="cb33-141"><a href="#cb33-141" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">250</span>, <span class="dv">250</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">6</span>)))</span>
-<span id="cb33-142"><a href="#cb33-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-143"><a href="#cb33-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-144"><a href="#cb33-144" aria-hidden="true" tabindex="-1"></a>In directed graphs, edges and paths can be one-way. For instance, in our graph, you can go from node 0 to node 3, but not from 3 to 0.</span>
-<span id="cb33-145"><a href="#cb33-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-148"><a href="#cb33-148" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-149"><a href="#cb33-149" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"From 0 to 3"</span>, g.get_all_simple_paths(<span class="dv">0</span>, to<span class="op">=</span><span class="dv">3</span>))</span>
-<span id="cb33-150"><a href="#cb33-150" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"From 3 to 0"</span>, g.get_all_simple_paths(<span class="dv">3</span>, to<span class="op">=</span><span class="dv">0</span>))</span>
-<span id="cb33-151"><a href="#cb33-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-152"><a href="#cb33-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-153"><a href="#cb33-153" aria-hidden="true" tabindex="-1"></a>The shortest path from 4 to 1 must take a longer route due to edge directions.</span>
-<span id="cb33-156"><a href="#cb33-156" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-157"><a href="#cb33-157" aria-hidden="true" tabindex="-1"></a>g.get_shortest_paths(<span class="dv">4</span>, <span class="dv">1</span>)</span>
-<span id="cb33-158"><a href="#cb33-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-159"><a href="#cb33-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-160"><a href="#cb33-160" aria-hidden="true" tabindex="-1"></a>Directed networks have two kinds of connected components.</span>
-<span id="cb33-161"><a href="#cb33-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-162"><a href="#cb33-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Strongly connected components:** Strongly connected means that there exists a direct path between every pair of nodes, i.e., that from any node to any other nodes while respecting the edge directionality.</span>
-<span id="cb33-163"><a href="#cb33-163" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Weakly connected components:** Weakly connected means that there exists a path between every pair of nodes when ignoring the edge directionality.</span>
-<span id="cb33-164"><a href="#cb33-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-167"><a href="#cb33-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-168"><a href="#cb33-168" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(g.connected_components(mode<span class="op">=</span><span class="st">"strong"</span>)))</span>
-<span id="cb33-169"><a href="#cb33-169" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(g.connected_components(mode<span class="op">=</span><span class="st">"weak"</span>)))</span>
-<span id="cb33-170"><a href="#cb33-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-171"><a href="#cb33-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-172"><a href="#cb33-172" aria-hidden="true" tabindex="-1"></a><span class="fu">## Clustering Coefficients</span></span>
-<span id="cb33-173"><a href="#cb33-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-174"><a href="#cb33-174" aria-hidden="true" tabindex="-1"></a>Now let's see how to compute the clustering coefficients you learned about using igraph.</span>
-<span id="cb33-175"><a href="#cb33-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-176"><a href="#cb33-176" aria-hidden="true" tabindex="-1"></a>Let's create a more interesting graph to demonstrate clustering:</span>
-<span id="cb33-177"><a href="#cb33-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-180"><a href="#cb33-180" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-181"><a href="#cb33-181" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a graph with some triangles</span></span>
-<span id="cb33-182"><a href="#cb33-182" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">1</span>, <span class="dv">2</span>),  <span class="co"># Triangle: 0-1-2</span></span>
-<span id="cb33-183"><a href="#cb33-183" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">3</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">5</span>),  <span class="co"># Node 3 with two neighbors (4,5)</span></span>
-<span id="cb33-184"><a href="#cb33-184" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">4</span>, <span class="dv">5</span>),                  <span class="co"># Triangle: 3-4-5</span></span>
-<span id="cb33-185"><a href="#cb33-185" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">1</span>, <span class="dv">6</span>), (<span class="dv">6</span>, <span class="dv">7</span>)]          <span class="co"># Linear extension</span></span>
-<span id="cb33-186"><a href="#cb33-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-187"><a href="#cb33-187" aria-hidden="true" tabindex="-1"></a>g_cluster <span class="op">=</span> igraph.Graph()</span>
-<span id="cb33-188"><a href="#cb33-188" aria-hidden="true" tabindex="-1"></a>g_cluster.add_vertices(<span class="dv">8</span>)</span>
-<span id="cb33-189"><a href="#cb33-189" aria-hidden="true" tabindex="-1"></a>g_cluster.add_edges(edges)</span>
-<span id="cb33-190"><a href="#cb33-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-191"><a href="#cb33-191" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
-<span id="cb33-192"><a href="#cb33-192" aria-hidden="true" tabindex="-1"></a>igraph.plot(g_cluster, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>), vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">8</span>)))</span>
-<span id="cb33-193"><a href="#cb33-193" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-194"><a href="#cb33-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-195"><a href="#cb33-195" aria-hidden="true" tabindex="-1"></a><span class="fu">### Local Clustering Coefficient</span></span>
-<span id="cb33-196"><a href="#cb33-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-197"><a href="#cb33-197" aria-hidden="true" tabindex="-1"></a>The <span class="in">`transitivity_local_undirected()`</span> function computes the local clustering coefficient for each node, returning a list of float values (one per node). It returns <span class="in">`NaN`</span> for nodes with degree &lt; 2.</span>
-<span id="cb33-198"><a href="#cb33-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-201"><a href="#cb33-201" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-202"><a href="#cb33-202" aria-hidden="true" tabindex="-1"></a><span class="co"># Local clustering coefficient for each node</span></span>
-<span id="cb33-203"><a href="#cb33-203" aria-hidden="true" tabindex="-1"></a>local_clustering <span class="op">=</span> g_cluster.transitivity_local_undirected()</span>
-<span id="cb33-204"><a href="#cb33-204" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-205"><a href="#cb33-205" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Local clustering coefficients:"</span>)</span>
-<span id="cb33-206"><a href="#cb33-206" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, coeff <span class="kw">in</span> <span class="bu">enumerate</span>(local_clustering):</span>
-<span id="cb33-207"><a href="#cb33-207" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>coeff<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-208"><a href="#cb33-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-209"><a href="#cb33-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-210"><a href="#cb33-210" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb33-211"><a href="#cb33-211" aria-hidden="true" tabindex="-1"></a>**Understanding the values:**</span>
-<span id="cb33-212"><a href="#cb33-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>1.0 = All neighbors are connected (perfect local clustering)</span>
-<span id="cb33-213"><a href="#cb33-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>0.0 = No neighbors are connected</span>
-<span id="cb33-214"><a href="#cb33-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>NaN = Node has degree &lt; 2 (clustering undefined)</span>
-<span id="cb33-215"><a href="#cb33-215" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb33-216"><a href="#cb33-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-217"><a href="#cb33-217" aria-hidden="true" tabindex="-1"></a>Analyze how clustering values relate to actual neighborhood connectivity:</span>
-<span id="cb33-218"><a href="#cb33-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-221"><a href="#cb33-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-222"><a href="#cb33-222" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze clustering for specific nodes</span></span>
-<span id="cb33-223"><a href="#cb33-223" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> <span class="bu">range</span>(g_cluster.vcount()):</span>
-<span id="cb33-224"><a href="#cb33-224" aria-hidden="true" tabindex="-1"></a>    neighbors <span class="op">=</span> g_cluster.neighbors(node)</span>
-<span id="cb33-225"><a href="#cb33-225" aria-hidden="true" tabindex="-1"></a>    degree <span class="op">=</span> <span class="bu">len</span>(neighbors)</span>
-<span id="cb33-226"><a href="#cb33-226" aria-hidden="true" tabindex="-1"></a>    clustering <span class="op">=</span> local_clustering[node]</span>
-<span id="cb33-227"><a href="#cb33-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-228"><a href="#cb33-228" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Node </span><span class="sc">{</span>node<span class="sc">}</span><span class="ss">: degree=</span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss">, neighbors=</span><span class="sc">{</span>neighbors<span class="sc">}</span><span class="ss">, clustering=</span><span class="sc">{</span>clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-229"><a href="#cb33-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-230"><a href="#cb33-230" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> degree <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
-<span id="cb33-231"><a href="#cb33-231" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Count actual triangles</span></span>
-<span id="cb33-232"><a href="#cb33-232" aria-hidden="true" tabindex="-1"></a>        possible_edges <span class="op">=</span> degree <span class="op">*</span> (degree <span class="op">-</span> <span class="dv">1</span>) <span class="op">//</span> <span class="dv">2</span></span>
-<span id="cb33-233"><a href="#cb33-233" aria-hidden="true" tabindex="-1"></a>        actual_edges <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb33-234"><a href="#cb33-234" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(neighbors)):</span>
-<span id="cb33-235"><a href="#cb33-235" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(neighbors)):</span>
-<span id="cb33-236"><a href="#cb33-236" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> g_cluster.are_adjacent(neighbors[i], neighbors[j]):</span>
-<span id="cb33-237"><a href="#cb33-237" aria-hidden="true" tabindex="-1"></a>                    actual_edges <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb33-238"><a href="#cb33-238" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"  -&gt; </span><span class="sc">{</span>actual_edges<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>possible_edges<span class="sc">}</span><span class="ss"> neighbor pairs connected"</span>)</span>
-<span id="cb33-239"><a href="#cb33-239" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
-<span id="cb33-240"><a href="#cb33-240" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-241"><a href="#cb33-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-242"><a href="#cb33-242" aria-hidden="true" tabindex="-1"></a><span class="fu">### Average Local Clustering</span></span>
-<span id="cb33-243"><a href="#cb33-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-244"><a href="#cb33-244" aria-hidden="true" tabindex="-1"></a>The <span class="in">`transitivity_avglocal_undirected()`</span> function computes the average local clustering coefficient directly, returning a single float value. It automatically ignores NaN values from low-degree nodes.</span>
-<span id="cb33-245"><a href="#cb33-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-248"><a href="#cb33-248" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-249"><a href="#cb33-249" aria-hidden="true" tabindex="-1"></a><span class="co"># Average local clustering (mean of local values)</span></span>
-<span id="cb33-250"><a href="#cb33-250" aria-hidden="true" tabindex="-1"></a>avg_local_clustering <span class="op">=</span> g_cluster.transitivity_avglocal_undirected()</span>
-<span id="cb33-251"><a href="#cb33-251" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average local clustering: </span><span class="sc">{</span>avg_local_clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-252"><a href="#cb33-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-253"><a href="#cb33-253" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify by manual calculation</span></span>
-<span id="cb33-254"><a href="#cb33-254" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb33-255"><a href="#cb33-255" aria-hidden="true" tabindex="-1"></a>manual_avg <span class="op">=</span> np.nanmean(local_clustering)  <span class="co"># nanmean ignores NaN values</span></span>
-<span id="cb33-256"><a href="#cb33-256" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Manual calculation: </span><span class="sc">{</span>manual_avg<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-257"><a href="#cb33-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-258"><a href="#cb33-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-259"><a href="#cb33-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### Global Clustering Coefficient</span></span>
-<span id="cb33-260"><a href="#cb33-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-261"><a href="#cb33-261" aria-hidden="true" tabindex="-1"></a>The <span class="in">`transitivity_undirected()`</span> function computes the global clustering coefficient (transitivity), returning a single float value.</span>
-<span id="cb33-262"><a href="#cb33-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-265"><a href="#cb33-265" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-266"><a href="#cb33-266" aria-hidden="true" tabindex="-1"></a><span class="co"># Global clustering coefficient</span></span>
-<span id="cb33-267"><a href="#cb33-267" aria-hidden="true" tabindex="-1"></a>global_clustering <span class="op">=</span> g_cluster.transitivity_undirected()</span>
-<span id="cb33-268"><a href="#cb33-268" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering: </span><span class="sc">{</span>global_clustering<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-269"><a href="#cb33-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-270"><a href="#cb33-270" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's understand this calculation using supporting functions</span></span>
-<span id="cb33-271"><a href="#cb33-271" aria-hidden="true" tabindex="-1"></a><span class="co"># list_triangles() returns all triangles in the graph</span></span>
-<span id="cb33-272"><a href="#cb33-272" aria-hidden="true" tabindex="-1"></a>triangles_count <span class="op">=</span> <span class="bu">len</span>(g_cluster.list_triangles())</span>
-<span id="cb33-273"><a href="#cb33-273" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of triangles: </span><span class="sc">{</span>triangles_count<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb33-274"><a href="#cb33-274" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Triangles in graph: </span><span class="sc">{</span>g_cluster<span class="sc">.</span>list_triangles()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb33-275"><a href="#cb33-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-276"><a href="#cb33-276" aria-hidden="true" tabindex="-1"></a><span class="co"># Count connected triples (paths of length 2)</span></span>
-<span id="cb33-277"><a href="#cb33-277" aria-hidden="true" tabindex="-1"></a><span class="co"># degree(node) returns the degree of a specific node</span></span>
-<span id="cb33-278"><a href="#cb33-278" aria-hidden="true" tabindex="-1"></a>triples <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb33-279"><a href="#cb33-279" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> <span class="bu">range</span>(g_cluster.vcount()):</span>
-<span id="cb33-280"><a href="#cb33-280" aria-hidden="true" tabindex="-1"></a>    degree <span class="op">=</span> g_cluster.degree(node)</span>
-<span id="cb33-281"><a href="#cb33-281" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Each node with degree d contributes d*(d-1)/2 triples</span></span>
-<span id="cb33-282"><a href="#cb33-282" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> degree <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
-<span id="cb33-283"><a href="#cb33-283" aria-hidden="true" tabindex="-1"></a>        triples <span class="op">+=</span> degree <span class="op">*</span> (degree <span class="op">-</span> <span class="dv">1</span>) <span class="op">//</span> <span class="dv">2</span></span>
-<span id="cb33-284"><a href="#cb33-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-285"><a href="#cb33-285" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Connected triples: </span><span class="sc">{</span>triples<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb33-286"><a href="#cb33-286" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering = 3 * </span><span class="sc">{</span>triangles_count<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span>triples<span class="sc">}</span><span class="ss"> = </span><span class="sc">{</span><span class="dv">3</span> <span class="op">*</span> triangles_count <span class="op">/</span> triples<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-287"><a href="#cb33-287" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-288"><a href="#cb33-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-289"><a href="#cb33-289" aria-hidden="true" tabindex="-1"></a><span class="fu">### Comparing Different Networks</span></span>
-<span id="cb33-290"><a href="#cb33-290" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-291"><a href="#cb33-291" aria-hidden="true" tabindex="-1"></a>We can use igraph's built-in network generators: <span class="in">`Graph.Full()`</span> creates complete graphs, <span class="in">`Graph.Erdos_Renyi()`</span> creates random graphs, and <span class="in">`Graph.Lattice()`</span> creates regular lattices.</span>
-<span id="cb33-292"><a href="#cb33-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-295"><a href="#cb33-295" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-296"><a href="#cb33-296" aria-hidden="true" tabindex="-1"></a><span class="co"># Create different network types for comparison</span></span>
-<span id="cb33-297"><a href="#cb33-297" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb33-298"><a href="#cb33-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-299"><a href="#cb33-299" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Complete graph (everyone connected to everyone)</span></span>
-<span id="cb33-300"><a href="#cb33-300" aria-hidden="true" tabindex="-1"></a>n_complete <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb33-301"><a href="#cb33-301" aria-hidden="true" tabindex="-1"></a>g_complete <span class="op">=</span> igraph.Graph.Full(n_complete)</span>
-<span id="cb33-302"><a href="#cb33-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-303"><a href="#cb33-303" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Random graph (Erdős–Rényi)</span></span>
-<span id="cb33-304"><a href="#cb33-304" aria-hidden="true" tabindex="-1"></a>n_random <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb33-305"><a href="#cb33-305" aria-hidden="true" tabindex="-1"></a>p_random <span class="op">=</span> <span class="fl">0.2</span></span>
-<span id="cb33-306"><a href="#cb33-306" aria-hidden="true" tabindex="-1"></a>g_random <span class="op">=</span> igraph.Graph.Erdos_Renyi(n_random, p_random)</span>
-<span id="cb33-307"><a href="#cb33-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-308"><a href="#cb33-308" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Regular ring lattice (each node connected to k nearest neighbors)</span></span>
-<span id="cb33-309"><a href="#cb33-309" aria-hidden="true" tabindex="-1"></a>n_ring <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb33-310"><a href="#cb33-310" aria-hidden="true" tabindex="-1"></a>k_ring <span class="op">=</span> <span class="dv">4</span></span>
-<span id="cb33-311"><a href="#cb33-311" aria-hidden="true" tabindex="-1"></a>g_ring <span class="op">=</span> igraph.Graph.Lattice(dim<span class="op">=</span>[n_ring], circular<span class="op">=</span><span class="va">True</span>, nei<span class="op">=</span>k_ring<span class="op">//</span><span class="dv">2</span>)</span>
-<span id="cb33-312"><a href="#cb33-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-313"><a href="#cb33-313" aria-hidden="true" tabindex="-1"></a>networks <span class="op">=</span> {</span>
-<span id="cb33-314"><a href="#cb33-314" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Complete"</span>: g_complete,</span>
-<span id="cb33-315"><a href="#cb33-315" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Random"</span>: g_random,</span>
-<span id="cb33-316"><a href="#cb33-316" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ring Lattice"</span>: g_ring,</span>
-<span id="cb33-317"><a href="#cb33-317" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Our Example"</span>: g_cluster</span>
-<span id="cb33-318"><a href="#cb33-318" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb33-319"><a href="#cb33-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-320"><a href="#cb33-320" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Clustering Comparison:"</span>)</span>
-<span id="cb33-321"><a href="#cb33-321" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span>
-<span id="cb33-322"><a href="#cb33-322" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="st">'Network'</span><span class="sc">:&lt;15}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Avg Local'</span><span class="sc">:&lt;12}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Global'</span><span class="sc">:&lt;12}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Nodes'</span><span class="sc">:&lt;8}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'Edges'</span><span class="sc">:&lt;8}</span><span class="ss">"</span>)</span>
-<span id="cb33-323"><a href="#cb33-323" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span>
-<span id="cb33-324"><a href="#cb33-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-325"><a href="#cb33-325" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, graph <span class="kw">in</span> networks.items():</span>
-<span id="cb33-326"><a href="#cb33-326" aria-hidden="true" tabindex="-1"></a>    avg_local <span class="op">=</span> graph.transitivity_avglocal_undirected()</span>
-<span id="cb33-327"><a href="#cb33-327" aria-hidden="true" tabindex="-1"></a>    global_clust <span class="op">=</span> graph.transitivity_undirected()</span>
-<span id="cb33-328"><a href="#cb33-328" aria-hidden="true" tabindex="-1"></a>    nodes <span class="op">=</span> graph.vcount()</span>
-<span id="cb33-329"><a href="#cb33-329" aria-hidden="true" tabindex="-1"></a>    edges <span class="op">=</span> graph.ecount()</span>
-<span id="cb33-330"><a href="#cb33-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-331"><a href="#cb33-331" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:&lt;15}</span><span class="ss"> </span><span class="sc">{</span>avg_local<span class="sc">:&lt;12.3f}</span><span class="ss"> </span><span class="sc">{</span>global_clust<span class="sc">:&lt;12.3f}</span><span class="ss"> </span><span class="sc">{</span>nodes<span class="sc">:&lt;8}</span><span class="ss"> </span><span class="sc">{</span>edges<span class="sc">:&lt;8}</span><span class="ss">"</span>)</span>
-<span id="cb33-332"><a href="#cb33-332" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-333"><a href="#cb33-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-334"><a href="#cb33-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-335"><a href="#cb33-335" aria-hidden="true" tabindex="-1"></a><span class="fu">### Small-World Network Example</span></span>
-<span id="cb33-336"><a href="#cb33-336" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-337"><a href="#cb33-337" aria-hidden="true" tabindex="-1"></a>The <span class="in">`Graph.Watts_Strogatz()`</span> function creates small-world networks using the Watts-Strogatz model. The <span class="in">`average_path_length()`</span> function computes the mean shortest path length across all node pairs.</span>
-<span id="cb33-338"><a href="#cb33-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-341"><a href="#cb33-341" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb33-342"><a href="#cb33-342" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a small-world network (Watts-Strogatz model)</span></span>
-<span id="cb33-343"><a href="#cb33-343" aria-hidden="true" tabindex="-1"></a><span class="co"># Start with ring lattice, then rewire some edges randomly</span></span>
-<span id="cb33-344"><a href="#cb33-344" aria-hidden="true" tabindex="-1"></a>n_ws <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb33-345"><a href="#cb33-345" aria-hidden="true" tabindex="-1"></a>k_ws <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb33-346"><a href="#cb33-346" aria-hidden="true" tabindex="-1"></a>p_rewire <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb33-347"><a href="#cb33-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-348"><a href="#cb33-348" aria-hidden="true" tabindex="-1"></a>g_smallworld <span class="op">=</span> igraph.Graph.Watts_Strogatz(dim<span class="op">=</span><span class="dv">1</span>, size<span class="op">=</span>n_ws, nei<span class="op">=</span>k_ws<span class="op">//</span><span class="dv">2</span>, p<span class="op">=</span>p_rewire)</span>
-<span id="cb33-349"><a href="#cb33-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-350"><a href="#cb33-350" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Small-World Network Analysis:"</span>)</span>
-<span id="cb33-351"><a href="#cb33-351" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Nodes: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>vcount()<span class="sc">}</span><span class="ss">, Edges: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>ecount()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb33-352"><a href="#cb33-352" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average local clustering: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>transitivity_avglocal_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-353"><a href="#cb33-353" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Global clustering: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>transitivity_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-354"><a href="#cb33-354" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average path length: </span><span class="sc">{</span>g_smallworld<span class="sc">.</span>average_path_length()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-355"><a href="#cb33-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-356"><a href="#cb33-356" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare with random graph of same size and density</span></span>
-<span id="cb33-357"><a href="#cb33-357" aria-hidden="true" tabindex="-1"></a>g_random_compare <span class="op">=</span> igraph.Graph.Erdos_Renyi(n_ws, g_smallworld.ecount() <span class="op">*</span> <span class="dv">2</span> <span class="op">/</span> (n_ws <span class="op">*</span> (n_ws <span class="op">-</span> <span class="dv">1</span>)))</span>
-<span id="cb33-358"><a href="#cb33-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-359"><a href="#cb33-359" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Compared to random graph with same density:"</span>)</span>
-<span id="cb33-360"><a href="#cb33-360" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random avg local clustering: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>transitivity_avglocal_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-361"><a href="#cb33-361" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random global clustering: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>transitivity_undirected()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-362"><a href="#cb33-362" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Random average path length: </span><span class="sc">{</span>g_random_compare<span class="sc">.</span>average_path_length()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb33-363"><a href="#cb33-363" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb33-364"><a href="#cb33-364" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-365"><a href="#cb33-365" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercise 02 🏋️‍♀️💪🧠</span></span>
-<span id="cb33-366"><a href="#cb33-366" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-367"><a href="#cb33-367" aria-hidden="true" tabindex="-1"></a>Let's compute the average path length of a network from pre-existing data and check if how long on average it takes to go from any node to any other node.</span>
-<span id="cb33-368"><a href="#cb33-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-369"><a href="#cb33-369" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Select a network of your choice from <span class="co">[</span><span class="ot">Netzschleuder</span><span class="co">](https://networks.skewed.de/)</span>. For convenience, choose a network of nodes less than 5000.</span>
-<span id="cb33-370"><a href="#cb33-370" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Download the csv version of the data by clicking something like "3KiB" under <span class="in">`csv`</span> column.</span>
-<span id="cb33-371"><a href="#cb33-371" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Unzip the file and find "edges.csv", open it with a text editor to familiarize yourself with the format.</span>
-<span id="cb33-372"><a href="#cb33-372" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Load the data using <span class="in">`pandas`</span>.</span>
-<span id="cb33-373"><a href="#cb33-373" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Get the source and target nodes from the data to create an edge list.</span>
-<span id="cb33-374"><a href="#cb33-374" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Construct a graph from the edge list, either using <span class="in">`igraph`</span> or <span class="in">`scipy`</span>.</span>
-<span id="cb33-375"><a href="#cb33-375" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Compute the average path length</span>
-<span id="cb33-376"><a href="#cb33-376" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-377"><a href="#cb33-377" aria-hidden="true" tabindex="-1"></a>**Hint:** Finding all shortest paths is a qubic time operation with respect to the number of nodes, or simply put, it takes a long time to compute. So compute the "estimate" by sampling many pairs of nodes uniformly at random and computing the average path length.</span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1991,7 +1125,7 @@ Random average path length: 2.048</code></pre>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

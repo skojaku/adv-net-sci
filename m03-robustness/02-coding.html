@@ -2,60 +2,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-09-11">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Coding - Network Robustness Analysis – Advanced Topics in Network Science</title>
+<title>Hands-on: Breaking Networks on Purpose – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,11 +75,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script defer="" src="../assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
-<link rel="stylesheet" href="../assets/custom.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -116,7 +130,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -129,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -139,192 +154,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -344,12 +245,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/02-coding.html">Coding - Network Robustness Analysis</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/02-coding.html">Hands-on: Breaking Networks on Purpose</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -357,13 +255,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -376,7 +275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -387,26 +286,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -423,7 +328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -431,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -445,20 +350,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -475,13 +386,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -493,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -510,13 +421,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -528,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -545,19 +456,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -574,19 +491,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -603,19 +526,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -632,19 +561,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -661,25 +596,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -696,31 +631,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -730,14 +665,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-you-will-build" id="toc-what-you-will-build" class="nav-link active" data-scroll-target="#what-you-will-build">What you will build</a></li>
+  <li><a href="#what-to-watch-for" id="toc-what-to-watch-for" class="nav-link" data-scroll-target="#what-to-watch-for">What to watch for</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m03-robustness/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/02-coding.html">Coding - Network Robustness Analysis</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m03-robustness/01-concepts.html">M03: Robustness</a></li><li class="breadcrumb-item"><a href="../m03-robustness/02-coding.html">Hands-on: Breaking Networks on Purpose</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Coding - Network Robustness Analysis</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Hands-on: Breaking Networks on Purpose</h1>
 </div>
 
 
@@ -754,7 +697,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 11, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -766,456 +709,62 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="key-robustness-concepts-in-igraph" class="level2 page-columns page-full" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="key-robustness-concepts-in-igraph"><span class="header-section-number">1</span> Key robustness concepts in <code>igraph</code></h2>
-<p>Network robustness analysis focuses on understanding how networks behave when nodes or edges are removed, whether through random failures or targeted attacks. The Python ecosystem provides powerful tools for analyzing these phenomena:</p>
+<p>The theory says hub-heavy networks shrug off random failure and collapse under targeted attack. Here you make that happen and measure it.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Where the code lives
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This course keeps its lecture note free of runnable code. Everything you execute lives in a marimo notebook, so it stays interactive and reactive instead of being a wall of output frozen into a web page.</p>
+<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first load takes a few seconds while Python itself is downloaded.</p>
+<p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/coding.py"><code>notebooks/m03-robustness/coding.py</code></a>. Run it with <code>marimo edit notebooks/m03-robustness/coding.py</code>.</p>
+</div>
+</div>
+<section id="what-you-will-build" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-will-build">What you will build</h2>
+<ol type="1">
+<li>Measure connectivity as the fraction of nodes left in the largest component.</li>
+<li>Simulate random failure on the karate-club network and plot its robustness profile.</li>
+<li>Simulate an adaptive targeted attack — degrees recomputed after every removal — and lay the two profiles on top of each other.</li>
+<li>Build a minimum spanning tree of a weighted network with <code>igraph</code>.</li>
+<li>Watch a lattice percolate as the occupation probability rises.</li>
+<li>Compute <span class="math inline">\kappa</span> for a real airport network and check the predicted threshold against the simulated one.</li>
+</ol>
+</section>
+<section id="what-to-watch-for" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h2>
 <ul>
-<li><a href="https://igraph.org/python/">igraph</a> - comprehensive network analysis with robust algorithms for connectivity analysis</li>
-<li><a href="https://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html">scipy.sparse.csgraph</a> - efficient connected component algorithms for large networks</li>
-<li><a href="https://networkx.org/">networkx</a> - alternative approach with different robustness metrics</li>
+<li>The notebook runs random failure <strong>once</strong>, and one run looks deceptively smooth. Wrap it in a loop, run it fifty times, and plot the spread: for random failure the variance is the story.</li>
+<li>The targeted attack in the notebook is the <em>adaptive</em> one. Write the fixed-ranking version too — rank by degree once, on the original network — and compare. The gap between the two curves is the value of information to an attacker.</li>
+<li>Check your measured threshold against <span class="math inline">f_c = 1 - 1/(\kappa - 1)</span>, derived in <a href="../m03-robustness/04-appendix.html">the appendix</a>. Expect agreement in order of magnitude, not to three decimals: the formula is an asymptotic result for randomly wired networks, and the karate club has 34 nodes and a great deal of structure.</li>
 </ul>
-<p>Throughout this analysis, we’ll use <code>igraph</code> for its reliable implementations and performance advantages when working with connectivity measures and component analysis.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p><strong>Installing igraph</strong></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pip (with plotting support)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph cairocffi</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Using conda (recommended)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge igraph cairocffi</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative plotting backend</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph pycairo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Note: igraph requires compiled C libraries and plotting needs <code>cairocffi</code> or <code>pycairo</code>. Use conda for easier installation.</p>
-</div></div><p>For advanced users comfortable with <code>scipy</code>, the <code>csgraph</code> submodule provides an excellent alternative that leverages one of Python’s most well-tested and optimized libraries. For example, <code>csgraph.shortest_path</code> and <code>csgraph.connected_components</code> offer high-performance implementations.</p>
-<section id="create-a-robust-test-network" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="create-a-robust-test-network">Create a robust test network</h3>
-<p>Let’s start by creating a network using the famous Zachary’s karate club, which provides an excellent testbed for robustness analysis:</p>
-<div id="0f31b4fa" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the famous Zachary's karate club network</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph.Famous(<span class="st">'Zachary'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the network</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>), vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(g.vcount())))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-2-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
+<div class="callout callout-style-default callout-note callout-titled" title="If the last cells fail in the browser">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>If the last cells fail in the browser
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The airport network is loaded over the network with <code>pd.read_csv</code> from a GitHub URL. The in-browser runtime sandboxes some network access, so if those cells error out, run the notebook locally instead.</p>
 </div>
 </div>
 
-<div class="no-row-height column-margin column-container"><div class="">
-<p><strong>About Zachary’s Karate Club</strong></p>
-<p><a href="https://en.wikipedia.org/wiki/Zachary%27s_karate_club">Zachary’s karate club</a> is a famous network of 34 members of a karate club documenting friendships between members. The network is undirected and originally unweighted, making it an excellent testbed for robustness analysis.</p>
-</div></div></section>
-<section id="connected-components" class="level3">
-<h3 class="anchored" data-anchor-id="connected-components">Connected Components</h3>
-<p>Before analyzing robustness, let’s understand how to measure network connectivity. In network analysis, we often need to identify connected components:</p>
-<div id="a41bda85" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of components:"</span>, <span class="bu">len</span>(components))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Component sizes:"</span>, <span class="bu">list</span>(components.sizes()))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Largest component size:"</span>, components.giant().vcount())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Number of components: 1
-Component sizes: [34]
-Largest component size: 34</code></pre>
-</div>
-</div>
-<p>The connectivity of a network is typically measured as the fraction of nodes in the largest connected component:</p>
-<div id="82d7273d" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> network_connectivity(graph, original_size<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Calculate network connectivity as fraction of nodes in largest component"""</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> original_size <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        original_size <span class="op">=</span> graph.vcount()</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> graph.vcount() <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.0</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    components <span class="op">=</span> graph.connected_components()</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(components.sizes()) <span class="op">/</span> original_size</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>connectivity <span class="op">=</span> network_connectivity(g)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Current connectivity: </span><span class="sc">{</span>connectivity<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Current connectivity: 1.000</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="network-robustness-analysis" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="network-robustness-analysis"><span class="header-section-number">2</span> Network Robustness Analysis</h2>
-<p>Now let’s explore how networks behave when nodes fail or are attacked systematically.</p>
-<p><a target="_blank" href="https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"> </a></p>
-<div id="4ea4e8aa" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install pycairo cairocffi</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install igraph</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="random-attack-simulation" class="level3">
-<h3 class="anchored" data-anchor-id="random-attack-simulation">Random Attack Simulation</h3>
-<p>Random attacks simulate random failures where nodes are removed with equal probability. Let’s implement a systematic approach:</p>
-<div id="c36a5faa" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_random_attack(graph):</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate random node removal and measure connectivity"""</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    g_test <span class="op">=</span> graph.copy()</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> g_test.vcount()</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(original_size <span class="op">-</span> <span class="dv">1</span>):  <span class="co"># Remove all but one node</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Randomly select and remove a node</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        node_idx <span class="op">=</span> np.random.choice(g_test.vs.indices)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        g_test.delete_vertices(node_idx)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Measure connectivity</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        connectivity <span class="op">=</span> network_connectivity(g_test, original_size)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store results</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        results.append({</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">"connectivity"</span>: connectivity,</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"frac_nodes_removed"</span>: (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> original_size,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the simulation</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>df_random <span class="op">=</span> simulate_random_attack(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Let’s visualize the robustness profile:</p>
-<div id="bc0e1293" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">'white'</span>, font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'ticks'</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>ax.plot(df_random[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        df_random[<span class="st">"connectivity"</span>],</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Random attack"</span>)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="targeted-attack-simulation" class="level3">
-<h3 class="anchored" data-anchor-id="targeted-attack-simulation">Targeted Attack Simulation</h3>
-<p>Targeted attacks remove nodes based on specific criteria, such as degree centrality. High-degree nodes (hubs) often play crucial roles in network connectivity:</p>
-<div id="b3bc6581" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_targeted_attack(graph, criterion<span class="op">=</span><span class="st">"degree"</span>):</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate targeted node removal based on specified criterion"""</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    g_test <span class="op">=</span> graph.copy()</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> g_test.vcount()</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(original_size <span class="op">-</span> <span class="dv">1</span>):</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remove node with highest degree</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> criterion <span class="op">==</span> <span class="st">"degree"</span>:</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            degrees <span class="op">=</span> g_test.degree()</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            node_idx <span class="op">=</span> g_test.vs.indices[np.argmax(degrees)]</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        g_test.delete_vertices(node_idx)</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Measure connectivity</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        connectivity <span class="op">=</span> network_connectivity(g_test, original_size)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store results</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        results.append({</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"connectivity"</span>: connectivity,</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">"frac_nodes_removed"</span>: (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> original_size,</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Run targeted attack simulation</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>df_targeted <span class="op">=</span> simulate_targeted_attack(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Now let’s compare both attack strategies:</p>
-<div id="3fba3415" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ax.plot(df_random[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        df_random[<span class="st">"connectivity"</span>],</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Random attack"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>ax.plot(df_targeted[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        df_targeted[<span class="st">"connectivity"</span>],</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'s-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Targeted attack"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The comparison reveals a key insight: while networks are often robust against random failures, they can be vulnerable to targeted attacks on high-degree nodes.</p>
-<section id="exercise-01" class="level5">
-<h5 class="anchored" data-anchor-id="exercise-01">Exercise 01 🏋️‍♀️💪🧠</h5>
-<ol type="1">
-<li><p>Examine the degree distribution of the Zachary network and identify the nodes with highest degrees. 📊🔍</p></li>
-<li><p>Create a visualization showing which nodes are removed first in the targeted attack. 🎯📈</p></li>
-<li><p>Try implementing a targeted attack based on betweenness centrality instead of degree. How does it compare? 🌐⚡</p></li>
-</ol>
-</section>
-</section>
-</section>
-<section id="minimum-spanning-tree-analysis" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="minimum-spanning-tree-analysis"><span class="header-section-number">3</span> Minimum Spanning Tree Analysis</h2>
-<p>Understanding network structure through minimum spanning trees can provide insights into network robustness. Let’s explore this concept:</p>
-<div id="21b1f24b" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a weighted version of our network for MST analysis</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>g_weighted <span class="op">=</span> g.copy()</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>g_weighted.es[<span class="st">"weight"</span>] <span class="op">=</span> [random.randint(<span class="dv">1</span>, <span class="dv">10</span>) <span class="cf">for</span> _ <span class="kw">in</span> g_weighted.es]</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize weighted network</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>igraph.plot(g_weighted, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>),</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>           edge_width<span class="op">=</span>[w<span class="op">/</span><span class="dv">3</span> <span class="cf">for</span> w <span class="kw">in</span> g_weighted.es[<span class="st">"weight"</span>]],</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>           vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(g_weighted.vcount())))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-10-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<section id="computing-the-minimum-spanning-tree" class="level3">
-<h3 class="anchored" data-anchor-id="computing-the-minimum-spanning-tree">Computing the Minimum Spanning Tree</h3>
-<p>The minimum spanning tree represents the most efficient way to connect all nodes:</p>
-<div id="bac01553" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find minimum spanning tree</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mst <span class="op">=</span> g_weighted.spanning_tree(weights<span class="op">=</span>g_weighted.es[<span class="st">"weight"</span>])</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the MST</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>igraph.plot(mst, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>),</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>           edge_width<span class="op">=</span>[w<span class="op">/</span><span class="dv">3</span> <span class="cf">for</span> w <span class="kw">in</span> mst.es[<span class="st">"weight"</span>]],</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>           vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(mst.vcount())))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-11-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The MST identifies the most critical connections for maintaining network connectivity, which relates directly to robustness analysis.</p>
-</section>
-</section>
-<section id="percolation-theory" class="level2 page-columns page-full" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="percolation-theory"><span class="header-section-number">4</span> Percolation Theory</h2>
-<p>Network robustness can be viewed as the inverse process of <strong>percolation</strong>. In percolation theory, we study how connectivity emerges as we randomly add nodes to a network.</p>
-<div id="be33a413" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">100</span>, p_values<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate percolation on a 2D lattice"""</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> p_values <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        p_values <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">20</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create 2D lattice</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    g_lattice <span class="op">=</span> igraph.Graph.Lattice([lattice_size, lattice_size],</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                    nei<span class="op">=</span><span class="dv">1</span>, directed<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                    mutual<span class="op">=</span><span class="va">False</span>, circular<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> p_values:</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Randomly keep nodes with probability p</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        keep_nodes <span class="op">=</span> np.where(np.random.rand(g_lattice.vcount()) <span class="op">&lt;</span> p)[<span class="dv">0</span>]</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(keep_nodes) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>            g_sub <span class="op">=</span> g_lattice.subgraph(keep_nodes)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>            largest_size <span class="op">=</span> network_connectivity(g_sub, g_lattice.vcount())</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>            largest_size <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>        results.append({<span class="st">"p"</span>: p, <span class="st">"largest_component_fraction"</span>: largest_size})</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Run percolation simulation</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>df_percolation <span class="op">=</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="c05a37da" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>ax.plot(df_percolation[<span class="st">"p"</span>],</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        df_percolation[<span class="st">"largest_component_fraction"</span>],</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark theoretical critical point for 2D lattice</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>critical_p <span class="op">=</span> <span class="fl">0.593</span>  <span class="co"># Theoretical value for 2D square lattice</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>critical_p, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>,</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'Critical point (p_c ≈ </span><span class="sc">{</span>critical_p<span class="sc">}</span><span class="ss">)'</span>)</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Probability (p)"</span>)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Fractional largest component size"</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Percolation on 2D Lattice"</span>)</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
 
-<div class="no-row-height column-margin column-container"><div class="">
-<p><strong>Phase Transition</strong></p>
-<p>The sharp transition around p_c demonstrates a <strong>phase transition</strong> - a sudden change from a disconnected to connected state as we cross the critical threshold.</p>
-</div></div><pre class="{note}"><code>
-Want to see this in action? 🌟 Check out this interactive simulation.
-Play around with it and watch how the puddles grow and connect. 🌊
-
-[Bernoulli Percolation Simulation 🌐](https://visualize-it.github.io/bernoulli_percolation/simulation.html) 🔗
-</code></pre>
-</section>
-<section id="exercise-02" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="exercise-02"><span class="header-section-number">5</span> Exercise 02 🏋️‍♀️</h2>
-<p>Let’s explore robustness in real-world networks by analyzing data from <a href="https://networks.skewed.de/">Netzschleuder</a>.</p>
-<ol type="1">
-<li>Select a network with fewer than 5000 nodes from Netzschleuder</li>
-<li>Download the CSV version and load it using <code>pandas</code></li>
-<li>Create the network using <code>igraph</code></li>
-<li>Compare random vs.&nbsp;targeted attack robustness profiles</li>
-<li>Calculate theoretical predictions using the Molloy-Reed criterion</li>
-</ol>
-<p><strong>Hint:</strong> For large networks, consider sampling node pairs to estimate average path length rather than computing all pairwise distances.</p>
-<div id="4df66729" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your implementation here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="real-world-case-study-airport-network" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="real-world-case-study-airport-network"><span class="header-section-number">6</span> Real-World Case Study: Airport Network</h2>
-<p>Let’s analyze a more complex real-world network to see robustness principles in action:</p>
-<div id="e7f61d7f" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load airport network data</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df_airports <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/skojaku/core-periphery-detection/master/data/edge-table-airport.csv"</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Process edge data</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> df_airports[[<span class="st">"source"</span>, <span class="st">"target"</span>]].to_numpy()</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> np.unique(edges.reshape(<span class="op">-</span><span class="dv">1</span>), return_inverse<span class="op">=</span><span class="va">True</span>)[<span class="dv">1</span>]</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> edges.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create network</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>g_airports <span class="op">=</span> igraph.Graph()</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>g_airports.add_vertices(np.<span class="bu">max</span>(edges) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>g_airports.add_edges([<span class="bu">tuple</span>(edge) <span class="cf">for</span> edge <span class="kw">in</span> edges])</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Airport network: </span><span class="sc">{</span>g_airports<span class="sc">.</span>vcount()<span class="sc">}</span><span class="ss"> nodes, </span><span class="sc">{</span>g_airports<span class="sc">.</span>ecount()<span class="sc">}</span><span class="ss"> edges"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Airport network: 2905 nodes, 30442 edges</code></pre>
-</div>
-</div>
-<section id="theoretical-prediction-using-molloy-reed-criterion" class="level3">
-<h3 class="anchored" data-anchor-id="theoretical-prediction-using-molloy-reed-criterion">Theoretical Prediction using Molloy-Reed Criterion</h3>
-<p>The Molloy-Reed criterion provides a theoretical framework for predicting network robustness:</p>
-<div id="c9cac041" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate degree statistics</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> np.array(g_airports.degree())</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>k_mean <span class="op">=</span> np.mean(degrees)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>k_squared_mean <span class="op">=</span> np.mean(degrees<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Molloy-Reed criterion: kappa_0 &gt; 2 for giant component</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>kappa_0 <span class="op">=</span> k_squared_mean <span class="op">/</span> k_mean</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"κ₀ = &lt;k²&gt;/&lt;k&gt; = </span><span class="sc">{</span>kappa_0<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Critical fraction for network breakdown</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>f_c <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="dv">1</span> <span class="op">/</span> (kappa_0 <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predicted critical fraction f_c = </span><span class="sc">{</span>f_c<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>κ₀ = &lt;k²&gt;/&lt;k&gt; = 110.937
-Predicted critical fraction f_c = 0.991</code></pre>
-</div>
-</div>
-<p>The high f_c value indicates the airport network is extremely robust to random failures, maintaining connectivity until almost all nodes are removed.</p>
-<div id="be46e83d" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate and visualize (using subset for efficiency)</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="bu">min</span>(<span class="dv">500</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">1</span>)  <span class="co"># Sample for computational efficiency</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sample_indices <span class="op">=</span> np.linspace(<span class="dv">0</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">2</span>, n_samples, dtype<span class="op">=</span><span class="bu">int</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>df_airport_robustness <span class="op">=</span> simulate_random_attack(g_airports)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>df_airport_sample <span class="op">=</span> df_airport_robustness.iloc[sample_indices]</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>ax.plot(df_airport_sample[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        df_airport_sample[<span class="st">"connectivity"</span>],</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">3</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add theoretical prediction</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>f_c, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>,</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'Theoretical f_c = </span><span class="sc">{</span>f_c<span class="sc">:.3f}</span><span class="ss">'</span>)</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Add diagonal reference line</span></span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">1</span>, <span class="dv">0</span>], <span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, label<span class="op">=</span><span class="st">'Linear decline'</span>)</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Airport Network Robustness"</span>)</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="key-design-principles-for-robust-networks" class="level3">
-<h3 class="anchored" data-anchor-id="key-design-principles-for-robust-networks">Key Design Principles for Robust Networks</h3>
-<p>Based on percolation theory and empirical analysis, robust networks share several characteristics:</p>
-<ol type="1">
-<li><strong>Degree heterogeneity</strong>: Networks with diverse degree distributions (high κ₀) maintain connectivity better</li>
-<li><strong>Distributed hubs</strong>: Resilience improves when connectivity doesn’t depend on single critical nodes</li>
-<li><strong>Redundant pathways</strong>: Multiple paths between node pairs provide backup routes when primary connections fail</li>
-</ol>
-<p>Understanding these principles helps in designing resilient infrastructure networks, from transportation systems to communication networks.</p>
-
-
-<!-- -->
-
-</section>
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1267,13 +816,14 @@ Predicted critical fraction f_c = 0.991</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1285,57 +835,6 @@ Predicted critical fraction f_c = 0.991</code></pre>
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1668,8 +1167,8 @@ Predicted critical fraction f_c = 0.991</code></pre>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m03-robustness/01-concepts.html" class="pagination-link" aria-label="Core Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Core Concepts</span>
+      <a href="../m03-robustness/01-concepts.html" class="pagination-link" aria-label="Build It Cheap, Then Watch It Break">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Build It Cheap, Then Watch It Break</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1677,438 +1176,7 @@ Predicted critical fraction f_c = 0.991</code></pre>
         <span class="nav-page-text">Exercises and Assignments</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb23" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Coding - Network Robustness Analysis"</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key robustness concepts in `igraph`</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>Network robustness analysis focuses on understanding how networks behave when nodes or edges are removed, whether through random failures or targeted attacks. The Python ecosystem provides powerful tools for analyzing these phenomena:</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">igraph</span><span class="co">](https://igraph.org/python/)</span> - comprehensive network analysis with robust algorithms for connectivity analysis</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">scipy.sparse.csgraph</span><span class="co">](https://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html)</span> - efficient connected component algorithms for large networks</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">networkx</span><span class="co">](https://networkx.org/)</span> - alternative approach with different robustness metrics</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>Throughout this analysis, we'll use <span class="in">`igraph`</span> for its reliable implementations and performance advantages when working with connectivity measures and component analysis.</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>**Installing igraph**</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pip (with plotting support)</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph cairocffi</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Using conda (recommended)</span></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge igraph cairocffi</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative plotting backend</span></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install igraph pycairo</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>Note: igraph requires compiled C libraries and plotting needs <span class="in">`cairocffi`</span> or <span class="in">`pycairo`</span>. Use conda for easier installation.</span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>For advanced users comfortable with <span class="in">`scipy`</span>, the <span class="in">`csgraph`</span> submodule provides an excellent alternative that leverages one of Python's most well-tested and optimized libraries. For example, <span class="in">`csgraph.shortest_path`</span> and <span class="in">`csgraph.connected_components`</span> offer high-performance implementations.</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a><span class="fu">### Create a robust test network</span></span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>Let's start by creating a network using the famous Zachary's karate club, which provides an excellent testbed for robustness analysis:</span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the famous Zachary's karate club network</span></span>
-<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph.Famous(<span class="st">'Zachary'</span>)</span>
-<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the network</span></span>
-<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>), vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(g.vcount())))</span>
-<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>**About Zachary's Karate Club**</span>
-<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Zachary's karate club</span><span class="co">](https://en.wikipedia.org/wiki/Zachary%27s_karate_club)</span> is a famous network of 34 members of a karate club documenting friendships between members. The network is undirected and originally unweighted, making it an excellent testbed for robustness analysis.</span>
-<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### Connected Components</span></span>
-<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>Before analyzing robustness, let's understand how to measure network connectivity. In network analysis, we often need to identify connected components:</span>
-<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-66"><a href="#cb23-66" aria-hidden="true" tabindex="-1"></a>components <span class="op">=</span> g.connected_components()</span>
-<span id="cb23-67"><a href="#cb23-67" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of components:"</span>, <span class="bu">len</span>(components))</span>
-<span id="cb23-68"><a href="#cb23-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Component sizes:"</span>, <span class="bu">list</span>(components.sizes()))</span>
-<span id="cb23-69"><a href="#cb23-69" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Largest component size:"</span>, components.giant().vcount())</span>
-<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-71"><a href="#cb23-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-72"><a href="#cb23-72" aria-hidden="true" tabindex="-1"></a>The connectivity of a network is typically measured as the fraction of nodes in the largest connected component:</span>
-<span id="cb23-73"><a href="#cb23-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-76"><a href="#cb23-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-79"><a href="#cb23-79" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> network_connectivity(graph, original_size<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb23-80"><a href="#cb23-80" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Calculate network connectivity as fraction of nodes in largest component"""</span></span>
-<span id="cb23-81"><a href="#cb23-81" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> original_size <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb23-82"><a href="#cb23-82" aria-hidden="true" tabindex="-1"></a>        original_size <span class="op">=</span> graph.vcount()</span>
-<span id="cb23-83"><a href="#cb23-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-84"><a href="#cb23-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> graph.vcount() <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb23-85"><a href="#cb23-85" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.0</span></span>
-<span id="cb23-86"><a href="#cb23-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-87"><a href="#cb23-87" aria-hidden="true" tabindex="-1"></a>    components <span class="op">=</span> graph.connected_components()</span>
-<span id="cb23-88"><a href="#cb23-88" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(components.sizes()) <span class="op">/</span> original_size</span>
-<span id="cb23-89"><a href="#cb23-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-90"><a href="#cb23-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb23-91"><a href="#cb23-91" aria-hidden="true" tabindex="-1"></a>connectivity <span class="op">=</span> network_connectivity(g)</span>
-<span id="cb23-92"><a href="#cb23-92" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Current connectivity: </span><span class="sc">{</span>connectivity<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb23-93"><a href="#cb23-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-94"><a href="#cb23-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-95"><a href="#cb23-95" aria-hidden="true" tabindex="-1"></a><span class="fu">## Network Robustness Analysis</span></span>
-<span id="cb23-96"><a href="#cb23-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-97"><a href="#cb23-97" aria-hidden="true" tabindex="-1"></a>Now let's explore how networks behave when nodes fail or are attacked systematically.</span>
-<span id="cb23-98"><a href="#cb23-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-99"><a href="#cb23-99" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> target</span><span class="op">=</span><span class="st">"_blank"</span><span class="ot"> href</span><span class="op">=</span><span class="st">"https://colab.research.google.com/github/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb"</span><span class="dt">&gt;</span></span>
-<span id="cb23-100"><a href="#cb23-100" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span><span class="ot"> src</span><span class="op">=</span><span class="st">"https://colab.research.google.com/assets/colab-badge.svg"</span><span class="ot"> alt</span><span class="op">=</span><span class="st">"Open In Colab"</span><span class="dt">/&gt;</span></span>
-<span id="cb23-101"><a href="#cb23-101" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span>
-<span id="cb23-102"><a href="#cb23-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-105"><a href="#cb23-105" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-106"><a href="#cb23-106" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are using Google Colab, uncomment the following line to install igraph</span></span>
-<span id="cb23-107"><a href="#cb23-107" aria-hidden="true" tabindex="-1"></a><span class="co"># !sudo apt install libcairo2-dev pkg-config python3-dev</span></span>
-<span id="cb23-108"><a href="#cb23-108" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install pycairo cairocffi</span></span>
-<span id="cb23-109"><a href="#cb23-109" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install igraph</span></span>
-<span id="cb23-110"><a href="#cb23-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-111"><a href="#cb23-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-112"><a href="#cb23-112" aria-hidden="true" tabindex="-1"></a><span class="fu">### Random Attack Simulation</span></span>
-<span id="cb23-113"><a href="#cb23-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-114"><a href="#cb23-114" aria-hidden="true" tabindex="-1"></a>Random attacks simulate random failures where nodes are removed with equal probability. Let's implement a systematic approach:</span>
-<span id="cb23-115"><a href="#cb23-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-118"><a href="#cb23-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-119"><a href="#cb23-119" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb23-120"><a href="#cb23-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-121"><a href="#cb23-121" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_random_attack(graph):</span>
-<span id="cb23-122"><a href="#cb23-122" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate random node removal and measure connectivity"""</span></span>
-<span id="cb23-123"><a href="#cb23-123" aria-hidden="true" tabindex="-1"></a>    g_test <span class="op">=</span> graph.copy()</span>
-<span id="cb23-124"><a href="#cb23-124" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> g_test.vcount()</span>
-<span id="cb23-125"><a href="#cb23-125" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb23-126"><a href="#cb23-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-127"><a href="#cb23-127" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(original_size <span class="op">-</span> <span class="dv">1</span>):  <span class="co"># Remove all but one node</span></span>
-<span id="cb23-128"><a href="#cb23-128" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Randomly select and remove a node</span></span>
-<span id="cb23-129"><a href="#cb23-129" aria-hidden="true" tabindex="-1"></a>        node_idx <span class="op">=</span> np.random.choice(g_test.vs.indices)</span>
-<span id="cb23-130"><a href="#cb23-130" aria-hidden="true" tabindex="-1"></a>        g_test.delete_vertices(node_idx)</span>
-<span id="cb23-131"><a href="#cb23-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-132"><a href="#cb23-132" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Measure connectivity</span></span>
-<span id="cb23-133"><a href="#cb23-133" aria-hidden="true" tabindex="-1"></a>        connectivity <span class="op">=</span> network_connectivity(g_test, original_size)</span>
-<span id="cb23-134"><a href="#cb23-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-135"><a href="#cb23-135" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store results</span></span>
-<span id="cb23-136"><a href="#cb23-136" aria-hidden="true" tabindex="-1"></a>        results.append({</span>
-<span id="cb23-137"><a href="#cb23-137" aria-hidden="true" tabindex="-1"></a>            <span class="st">"connectivity"</span>: connectivity,</span>
-<span id="cb23-138"><a href="#cb23-138" aria-hidden="true" tabindex="-1"></a>            <span class="st">"frac_nodes_removed"</span>: (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> original_size,</span>
-<span id="cb23-139"><a href="#cb23-139" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb23-140"><a href="#cb23-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-141"><a href="#cb23-141" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb23-142"><a href="#cb23-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-143"><a href="#cb23-143" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the simulation</span></span>
-<span id="cb23-144"><a href="#cb23-144" aria-hidden="true" tabindex="-1"></a>df_random <span class="op">=</span> simulate_random_attack(g)</span>
-<span id="cb23-145"><a href="#cb23-145" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-146"><a href="#cb23-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-147"><a href="#cb23-147" aria-hidden="true" tabindex="-1"></a>Let's visualize the robustness profile:</span>
-<span id="cb23-148"><a href="#cb23-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-151"><a href="#cb23-151" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-152"><a href="#cb23-152" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb23-153"><a href="#cb23-153" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb23-154"><a href="#cb23-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-155"><a href="#cb23-155" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">'white'</span>, font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb23-156"><a href="#cb23-156" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'ticks'</span>)</span>
-<span id="cb23-157"><a href="#cb23-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-158"><a href="#cb23-158" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb23-159"><a href="#cb23-159" aria-hidden="true" tabindex="-1"></a>ax.plot(df_random[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb23-160"><a href="#cb23-160" aria-hidden="true" tabindex="-1"></a>        df_random[<span class="st">"connectivity"</span>],</span>
-<span id="cb23-161"><a href="#cb23-161" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Random attack"</span>)</span>
-<span id="cb23-162"><a href="#cb23-162" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb23-163"><a href="#cb23-163" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb23-164"><a href="#cb23-164" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb23-165"><a href="#cb23-165" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb23-166"><a href="#cb23-166" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb23-167"><a href="#cb23-167" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb23-168"><a href="#cb23-168" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb23-169"><a href="#cb23-169" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-170"><a href="#cb23-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-171"><a href="#cb23-171" aria-hidden="true" tabindex="-1"></a><span class="fu">### Targeted Attack Simulation</span></span>
-<span id="cb23-172"><a href="#cb23-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-173"><a href="#cb23-173" aria-hidden="true" tabindex="-1"></a>Targeted attacks remove nodes based on specific criteria, such as degree centrality. High-degree nodes (hubs) often play crucial roles in network connectivity:</span>
-<span id="cb23-174"><a href="#cb23-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-177"><a href="#cb23-177" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-178"><a href="#cb23-178" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_targeted_attack(graph, criterion<span class="op">=</span><span class="st">"degree"</span>):</span>
-<span id="cb23-179"><a href="#cb23-179" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate targeted node removal based on specified criterion"""</span></span>
-<span id="cb23-180"><a href="#cb23-180" aria-hidden="true" tabindex="-1"></a>    g_test <span class="op">=</span> graph.copy()</span>
-<span id="cb23-181"><a href="#cb23-181" aria-hidden="true" tabindex="-1"></a>    original_size <span class="op">=</span> g_test.vcount()</span>
-<span id="cb23-182"><a href="#cb23-182" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb23-183"><a href="#cb23-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-184"><a href="#cb23-184" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(original_size <span class="op">-</span> <span class="dv">1</span>):</span>
-<span id="cb23-185"><a href="#cb23-185" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remove node with highest degree</span></span>
-<span id="cb23-186"><a href="#cb23-186" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> criterion <span class="op">==</span> <span class="st">"degree"</span>:</span>
-<span id="cb23-187"><a href="#cb23-187" aria-hidden="true" tabindex="-1"></a>            degrees <span class="op">=</span> g_test.degree()</span>
-<span id="cb23-188"><a href="#cb23-188" aria-hidden="true" tabindex="-1"></a>            node_idx <span class="op">=</span> g_test.vs.indices[np.argmax(degrees)]</span>
-<span id="cb23-189"><a href="#cb23-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-190"><a href="#cb23-190" aria-hidden="true" tabindex="-1"></a>        g_test.delete_vertices(node_idx)</span>
-<span id="cb23-191"><a href="#cb23-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-192"><a href="#cb23-192" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Measure connectivity</span></span>
-<span id="cb23-193"><a href="#cb23-193" aria-hidden="true" tabindex="-1"></a>        connectivity <span class="op">=</span> network_connectivity(g_test, original_size)</span>
-<span id="cb23-194"><a href="#cb23-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-195"><a href="#cb23-195" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store results</span></span>
-<span id="cb23-196"><a href="#cb23-196" aria-hidden="true" tabindex="-1"></a>        results.append({</span>
-<span id="cb23-197"><a href="#cb23-197" aria-hidden="true" tabindex="-1"></a>            <span class="st">"connectivity"</span>: connectivity,</span>
-<span id="cb23-198"><a href="#cb23-198" aria-hidden="true" tabindex="-1"></a>            <span class="st">"frac_nodes_removed"</span>: (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> original_size,</span>
-<span id="cb23-199"><a href="#cb23-199" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb23-200"><a href="#cb23-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-201"><a href="#cb23-201" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb23-202"><a href="#cb23-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-203"><a href="#cb23-203" aria-hidden="true" tabindex="-1"></a><span class="co"># Run targeted attack simulation</span></span>
-<span id="cb23-204"><a href="#cb23-204" aria-hidden="true" tabindex="-1"></a>df_targeted <span class="op">=</span> simulate_targeted_attack(g)</span>
-<span id="cb23-205"><a href="#cb23-205" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-206"><a href="#cb23-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-207"><a href="#cb23-207" aria-hidden="true" tabindex="-1"></a>Now let's compare both attack strategies:</span>
-<span id="cb23-208"><a href="#cb23-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-211"><a href="#cb23-211" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-212"><a href="#cb23-212" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
-<span id="cb23-213"><a href="#cb23-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-214"><a href="#cb23-214" aria-hidden="true" tabindex="-1"></a>ax.plot(df_random[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb23-215"><a href="#cb23-215" aria-hidden="true" tabindex="-1"></a>        df_random[<span class="st">"connectivity"</span>],</span>
-<span id="cb23-216"><a href="#cb23-216" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Random attack"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb23-217"><a href="#cb23-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-218"><a href="#cb23-218" aria-hidden="true" tabindex="-1"></a>ax.plot(df_targeted[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb23-219"><a href="#cb23-219" aria-hidden="true" tabindex="-1"></a>        df_targeted[<span class="st">"connectivity"</span>],</span>
-<span id="cb23-220"><a href="#cb23-220" aria-hidden="true" tabindex="-1"></a>        <span class="st">'s-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"Targeted attack"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb23-221"><a href="#cb23-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-222"><a href="#cb23-222" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb23-223"><a href="#cb23-223" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb23-224"><a href="#cb23-224" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb23-225"><a href="#cb23-225" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb23-226"><a href="#cb23-226" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb23-227"><a href="#cb23-227" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb23-228"><a href="#cb23-228" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb23-229"><a href="#cb23-229" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb23-230"><a href="#cb23-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-231"><a href="#cb23-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-232"><a href="#cb23-232" aria-hidden="true" tabindex="-1"></a>The comparison reveals a key insight: while networks are often robust against random failures, they can be vulnerable to targeted attacks on high-degree nodes.</span>
-<span id="cb23-233"><a href="#cb23-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-234"><a href="#cb23-234" aria-hidden="true" tabindex="-1"></a><span class="fu">##### Exercise 01 🏋️‍♀️💪🧠</span></span>
-<span id="cb23-235"><a href="#cb23-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-236"><a href="#cb23-236" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Examine the degree distribution of the Zachary network and identify the nodes with highest degrees. 📊🔍</span>
-<span id="cb23-237"><a href="#cb23-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-238"><a href="#cb23-238" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Create a visualization showing which nodes are removed first in the targeted attack. 🎯📈</span>
-<span id="cb23-239"><a href="#cb23-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-240"><a href="#cb23-240" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Try implementing a targeted attack based on betweenness centrality instead of degree. How does it compare? 🌐⚡</span>
-<span id="cb23-241"><a href="#cb23-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-244"><a href="#cb23-244" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-245"><a href="#cb23-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-246"><a href="#cb23-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-247"><a href="#cb23-247" aria-hidden="true" tabindex="-1"></a><span class="fu">## Minimum Spanning Tree Analysis</span></span>
-<span id="cb23-248"><a href="#cb23-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-249"><a href="#cb23-249" aria-hidden="true" tabindex="-1"></a>Understanding network structure through minimum spanning trees can provide insights into network robustness. Let's explore this concept:</span>
-<span id="cb23-250"><a href="#cb23-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-253"><a href="#cb23-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-254"><a href="#cb23-254" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
-<span id="cb23-255"><a href="#cb23-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-256"><a href="#cb23-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a weighted version of our network for MST analysis</span></span>
-<span id="cb23-257"><a href="#cb23-257" aria-hidden="true" tabindex="-1"></a>g_weighted <span class="op">=</span> g.copy()</span>
-<span id="cb23-258"><a href="#cb23-258" aria-hidden="true" tabindex="-1"></a>g_weighted.es[<span class="st">"weight"</span>] <span class="op">=</span> [random.randint(<span class="dv">1</span>, <span class="dv">10</span>) <span class="cf">for</span> _ <span class="kw">in</span> g_weighted.es]</span>
-<span id="cb23-259"><a href="#cb23-259" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-260"><a href="#cb23-260" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize weighted network</span></span>
-<span id="cb23-261"><a href="#cb23-261" aria-hidden="true" tabindex="-1"></a>igraph.plot(g_weighted, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>),</span>
-<span id="cb23-262"><a href="#cb23-262" aria-hidden="true" tabindex="-1"></a>           edge_width<span class="op">=</span>[w<span class="op">/</span><span class="dv">3</span> <span class="cf">for</span> w <span class="kw">in</span> g_weighted.es[<span class="st">"weight"</span>]],</span>
-<span id="cb23-263"><a href="#cb23-263" aria-hidden="true" tabindex="-1"></a>           vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(g_weighted.vcount())))</span>
-<span id="cb23-264"><a href="#cb23-264" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-265"><a href="#cb23-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-266"><a href="#cb23-266" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing the Minimum Spanning Tree</span></span>
-<span id="cb23-267"><a href="#cb23-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-268"><a href="#cb23-268" aria-hidden="true" tabindex="-1"></a>The minimum spanning tree represents the most efficient way to connect all nodes:</span>
-<span id="cb23-269"><a href="#cb23-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-272"><a href="#cb23-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-273"><a href="#cb23-273" aria-hidden="true" tabindex="-1"></a><span class="co"># Find minimum spanning tree</span></span>
-<span id="cb23-274"><a href="#cb23-274" aria-hidden="true" tabindex="-1"></a>mst <span class="op">=</span> g_weighted.spanning_tree(weights<span class="op">=</span>g_weighted.es[<span class="st">"weight"</span>])</span>
-<span id="cb23-275"><a href="#cb23-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-276"><a href="#cb23-276" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the MST</span></span>
-<span id="cb23-277"><a href="#cb23-277" aria-hidden="true" tabindex="-1"></a>igraph.plot(mst, bbox<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">200</span>),</span>
-<span id="cb23-278"><a href="#cb23-278" aria-hidden="true" tabindex="-1"></a>           edge_width<span class="op">=</span>[w<span class="op">/</span><span class="dv">3</span> <span class="cf">for</span> w <span class="kw">in</span> mst.es[<span class="st">"weight"</span>]],</span>
-<span id="cb23-279"><a href="#cb23-279" aria-hidden="true" tabindex="-1"></a>           vertex_label<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(mst.vcount())))</span>
-<span id="cb23-280"><a href="#cb23-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-281"><a href="#cb23-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-282"><a href="#cb23-282" aria-hidden="true" tabindex="-1"></a>The MST identifies the most critical connections for maintaining network connectivity, which relates directly to robustness analysis.</span>
-<span id="cb23-283"><a href="#cb23-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-284"><a href="#cb23-284" aria-hidden="true" tabindex="-1"></a><span class="fu">## Percolation Theory</span></span>
-<span id="cb23-285"><a href="#cb23-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-286"><a href="#cb23-286" aria-hidden="true" tabindex="-1"></a>Network robustness can be viewed as the inverse process of **percolation**. In percolation theory, we study how connectivity emerges as we randomly add nodes to a network.</span>
-<span id="cb23-287"><a href="#cb23-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-290"><a href="#cb23-290" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-291"><a href="#cb23-291" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">100</span>, p_values<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb23-292"><a href="#cb23-292" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate percolation on a 2D lattice"""</span></span>
-<span id="cb23-293"><a href="#cb23-293" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> p_values <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb23-294"><a href="#cb23-294" aria-hidden="true" tabindex="-1"></a>        p_values <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">20</span>)</span>
-<span id="cb23-295"><a href="#cb23-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-296"><a href="#cb23-296" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create 2D lattice</span></span>
-<span id="cb23-297"><a href="#cb23-297" aria-hidden="true" tabindex="-1"></a>    g_lattice <span class="op">=</span> igraph.Graph.Lattice([lattice_size, lattice_size],</span>
-<span id="cb23-298"><a href="#cb23-298" aria-hidden="true" tabindex="-1"></a>                                    nei<span class="op">=</span><span class="dv">1</span>, directed<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb23-299"><a href="#cb23-299" aria-hidden="true" tabindex="-1"></a>                                    mutual<span class="op">=</span><span class="va">False</span>, circular<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb23-300"><a href="#cb23-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-301"><a href="#cb23-301" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
-<span id="cb23-302"><a href="#cb23-302" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> p_values:</span>
-<span id="cb23-303"><a href="#cb23-303" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Randomly keep nodes with probability p</span></span>
-<span id="cb23-304"><a href="#cb23-304" aria-hidden="true" tabindex="-1"></a>        keep_nodes <span class="op">=</span> np.where(np.random.rand(g_lattice.vcount()) <span class="op">&lt;</span> p)[<span class="dv">0</span>]</span>
-<span id="cb23-305"><a href="#cb23-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-306"><a href="#cb23-306" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(keep_nodes) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb23-307"><a href="#cb23-307" aria-hidden="true" tabindex="-1"></a>            g_sub <span class="op">=</span> g_lattice.subgraph(keep_nodes)</span>
-<span id="cb23-308"><a href="#cb23-308" aria-hidden="true" tabindex="-1"></a>            largest_size <span class="op">=</span> network_connectivity(g_sub, g_lattice.vcount())</span>
-<span id="cb23-309"><a href="#cb23-309" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb23-310"><a href="#cb23-310" aria-hidden="true" tabindex="-1"></a>            largest_size <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb23-311"><a href="#cb23-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-312"><a href="#cb23-312" aria-hidden="true" tabindex="-1"></a>        results.append({<span class="st">"p"</span>: p, <span class="st">"largest_component_fraction"</span>: largest_size})</span>
-<span id="cb23-313"><a href="#cb23-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-314"><a href="#cb23-314" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
-<span id="cb23-315"><a href="#cb23-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-316"><a href="#cb23-316" aria-hidden="true" tabindex="-1"></a><span class="co"># Run percolation simulation</span></span>
-<span id="cb23-317"><a href="#cb23-317" aria-hidden="true" tabindex="-1"></a>df_percolation <span class="op">=</span> percolation_simulation(lattice_size<span class="op">=</span><span class="dv">50</span>)</span>
-<span id="cb23-318"><a href="#cb23-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-319"><a href="#cb23-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-322"><a href="#cb23-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-323"><a href="#cb23-323" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb23-324"><a href="#cb23-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-325"><a href="#cb23-325" aria-hidden="true" tabindex="-1"></a>ax.plot(df_percolation[<span class="st">"p"</span>],</span>
-<span id="cb23-326"><a href="#cb23-326" aria-hidden="true" tabindex="-1"></a>        df_percolation[<span class="st">"largest_component_fraction"</span>],</span>
-<span id="cb23-327"><a href="#cb23-327" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb23-328"><a href="#cb23-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-329"><a href="#cb23-329" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark theoretical critical point for 2D lattice</span></span>
-<span id="cb23-330"><a href="#cb23-330" aria-hidden="true" tabindex="-1"></a>critical_p <span class="op">=</span> <span class="fl">0.593</span>  <span class="co"># Theoretical value for 2D square lattice</span></span>
-<span id="cb23-331"><a href="#cb23-331" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>critical_p, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>,</span>
-<span id="cb23-332"><a href="#cb23-332" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'Critical point (p_c ≈ </span><span class="sc">{</span>critical_p<span class="sc">}</span><span class="ss">)'</span>)</span>
-<span id="cb23-333"><a href="#cb23-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-334"><a href="#cb23-334" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Probability (p)"</span>)</span>
-<span id="cb23-335"><a href="#cb23-335" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Fractional largest component size"</span>)</span>
-<span id="cb23-336"><a href="#cb23-336" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Percolation on 2D Lattice"</span>)</span>
-<span id="cb23-337"><a href="#cb23-337" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb23-338"><a href="#cb23-338" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb23-339"><a href="#cb23-339" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb23-340"><a href="#cb23-340" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb23-341"><a href="#cb23-341" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-342"><a href="#cb23-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-343"><a href="#cb23-343" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb23-344"><a href="#cb23-344" aria-hidden="true" tabindex="-1"></a>**Phase Transition**</span>
-<span id="cb23-345"><a href="#cb23-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-346"><a href="#cb23-346" aria-hidden="true" tabindex="-1"></a>The sharp transition around p_c demonstrates a **phase transition** - a sudden change from a disconnected to connected state as we cross the critical threshold.</span>
-<span id="cb23-347"><a href="#cb23-347" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb23-348"><a href="#cb23-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-351"><a href="#cb23-351" aria-hidden="true" tabindex="-1"></a><span class="in">```{note}</span></span>
-<span id="cb23-352"><a href="#cb23-352" aria-hidden="true" tabindex="-1"></a><span class="in">Want to see this in action? 🌟 Check out this interactive simulation.</span></span>
-<span id="cb23-353"><a href="#cb23-353" aria-hidden="true" tabindex="-1"></a><span class="in">Play around with it and watch how the puddles grow and connect. 🌊</span></span>
-<span id="cb23-354"><a href="#cb23-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-355"><a href="#cb23-355" aria-hidden="true" tabindex="-1"></a><span class="in">[Bernoulli Percolation Simulation 🌐](https://visualize-it.github.io/bernoulli_percolation/simulation.html) 🔗</span></span>
-<span id="cb23-356"><a href="#cb23-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-357"><a href="#cb23-357" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-358"><a href="#cb23-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-359"><a href="#cb23-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-360"><a href="#cb23-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-361"><a href="#cb23-361" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercise 02 🏋️‍♀️</span></span>
-<span id="cb23-362"><a href="#cb23-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-363"><a href="#cb23-363" aria-hidden="true" tabindex="-1"></a>Let's explore robustness in real-world networks by analyzing data from <span class="co">[</span><span class="ot">Netzschleuder</span><span class="co">](https://networks.skewed.de/)</span>.</span>
-<span id="cb23-364"><a href="#cb23-364" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-365"><a href="#cb23-365" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Select a network with fewer than 5000 nodes from Netzschleuder</span>
-<span id="cb23-366"><a href="#cb23-366" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Download the CSV version and load it using <span class="in">`pandas`</span></span>
-<span id="cb23-367"><a href="#cb23-367" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Create the network using <span class="in">`igraph`</span></span>
-<span id="cb23-368"><a href="#cb23-368" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Compare random vs. targeted attack robustness profiles</span>
-<span id="cb23-369"><a href="#cb23-369" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Calculate theoretical predictions using the Molloy-Reed criterion</span>
-<span id="cb23-370"><a href="#cb23-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-371"><a href="#cb23-371" aria-hidden="true" tabindex="-1"></a>**Hint:** For large networks, consider sampling node pairs to estimate average path length rather than computing all pairwise distances.</span>
-<span id="cb23-372"><a href="#cb23-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-375"><a href="#cb23-375" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-376"><a href="#cb23-376" aria-hidden="true" tabindex="-1"></a><span class="co"># Your implementation here</span></span>
-<span id="cb23-377"><a href="#cb23-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-378"><a href="#cb23-378" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-379"><a href="#cb23-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-380"><a href="#cb23-380" aria-hidden="true" tabindex="-1"></a><span class="fu">## Real-World Case Study: Airport Network</span></span>
-<span id="cb23-381"><a href="#cb23-381" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-382"><a href="#cb23-382" aria-hidden="true" tabindex="-1"></a>Let's analyze a more complex real-world network to see robustness principles in action:</span>
-<span id="cb23-383"><a href="#cb23-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-386"><a href="#cb23-386" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-387"><a href="#cb23-387" aria-hidden="true" tabindex="-1"></a><span class="co"># Load airport network data</span></span>
-<span id="cb23-388"><a href="#cb23-388" aria-hidden="true" tabindex="-1"></a>df_airports <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/skojaku/core-periphery-detection/master/data/edge-table-airport.csv"</span>)</span>
-<span id="cb23-389"><a href="#cb23-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-390"><a href="#cb23-390" aria-hidden="true" tabindex="-1"></a><span class="co"># Process edge data</span></span>
-<span id="cb23-391"><a href="#cb23-391" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> df_airports[[<span class="st">"source"</span>, <span class="st">"target"</span>]].to_numpy()</span>
-<span id="cb23-392"><a href="#cb23-392" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> np.unique(edges.reshape(<span class="op">-</span><span class="dv">1</span>), return_inverse<span class="op">=</span><span class="va">True</span>)[<span class="dv">1</span>]</span>
-<span id="cb23-393"><a href="#cb23-393" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> edges.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb23-394"><a href="#cb23-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-395"><a href="#cb23-395" aria-hidden="true" tabindex="-1"></a><span class="co"># Create network</span></span>
-<span id="cb23-396"><a href="#cb23-396" aria-hidden="true" tabindex="-1"></a>g_airports <span class="op">=</span> igraph.Graph()</span>
-<span id="cb23-397"><a href="#cb23-397" aria-hidden="true" tabindex="-1"></a>g_airports.add_vertices(np.<span class="bu">max</span>(edges) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb23-398"><a href="#cb23-398" aria-hidden="true" tabindex="-1"></a>g_airports.add_edges([<span class="bu">tuple</span>(edge) <span class="cf">for</span> edge <span class="kw">in</span> edges])</span>
-<span id="cb23-399"><a href="#cb23-399" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-400"><a href="#cb23-400" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Airport network: </span><span class="sc">{</span>g_airports<span class="sc">.</span>vcount()<span class="sc">}</span><span class="ss"> nodes, </span><span class="sc">{</span>g_airports<span class="sc">.</span>ecount()<span class="sc">}</span><span class="ss"> edges"</span>)</span>
-<span id="cb23-401"><a href="#cb23-401" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-402"><a href="#cb23-402" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-403"><a href="#cb23-403" aria-hidden="true" tabindex="-1"></a><span class="fu">### Theoretical Prediction using Molloy-Reed Criterion</span></span>
-<span id="cb23-404"><a href="#cb23-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-405"><a href="#cb23-405" aria-hidden="true" tabindex="-1"></a>The Molloy-Reed criterion provides a theoretical framework for predicting network robustness:</span>
-<span id="cb23-406"><a href="#cb23-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-409"><a href="#cb23-409" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-410"><a href="#cb23-410" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate degree statistics</span></span>
-<span id="cb23-411"><a href="#cb23-411" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> np.array(g_airports.degree())</span>
-<span id="cb23-412"><a href="#cb23-412" aria-hidden="true" tabindex="-1"></a>k_mean <span class="op">=</span> np.mean(degrees)</span>
-<span id="cb23-413"><a href="#cb23-413" aria-hidden="true" tabindex="-1"></a>k_squared_mean <span class="op">=</span> np.mean(degrees<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb23-414"><a href="#cb23-414" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-415"><a href="#cb23-415" aria-hidden="true" tabindex="-1"></a><span class="co"># Molloy-Reed criterion: kappa_0 &gt; 2 for giant component</span></span>
-<span id="cb23-416"><a href="#cb23-416" aria-hidden="true" tabindex="-1"></a>kappa_0 <span class="op">=</span> k_squared_mean <span class="op">/</span> k_mean</span>
-<span id="cb23-417"><a href="#cb23-417" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"κ₀ = &lt;k²&gt;/&lt;k&gt; = </span><span class="sc">{</span>kappa_0<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb23-418"><a href="#cb23-418" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-419"><a href="#cb23-419" aria-hidden="true" tabindex="-1"></a><span class="co"># Critical fraction for network breakdown</span></span>
-<span id="cb23-420"><a href="#cb23-420" aria-hidden="true" tabindex="-1"></a>f_c <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="dv">1</span> <span class="op">/</span> (kappa_0 <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="cb23-421"><a href="#cb23-421" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predicted critical fraction f_c = </span><span class="sc">{</span>f_c<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb23-422"><a href="#cb23-422" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-423"><a href="#cb23-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-424"><a href="#cb23-424" aria-hidden="true" tabindex="-1"></a>The high f_c value indicates the airport network is extremely robust to random failures, maintaining connectivity until almost all nodes are removed.</span>
-<span id="cb23-425"><a href="#cb23-425" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-428"><a href="#cb23-428" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb23-429"><a href="#cb23-429" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate and visualize (using subset for efficiency)</span></span>
-<span id="cb23-430"><a href="#cb23-430" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="bu">min</span>(<span class="dv">500</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">1</span>)  <span class="co"># Sample for computational efficiency</span></span>
-<span id="cb23-431"><a href="#cb23-431" aria-hidden="true" tabindex="-1"></a>sample_indices <span class="op">=</span> np.linspace(<span class="dv">0</span>, g_airports.vcount() <span class="op">-</span> <span class="dv">2</span>, n_samples, dtype<span class="op">=</span><span class="bu">int</span>)</span>
-<span id="cb23-432"><a href="#cb23-432" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-433"><a href="#cb23-433" aria-hidden="true" tabindex="-1"></a>df_airport_robustness <span class="op">=</span> simulate_random_attack(g_airports)</span>
-<span id="cb23-434"><a href="#cb23-434" aria-hidden="true" tabindex="-1"></a>df_airport_sample <span class="op">=</span> df_airport_robustness.iloc[sample_indices]</span>
-<span id="cb23-435"><a href="#cb23-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-436"><a href="#cb23-436" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
-<span id="cb23-437"><a href="#cb23-437" aria-hidden="true" tabindex="-1"></a>ax.plot(df_airport_sample[<span class="st">"frac_nodes_removed"</span>],</span>
-<span id="cb23-438"><a href="#cb23-438" aria-hidden="true" tabindex="-1"></a>        df_airport_sample[<span class="st">"connectivity"</span>],</span>
-<span id="cb23-439"><a href="#cb23-439" aria-hidden="true" tabindex="-1"></a>        <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">3</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb23-440"><a href="#cb23-440" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-441"><a href="#cb23-441" aria-hidden="true" tabindex="-1"></a><span class="co"># Add theoretical prediction</span></span>
-<span id="cb23-442"><a href="#cb23-442" aria-hidden="true" tabindex="-1"></a>ax.axvline(x<span class="op">=</span>f_c, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>,</span>
-<span id="cb23-443"><a href="#cb23-443" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'Theoretical f_c = </span><span class="sc">{</span>f_c<span class="sc">:.3f}</span><span class="ss">'</span>)</span>
-<span id="cb23-444"><a href="#cb23-444" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-445"><a href="#cb23-445" aria-hidden="true" tabindex="-1"></a><span class="co"># Add diagonal reference line</span></span>
-<span id="cb23-446"><a href="#cb23-446" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">1</span>, <span class="dv">0</span>], <span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, label<span class="op">=</span><span class="st">'Linear decline'</span>)</span>
-<span id="cb23-447"><a href="#cb23-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-448"><a href="#cb23-448" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Proportion of nodes removed"</span>)</span>
-<span id="cb23-449"><a href="#cb23-449" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Connectivity"</span>)</span>
-<span id="cb23-450"><a href="#cb23-450" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Airport Network Robustness"</span>)</span>
-<span id="cb23-451"><a href="#cb23-451" aria-hidden="true" tabindex="-1"></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb23-452"><a href="#cb23-452" aria-hidden="true" tabindex="-1"></a>sns.despine()</span>
-<span id="cb23-453"><a href="#cb23-453" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb23-454"><a href="#cb23-454" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb23-455"><a href="#cb23-455" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb23-456"><a href="#cb23-456" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-457"><a href="#cb23-457" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Design Principles for Robust Networks</span></span>
-<span id="cb23-458"><a href="#cb23-458" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-459"><a href="#cb23-459" aria-hidden="true" tabindex="-1"></a>Based on percolation theory and empirical analysis, robust networks share several characteristics:</span>
-<span id="cb23-460"><a href="#cb23-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-461"><a href="#cb23-461" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Degree heterogeneity**: Networks with diverse degree distributions (high κ₀) maintain connectivity better</span>
-<span id="cb23-462"><a href="#cb23-462" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Distributed hubs**: Resilience improves when connectivity doesn't depend on single critical nodes</span>
-<span id="cb23-463"><a href="#cb23-463" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Redundant pathways**: Multiple paths between node pairs provide backup routes when primary connections fail</span>
-<span id="cb23-464"><a href="#cb23-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-465"><a href="#cb23-465" aria-hidden="true" tabindex="-1"></a>Understanding these principles helps in designing resilient infrastructure networks, from transportation systems to communication networks.</span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -2117,7 +1185,7 @@ Predicted critical fraction f_c = 0.991</code></pre>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m03-robustness/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m03-robustness/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

@@ -2,19 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-09-29">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Coding - Random Walks – Advanced Topics in Network Science</title>
+<title>Hands-on: Walking Randomly, on Purpose – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -22,45 +28,10 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -75,10 +46,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -103,11 +74,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-
-  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script defer="" src="../assets/katex/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -122,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    });
 }}});
   </script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +103,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -151,10 +119,10 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../assets/custom.css">
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -162,7 +130,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -175,7 +144,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -185,192 +154,78 @@ window.Quarto = {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -390,12 +245,9 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Coding - Random Walks</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Hands-on: Walking Randomly, on Purpose</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -403,13 +255,14 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -422,7 +275,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -433,26 +286,32 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -469,7 +328,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -477,7 +336,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -491,20 +350,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -521,13 +386,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -539,7 +404,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -556,13 +421,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -574,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -591,19 +456,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -620,19 +491,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -649,19 +526,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -678,19 +561,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -707,25 +596,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -742,31 +631,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -776,13 +665,22 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-you-will-build" id="toc-what-you-will-build" class="nav-link active" data-scroll-target="#what-you-will-build">What you will build</a></li>
+  <li><a href="#what-to-watch-for" id="toc-what-to-watch-for" class="nav-link" data-scroll-target="#what-to-watch-for">What to watch for</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Coding - Random Walks</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/02-coding.html">Hands-on: Walking Randomly, on Purpose</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Coding - Random Walks</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">Hands-on: Walking Randomly, on Purpose</h1>
 </div>
 
 
@@ -799,7 +697,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 29, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -811,853 +709,50 @@ window.Quarto = {
 </header>
 
 
-<section id="random-walks-implementation-and-applications" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Random Walks: Implementation and Applications</h1>
-<section id="introduction-from-theory-to-practice" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="introduction-from-theory-to-practice"><span class="header-section-number">1.1</span> Introduction: From Theory to Practice</h2>
-<p>In the previous section, we learned the theoretical foundations of random walks. Now we’ll implement these concepts in Python and explore their practical applications for network analysis.</p>
-<p>Recall that a random walk is a process where we: 1. Start at a node <span class="math inline">i</span> 2. Randomly choose an edge to traverse to a neighbor node <span class="math inline">j</span> 3. Repeat until we’ve taken <span class="math inline">T</span> steps</p>
-<p>Let’s see how this simple process can reveal deep insights about network structure.</p>
+<p>The theory says a blind walker settles onto the degree sequence, and that a bottleneck makes it take much longer to get there. Here you watch both happen.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Where the code lives
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This course keeps its lecture note free of runnable code. Everything you execute lives in a marimo notebook, so it stays interactive and reactive instead of being a wall of output frozen into a web page.</p>
+<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m07-randomwalks/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first load takes a few seconds while Python itself is downloaded.</p>
+<p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m07-randomwalks/coding.py"><code>notebooks/m07-randomwalks/coding.py</code></a>. Run it with <code>marimo edit notebooks/m07-randomwalks/coding.py</code>.</p>
+</div>
+</div>
+<section id="what-you-will-build" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-will-build">What you will build</h2>
+<ol type="1">
+<li>Build the transition matrix <span class="math inline">\mathbf{P} = \mathbf{D}^{-1}\mathbf{A}</span> from an adjacency matrix, and check that every row sums to 1.</li>
+<li>Push a distribution forward one step at a time with <code>x = x @ P</code>, and confirm it against <span class="math inline">\mathbf{P}^t</span> computed directly.</li>
+<li>Plot how far <span class="math inline">x(t)</span> is from converged, step by step, on a network with two clear communities.</li>
+<li>Compare the converged distribution against the theoretical <span class="math inline">\pi_i = k_i / 2m</span>.</li>
+<li>Draw the walker’s distribution on the network at <span class="math inline">t = 0, 1, 3, 5, 10, 299</span> and watch it leak out of its starting community.</li>
+<li>Take the eigenvalues of the normalized adjacency matrix <span class="math inline">\overline{\mathbf{A}}</span>, read off <span class="math inline">\lambda_2</span>, and turn it into a relaxation time <span class="math inline">\tau = 1/(1-\lambda_2)</span>.</li>
+<li>Reconstruct <span class="math inline">x(t)</span> from the spectral decomposition <span class="math inline">x(0)\mathbf{Q}_L \mathbf{\Lambda}^t \mathbf{Q}_R^\top</span> and check it against plain power iteration — the <a href="../m07-random-walks/04-appendix.html">appendix</a> explains what those matrices are.</li>
+</ol>
 </section>
-<section id="implementing-random-walks-in-python" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="implementing-random-walks-in-python"><span class="header-section-number">1.2</span> Implementing Random Walks in Python</h2>
-<section id="setting-up-simple-graph" class="level3">
-<h3 class="anchored" data-anchor-id="setting-up-simple-graph">Setting Up: Simple Graph</h3>
-<p>We’ll start by implementing random walks on a simple graph of five nodes.</p>
-<div id="bdfa076a" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>g.add_vertices([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>])</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>g.add_edges([(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">4</span>)])</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>g.vs[<span class="st">"name"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-2-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="computing-transition-probabilities" class="level3">
-<h3 class="anchored" data-anchor-id="computing-transition-probabilities">Computing Transition Probabilities</h3>
-<p>A random walk is characterized by the transition probabilities between nodes:</p>
-<p><span class="math display">P_{ij} = \frac{A_{ij}}{k_i}</span></p>
-<p>Let’s compute and visualize the transition probability matrix <span class="math inline">\mathbf{P}</span>:</p>
-<div id="b6e7e023" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># A simple but inefficient way to compute P</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.zeros((n_nodes, n_nodes))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> k[i] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            P[i, j] <span class="op">=</span> A[i, j] <span class="op">/</span> k[i]</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            P[i, j] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative, more efficient way to compute P</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># or even more efficiently</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="6f3f957a" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Transition probability matrix:
- [[0.         0.33333333 0.33333333 0.33333333 0.        ]
- [0.5        0.         0.         0.5        0.        ]
- [0.33333333 0.         0.         0.33333333 0.33333333]
- [0.25       0.25       0.25       0.         0.25      ]
- [0.         0.         0.5        0.5        0.        ]]</code></pre>
-</div>
-</div>
-<div id="17814821" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Each row and column of <span class="math inline">\mathbf{P}</span> corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</p>
-</section>
-<section id="simulating-random-walk-steps" class="level3">
-<h3 class="anchored" data-anchor-id="simulating-random-walk-steps">Simulating Random Walk Steps</h3>
-<p>Now let’s simulate a random walk step by step. We represent the position of the walker using a vector <span class="math inline">\mathbf{x}</span> with five elements, where we mark the current node with <code>1</code> and others as <code>0</code>:</p>
-<div id="37fa1647" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial position of the walker:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Initial position of the walker:
- [1 0 0 0 0]</code></pre>
-</div>
-</div>
-<p>This vector representation lets us compute transition probabilities to other nodes:</p>
-<p><span class="math display">\mathbf{x} \mathbf{P}</span></p>
-<div id="bed6a4aa" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probabilities from current position:</span><span class="ch">\n</span><span class="st">"</span>, probs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Transition probabilities from current position:
- [0.         0.33333333 0.33333333 0.33333333 0.        ]</code></pre>
-</div>
-</div>
-<p>We can then draw the next node based on these probabilities:</p>
-<div id="746efcc1" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>x[:] <span class="op">=</span> <span class="dv">0</span> <span class="co"># zero out the vector</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>x[next_node] <span class="op">=</span> <span class="dv">1</span> <span class="co"># set the next node to 1</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Position after one step:</span><span class="ch">\n</span><span class="st">"</span>, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Position after one step:
- [0 1 0 0 0]</code></pre>
-</div>
-</div>
-</section>
-<section id="exercise-01" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-01">Exercise 01</h3>
-<p>Write the following function to simulate the random walk for a given number of steps and return the <span class="math inline">x</span> for each step:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">        n_steps (int): The number of steps to simulate.</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The position of the walker after each step.</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    n_nodes <span class="op">=</span> A.shape[<span class="dv">0</span>]</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize position</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.zeros(n_nodes)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Start at node 0</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> [x.copy()]</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(n_steps):</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>        probs <span class="op">=</span> x <span class="op">@</span> P</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        next_node <span class="op">=</span> ... <span class="co"># fill in the missing code</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        x[:] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        x[next_node] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        positions.append(x.copy())</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(positions)</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>walk_positions <span class="op">=</span> random_walk(A, <span class="dv">10</span>)</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Walker positions over 10 steps:"</span>)</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(walk_positions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="expected-behavior-of-random-walks" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="expected-behavior-of-random-walks"><span class="header-section-number">1.3</span> Expected Behavior of Random Walks</h2>
-<section id="computing-expected-positions" class="level3">
-<h3 class="anchored" data-anchor-id="computing-expected-positions">Computing Expected Positions</h3>
-<p>What is the expected position of the walker after multiple steps? For the first step from initial position <span class="math inline">\mathbf{x}(0)</span>:</p>
-<p><span class="math display">\mathbb{E}[\mathbf{x}(1)] = \mathbf{x}(0) \mathbf{P}</span></p>
-<div id="ac2c5f13" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>x_1 <span class="op">=</span> x_0 <span class="op">@</span> P</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after one step:</span><span class="ch">\n</span><span class="st">"</span>, x_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Expected position after one step:
- [0.         0.33333333 0.33333333 0.33333333 0.        ]</code></pre>
-</div>
-</div>
-<p>For the second step:</p>
-<p><span class="math display">\mathbb{E}[\mathbf{x}(2)] = \mathbf{x}(0) \mathbf{P}^2</span></p>
-<div id="9ff32402" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after two steps:</span><span class="ch">\n</span><span class="st">"</span>, x_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Expected position after two steps:
- [0.36111111 0.08333333 0.08333333 0.27777778 0.19444444]</code></pre>
-</div>
-</div>
-<p>In general, the expected position at time <span class="math inline">t</span> is:</p>
-<p><span class="math display">\mathbb{E}[\mathbf{x}(t)] = \mathbf{x}(0) \mathbf{P}^t</span></p>
-</section>
-<section id="exercise-02" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-02">Exercise 02</h3>
-<p>Write a function to compute the expected position of the walker at time <span class="math inline">t</span>:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">        x_0 (np.ndarray): The initial position of the walker.</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">        t (int): The number of steps to simulate.</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The expected position at time t.</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute P^t</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    P_t <span class="op">=</span> ... <span class="co"># fill in the missing code</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x_0 <span class="op">@</span> P_t</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>]:</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> expected_position(A, x_0, t)</span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Expected position at time </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>x_t<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="exercise-03" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-03">Exercise 03</h3>
-<p>Plot each element of <span class="math inline">\mathbf{x}(t)</span> as a function of <span class="math inline">t</span> for <span class="math inline">t=0,1,2,\ldots, 100</span>. Try different initial positions and compare the results!</p>
-<div id="791f6e94" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_convergence(A, x_0, max_t<span class="op">=</span><span class="dv">100</span>):</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Plot the convergence to stationary distribution."""</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    n_nodes <span class="op">=</span> A.shape[<span class="dv">0</span>]</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute expected positions over time</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> []</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> x_0.copy()</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    positions.append(x_t.copy())</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(max_t):</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        x_t <span class="op">=</span> x_t <span class="op">@</span> P</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>        positions.append(x_t.copy())</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> np.array(positions)</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot</span></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>        ax.plot(<span class="bu">range</span>(max_t <span class="op">+</span> <span class="dv">1</span>), positions[:, i], label<span class="op">=</span><span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"Probability"</span>)</span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="st">"Random Walk Convergence to Stationary Distribution"</span>)</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    ax.legend()</span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Test with different starting positions</span></span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>starting_positions <span class="op">=</span> [</span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]</span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, x_0 <span class="kw">in</span> <span class="bu">enumerate</span>(starting_positions):</span>
-<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Starting from node </span><span class="sc">{</span>np<span class="sc">.</span>argmax(x_0)<span class="sc">}</span><span class="ss">:"</span>)</span>
-<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>    plot_convergence(A, np.array(x_0))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Starting from node 0:</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Starting from node 1:</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-11-output-4.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Starting from node 4:</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-11-output-6.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="practical-demonstration-with-real-networks" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="practical-demonstration-with-real-networks"><span class="header-section-number">1.4</span> Practical Demonstration with Real Networks</h2>
-<p>Let’s demonstrate random walks on a more complex network structure.</p>
-<div id="9a094d51" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a network with two communities</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> []</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i<span class="op">+</span><span class="dv">1</span>, <span class="dv">5</span>):</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        edge_list.append((i, j))</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>        edge_list.append((i<span class="op">+</span><span class="dv">5</span>, j<span class="op">+</span><span class="dv">5</span>))</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>edge_list.append((<span class="dv">0</span>, <span class="dv">6</span>))</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> ig.Graph(edge_list)</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>ig.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>np.arange(g.vcount()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-12-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<section id="computing-stationary-distribution" class="level3">
-<h3 class="anchored" data-anchor-id="computing-stationary-distribution">Computing Stationary Distribution</h3>
-<p>The transition probability matrix <span class="math inline">\mathbf{P}</span> is:</p>
-<div id="7387230a" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).flatten()</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>Dinv <span class="op">=</span> sparse.diags(<span class="dv">1</span><span class="op">/</span>deg)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> Dinv <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Let’s compute the stationary distribution using the power method:</p>
-<div id="0f1550d6" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">1</span> <span class="co"># Start from node 1</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>xt <span class="op">=</span> []</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> x.reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">@</span> P</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    xt.append(x)</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>xt <span class="op">=</span> np.vstack(xt) <span class="co"># Stack the results vertically</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> sns.color_palette().as_hex()</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(g.vcount()):</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    sns.lineplot(x<span class="op">=</span><span class="bu">range</span>(T), y<span class="op">=</span>xt[:, i], label<span class="op">=</span><span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, ax<span class="op">=</span>ax, color<span class="op">=</span>palette[i <span class="op">%</span> <span class="bu">len</span>(palette)])</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Probability"</span>)</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Stationary distribution of a random walk"</span>)</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="dv">1</span>), loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>We observe three key features: 1. The distribution oscillates with decaying amplitude before converging 2. Nodes of the same degree converge to the same stationary probability 3. Nodes with higher degree have higher stationary probability</p>
-<p>Let’s verify this by comparing with the theoretical stationary distribution:</p>
-<div id="3a5fe0db" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>n_edges <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>expected_stationary_dist <span class="op">=</span> deg <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> n_edges)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Expected stationary distribution"</span>: expected_stationary_dist,</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Observed stationary distribution"</span>: xt[<span class="op">-</span><span class="dv">1</span>].flatten()</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>}).style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>).set_caption(<span class="st">"Comparison of Expected and Observed Stationary Distributions"</span>).background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-<style type="text/css">
-#T_2fb03_row0_col0, #T_2fb03_row0_col1, #T_2fb03_row6_col0 {
-  background-color: #fee838;
-  color: #000000;
-}
-#T_2fb03_row1_col0, #T_2fb03_row2_col0, #T_2fb03_row3_col0, #T_2fb03_row4_col0, #T_2fb03_row5_col0, #T_2fb03_row5_col1, #T_2fb03_row7_col0, #T_2fb03_row7_col1, #T_2fb03_row8_col0, #T_2fb03_row8_col1, #T_2fb03_row9_col0, #T_2fb03_row9_col1 {
-  background-color: #00224e;
-  color: #f1f1f1;
-}
-#T_2fb03_row1_col1, #T_2fb03_row2_col1, #T_2fb03_row3_col1, #T_2fb03_row4_col1 {
-  background-color: #00234f;
-  color: #f1f1f1;
-}
-#T_2fb03_row6_col1 {
-  background-color: #fee636;
-  color: #000000;
-}
-</style>
-
-<div id="T_2fb03" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_2fb03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Comparison of Expected and Observed Stationary Distributions
-</figcaption>
-<div aria-describedby="T_2fb03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_2fb03" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_2fb03_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Expected stationary distribution</th>
-<th id="T_2fb03_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Observed stationary distribution</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td id="T_2fb03_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
-<td id="T_2fb03_row0_col0" class="data row0 col0">0.1190</td>
-<td id="T_2fb03_row0_col1" class="data row0 col1">0.1191</td>
-</tr>
-<tr class="even">
-<td id="T_2fb03_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
-<td id="T_2fb03_row1_col0" class="data row1 col0">0.0952</td>
-<td id="T_2fb03_row1_col1" class="data row1 col1">0.0953</td>
-</tr>
-<tr class="odd">
-<td id="T_2fb03_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
-<td id="T_2fb03_row2_col0" class="data row2 col0">0.0952</td>
-<td id="T_2fb03_row2_col1" class="data row2 col1">0.0953</td>
-</tr>
-<tr class="even">
-<td id="T_2fb03_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
-<td id="T_2fb03_row3_col0" class="data row3 col0">0.0952</td>
-<td id="T_2fb03_row3_col1" class="data row3 col1">0.0953</td>
-</tr>
-<tr class="odd">
-<td id="T_2fb03_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
-<td id="T_2fb03_row4_col0" class="data row4 col0">0.0952</td>
-<td id="T_2fb03_row4_col1" class="data row4 col1">0.0953</td>
-</tr>
-<tr class="even">
-<td id="T_2fb03_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
-<td id="T_2fb03_row5_col0" class="data row5 col0">0.0952</td>
-<td id="T_2fb03_row5_col1" class="data row5 col1">0.0952</td>
-</tr>
-<tr class="odd">
-<td id="T_2fb03_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
-<td id="T_2fb03_row6_col0" class="data row6 col0">0.1190</td>
-<td id="T_2fb03_row6_col1" class="data row6 col1">0.1190</td>
-</tr>
-<tr class="even">
-<td id="T_2fb03_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
-<td id="T_2fb03_row7_col0" class="data row7 col0">0.0952</td>
-<td id="T_2fb03_row7_col1" class="data row7 col1">0.0952</td>
-</tr>
-<tr class="odd">
-<td id="T_2fb03_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
-<td id="T_2fb03_row8_col0" class="data row8 col0">0.0952</td>
-<td id="T_2fb03_row8_col1" class="data row8 col1">0.0952</td>
-</tr>
-<tr class="even">
-<td id="T_2fb03_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">9</td>
-<td id="T_2fb03_row9_col0" class="data row9 col0">0.0952</td>
-<td id="T_2fb03_row9_col1" class="data row9 col1">0.0952</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="community-structure-detection" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="community-structure-detection"><span class="header-section-number">1.5</span> Community Structure Detection</h2>
-<p>Random walks can capture community structure. Let’s explore this with a ring of cliques:</p>
-<div id="51cd0fb8" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>n_cliques <span class="op">=</span> <span class="dv">3</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>n_nodes_per_clique <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.ring_of_cliques(n_cliques, n_nodes_per_clique)</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph().Adjacency(nx.to_numpy_array(G).tolist()).as_undirected()</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>membership <span class="op">=</span> np.repeat(np.arange(n_cliques), n_nodes_per_clique)</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>color_map <span class="op">=</span> [sns.color_palette()[i] <span class="cf">for</span> i <span class="kw">in</span> membership]</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>color_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-16-output-1.svg" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<section id="visualizing-random-walk-dynamics" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-random-walk-dynamics">Visualizing Random Walk Dynamics</h3>
-<p>Let’s compute the expected position over time and visualize how the walker explores communities:</p>
-<div id="c19304fa" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the adjacency matrix and degree</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the transition matrix efficiently using scipy.sparse</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> sparse.diags(<span class="dv">1</span> <span class="op">/</span> k) <span class="op">@</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="1234f313" class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the expected position from node 2 over 300 steps</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>x_t <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>x_t[<span class="dv">2</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> [x_t]</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">300</span>):</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> x_t <span class="op">@</span> P</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    x_list.append(x_t)</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> np.array(x_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="24a69237" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the network at different time steps</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette(<span class="st">"viridis"</span>, as_cmap<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'ticks'</span>)</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>), ncols <span class="op">=</span> <span class="dv">3</span>, nrows <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>t_list <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">299</span>]</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(t_list):</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>[cmap(x_list[t][j] <span class="op">/</span> np.<span class="bu">max</span>(x_list[t])) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(g.vcount())], target <span class="op">=</span> axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>])</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>].set_title(<span class="ss">f"$t$ = </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span>, fontsize <span class="op">=</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02-coding_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The color intensity represents the probability of the walker being at each node. Notice how: - Initially, the walker is concentrated at the starting node - It gradually diffuses within its community - Only later does it spread to other communities - Eventually, it reaches the stationary distribution</p>
-<p>This temporal behavior reveals the community structure!</p>
-</section>
-</section>
-<section id="mixing-time-and-spectral-analysis" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="mixing-time-and-spectral-analysis"><span class="header-section-number">1.6</span> Mixing Time and Spectral Analysis</h2>
-<section id="computing-eigenvalues-and-mixing-time" class="level3">
-<h3 class="anchored" data-anchor-id="computing-eigenvalues-and-mixing-time">Computing Eigenvalues and Mixing Time</h3>
-<p>Let’s demonstrate the spectral analysis of random walks:</p>
-<div id="e4ba3241" class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the two-clique network from before</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A_norm.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).flatten()</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized adjacency matrix</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> Dinv_sqrt <span class="op">@</span> A_norm <span class="op">@</span> Dinv_sqrt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="a65652e9" class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute eigenvalues and eigenvectors</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="f7e6a35b" class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display eigenvalues</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvalue"</span>: evals</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>}).T.style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="dv">1</span>).set_caption(<span class="st">"Eigenvalues of the normalized adjacency matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<style type="text/css">
-#T_dac7b_row0_col0 {
-  background-color: #00224e;
-  color: #f1f1f1;
-}
-#T_dac7b_row0_col1, #T_dac7b_row0_col2 {
-  background-color: #002758;
-  color: #f1f1f1;
-}
-#T_dac7b_row0_col3, #T_dac7b_row0_col4, #T_dac7b_row0_col5, #T_dac7b_row0_col6, #T_dac7b_row0_col7, #T_dac7b_row0_col8 {
-  background-color: #0f3570;
-  color: #f1f1f1;
-}
-#T_dac7b_row0_col9 {
-  background-color: #39486c;
-  color: #f1f1f1;
-}
-#T_dac7b_row0_col10, #T_dac7b_row0_col11 {
-  background-color: #46516c;
-  color: #f1f1f1;
-}
-#T_dac7b_row0_col12, #T_dac7b_row0_col13 {
-  background-color: #ebd44b;
-  color: #000000;
-}
-#T_dac7b_row0_col14 {
-  background-color: #fee838;
-  color: #000000;
-}
-</style>
-
-<div id="T_dac7b" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_dac7b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Eigenvalues of the normalized adjacency matrix
-</figcaption>
-<div aria-describedby="T_dac7b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_dac7b" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_dac7b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">0</th>
-<th id="T_dac7b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">1</th>
-<th id="T_dac7b_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">2</th>
-<th id="T_dac7b_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">3</th>
-<th id="T_dac7b_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">4</th>
-<th id="T_dac7b_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">5</th>
-<th id="T_dac7b_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">6</th>
-<th id="T_dac7b_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">7</th>
-<th id="T_dac7b_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">8</th>
-<th id="T_dac7b_level0_col9" class="col_heading level0 col9" data-quarto-table-cell-role="th">9</th>
-<th id="T_dac7b_level0_col10" class="col_heading level0 col10" data-quarto-table-cell-role="th">10</th>
-<th id="T_dac7b_level0_col11" class="col_heading level0 col11" data-quarto-table-cell-role="th">11</th>
-<th id="T_dac7b_level0_col12" class="col_heading level0 col12" data-quarto-table-cell-role="th">12</th>
-<th id="T_dac7b_level0_col13" class="col_heading level0 col13" data-quarto-table-cell-role="th">13</th>
-<th id="T_dac7b_level0_col14" class="col_heading level0 col14" data-quarto-table-cell-role="th">14</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td id="T_dac7b_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">Eigenvalue</td>
-<td id="T_dac7b_row0_col0" class="data row0 col0">-0.400000</td>
-<td id="T_dac7b_row0_col1" class="data row0 col1">-0.362289</td>
-<td id="T_dac7b_row0_col2" class="data row0 col2">-0.362289</td>
-<td id="T_dac7b_row0_col3" class="data row0 col3">-0.250000</td>
-<td id="T_dac7b_row0_col4" class="data row0 col4">-0.250000</td>
-<td id="T_dac7b_row0_col5" class="data row0 col5">-0.250000</td>
-<td id="T_dac7b_row0_col6" class="data row0 col6">-0.250000</td>
-<td id="T_dac7b_row0_col7" class="data row0 col7">-0.250000</td>
-<td id="T_dac7b_row0_col8" class="data row0 col8">-0.250000</td>
-<td id="T_dac7b_row0_col9" class="data row0 col9">-0.100000</td>
-<td id="T_dac7b_row0_col10" class="data row0 col10">-0.030903</td>
-<td id="T_dac7b_row0_col11" class="data row0 col11">-0.030903</td>
-<td id="T_dac7b_row0_col12" class="data row0 col12">0.893192</td>
-<td id="T_dac7b_row0_col13" class="data row0 col13">0.893192</td>
-<td id="T_dac7b_row0_col14" class="data row0 col14">1.000000</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-</div>
-</div>
-<p>The largest eigenvalue is always 1 for a normalized adjacency matrix. The associated eigenvector gives the stationary distribution.</p>
-</section>
-<section id="relaxation-time" class="level3">
-<h3 class="anchored" data-anchor-id="relaxation-time">Relaxation Time</h3>
-<div id="30e367bf" class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>lambda_2 <span class="op">=</span> <span class="op">-</span>np.sort(<span class="op">-</span>evals)[<span class="dv">1</span>]  <span class="co"># Second largest eigenvalue</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> lambda_2)  <span class="co"># Relaxation time</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The second largest eigenvalue is </span><span class="sc">{</span>lambda_2<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The relaxation time of the random walk is </span><span class="sc">{</span>tau<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The second largest eigenvalue is 0.8932
-The relaxation time of the random walk is 9.3626</code></pre>
-</div>
-</div>
-</section>
-<section id="verifying-spectral-decomposition" class="level3">
-<h3 class="anchored" data-anchor-id="verifying-spectral-decomposition">Verifying Spectral Decomposition</h3>
-<p>Let’s verify we can compute multi-step transitions using eigenvalues:</p>
-<div id="b5ded83e" class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>x_0[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: Using eigenvalues and eigenvectors</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>Q_L <span class="op">=</span> np.diag(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg)) <span class="op">@</span> evecs</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>Q_R <span class="op">=</span> np.diag(np.sqrt(deg)) <span class="op">@</span> evecs</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>x_t_spectral <span class="op">=</span> x_0 <span class="op">@</span> Q_L <span class="op">@</span> np.diag(evals<span class="op">**</span>t) <span class="op">@</span> Q_R.T</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 2: Using power iteration</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>P_matrix <span class="op">=</span> sparse.diags(<span class="dv">1</span><span class="op">/</span>deg) <span class="op">@</span> g.get_adjacency_sparse()</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>x_t_power <span class="op">=</span> x_0.copy()</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(t):</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>    x_t_power <span class="op">=</span> x_t_power <span class="op">@</span> P_matrix</span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Spectral method"</span>: x_t_spectral.flatten(),</span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Power iteration"</span>: x_t_power.flatten()</span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>}).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Comparison of Spectral and Power Iteration Methods"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
-<style type="text/css">
-#T_5f7c1_row0_col0, #T_5f7c1_row0_col1 {
-  background-color: #fee636;
-  color: #000000;
-}
-#T_5f7c1_row1_col0, #T_5f7c1_row1_col1 {
-  background-color: #fee838;
-  color: #000000;
-}
-#T_5f7c1_row2_col0, #T_5f7c1_row2_col1, #T_5f7c1_row3_col0, #T_5f7c1_row3_col1, #T_5f7c1_row4_col0, #T_5f7c1_row4_col1 {
-  background-color: #e4ce53;
-  color: #000000;
-}
-#T_5f7c1_row5_col0, #T_5f7c1_row5_col1, #T_5f7c1_row10_col0, #T_5f7c1_row10_col1 {
-  background-color: #34456c;
-  color: #f1f1f1;
-}
-#T_5f7c1_row6_col0, #T_5f7c1_row6_col1 {
-  background-color: #002e6a;
-  color: #f1f1f1;
-}
-#T_5f7c1_row7_col0, #T_5f7c1_row7_col1, #T_5f7c1_row8_col0, #T_5f7c1_row8_col1, #T_5f7c1_row9_col0, #T_5f7c1_row9_col1 {
-  background-color: #00224e;
-  color: #f1f1f1;
-}
-#T_5f7c1_row11_col0, #T_5f7c1_row11_col1 {
-  background-color: #686a71;
-  color: #f1f1f1;
-}
-#T_5f7c1_row12_col0, #T_5f7c1_row12_col1, #T_5f7c1_row13_col0, #T_5f7c1_row13_col1, #T_5f7c1_row14_col0, #T_5f7c1_row14_col1 {
-  background-color: #273e6e;
-  color: #f1f1f1;
-}
-</style>
-
-<div id="T_5f7c1" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_5f7c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Comparison of Spectral and Power Iteration Methods
-</figcaption>
-<div aria-describedby="T_5f7c1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_5f7c1" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_5f7c1_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Spectral method</th>
-<th id="T_5f7c1_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Power iteration</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td id="T_5f7c1_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</td>
-<td id="T_5f7c1_row0_col0" class="data row0 col0">0.138150</td>
-<td id="T_5f7c1_row0_col1" class="data row0 col1">0.138150</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</td>
-<td id="T_5f7c1_row1_col0" class="data row1 col0">0.138670</td>
-<td id="T_5f7c1_row1_col1" class="data row1 col1">0.138670</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</td>
-<td id="T_5f7c1_row2_col0" class="data row2 col0">0.126020</td>
-<td id="T_5f7c1_row2_col1" class="data row2 col1">0.126020</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</td>
-<td id="T_5f7c1_row3_col0" class="data row3 col0">0.126020</td>
-<td id="T_5f7c1_row3_col1" class="data row3 col1">0.126020</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</td>
-<td id="T_5f7c1_row4_col0" class="data row4 col0">0.126020</td>
-<td id="T_5f7c1_row4_col1" class="data row4 col1">0.126020</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">5</td>
-<td id="T_5f7c1_row5_col0" class="data row5 col0">0.042000</td>
-<td id="T_5f7c1_row5_col1" class="data row5 col1">0.042000</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">6</td>
-<td id="T_5f7c1_row6_col0" class="data row6 col0">0.026300</td>
-<td id="T_5f7c1_row6_col1" class="data row6 col1">0.026300</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">7</td>
-<td id="T_5f7c1_row7_col0" class="data row7 col0">0.018400</td>
-<td id="T_5f7c1_row7_col1" class="data row7 col1">0.018400</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">8</td>
-<td id="T_5f7c1_row8_col0" class="data row8 col0">0.018400</td>
-<td id="T_5f7c1_row8_col1" class="data row8 col1">0.018400</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">9</td>
-<td id="T_5f7c1_row9_col0" class="data row9 col0">0.018400</td>
-<td id="T_5f7c1_row9_col1" class="data row9 col1">0.018400</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row10" class="row_heading level0 row10" data-quarto-table-cell-role="th">10</td>
-<td id="T_5f7c1_row10_col0" class="data row10 col0">0.042000</td>
-<td id="T_5f7c1_row10_col1" class="data row10 col1">0.042000</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row11" class="row_heading level0 row11" data-quarto-table-cell-role="th">11</td>
-<td id="T_5f7c1_row11_col0" class="data row11 col0">0.067420</td>
-<td id="T_5f7c1_row11_col1" class="data row11 col1">0.067420</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row12" class="row_heading level0 row12" data-quarto-table-cell-role="th">12</td>
-<td id="T_5f7c1_row12_col0" class="data row12 col0">0.037400</td>
-<td id="T_5f7c1_row12_col1" class="data row12 col1">0.037400</td>
-</tr>
-<tr class="even">
-<td id="T_5f7c1_level0_row13" class="row_heading level0 row13" data-quarto-table-cell-role="th">13</td>
-<td id="T_5f7c1_row13_col0" class="data row13 col0">0.037400</td>
-<td id="T_5f7c1_row13_col1" class="data row13 col1">0.037400</td>
-</tr>
-<tr class="odd">
-<td id="T_5f7c1_level0_row14" class="row_heading level0 row14" data-quarto-table-cell-role="th">14</td>
-<td id="T_5f7c1_row14_col0" class="data row14 col0">0.037400</td>
-<td id="T_5f7c1_row14_col1" class="data row14 col1">0.037400</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="key-takeaways" class="level3">
-<h3 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h3>
+<section id="what-to-watch-for" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h2>
 <ul>
-<li>Random walks converge to stationary distributions proportional to node degrees</li>
-<li>Community structure is revealed through short-term vs.&nbsp;long-term behavior</li>
-<li>Spectral properties control convergence speed and mixing times</li>
-<li>Implementation requires careful attention to matrix operations and numerical stability</li>
-<li>Applications span centrality measures, community detection, and network characterization</li>
+<li>How many steps convergence takes on a network with two clear communities, versus one without. That difference is the spectral gap made visible.</li>
+<li>Whether your converged vector really equals <span class="math inline">k_i/2m</span>, entry by entry. If it does not, check whether your network is connected and non-bipartite — those are the two conditions from the concepts page.</li>
+<li>Whether <span class="math inline">1/(1-\lambda_2)</span> predicts the number of steps you actually measured in step 3. It should land within a small factor.</li>
 </ul>
-<p>This foundation prepares you to apply random walks to real-world network analysis problems and understand their connections to other network science techniques.</p>
 
 
-<!-- -->
-
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1709,13 +804,14 @@ Table&nbsp;3: Comparison of Spectral and Power Iteration Methods
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1727,57 +823,6 @@ Table&nbsp;3: Comparison of Spectral and Power Iteration Methods
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -2110,503 +1155,16 @@ Table&nbsp;3: Comparison of Spectral and Power Iteration Methods
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="Random Walks Concepts">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Random Walks Concepts</span>
+      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="The Drunkard Who Maps the City">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">The Drunkard Who Maps the City</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../m07-random-walks/03-exercises.html" class="pagination-link" aria-label="Exercises &amp; Assignments">
-        <span class="nav-page-text">Exercises &amp; Assignments</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../m07-random-walks/03-exercises.html" class="pagination-link" aria-label="Exercises and Assignments">
+        <span class="nav-page-text">Exercises and Assignments</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb36" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Coding - Random Walks"</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> advnetsci</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co">    enabled: true</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu"># Random Walks: Implementation and Applications</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction: From Theory to Practice</span></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>In the previous section, we learned the theoretical foundations of random walks. Now we'll implement these concepts in Python and explore their practical applications for network analysis.</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>Recall that a random walk is a process where we:</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Start at a node $i$</span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Randomly choose an edge to traverse to a neighbor node $j$</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Repeat until we've taken $T$ steps</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>Let's see how this simple process can reveal deep insights about network structure.</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## Implementing Random Walks in Python</span></span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="fu">### Setting Up: Simple Graph</span></span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>We'll start by implementing random walks on a simple graph of five nodes.</span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph()</span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>g.add_vertices([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>])</span>
-<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>g.add_edges([(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">3</span>), (<span class="dv">1</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">2</span>, <span class="dv">4</span>), (<span class="dv">3</span>, <span class="dv">4</span>)])</span>
-<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>g.vs[<span class="st">"name"</span>])</span>
-<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing Transition Probabilities</span></span>
-<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>A random walk is characterized by the transition probabilities between nodes:</span>
-<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>$$P_{ij} = \frac{A_{ij}}{k_i}$$</span>
-<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>Let's compute and visualize the transition probability matrix $\mathbf{P}$:</span>
-<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse().toarray()</span>
-<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
-<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>n_nodes <span class="op">=</span> g.vcount()</span>
-<span id="cb36-54"><a href="#cb36-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-55"><a href="#cb36-55" aria-hidden="true" tabindex="-1"></a><span class="co"># A simple but inefficient way to compute P</span></span>
-<span id="cb36-56"><a href="#cb36-56" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.zeros((n_nodes, n_nodes))</span>
-<span id="cb36-57"><a href="#cb36-57" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb36-58"><a href="#cb36-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb36-59"><a href="#cb36-59" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> k[i] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb36-60"><a href="#cb36-60" aria-hidden="true" tabindex="-1"></a>            P[i, j] <span class="op">=</span> A[i, j] <span class="op">/</span> k[i]</span>
-<span id="cb36-61"><a href="#cb36-61" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb36-62"><a href="#cb36-62" aria-hidden="true" tabindex="-1"></a>            P[i, j] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb36-63"><a href="#cb36-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-64"><a href="#cb36-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative, more efficient way to compute P</span></span>
-<span id="cb36-65"><a href="#cb36-65" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb36-66"><a href="#cb36-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-67"><a href="#cb36-67" aria-hidden="true" tabindex="-1"></a><span class="co"># or even more efficiently</span></span>
-<span id="cb36-68"><a href="#cb36-68" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.einsum(<span class="st">"ij,i-&gt;ij"</span>, A, <span class="dv">1</span> <span class="op">/</span> k)</span>
-<span id="cb36-69"><a href="#cb36-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-70"><a href="#cb36-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-73"><a href="#cb36-73" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-74"><a href="#cb36-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probability matrix:</span><span class="ch">\n</span><span class="st">"</span>, P)</span>
-<span id="cb36-75"><a href="#cb36-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-76"><a href="#cb36-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-79"><a href="#cb36-79" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-80"><a href="#cb36-80" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb36-81"><a href="#cb36-81" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb36-82"><a href="#cb36-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-83"><a href="#cb36-83" aria-hidden="true" tabindex="-1"></a>sns.heatmap(P, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"YlGnBu"</span>)</span>
-<span id="cb36-84"><a href="#cb36-84" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb36-85"><a href="#cb36-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-86"><a href="#cb36-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-87"><a href="#cb36-87" aria-hidden="true" tabindex="-1"></a>Each row and column of $\mathbf{P}$ corresponds to a node, with entries representing the transition probabilities from the row node to the column node.</span>
-<span id="cb36-88"><a href="#cb36-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-89"><a href="#cb36-89" aria-hidden="true" tabindex="-1"></a><span class="fu">### Simulating Random Walk Steps</span></span>
-<span id="cb36-90"><a href="#cb36-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-91"><a href="#cb36-91" aria-hidden="true" tabindex="-1"></a>Now let's simulate a random walk step by step. We represent the position of the walker using a vector $\mathbf{x}$ with five elements, where we mark the current node with <span class="in">`1`</span> and others as <span class="in">`0`</span>:</span>
-<span id="cb36-92"><a href="#cb36-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-95"><a href="#cb36-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-96"><a href="#cb36-96" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb36-97"><a href="#cb36-97" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb36-98"><a href="#cb36-98" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial position of the walker:</span><span class="ch">\n</span><span class="st">"</span>, x)</span>
-<span id="cb36-99"><a href="#cb36-99" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-100"><a href="#cb36-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-101"><a href="#cb36-101" aria-hidden="true" tabindex="-1"></a>This vector representation lets us compute transition probabilities to other nodes:</span>
-<span id="cb36-102"><a href="#cb36-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-103"><a href="#cb36-103" aria-hidden="true" tabindex="-1"></a>$$\mathbf{x} \mathbf{P}$$</span>
-<span id="cb36-104"><a href="#cb36-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-107"><a href="#cb36-107" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-108"><a href="#cb36-108" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> x <span class="op">@</span> P</span>
-<span id="cb36-109"><a href="#cb36-109" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Transition probabilities from current position:</span><span class="ch">\n</span><span class="st">"</span>, probs)</span>
-<span id="cb36-110"><a href="#cb36-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-111"><a href="#cb36-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-112"><a href="#cb36-112" aria-hidden="true" tabindex="-1"></a>We can then draw the next node based on these probabilities:</span>
-<span id="cb36-113"><a href="#cb36-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-116"><a href="#cb36-116" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-117"><a href="#cb36-117" aria-hidden="true" tabindex="-1"></a>next_node <span class="op">=</span> np.random.choice(n_nodes, p<span class="op">=</span>probs)</span>
-<span id="cb36-118"><a href="#cb36-118" aria-hidden="true" tabindex="-1"></a>x[:] <span class="op">=</span> <span class="dv">0</span> <span class="co"># zero out the vector</span></span>
-<span id="cb36-119"><a href="#cb36-119" aria-hidden="true" tabindex="-1"></a>x[next_node] <span class="op">=</span> <span class="dv">1</span> <span class="co"># set the next node to 1</span></span>
-<span id="cb36-120"><a href="#cb36-120" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Position after one step:</span><span class="ch">\n</span><span class="st">"</span>, x)</span>
-<span id="cb36-121"><a href="#cb36-121" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-122"><a href="#cb36-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-123"><a href="#cb36-123" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 01</span></span>
-<span id="cb36-124"><a href="#cb36-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-125"><a href="#cb36-125" aria-hidden="true" tabindex="-1"></a>Write the following function to simulate the random walk for a given number of steps and return the $x$ for each step:</span>
-<span id="cb36-126"><a href="#cb36-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-127"><a href="#cb36-127" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb36-128"><a href="#cb36-128" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_walk(A, n_steps):</span>
-<span id="cb36-129"><a href="#cb36-129" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb36-130"><a href="#cb36-130" aria-hidden="true" tabindex="-1"></a><span class="co">    Simulate the random walk on a graph with adjacency matrix A.</span></span>
-<span id="cb36-131"><a href="#cb36-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-132"><a href="#cb36-132" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb36-133"><a href="#cb36-133" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb36-134"><a href="#cb36-134" aria-hidden="true" tabindex="-1"></a><span class="co">        n_steps (int): The number of steps to simulate.</span></span>
-<span id="cb36-135"><a href="#cb36-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-136"><a href="#cb36-136" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb36-137"><a href="#cb36-137" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The position of the walker after each step.</span></span>
-<span id="cb36-138"><a href="#cb36-138" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb36-139"><a href="#cb36-139" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb36-140"><a href="#cb36-140" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb36-141"><a href="#cb36-141" aria-hidden="true" tabindex="-1"></a>    n_nodes <span class="op">=</span> A.shape[<span class="dv">0</span>]</span>
-<span id="cb36-142"><a href="#cb36-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-143"><a href="#cb36-143" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize position</span></span>
-<span id="cb36-144"><a href="#cb36-144" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.zeros(n_nodes)</span>
-<span id="cb36-145"><a href="#cb36-145" aria-hidden="true" tabindex="-1"></a>    x[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Start at node 0</span></span>
-<span id="cb36-146"><a href="#cb36-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-147"><a href="#cb36-147" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> [x.copy()]</span>
-<span id="cb36-148"><a href="#cb36-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-149"><a href="#cb36-149" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(n_steps):</span>
-<span id="cb36-150"><a href="#cb36-150" aria-hidden="true" tabindex="-1"></a>        probs <span class="op">=</span> x <span class="op">@</span> P</span>
-<span id="cb36-151"><a href="#cb36-151" aria-hidden="true" tabindex="-1"></a>        next_node <span class="op">=</span> ... <span class="co"># fill in the missing code</span></span>
-<span id="cb36-152"><a href="#cb36-152" aria-hidden="true" tabindex="-1"></a>        x[:] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb36-153"><a href="#cb36-153" aria-hidden="true" tabindex="-1"></a>        x[next_node] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb36-154"><a href="#cb36-154" aria-hidden="true" tabindex="-1"></a>        positions.append(x.copy())</span>
-<span id="cb36-155"><a href="#cb36-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-156"><a href="#cb36-156" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(positions)</span>
-<span id="cb36-157"><a href="#cb36-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-158"><a href="#cb36-158" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb36-159"><a href="#cb36-159" aria-hidden="true" tabindex="-1"></a>walk_positions <span class="op">=</span> random_walk(A, <span class="dv">10</span>)</span>
-<span id="cb36-160"><a href="#cb36-160" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Walker positions over 10 steps:"</span>)</span>
-<span id="cb36-161"><a href="#cb36-161" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(walk_positions)</span>
-<span id="cb36-162"><a href="#cb36-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-163"><a href="#cb36-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-164"><a href="#cb36-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## Expected Behavior of Random Walks</span></span>
-<span id="cb36-165"><a href="#cb36-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-166"><a href="#cb36-166" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing Expected Positions</span></span>
-<span id="cb36-167"><a href="#cb36-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-168"><a href="#cb36-168" aria-hidden="true" tabindex="-1"></a>What is the expected position of the walker after multiple steps? For the first step from initial position $\mathbf{x}(0)$:</span>
-<span id="cb36-169"><a href="#cb36-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-170"><a href="#cb36-170" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}<span class="co">[</span><span class="ot">\mathbf{x}(1)</span><span class="co">]</span> = \mathbf{x}(0) \mathbf{P}$$</span>
-<span id="cb36-171"><a href="#cb36-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-174"><a href="#cb36-174" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-175"><a href="#cb36-175" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb36-176"><a href="#cb36-176" aria-hidden="true" tabindex="-1"></a>x_1 <span class="op">=</span> x_0 <span class="op">@</span> P</span>
-<span id="cb36-177"><a href="#cb36-177" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after one step:</span><span class="ch">\n</span><span class="st">"</span>, x_1)</span>
-<span id="cb36-178"><a href="#cb36-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-179"><a href="#cb36-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-180"><a href="#cb36-180" aria-hidden="true" tabindex="-1"></a>For the second step:</span>
-<span id="cb36-181"><a href="#cb36-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-182"><a href="#cb36-182" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}<span class="co">[</span><span class="ot">\mathbf{x}(2)</span><span class="co">]</span> = \mathbf{x}(0) \mathbf{P}^2$$</span>
-<span id="cb36-183"><a href="#cb36-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-186"><a href="#cb36-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-187"><a href="#cb36-187" aria-hidden="true" tabindex="-1"></a>x_2 <span class="op">=</span> x_1 <span class="op">@</span> P</span>
-<span id="cb36-188"><a href="#cb36-188" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Expected position after two steps:</span><span class="ch">\n</span><span class="st">"</span>, x_2)</span>
-<span id="cb36-189"><a href="#cb36-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-190"><a href="#cb36-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-191"><a href="#cb36-191" aria-hidden="true" tabindex="-1"></a>In general, the expected position at time $t$ is:</span>
-<span id="cb36-192"><a href="#cb36-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-193"><a href="#cb36-193" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}<span class="co">[</span><span class="ot">\mathbf{x}(t)</span><span class="co">]</span> = \mathbf{x}(0) \mathbf{P}^t$$</span>
-<span id="cb36-194"><a href="#cb36-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-195"><a href="#cb36-195" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 02</span></span>
-<span id="cb36-196"><a href="#cb36-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-197"><a href="#cb36-197" aria-hidden="true" tabindex="-1"></a>Write a function to compute the expected position of the walker at time $t$:</span>
-<span id="cb36-198"><a href="#cb36-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-199"><a href="#cb36-199" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb36-200"><a href="#cb36-200" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_position(A, x_0, t):</span>
-<span id="cb36-201"><a href="#cb36-201" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb36-202"><a href="#cb36-202" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the expected position of the walker at time t.</span></span>
-<span id="cb36-203"><a href="#cb36-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-204"><a href="#cb36-204" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb36-205"><a href="#cb36-205" aria-hidden="true" tabindex="-1"></a><span class="co">        A (np.ndarray): The adjacency matrix of the graph.</span></span>
-<span id="cb36-206"><a href="#cb36-206" aria-hidden="true" tabindex="-1"></a><span class="co">        x_0 (np.ndarray): The initial position of the walker.</span></span>
-<span id="cb36-207"><a href="#cb36-207" aria-hidden="true" tabindex="-1"></a><span class="co">        t (int): The number of steps to simulate.</span></span>
-<span id="cb36-208"><a href="#cb36-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-209"><a href="#cb36-209" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb36-210"><a href="#cb36-210" aria-hidden="true" tabindex="-1"></a><span class="co">        np.ndarray: The expected position at time t.</span></span>
-<span id="cb36-211"><a href="#cb36-211" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb36-212"><a href="#cb36-212" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb36-213"><a href="#cb36-213" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb36-214"><a href="#cb36-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-215"><a href="#cb36-215" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute P^t</span></span>
-<span id="cb36-216"><a href="#cb36-216" aria-hidden="true" tabindex="-1"></a>    P_t <span class="op">=</span> ... <span class="co"># fill in the missing code</span></span>
-<span id="cb36-217"><a href="#cb36-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-218"><a href="#cb36-218" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x_0 <span class="op">@</span> P_t</span>
-<span id="cb36-219"><a href="#cb36-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-220"><a href="#cb36-220" aria-hidden="true" tabindex="-1"></a><span class="co"># Test the function</span></span>
-<span id="cb36-221"><a href="#cb36-221" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
-<span id="cb36-222"><a href="#cb36-222" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>]:</span>
-<span id="cb36-223"><a href="#cb36-223" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> expected_position(A, x_0, t)</span>
-<span id="cb36-224"><a href="#cb36-224" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Expected position at time </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>x_t<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb36-225"><a href="#cb36-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-226"><a href="#cb36-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-227"><a href="#cb36-227" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 03</span></span>
-<span id="cb36-228"><a href="#cb36-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-229"><a href="#cb36-229" aria-hidden="true" tabindex="-1"></a>Plot each element of $\mathbf{x}(t)$ as a function of $t$ for $t=0,1,2,\ldots, 100$. Try different initial positions and compare the results!</span>
-<span id="cb36-230"><a href="#cb36-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-233"><a href="#cb36-233" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-234"><a href="#cb36-234" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb36-235"><a href="#cb36-235" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb36-236"><a href="#cb36-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-237"><a href="#cb36-237" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_convergence(A, x_0, max_t<span class="op">=</span><span class="dv">100</span>):</span>
-<span id="cb36-238"><a href="#cb36-238" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Plot the convergence to stationary distribution."""</span></span>
-<span id="cb36-239"><a href="#cb36-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-240"><a href="#cb36-240" aria-hidden="true" tabindex="-1"></a>    k <span class="op">=</span> np.<span class="bu">sum</span>(A, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb36-241"><a href="#cb36-241" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> A <span class="op">/</span> k[:, np.newaxis]</span>
-<span id="cb36-242"><a href="#cb36-242" aria-hidden="true" tabindex="-1"></a>    n_nodes <span class="op">=</span> A.shape[<span class="dv">0</span>]</span>
-<span id="cb36-243"><a href="#cb36-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-244"><a href="#cb36-244" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute expected positions over time</span></span>
-<span id="cb36-245"><a href="#cb36-245" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> []</span>
-<span id="cb36-246"><a href="#cb36-246" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> x_0.copy()</span>
-<span id="cb36-247"><a href="#cb36-247" aria-hidden="true" tabindex="-1"></a>    positions.append(x_t.copy())</span>
-<span id="cb36-248"><a href="#cb36-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-249"><a href="#cb36-249" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(max_t):</span>
-<span id="cb36-250"><a href="#cb36-250" aria-hidden="true" tabindex="-1"></a>        x_t <span class="op">=</span> x_t <span class="op">@</span> P</span>
-<span id="cb36-251"><a href="#cb36-251" aria-hidden="true" tabindex="-1"></a>        positions.append(x_t.copy())</span>
-<span id="cb36-252"><a href="#cb36-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-253"><a href="#cb36-253" aria-hidden="true" tabindex="-1"></a>    positions <span class="op">=</span> np.array(positions)</span>
-<span id="cb36-254"><a href="#cb36-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-255"><a href="#cb36-255" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot</span></span>
-<span id="cb36-256"><a href="#cb36-256" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb36-257"><a href="#cb36-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-258"><a href="#cb36-258" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_nodes):</span>
-<span id="cb36-259"><a href="#cb36-259" aria-hidden="true" tabindex="-1"></a>        ax.plot(<span class="bu">range</span>(max_t <span class="op">+</span> <span class="dv">1</span>), positions[:, i], label<span class="op">=</span><span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb36-260"><a href="#cb36-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-261"><a href="#cb36-261" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb36-262"><a href="#cb36-262" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"Probability"</span>)</span>
-<span id="cb36-263"><a href="#cb36-263" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="st">"Random Walk Convergence to Stationary Distribution"</span>)</span>
-<span id="cb36-264"><a href="#cb36-264" aria-hidden="true" tabindex="-1"></a>    ax.legend()</span>
-<span id="cb36-265"><a href="#cb36-265" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb36-266"><a href="#cb36-266" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb36-267"><a href="#cb36-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-268"><a href="#cb36-268" aria-hidden="true" tabindex="-1"></a><span class="co"># Test with different starting positions</span></span>
-<span id="cb36-269"><a href="#cb36-269" aria-hidden="true" tabindex="-1"></a>starting_positions <span class="op">=</span> [</span>
-<span id="cb36-270"><a href="#cb36-270" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
-<span id="cb36-271"><a href="#cb36-271" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
-<span id="cb36-272"><a href="#cb36-272" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]</span>
-<span id="cb36-273"><a href="#cb36-273" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb36-274"><a href="#cb36-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-275"><a href="#cb36-275" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, x_0 <span class="kw">in</span> <span class="bu">enumerate</span>(starting_positions):</span>
-<span id="cb36-276"><a href="#cb36-276" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Starting from node </span><span class="sc">{</span>np<span class="sc">.</span>argmax(x_0)<span class="sc">}</span><span class="ss">:"</span>)</span>
-<span id="cb36-277"><a href="#cb36-277" aria-hidden="true" tabindex="-1"></a>    plot_convergence(A, np.array(x_0))</span>
-<span id="cb36-278"><a href="#cb36-278" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-279"><a href="#cb36-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-280"><a href="#cb36-280" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practical Demonstration with Real Networks</span></span>
-<span id="cb36-281"><a href="#cb36-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-282"><a href="#cb36-282" aria-hidden="true" tabindex="-1"></a>Let's demonstrate random walks on a more complex network structure.</span>
-<span id="cb36-283"><a href="#cb36-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-286"><a href="#cb36-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-287"><a href="#cb36-287" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph <span class="im">as</span> ig</span>
-<span id="cb36-288"><a href="#cb36-288" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb36-289"><a href="#cb36-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-290"><a href="#cb36-290" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a network with two communities</span></span>
-<span id="cb36-291"><a href="#cb36-291" aria-hidden="true" tabindex="-1"></a>edge_list <span class="op">=</span> []</span>
-<span id="cb36-292"><a href="#cb36-292" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
-<span id="cb36-293"><a href="#cb36-293" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i<span class="op">+</span><span class="dv">1</span>, <span class="dv">5</span>):</span>
-<span id="cb36-294"><a href="#cb36-294" aria-hidden="true" tabindex="-1"></a>        edge_list.append((i, j))</span>
-<span id="cb36-295"><a href="#cb36-295" aria-hidden="true" tabindex="-1"></a>        edge_list.append((i<span class="op">+</span><span class="dv">5</span>, j<span class="op">+</span><span class="dv">5</span>))</span>
-<span id="cb36-296"><a href="#cb36-296" aria-hidden="true" tabindex="-1"></a>edge_list.append((<span class="dv">0</span>, <span class="dv">6</span>))</span>
-<span id="cb36-297"><a href="#cb36-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-298"><a href="#cb36-298" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> ig.Graph(edge_list)</span>
-<span id="cb36-299"><a href="#cb36-299" aria-hidden="true" tabindex="-1"></a>ig.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_label<span class="op">=</span>np.arange(g.vcount()))</span>
-<span id="cb36-300"><a href="#cb36-300" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-301"><a href="#cb36-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-302"><a href="#cb36-302" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing Stationary Distribution</span></span>
-<span id="cb36-303"><a href="#cb36-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-304"><a href="#cb36-304" aria-hidden="true" tabindex="-1"></a>The transition probability matrix $\mathbf{P}$ is:</span>
-<span id="cb36-305"><a href="#cb36-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-308"><a href="#cb36-308" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-309"><a href="#cb36-309" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.sparse <span class="im">as</span> sparse</span>
-<span id="cb36-310"><a href="#cb36-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-311"><a href="#cb36-311" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb36-312"><a href="#cb36-312" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).flatten()</span>
-<span id="cb36-313"><a href="#cb36-313" aria-hidden="true" tabindex="-1"></a>Dinv <span class="op">=</span> sparse.diags(<span class="dv">1</span><span class="op">/</span>deg)</span>
-<span id="cb36-314"><a href="#cb36-314" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> Dinv <span class="op">@</span> A</span>
-<span id="cb36-315"><a href="#cb36-315" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-316"><a href="#cb36-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-317"><a href="#cb36-317" aria-hidden="true" tabindex="-1"></a>Let's compute the stationary distribution using the power method:</span>
-<span id="cb36-318"><a href="#cb36-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-321"><a href="#cb36-321" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-322"><a href="#cb36-322" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb36-323"><a href="#cb36-323" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb36-324"><a href="#cb36-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-325"><a href="#cb36-325" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb36-326"><a href="#cb36-326" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>] <span class="op">=</span> <span class="dv">1</span> <span class="co"># Start from node 1</span></span>
-<span id="cb36-327"><a href="#cb36-327" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb36-328"><a href="#cb36-328" aria-hidden="true" tabindex="-1"></a>xt <span class="op">=</span> []</span>
-<span id="cb36-329"><a href="#cb36-329" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
-<span id="cb36-330"><a href="#cb36-330" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> x.reshape(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">@</span> P</span>
-<span id="cb36-331"><a href="#cb36-331" aria-hidden="true" tabindex="-1"></a>    xt.append(x)</span>
-<span id="cb36-332"><a href="#cb36-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-333"><a href="#cb36-333" aria-hidden="true" tabindex="-1"></a>xt <span class="op">=</span> np.vstack(xt) <span class="co"># Stack the results vertically</span></span>
-<span id="cb36-334"><a href="#cb36-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-335"><a href="#cb36-335" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb36-336"><a href="#cb36-336" aria-hidden="true" tabindex="-1"></a>palette <span class="op">=</span> sns.color_palette().as_hex()</span>
-<span id="cb36-337"><a href="#cb36-337" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(g.vcount()):</span>
-<span id="cb36-338"><a href="#cb36-338" aria-hidden="true" tabindex="-1"></a>    sns.lineplot(x<span class="op">=</span><span class="bu">range</span>(T), y<span class="op">=</span>xt[:, i], label<span class="op">=</span><span class="ss">f"Node </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, ax<span class="op">=</span>ax, color<span class="op">=</span>palette[i <span class="op">%</span> <span class="bu">len</span>(palette)])</span>
-<span id="cb36-339"><a href="#cb36-339" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Time"</span>)</span>
-<span id="cb36-340"><a href="#cb36-340" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Probability"</span>)</span>
-<span id="cb36-341"><a href="#cb36-341" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Stationary distribution of a random walk"</span>)</span>
-<span id="cb36-342"><a href="#cb36-342" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="dv">1</span>), loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb36-343"><a href="#cb36-343" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb36-344"><a href="#cb36-344" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb36-345"><a href="#cb36-345" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-346"><a href="#cb36-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-347"><a href="#cb36-347" aria-hidden="true" tabindex="-1"></a>We observe three key features:</span>
-<span id="cb36-348"><a href="#cb36-348" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>The distribution oscillates with decaying amplitude before converging</span>
-<span id="cb36-349"><a href="#cb36-349" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Nodes of the same degree converge to the same stationary probability</span>
-<span id="cb36-350"><a href="#cb36-350" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Nodes with higher degree have higher stationary probability</span>
-<span id="cb36-351"><a href="#cb36-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-352"><a href="#cb36-352" aria-hidden="true" tabindex="-1"></a>Let's verify this by comparing with the theoretical stationary distribution:</span>
-<span id="cb36-353"><a href="#cb36-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-356"><a href="#cb36-356" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-357"><a href="#cb36-357" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb36-358"><a href="#cb36-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-359"><a href="#cb36-359" aria-hidden="true" tabindex="-1"></a>n_edges <span class="op">=</span> np.<span class="bu">sum</span>(deg) <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb36-360"><a href="#cb36-360" aria-hidden="true" tabindex="-1"></a>expected_stationary_dist <span class="op">=</span> deg <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> n_edges)</span>
-<span id="cb36-361"><a href="#cb36-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-362"><a href="#cb36-362" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb36-363"><a href="#cb36-363" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Expected stationary distribution"</span>: expected_stationary_dist,</span>
-<span id="cb36-364"><a href="#cb36-364" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Observed stationary distribution"</span>: xt[<span class="op">-</span><span class="dv">1</span>].flatten()</span>
-<span id="cb36-365"><a href="#cb36-365" aria-hidden="true" tabindex="-1"></a>}).style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>).set_caption(<span class="st">"Comparison of Expected and Observed Stationary Distributions"</span>).background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb36-366"><a href="#cb36-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-367"><a href="#cb36-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-368"><a href="#cb36-368" aria-hidden="true" tabindex="-1"></a><span class="fu">## Community Structure Detection</span></span>
-<span id="cb36-369"><a href="#cb36-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-370"><a href="#cb36-370" aria-hidden="true" tabindex="-1"></a>Random walks can capture community structure. Let's explore this with a ring of cliques:</span>
-<span id="cb36-371"><a href="#cb36-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-374"><a href="#cb36-374" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-375"><a href="#cb36-375" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
-<span id="cb36-376"><a href="#cb36-376" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> igraph</span>
-<span id="cb36-377"><a href="#cb36-377" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb36-378"><a href="#cb36-378" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb36-379"><a href="#cb36-379" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb36-380"><a href="#cb36-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-381"><a href="#cb36-381" aria-hidden="true" tabindex="-1"></a>n_cliques <span class="op">=</span> <span class="dv">3</span></span>
-<span id="cb36-382"><a href="#cb36-382" aria-hidden="true" tabindex="-1"></a>n_nodes_per_clique <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb36-383"><a href="#cb36-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-384"><a href="#cb36-384" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.ring_of_cliques(n_cliques, n_nodes_per_clique)</span>
-<span id="cb36-385"><a href="#cb36-385" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> igraph.Graph().Adjacency(nx.to_numpy_array(G).tolist()).as_undirected()</span>
-<span id="cb36-386"><a href="#cb36-386" aria-hidden="true" tabindex="-1"></a>membership <span class="op">=</span> np.repeat(np.arange(n_cliques), n_nodes_per_clique)</span>
-<span id="cb36-387"><a href="#cb36-387" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-388"><a href="#cb36-388" aria-hidden="true" tabindex="-1"></a>color_map <span class="op">=</span> [sns.color_palette()[i] <span class="cf">for</span> i <span class="kw">in</span> membership]</span>
-<span id="cb36-389"><a href="#cb36-389" aria-hidden="true" tabindex="-1"></a>igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>color_map)</span>
-<span id="cb36-390"><a href="#cb36-390" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-391"><a href="#cb36-391" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-392"><a href="#cb36-392" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visualizing Random Walk Dynamics</span></span>
-<span id="cb36-393"><a href="#cb36-393" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-394"><a href="#cb36-394" aria-hidden="true" tabindex="-1"></a>Let's compute the expected position over time and visualize how the walker explores communities:</span>
-<span id="cb36-395"><a href="#cb36-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-398"><a href="#cb36-398" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-399"><a href="#cb36-399" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> sparse</span>
-<span id="cb36-400"><a href="#cb36-400" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-401"><a href="#cb36-401" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the adjacency matrix and degree</span></span>
-<span id="cb36-402"><a href="#cb36-402" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb36-403"><a href="#cb36-403" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.array(g.degree())</span>
-<span id="cb36-404"><a href="#cb36-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-405"><a href="#cb36-405" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the transition matrix efficiently using scipy.sparse</span></span>
-<span id="cb36-406"><a href="#cb36-406" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> sparse.diags(<span class="dv">1</span> <span class="op">/</span> k) <span class="op">@</span> A</span>
-<span id="cb36-407"><a href="#cb36-407" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-408"><a href="#cb36-408" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-411"><a href="#cb36-411" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-412"><a href="#cb36-412" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the expected position from node 2 over 300 steps</span></span>
-<span id="cb36-413"><a href="#cb36-413" aria-hidden="true" tabindex="-1"></a>x_t <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb36-414"><a href="#cb36-414" aria-hidden="true" tabindex="-1"></a>x_t[<span class="dv">2</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb36-415"><a href="#cb36-415" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> [x_t]</span>
-<span id="cb36-416"><a href="#cb36-416" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">300</span>):</span>
-<span id="cb36-417"><a href="#cb36-417" aria-hidden="true" tabindex="-1"></a>    x_t <span class="op">=</span> x_t <span class="op">@</span> P</span>
-<span id="cb36-418"><a href="#cb36-418" aria-hidden="true" tabindex="-1"></a>    x_list.append(x_t)</span>
-<span id="cb36-419"><a href="#cb36-419" aria-hidden="true" tabindex="-1"></a>x_list <span class="op">=</span> np.array(x_list)</span>
-<span id="cb36-420"><a href="#cb36-420" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-421"><a href="#cb36-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-424"><a href="#cb36-424" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-425"><a href="#cb36-425" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the network at different time steps</span></span>
-<span id="cb36-426"><a href="#cb36-426" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> sns.color_palette(<span class="st">"viridis"</span>, as_cmap<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb36-427"><a href="#cb36-427" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-428"><a href="#cb36-428" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span>
-<span id="cb36-429"><a href="#cb36-429" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(font_scale<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb36-430"><a href="#cb36-430" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'ticks'</span>)</span>
-<span id="cb36-431"><a href="#cb36-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-432"><a href="#cb36-432" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>), ncols <span class="op">=</span> <span class="dv">3</span>, nrows <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb36-433"><a href="#cb36-433" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-434"><a href="#cb36-434" aria-hidden="true" tabindex="-1"></a>t_list <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">299</span>]</span>
-<span id="cb36-435"><a href="#cb36-435" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(t_list):</span>
-<span id="cb36-436"><a href="#cb36-436" aria-hidden="true" tabindex="-1"></a>    igraph.plot(g, vertex_size<span class="op">=</span><span class="dv">20</span>, vertex_color<span class="op">=</span>[cmap(x_list[t][j] <span class="op">/</span> np.<span class="bu">max</span>(x_list[t])) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(g.vcount())], target <span class="op">=</span> axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>])</span>
-<span id="cb36-437"><a href="#cb36-437" aria-hidden="true" tabindex="-1"></a>    axes[i<span class="op">//</span><span class="dv">3</span>][i<span class="op">%</span><span class="dv">3</span>].set_title(<span class="ss">f"$t$ = </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span>, fontsize <span class="op">=</span> <span class="dv">25</span>)</span>
-<span id="cb36-438"><a href="#cb36-438" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-439"><a href="#cb36-439" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-440"><a href="#cb36-440" aria-hidden="true" tabindex="-1"></a>The color intensity represents the probability of the walker being at each node. Notice how:</span>
-<span id="cb36-441"><a href="#cb36-441" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Initially, the walker is concentrated at the starting node</span>
-<span id="cb36-442"><a href="#cb36-442" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>It gradually diffuses within its community</span>
-<span id="cb36-443"><a href="#cb36-443" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Only later does it spread to other communities</span>
-<span id="cb36-444"><a href="#cb36-444" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Eventually, it reaches the stationary distribution</span>
-<span id="cb36-445"><a href="#cb36-445" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-446"><a href="#cb36-446" aria-hidden="true" tabindex="-1"></a>This temporal behavior reveals the community structure!</span>
-<span id="cb36-447"><a href="#cb36-447" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-448"><a href="#cb36-448" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mixing Time and Spectral Analysis</span></span>
-<span id="cb36-449"><a href="#cb36-449" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-450"><a href="#cb36-450" aria-hidden="true" tabindex="-1"></a><span class="fu">### Computing Eigenvalues and Mixing Time</span></span>
-<span id="cb36-451"><a href="#cb36-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-452"><a href="#cb36-452" aria-hidden="true" tabindex="-1"></a>Let's demonstrate the spectral analysis of random walks:</span>
-<span id="cb36-453"><a href="#cb36-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-456"><a href="#cb36-456" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-457"><a href="#cb36-457" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the two-clique network from before</span></span>
-<span id="cb36-458"><a href="#cb36-458" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> g.get_adjacency_sparse()</span>
-<span id="cb36-459"><a href="#cb36-459" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> np.array(A_norm.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)).flatten()</span>
-<span id="cb36-460"><a href="#cb36-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-461"><a href="#cb36-461" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized adjacency matrix</span></span>
-<span id="cb36-462"><a href="#cb36-462" aria-hidden="true" tabindex="-1"></a>Dinv_sqrt <span class="op">=</span> sparse.diags(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg))</span>
-<span id="cb36-463"><a href="#cb36-463" aria-hidden="true" tabindex="-1"></a>A_norm <span class="op">=</span> Dinv_sqrt <span class="op">@</span> A_norm <span class="op">@</span> Dinv_sqrt</span>
-<span id="cb36-464"><a href="#cb36-464" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-465"><a href="#cb36-465" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-468"><a href="#cb36-468" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-469"><a href="#cb36-469" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute eigenvalues and eigenvectors</span></span>
-<span id="cb36-470"><a href="#cb36-470" aria-hidden="true" tabindex="-1"></a>evals, evecs <span class="op">=</span> np.linalg.eigh(A_norm.toarray())</span>
-<span id="cb36-471"><a href="#cb36-471" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-472"><a href="#cb36-472" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-475"><a href="#cb36-475" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-476"><a href="#cb36-476" aria-hidden="true" tabindex="-1"></a><span class="co"># Display eigenvalues</span></span>
-<span id="cb36-477"><a href="#cb36-477" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb36-478"><a href="#cb36-478" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Eigenvalue"</span>: evals</span>
-<span id="cb36-479"><a href="#cb36-479" aria-hidden="true" tabindex="-1"></a>}).T.style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="dv">1</span>).set_caption(<span class="st">"Eigenvalues of the normalized adjacency matrix"</span>)</span>
-<span id="cb36-480"><a href="#cb36-480" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-481"><a href="#cb36-481" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-482"><a href="#cb36-482" aria-hidden="true" tabindex="-1"></a>The largest eigenvalue is always 1 for a normalized adjacency matrix. The associated eigenvector gives the stationary distribution.</span>
-<span id="cb36-483"><a href="#cb36-483" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-484"><a href="#cb36-484" aria-hidden="true" tabindex="-1"></a><span class="fu">### Relaxation Time</span></span>
-<span id="cb36-485"><a href="#cb36-485" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-488"><a href="#cb36-488" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-489"><a href="#cb36-489" aria-hidden="true" tabindex="-1"></a>lambda_2 <span class="op">=</span> <span class="op">-</span>np.sort(<span class="op">-</span>evals)[<span class="dv">1</span>]  <span class="co"># Second largest eigenvalue</span></span>
-<span id="cb36-490"><a href="#cb36-490" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> lambda_2)  <span class="co"># Relaxation time</span></span>
-<span id="cb36-491"><a href="#cb36-491" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The second largest eigenvalue is </span><span class="sc">{</span>lambda_2<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb36-492"><a href="#cb36-492" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The relaxation time of the random walk is </span><span class="sc">{</span>tau<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb36-493"><a href="#cb36-493" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-494"><a href="#cb36-494" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-495"><a href="#cb36-495" aria-hidden="true" tabindex="-1"></a><span class="fu">### Verifying Spectral Decomposition</span></span>
-<span id="cb36-496"><a href="#cb36-496" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-497"><a href="#cb36-497" aria-hidden="true" tabindex="-1"></a>Let's verify we can compute multi-step transitions using eigenvalues:</span>
-<span id="cb36-498"><a href="#cb36-498" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-501"><a href="#cb36-501" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb36-502"><a href="#cb36-502" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb36-503"><a href="#cb36-503" aria-hidden="true" tabindex="-1"></a>x_0 <span class="op">=</span> np.zeros(g.vcount())</span>
-<span id="cb36-504"><a href="#cb36-504" aria-hidden="true" tabindex="-1"></a>x_0[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb36-505"><a href="#cb36-505" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-506"><a href="#cb36-506" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: Using eigenvalues and eigenvectors</span></span>
-<span id="cb36-507"><a href="#cb36-507" aria-hidden="true" tabindex="-1"></a>Q_L <span class="op">=</span> np.diag(<span class="fl">1.0</span><span class="op">/</span>np.sqrt(deg)) <span class="op">@</span> evecs</span>
-<span id="cb36-508"><a href="#cb36-508" aria-hidden="true" tabindex="-1"></a>Q_R <span class="op">=</span> np.diag(np.sqrt(deg)) <span class="op">@</span> evecs</span>
-<span id="cb36-509"><a href="#cb36-509" aria-hidden="true" tabindex="-1"></a>x_t_spectral <span class="op">=</span> x_0 <span class="op">@</span> Q_L <span class="op">@</span> np.diag(evals<span class="op">**</span>t) <span class="op">@</span> Q_R.T</span>
-<span id="cb36-510"><a href="#cb36-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-511"><a href="#cb36-511" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 2: Using power iteration</span></span>
-<span id="cb36-512"><a href="#cb36-512" aria-hidden="true" tabindex="-1"></a>P_matrix <span class="op">=</span> sparse.diags(<span class="dv">1</span><span class="op">/</span>deg) <span class="op">@</span> g.get_adjacency_sparse()</span>
-<span id="cb36-513"><a href="#cb36-513" aria-hidden="true" tabindex="-1"></a>x_t_power <span class="op">=</span> x_0.copy()</span>
-<span id="cb36-514"><a href="#cb36-514" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(t):</span>
-<span id="cb36-515"><a href="#cb36-515" aria-hidden="true" tabindex="-1"></a>    x_t_power <span class="op">=</span> x_t_power <span class="op">@</span> P_matrix</span>
-<span id="cb36-516"><a href="#cb36-516" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-517"><a href="#cb36-517" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb36-518"><a href="#cb36-518" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Spectral method"</span>: x_t_spectral.flatten(),</span>
-<span id="cb36-519"><a href="#cb36-519" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Power iteration"</span>: x_t_power.flatten()</span>
-<span id="cb36-520"><a href="#cb36-520" aria-hidden="true" tabindex="-1"></a>}).style.background_gradient(cmap<span class="op">=</span><span class="st">'cividis'</span>, axis <span class="op">=</span> <span class="va">None</span>).set_caption(<span class="st">"Comparison of Spectral and Power Iteration Methods"</span>)</span>
-<span id="cb36-521"><a href="#cb36-521" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb36-522"><a href="#cb36-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-523"><a href="#cb36-523" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Takeaways</span></span>
-<span id="cb36-524"><a href="#cb36-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-525"><a href="#cb36-525" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Random walks converge to stationary distributions proportional to node degrees</span>
-<span id="cb36-526"><a href="#cb36-526" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Community structure is revealed through short-term vs. long-term behavior</span>
-<span id="cb36-527"><a href="#cb36-527" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Spectral properties control convergence speed and mixing times</span>
-<span id="cb36-528"><a href="#cb36-528" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Implementation requires careful attention to matrix operations and numerical stability</span>
-<span id="cb36-529"><a href="#cb36-529" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Applications span centrality measures, community detection, and network characterization</span>
-<span id="cb36-530"><a href="#cb36-530" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-531"><a href="#cb36-531" aria-hidden="true" tabindex="-1"></a>This foundation prepares you to apply random walks to real-world network analysis problems and understand their connections to other network science techniques.</span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -2615,7 +1173,7 @@ Table&nbsp;3: Comparison of Spectral and Power Iteration Methods
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/02-coding.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

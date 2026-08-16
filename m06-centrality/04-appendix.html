@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sadamori Kojaku">
+<meta name="dcterms.date" content="2026-08-16">
+
+<title>Appendix: The Algebra Behind the Rankings – Advanced Topics in Network Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../m07-random-walks/01-concepts.html" rel="next">
+<link href="../m06-centrality/03-exercises.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "|"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script defer="" src="../assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/anim.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Advanced Topics in Network Science</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-course" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Course</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
+        <li>
+    <a class="dropdown-item" href="../course/welcome.html">
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/about.html">
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/discord.html">
+ <span class="dropdown-text">Discord</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
+        <li>
+    <a class="dropdown-item" href="../intro/why-networks.html">
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/04-appendix.html">Appendix: The Algebra Behind the Rankings</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to SSIE 641</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About us</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Discord</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Set up your machine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">M01: Euler Tour</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">M02: Small World</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">M03: Robustness</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">M04: Friendship Paradox</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">M05: Clustering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">M06: Centrality</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">M07: Random Walks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">M08: Embedding</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">M09: Graph Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#perron-frobenius-stated-precisely" id="toc-perron-frobenius-stated-precisely" class="nav-link active" data-scroll-target="#perron-frobenius-stated-precisely">Perron-Frobenius, stated precisely</a></li>
+  <li><a href="#why-power-iteration-converges" id="toc-why-power-iteration-converges" class="nav-link" data-scroll-target="#why-power-iteration-converges">Why power iteration converges</a></li>
+  <li><a href="#katz-centrality-as-a-matrix-inverse" id="toc-katz-centrality-as-a-matrix-inverse" class="nav-link" data-scroll-target="#katz-centrality-as-a-matrix-inverse">Katz centrality as a matrix inverse</a></li>
+  <li><a href="#hits-two-centralities-that-define-each-other" id="toc-hits-two-centralities-that-define-each-other" class="nav-link" data-scroll-target="#hits-two-centralities-that-define-each-other">HITS: two centralities that define each other</a></li>
+  <li><a href="#personalized-pagerank" id="toc-personalized-pagerank" class="nav-link" data-scroll-target="#personalized-pagerank">Personalized PageRank</a></li>
+  <li><a href="#what-each-centrality-costs-to-compute" id="toc-what-each-centrality-costs-to-compute" class="nav-link" data-scroll-target="#what-each-centrality-costs-to-compute">What each centrality costs to compute</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m06-centrality/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m06-centrality/01-concepts.html">M06: Centrality</a></li><li class="breadcrumb-item"><a href="../m06-centrality/04-appendix.html">Appendix: The Algebra Behind the Rankings</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Appendix: The Algebra Behind the Rankings</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sadamori Kojaku </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 16, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Everything on this page is optional for a first reading. The main text keeps the intuition and the results; here are the derivations, stated for a reader who is comfortable with matrices and eigenvectors.</p>
+<section id="perron-frobenius-stated-precisely" class="level2">
+<h2 class="anchored" data-anchor-id="perron-frobenius-stated-precisely">Perron-Frobenius, stated precisely</h2>
+<p>Eigenvector centrality is well defined only because of the following theorem.</p>
+<blockquote class="blockquote">
+<p>Let <span class="math inline">\mathbf{A}</span> be a non-negative matrix (<span class="math inline">A_{ij} \geq 0</span>) that is <strong>irreducible</strong> — for an undirected network this means exactly that the network is connected. Then the largest eigenvalue <span class="math inline">\lambda_1</span> of <span class="math inline">\mathbf{A}</span> is real and positive, it is a simple root of the characteristic polynomial, and its eigenvector can be chosen with all entries strictly positive (<span class="math inline">v_i &gt; 0</span> for every <span class="math inline">i</span>). No other eigenvector of <span class="math inline">\mathbf{A}</span> has all-positive entries.</p>
+</blockquote>
+<p>Two consequences matter for us. First, “the eigenvector with the largest eigenvalue” picks out one vector, not a family, so eigenvector centrality is unambiguous. Second, that vector is the only eigenvector that can be read as an importance score, since every other one has both positive and negative entries.</p>
+<p>If the network is disconnected, the theorem does not apply and eigenvector centrality is computed per component. If the network is connected but <strong>bipartite</strong>, <span class="math inline">-\lambda_1</span> is also an eigenvalue: <span class="math inline">\lambda_1</span> remains simple and its eigenvector remains positive, but power iteration will oscillate instead of settling, and needs averaging over consecutive iterates.</p>
+</section>
+<section id="why-power-iteration-converges" class="level2">
+<h2 class="anchored" data-anchor-id="why-power-iteration-converges">Why power iteration converges</h2>
+<p>Power iteration starts from any positive vector and repeats</p>
+<p><span class="math display">
+{\bf c} \leftarrow \frac{{\bf A}{\bf c}}{\|{\bf A}{\bf c}\|}.
+</span></p>
+<p>Write the starting vector in the eigenvector basis, <span class="math inline">{\bf c}^{(0)} = \sum_i a_i {\bf v}_i</span>. Applying <span class="math inline">{\bf A}</span> <span class="math inline">t</span> times gives</p>
+<p><span class="math display">
+{\bf A}^t {\bf c}^{(0)} = \sum_i a_i \lambda_i^t {\bf v}_i = \lambda_1^t \left( a_1 {\bf v}_1 + \sum_{i \geq 2} a_i \left(\frac{\lambda_i}{\lambda_1}\right)^t {\bf v}_i \right).
+</span></p>
+<p>Since <span class="math inline">|\lambda_i / \lambda_1| &lt; 1</span> for every <span class="math inline">i \geq 2</span>, every term except the first decays geometrically. After enough iterations only <span class="math inline">{\bf v}_1</span> survives, which is why the normalized vector settles. The convergence rate is governed by the ratio <span class="math inline">|\lambda_2|/|\lambda_1|</span> — the closer those two eigenvalues, the slower it converges.</p>
+<p>For the five-node network of the main text the eigenvalues are <span class="math inline">2.21, 1, -0.54, -1, -1.68</span>, so <span class="math inline">|\lambda_2|/|\lambda_1| = 1.68/2.21 = 0.76</span> and each round cuts the error by about a quarter. That is why the numbers in the table were still visibly moving after three rounds.</p>
+</section>
+<section id="katz-centrality-as-a-matrix-inverse" class="level2">
+<h2 class="anchored" data-anchor-id="katz-centrality-as-a-matrix-inverse">Katz centrality as a matrix inverse</h2>
+<p>Katz centrality is defined by <span class="math inline">c_i = \beta + \alpha \sum_j A_{ij} c_j</span>, or in vector form</p>
+<p><span class="math display">
+\mathbf{c} = \beta \mathbf{1} + \alpha \mathbf{A} \mathbf{c}
+</span></p>
+<p>where <span class="math inline">\mathbf{1}</span> is the vector of ones. Collecting the <span class="math inline">\mathbf{c}</span> terms,</p>
+<p><span class="math display">
+\left( \mathbf{I} - \alpha \mathbf{A} \right) \mathbf{c} = \beta \mathbf{1},
+\qquad\text{so}\qquad
+\mathbf{c} = \beta \left( \mathbf{I} - \alpha \mathbf{A} \right)^{-1} \mathbf{1}
+</span></p>
+<p>where <span class="math inline">\mathbf{I}</span> is the identity matrix. This closed form is what a library actually computes, and it is also where the walk-counting interpretation comes from. For a scalar, <span class="math inline">1/(1-x) = 1 + x + x^2 + \cdots</span> whenever <span class="math inline">|x| &lt; 1</span>; the same identity holds for matrices when the series converges:</p>
+<p><span class="math display">
+\left( \mathbf{I} - \alpha \mathbf{A} \right)^{-1} = \mathbf{I} + \alpha \mathbf{A} + \alpha^2 \mathbf{A}^2 + \alpha^3 \mathbf{A}^3 + \cdots
+</span></p>
+<p>Recall from Module 1 that <span class="math inline">\left(\mathbf{A}^t\right)_{ij}</span> is the number of walks of length <span class="math inline">t</span> from <span class="math inline">i</span> to <span class="math inline">j</span>. Multiplying by <span class="math inline">\beta \mathbf{1}</span> therefore gives</p>
+<p><span class="math display">
+c_i = \beta \sum_{t=0}^{\infty} \alpha^t \left(\text{number of walks of length } t \text{ ending at } i\right),
+</span></p>
+<p>which is the statement quoted in the main text.</p>
+<p><strong>The convergence condition.</strong> A geometric series in a matrix converges exactly when the spectral radius of <span class="math inline">\alpha \mathbf{A}</span> is below 1, i.e.&nbsp;when <span class="math inline">\alpha &lt; 1 / \lambda_{\max}(\mathbf{A})</span>. Above that value the series diverges, <span class="math inline">\mathbf{I} - \alpha \mathbf{A}</span> has a non-positive eigenvalue, and the “solution” returned by a linear solver contains negative entries that mean nothing. As <span class="math inline">\alpha \rightarrow 1/\lambda_{\max}</span> the longest walks dominate the sum and Katz centrality converges to eigenvector centrality.</p>
+</section>
+<section id="hits-two-centralities-that-define-each-other" class="level2">
+<h2 class="anchored" data-anchor-id="hits-two-centralities-that-define-each-other">HITS: two centralities that define each other</h2>
+<p><strong>HITS</strong> (Hyperlink-Induced Topic Search) extends eigenvector centrality to directed networks by splitting importance into two: <em>hub</em> and <em>authority</em>. A node is an important hub if it points to many important authorities; a node is an important authority if it is pointed to by many important hubs.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Notation: edge direction">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Notation: edge direction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The convention stated in <a href="../m06-centrality/01-concepts.html">the main text</a>, repeated here: <span class="math inline">A_{ij} = 1</span> when there is an edge <strong>from <span class="math inline">i</span> to <span class="math inline">j</span></strong>, so <span class="math inline">\sum_j A_{ij}(\cdot)_j</span> sums over the nodes <span class="math inline">i</span> points to (their count is the out-degree <span class="math inline">d^{\text{out}}_i</span>) and <span class="math inline">\sum_j A_{ji}(\cdot)_j</span> sums over the nodes that point to <span class="math inline">i</span> (their count is the in-degree <span class="math inline">d^{\text{in}}_i</span>).</p>
+</div>
+</div>
+<p>Let <span class="math inline">x_i</span> and <span class="math inline">y_i</span> be the hub and authority scores of node <span class="math inline">i</span>. Following the eigenvector-centrality convention — the rescaling constant sits on the left, so it is an eigenvalue — node <span class="math inline">i</span> is a good hub when the nodes <strong>it points to</strong> are good authorities, and a good authority when the nodes <strong>pointing to it</strong> are good hubs:</p>
+<p><span class="math display">
+\underbrace{\lambda_x x_i = \sum_j A_{ij} y_j}_{\text{hub: sum over what } i \text{ points to}}, \quad \underbrace{\lambda_y y_i = \sum_j A_{ji} x_j}_{\text{authority: sum over what points to } i}
+</span></p>
+<p>Or equivalently,</p>
+<p><span class="math display">
+\lambda_x \mathbf{x} = \mathbf{A} \mathbf{y}, \quad \lambda_y \mathbf{y} = \mathbf{A}^\top \mathbf{x}
+</span></p>
+<p>Substituting each into the other,</p>
+<p><span class="math display">
+\lambda_x \lambda_y \mathbf{x} = \mathbf{A} \mathbf{A}^\top \mathbf{x}, \quad \lambda_x \lambda_y \mathbf{y} = \mathbf{A}^\top \mathbf{A} \mathbf{y}
+</span></p>
+<p>Again, we obtain eigenvector equations. The hub centrality <span class="math inline">\mathbf{x}</span> is the principal eigenvector of <span class="math inline">\mathbf{A} \mathbf{A}^\top</span>, and the authority centrality <span class="math inline">\mathbf{y}</span> is the principal eigenvector of <span class="math inline">\mathbf{A}^\top \mathbf{A}</span>, both with eigenvalue <span class="math inline">\lambda_x \lambda_y</span>.</p>
+<p>A useful sanity check on those two matrices: <span class="math inline">(\mathbf{A}\mathbf{A}^\top)_{ij}</span> counts how many nodes <strong>both</strong> <span class="math inline">i</span> and <span class="math inline">j</span> point to, so two hubs look similar when they cite the same sources. <span class="math inline">(\mathbf{A}^\top\mathbf{A})_{ij}</span> counts how many nodes point to <strong>both</strong> <span class="math inline">i</span> and <span class="math inline">j</span>, so two authorities look similar when they are cited together.</p>
+<div class="callout callout-style-simple callout-none no-icon callout-titled" title="Exercise: on an undirected network, is HITS the same as eigenvector centrality?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">None</span>Exercise: on an undirected network, is HITS the same as eigenvector centrality?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Yes. If the graph is undirected then <span class="math inline">\mathbf{A}^\top = \mathbf{A}</span>, the hub and authority equations become identical, and both reduce to the principal eigenvector of <span class="math inline">\mathbf{A}^\top \mathbf{A}</span>. Start from the eigenvector equation for <span class="math inline">\mathbf{A}</span>,</p>
+<p><span class="math display">
+\lambda \mathbf{c} = \mathbf{A} \mathbf{c},
+</span></p>
+<p>and multiply both sides by <span class="math inline">\mathbf{A}^\top</span>:</p>
+<p><span class="math display">
+\begin{aligned}
+\lambda \mathbf{A}^\top \mathbf{c} &amp;= \mathbf{A}^\top \mathbf{A} \mathbf{c} \\
+\iff \lambda \cdot \lambda \mathbf{c} &amp;= \mathbf{A}^\top \mathbf{A} \mathbf{c}
+\end{aligned}
+</span></p>
+<p>using <span class="math inline">\mathbf{A}^\top \mathbf{c} = \mathbf{A}\mathbf{c} = \lambda \mathbf{c}</span>. So the eigenvector of <span class="math inline">\mathbf{A}^\top \mathbf{A}</span> is the same as that of <span class="math inline">\mathbf{A}</span>, with the eigenvalue squared. On an undirected network HITS returns eigenvector centrality.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-none no-icon callout-titled" title="Exercise: normalize by degree and watch HITS collapse to degree centrality">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">None</span>Exercise: normalize by degree and watch HITS collapse to degree centrality
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Stay on an undirected network and divide each score by the degree of the node it came from:</p>
+<p><span class="math display">
+x_i = \sum_j \frac{A_{ij}}{d_j} y_j, \qquad y_i = \sum_j \frac{A_{ji}}{d_j} x_j
+</span></p>
+<p>Substitute <span class="math inline">y_j = d_j</span> into the first equation: <span class="math inline">x_i = \sum_j (A_{ij}/d_j) \, d_j = \sum_j A_{ij} = d_i</span>. Substitute <span class="math inline">x_j = d_j</span> into the second and you get <span class="math inline">y_i = d_i</span> as well. So <span class="math inline">\mathbf{x} = \mathbf{y} = \mathbf{d}</span> is an exact solution, and since <span class="math inline">\mathbf{A}\mathbf{D}^{-1}</span> is column-stochastic it is the leading one.</p>
+<p>One normalization turns a “sophisticated” recursive centrality into plain degree counting — the line between the two is thinner than it looks. The same degree-proportional vector reappears in Module 7 as the stationary distribution of a random walk.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="personalized-pagerank" class="level2">
+<h2 class="anchored" data-anchor-id="personalized-pagerank">Personalized PageRank</h2>
+<p><strong>Personalized PageRank</strong> contextualizes importance from the point of view of one node. Suppose a random walker starts at node <span class="math inline">\ell</span>. It moves to a neighboring node just like in PageRank, but at every step, with probability <span class="math inline">r</span>, it teleports back to <span class="math inline">\ell</span> rather than to a uniformly random node. Its long-run visiting probabilities solve</p>
+<p><span class="math display">
+c_i = \underbrace{(1-r) \sum_j A_{ji}\frac{c_j}{d^{\text{out}}_j}}_{\text{score arriving from neighbors}} + \underbrace{r \cdot (p_{\ell})_i}_{\text{teleport back to the start}}
+</span></p>
+<p>where <span class="math inline">p_{\ell}</span> is a one-hot vector, equal to 1 at position <span class="math inline">\ell</span> and 0 elsewhere. The only change from PageRank is that the teleportation term sends all its mass to one node instead of spreading it over all <span class="math inline">N</span>. It can be solved by power iteration exactly as PageRank is, or by solving the linear system directly.</p>
+<p>There is a second reading of the same quantity. Let <span class="math inline">p_{\ell i}^{(k)}</span> be the probability of being at node <span class="math inline">i</span> exactly <span class="math inline">k</span> steps after leaving <span class="math inline">\ell</span>. Then</p>
+<p><span class="math display">
+c_i = \sum_{k=0}^{\infty} r (1-r)^k \, p_{\ell i}^{(k)}
+</span></p>
+<p>where <span class="math inline">r(1-r)^k</span> is the probability that the walker takes exactly <span class="math inline">k</span> steps before its next restart — a geometric distribution over walk length, not a probability about node <span class="math inline">i</span>. Personalized PageRank is therefore a weighted average of “where am I after <span class="math inline">k</span> steps?” over all <span class="math inline">k</span>, with long excursions weighted exponentially less. Nodes close to <span class="math inline">\ell</span> collect weight early and often, which is why the measure reads as proximity to <span class="math inline">\ell</span>.</p>
+</section>
+<section id="what-each-centrality-costs-to-compute" class="level2">
+<h2 class="anchored" data-anchor-id="what-each-centrality-costs-to-compute">What each centrality costs to compute</h2>
+<p>Practical choice is constrained by computation. Below, <span class="math inline">N</span> is the number of nodes and <span class="math inline">M</span> the number of edges, and <span class="math inline">O(\cdot)</span> states how the running time grows with them: <span class="math inline">O(M)</span> means “proportional to the number of edges”.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 19%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Centrality</th>
+<th>Time complexity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Degree</td>
+<td><span class="math inline">O(M)</span></td>
+<td>One pass over the edges. Essentially free.</td>
+</tr>
+<tr class="even">
+<td>Closeness / Harmonic</td>
+<td><span class="math inline">O(NM)</span></td>
+<td>One breadth-first search per node. Expensive, but parallel.</td>
+</tr>
+<tr class="odd">
+<td>Betweenness</td>
+<td><span class="math inline">O(NM)</span></td>
+<td>Brandes’ algorithm, which accumulates path counts during those same searches. The practical bottleneck on large graphs.</td>
+</tr>
+<tr class="even">
+<td>Eigenvector / PageRank</td>
+<td><span class="math inline">O(M)</span> per iteration</td>
+<td>Power iteration; the number of iterations needed depends on <span class="math inline">\lvert\lambda_2\rvert/\lvert\lambda_1\rvert</span>.</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>breadth-first search</strong> (Module 1) explores a network one layer at a time from a starting node, and the layer at which it reaches a node is the shortest path length to that node. Closeness, harmonic and betweenness all need this from <em>every</em> node, which is where their <span class="math inline">N</span> factor comes from.</p>
+<p>The pattern is that shortest-path measures scale badly because they need all-pairs information, while walk-based measures scale well because they only ever need one matrix-vector product at a time. On a million-node network, PageRank is routine and exact betweenness is not — which is why approximate betweenness, computed by sampling source nodes instead of using all of them, is common practice.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/skojaku\.github\.io\/adv-net-sci\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../m06-centrality/03-exercises.html" class="pagination-link" aria-label="Exercises and Assignments">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Exercises and Assignments</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../m07-random-walks/01-concepts.html" class="pagination-link" aria-label="The Drunkard Who Maps the City">
+        <span class="nav-page-text">The Drunkard Who Maps the City</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2024, Sadamori Kojaku</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m06-centrality/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/skojaku/adv-net-sci">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

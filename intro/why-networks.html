@@ -2,19 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-07-28">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Networks – Advanced Topics in Network Science</title>
+<title>The Pandemic That Ignored the Map – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -22,46 +28,10 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -88,17 +58,17 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../m01-euler_tour/01-concepts.html" rel="next">
-<link href="../course/how-to-submit-assignment.html" rel="prev">
+<link href="../course/mini-project.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -124,11 +94,54 @@ div.csl-indent {
   }
 }</script>
 
+  <script defer="" src="../assets/katex/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
-<link rel="stylesheet" href="../assets/custom.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/anim.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed slimcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -136,7 +149,8 @@ div.csl-indent {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../logo.jpg" alt="" class="navbar-logo">
+    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -149,7 +163,7 @@ div.csl-indent {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -159,192 +173,78 @@ div.csl-indent {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="../course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="../intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -364,12 +264,9 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html">Networks</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html">The Pandemic That Ignored the Map</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -377,13 +274,14 @@ div.csl-indent {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -396,7 +294,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -407,26 +305,32 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -443,7 +347,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -451,7 +355,7 @@ div.csl-indent {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -465,20 +369,26 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -495,13 +405,13 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -513,7 +423,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -530,13 +440,13 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -548,7 +458,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -565,19 +475,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -594,19 +510,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -623,19 +545,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -652,19 +580,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -681,25 +615,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -716,31 +650,31 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -750,14 +684,26 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#h1n1-started-in-mexico.-spain-was-infected-before-guatemala." id="toc-h1n1-started-in-mexico.-spain-was-infected-before-guatemala." class="nav-link active" data-scroll-target="#h1n1-started-in-mexico.-spain-was-infected-before-guatemala.">H1N1 Started in Mexico. Spain Was Infected Before Guatemala.</a></li>
+  <li><a href="#a-route-that-carries-more-traffic-is-a-shorter-route" id="toc-a-route-that-carries-more-traffic-is-a-shorter-route" class="nav-link" data-scroll-target="#a-route-that-carries-more-traffic-is-a-shorter-route">A Route That Carries More Traffic Is a Shorter Route</a></li>
+  <li><a href="#the-same-skeleton-under-a-food-web-a-bank-and-your-brain" id="toc-the-same-skeleton-under-a-food-web-a-bank-and-your-brain" class="nav-link" data-scroll-target="#the-same-skeleton-under-a-food-web-a-bank-and-your-brain">The Same Skeleton Under a Food Web, a Bank and Your Brain</a></li>
+  <li><a href="#what-a-brain-and-a-power-grid-have-in-common-is-a-table" id="toc-what-a-brain-and-a-power-grid-have-in-common-is-a-table" class="nav-link" data-scroll-target="#what-a-brain-and-a-power-grid-have-in-common-is-a-table">What a Brain and a Power Grid Have in Common Is a Table</a></li>
+  <li><a href="#if-it-fits-in-a-spreadsheet-why-is-there-a-whole-field" id="toc-if-it-fits-in-a-spreadsheet-why-is-there-a-whole-field" class="nav-link" data-scroll-target="#if-it-fits-in-a-spreadsheet-why-is-there-a-whole-field">If It Fits in a Spreadsheet, Why Is There a Whole Field?</a></li>
+  <li><a href="#what-you-can-now-do" id="toc-what-you-can-now-do" class="nav-link" data-scroll-target="#what-you-can-now-do">What You Can Now Do</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/intro/why-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html">Networks</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../intro/why-networks.html">Introduction</a></li><li class="breadcrumb-item"><a href="../intro/why-networks.html">The Pandemic That Ignored the Map</a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Networks</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">The Pandemic That Ignored the Map</h1>
 </div>
 
 
@@ -774,7 +720,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 28, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -786,231 +732,735 @@ div.csl-indent {
 </header>
 
 
-<section id="networks-are-everywhere-and-they-matter" class="level2 page-columns page-full" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="networks-are-everywhere-and-they-matter"><span class="header-section-number">1</span> Networks are everywhere and they matter</h2>
-<p>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</p>
-<p>The most natural way to think about disease spread is through geographic distance. If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:</p>
-<div id="fig-geo-vs-arrival-time" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-geo-vs-arrival-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-geo-vs-arrival-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
-</figcaption>
-</figure>
-</div>
-<p>Distance does explain the arrival time to some extent - there’s a rough trend where farther places tend to be infected later (C, D, E). But it doesn’t tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</p>
-<p>This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.</p>
-<div id="fig-network-distance-vs-arrival-time" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-network-distance-vs-arrival-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-distance-vs-arrival-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).
-</figcaption>
-</figure>
-</div>
+<blockquote class="blockquote">
+<p><strong>The big question of this module.</strong> Why do we need a science of networks instead of ordinary statistics?</p>
+</blockquote>
+<section id="h1n1-started-in-mexico.-spain-was-infected-before-guatemala." class="level2">
+<h2 class="anchored" data-anchor-id="h1n1-started-in-mexico.-spain-was-infected-before-guatemala.">H1N1 Started in Mexico. Spain Was Infected Before Guatemala.</h2>
+<p>In April 2009 a new strain of influenza, H1N1, began spreading out of Mexico. Nobody had immunity, and every health ministry in the world was asking the same question: when does it get here?</p>
+<p>The natural way to answer that is with a map. Disease moves from person to person, people are spread across the ground, so an outbreak ought to grow like an ink stain — neighbours first, then outward in rings. Guatemala shares a land border with Mexico. Spain is nine thousand kilometres away, across an ocean.</p>
+<p>The first country outside Mexico to confirm a case was the United States. Spain confirmed its first case before Guatemala did.</p>
+<p>One country pair proves nothing, so here is every country at once. Step through the stage below. It opens on the map’s own answer — each country’s distance from Mexico City in kilometres, against the day the virus arrived — and then hands you the ruler.</p>
+<style>
+/* --------------------------------------------------------------------------
+   The ruler swap — the only rules this one stage needs. Paper, pen, panels,
+   buttons, knob and motion all come from assets/anim.css; the sequencer from
+   assets/anim.js. Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
 
-<div class="no-row-height column-margin column-container"><div class="">
-<p>See <span class="citation" data-cites="brockmann2013hidden">(<a href="#ref-brockmann2013hidden" role="doc-biblioref">Brockmann and Helbing 2013</a>)</span> for more details.</p>
-</div></div><p>The H1N1 example above reveals a fundamental truth: <strong><em>network structure determines how things spread</em></strong>. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</p>
-<p>Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we’re connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.</p>
-<div class="quarto-layout-panel" data-layout-nrow="4">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png" class="img-fluid figure-img"></p>
-<figcaption>Plant pollinator network</figcaption>
+/* A 28-point scatter needs the whole column, not the kit's 310px default.
+   A country's name travels with its dot and has to survive passing over the
+   others, so every label carries the kit's paper knockout (.anim-knockout),
+   a little heavier than its default because these letters cross whole dots. */
+#h1n1-ruler { --anim-svg-max: 100%; --anim-knockout-w: 3.4px; }
+#h1n1-ruler .h1-col { max-width: 520px; margin: 0 auto; }
+/* Reserve the tallest card so the page does not jump between steps. */
+#h1n1-ruler .h1-side { min-height: 200px; }
+
+/* One set of dots, moved by transform. 0.16s linear, not the kit's 0.34s
+   ease: across 21 detents a long ease reads as lag under your own finger. */
+#h1n1-ruler .h1-pt { transition: transform 0.16s linear; }
+#h1n1-ruler .h1-plot { transition: opacity 0.5s ease; }
+#h1n1-ruler .h1-named { stroke: var(--_ink); stroke-width: 1.5; }
+#h1n1-ruler .h1-hi { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  #h1n1-ruler .h1-pt, #h1n1-ruler .h1-plot { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage figure" id="h1n1-ruler">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step=""></div>
+    <div class="anim-dots" data-anim-dots=""></div>
+    <button class="anim-btn" type="button" data-anim-prev="" aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play="">⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next="" aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay="">↻ Replay</button>
+  </div>
+
+  <div class="h1-col" data-anim-canvas="">
+    <div data-anim-clear="" data-h1-plot=""></div>
+    <div class="h1-side" data-anim-clear="" data-h1-side=""></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note=""></figcaption>
 </figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://mlurgi.github.io/networks_for_r/images/food-web.png" class="img-fluid figure-img"></p>
-<figcaption>Food web</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp" class="img-fluid figure-img"></p>
-<figcaption>Brain network</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png" class="img-fluid figure-img"></p>
-<figcaption>Medicine network</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg" class="img-fluid figure-img"></p>
-<figcaption>Protein-protein interaction</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png" class="img-fluid figure-img"></p>
-<figcaption>Social network</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.researchgate.net/profile/Douglas-White-4/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png" class="img-fluid figure-img"></p>
-<figcaption>International financial network</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png" class="img-fluid figure-img"></p>
-<figcaption>US airport network</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png" class="img-fluid figure-img"></p>
-<figcaption>Power grid network</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png" class="img-fluid figure-img"></p>
-<figcaption>River network</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png" class="img-fluid figure-img"></p>
-<figcaption>Internet network</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png" class="img-fluid figure-img"></p>
-<figcaption>Knowledge graph</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
+
+<script>
+/* The ruler swap. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css
+   + assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing
+     here runs a shortest-path search, or any other algorithm, at page load.
+
+     28 countries. Four are named and carry the argument: Mexico (the origin,
+     day 0), the United States (3,030 km, day 29 — the first country outside
+     Mexico), Spain (9,070 km, day 41) and Guatemala (1,090 km, day 49).
+     Guatemala is 8.3x nearer than Spain and was reached 8 days later; that
+     pair is the paradox this page opens with. The other 24 are an anonymous
+     cloud shaped like panel D of Brockmann & Helbing: a weak rise, plus a
+     column of five countries at ~9,000 km whose arrival days run 41 to 121.
+
+     The effective distances were NOT re-derived from an airline timetable.
+     Each is the country's arrival day over a slope of 9.5 days per unit,
+     plus a residual, and the residuals were scaled by bisection until the
+     least-squares fit of arrival day on effective distance landed on exactly
+     the R^2 = 0.973 that Brockmann & Helbing report. The picture therefore
+     reproduces their published relationship rather than rediscovering it —
+     which is what "redrawn schematically" on the caption means.
+
+       R^2 of arrival day on kilometres           0.189
+       R^2 of arrival day on effective distance   0.973
+
+     Coordinates are stored already projected into the viewBox:
+       x_geo = 58 + km  / 20000 * 388     (axis 0 .. 20,000 km)
+       x_eff = 58 + eff / 16    * 388     (axis 0 .. 16)
+       y     = 214 - day / 150  * 184     (axis 0 .. 150 days)
+     ------------------------------------------------------------------------ */
+  const GEOX = [58,116.8,234,79.1,124,133.7,118.1,100.7,226.8,240.4,248.1,259.8,236.5,230.7,253.9,205.4,275.3,271.4,300.5,318,364.5,376.2,341.2,397.5,156.9,182.2,290.8,92.9];
+  const EFFX = [58,104.1,154.3,194,300,288.9,283.5,225.6,376.4,281.8,225.8,162.5,176.6,174.2,161.1,204.7,164.9,237.5,226.3,313.8,229.7,361.6,398.7,362.1,337.6,246.4,371.3,148.7];
+  const DAYY = [214,178.4,163.7,153.9,96.2,118.3,109.7,130.6,65.6,106.1,137.9,157.6,160,161.3,158.8,151.4,156.3,134.3,149,91.3,140.4,69.3,57,79.1,76.6,123.2,54.5,162.5];
+
+  /* The four named dots: index, label, and the offset its label sits at.
+     A label travels with its dot, so each offset had to clear every other
+     dot under BOTH rulers at once; these are the smallest that do, found by
+     sweeping the offset grid offline. They still get a paper-coloured
+     knockout (.anim-knockout) so a near miss is never a collision. */
+  const NAMED = [
+    [0, "Mexico", 8, -6, "start"],
+    [1, "USA", -8, 0, "end"],
+    [2, "Spain", -13, 3, "end"],
+    [3, "Guatemala", 21, 10, "start"]
+  ];
+  const SPAIN = 2, GUATEMALA = 3;
+
+  /* 21 detents of the blend x = (1-t) * x_geo + t * x_eff, t = i / 20.
+     R2B[i] is the least-squares R^2 of arrival day against that blended
+     coordinate; SEG[i] is the fitted line itself, already clipped to the
+     plot box as [x1, y1, x2, y2]. Both computed on the 28 points above. */
+  const DET = 21;
+  const R2B = [0.189,0.222,0.26,0.302,0.348,0.397,0.45,0.505,0.561,0.617,0.672,0.725,0.775,0.82,0.86,0.894,0.922,0.943,0.959,0.968,0.973];
+  const SEG = [[58,157.9,446,85.2],[58,161.7,446,80.5],[58,165.8,446,75.5],[58,170.1,446,70.3],[58,174.6,446,65],[58,179.3,446,59.7],[58,184,446,54.3],[58,188.7,446,49.1],[58,193.2,446,44.2],[58,197.5,446,39.7],[58,201.5,446,35.7],[58,205,446,32.3],[58,208,445.3,30],[58,210.4,441.3,30],[58,212.1,439.1,30],[58,213.2,438.5,30],[58,213.7,439.4,30],[58,213.6,441.6,30],[58,213,445.1,30],[58,212,446,31.7],[58,210.6,446,34.2]];
+
+  /* Step 2: three legs out of Mexico City, on the page's own numbers.
+     length = 1 - ln(p), so p = 1/5 -> 2.61, 1/10 -> 3.30, 1/1000 -> 7.91.
+     A leg is DRAWN at its effective length (x = 52 + 46 * len) and drawn
+     with thickness sqrt(p) * 24.6, so a fat pipe is visibly fat and visibly
+     short. The kilometres beside each destination run the other way. */
+  const LEGS = [
+    { y: 40, w: 11, x: 172.1, cls: "anim-edge", side: 1,
+      who: "Los Angeles · 2,500 km", how: "1 in 5 → length 2.6" },
+    { y: 92, w: 7, x: 203.8, cls: "anim-edge anim-accent-stroke", side: 1,
+      who: "Madrid · 9,100 km", how: "1 in 10 → length 3.3" },
+    { y: 144, w: 1.6, x: 415.9, cls: "anim-edge anim-amber-stroke", side: 0,
+      who: "Guatemala City · 1,100 km", how: "1 in 1000 → length 7.9" }
+  ];
+
+  const GEO_TICK = [[58, "0"], [155, "5"], [252, "10"], [349, "15"], [446, "20"]];
+  const EFF_TICK = [[58, "0"], [155, "4"], [252, "8"], [349, "12"], [446, "16"]];
+  const DAY_TICK = [[214, "0"], [152.7, "50"], [91.3, "100"], [30, "150"]];
+  const KM9 = 232.6;          /* where 9,000 km lands on the geographic axis */
+
+  const pct = (i) => Math.round((i / (DET - 1)) * 100);
+  const ruler = (i) => i === 0 ? "kilometres"
+    : i === DET - 1 ? "effective distance" : pct(i) + "% effective";
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "The map's answer",
+      note: "Twenty-eight countries: kilometres from Mexico City across, the day the virus arrived up. It is a cloud. Spain is eight times farther away than Guatemala and was infected eight days earlier.",
+      async run(ctx) {
+        ctx.drawPlot();
+        const c = ctx.card("the map's answer");
+        c.appendChild(ctx.el("div", "anim-readout",
+          "<span>ruler: <b>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b>0.19</b></span>"));
+
+        await ctx.sleep(2300);
+        ctx.spot(SPAIN, true);
+        ctx.spot(GUATEMALA, true);
+        [["Spain", "9,070 km · day 41"],
+         ["Guatemala", "1,090 km · day 49"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(1500);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "eight times nearer, eight days later"));
+        await ctx.sleep(1600);
+
+        ctx.mark(true);
+        c.appendChild(ctx.el("div", "anim-caption anim-fade",
+          "and along the dashed line: five countries, all within 400 km of " +
+          "nine thousand — the first reached on day 41, the last on day 121"));
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "A fat pipe is a short pipe",
+      note: "The mechanism. Give a flight leg the length 1 minus the log of the share of passengers who take it. A leg carrying one traveller in five is short; a leg carrying one in a thousand is long. Madrid is nine thousand kilometres out and three units away.",
+      async run(ctx) {
+        ctx.dim(0.28);
+        ctx.mark(false);
+        ctx.spot(SPAIN, false);
+        ctx.spot(GUATEMALA, false);
+        const c = ctx.card("stop counting kilometres, start counting travellers");
+
+        const svg = ctx.svgRoot("0 0 470 194");
+        const put = (tag, attrs, cls, txt) => {
+          const n = ctx.svgEl(tag, attrs);
+          if (cls) n.setAttribute("class", cls);
+          if (txt != null) n.textContent = txt;
+          return svg.appendChild(n);
+        };
+        const slow = !ctx.fast();
+
+        put("text", { x: 6, y: 13 }, "anim-label",
+          "how long is one flight leg out of Mexico City?");
+        /* The ruler sits under the three legs, not over them: a leg is drawn
+           at its own length, so the scale has to be readable beside them. */
+        put("line", { x1: 52, y1: 168, x2: 420, y2: 168 }, "anim-axis");
+        [[52, "0"], [144, "2"], [236, "4"], [328, "6"], [420, "8"]].forEach((t) => {
+          put("line", { x1: t[0], y1: 168, x2: t[0], y2: 172 }, "anim-axis");
+          put("text", { x: t[0], y: 185, "text-anchor": "middle" }, "anim-label", t[1]);
+        });
+        put("line", { x1: 52, y1: 40, x2: 52, y2: 144 }, "anim-edge");
+
+        LEGS.forEach((g, i) => {
+          const p = put("line", { x1: 52, y1: g.y, x2: g.x, y2: g.y },
+            g.cls + (slow ? " anim-draw" : ""));
+          p.style.strokeWidth = g.w;
+          if (slow) {
+            /* --dash must clear the line's own length or it pops in late. */
+            p.style.setProperty("--dash", Math.ceil(g.x - 52) + 4);
+            p.style.animationDelay = (0.35 + i * 0.9) + "s";
+            p.style.animationDuration = "0.7s";
+          }
+          /* A leg that reaches the right-hand edge has to caption itself
+             leftwards, and then the caption would lie along its own pipe —
+             so that one is stacked above the pipe instead of astride it. */
+          const anch = g.side ? "start" : "end";
+          const tx = g.side ? g.x + 10 : g.x - 10;
+          const ty = g.side ? [g.y - 5, g.y + 9] : [g.y - 28, g.y - 13];
+          const kids = [
+            put("circle", { cx: g.x, cy: g.y, r: 5.5 }, "anim-node"),
+            put("text", { x: tx, y: ty[0], "text-anchor": anch }, "anim-label", g.who),
+            put("text", { x: tx, y: ty[1], "text-anchor": anch }, "anim-label anim-faint", g.how)
+          ];
+          if (slow) {
+            kids.forEach((n, k) => {
+              n.classList.add("anim-fade");
+              n.style.animationDelay = (1.0 + i * 0.9 + k * 0.12) + "s";
+            });
+          }
+        });
+        put("circle", { cx: 52, cy: 92, r: 6 }, "anim-node");
+        c.appendChild(svg);
+
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "the fat pipe is the short one — and Madrid is far fatter than Guatemala City");
+        q.style.animationDelay = ctx.fast() ? "0s" : "3.5s";
+        c.appendChild(q);
+        await ctx.sleep(5400);
+      }
+    },
+    {
+      label: "Change the ruler",
+      note: "Same countries, same arrival days, no new data. Only the axis changes: kilometres out, effective distance in. Spain slides left past Guatemala, and the cloud collapses onto a line.",
+      async run(ctx) {
+        ctx.dim(1);
+        ctx.land(true);
+        const c = ctx.card("same days. same countries. new ruler.");
+        const read = ctx.el("div", "anim-readout",
+          "<span>ruler: <b data-r>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b data-q>0.19</b></span>");
+        c.appendChild(read);
+        const outR = read.querySelector("[data-r]");
+        const outQ = read.querySelector("[data-q]");
+        ctx.watch((i) => {
+          outR.textContent = ruler(i);
+          outQ.textContent = R2B[i].toFixed(2);
+        });
+
+        ctx.spot(SPAIN, true);
+        ctx.spot(GUATEMALA, true);
+        await ctx.sleep(1000);
+
+        if (ctx.fast()) {
+          ctx.setX(DET - 1, true);
+        } else {
+          for (let i = 1; i < DET; i++) { ctx.setX(i); await ctx.sleep(95); }
+          await ctx.sleep(700);
+        }
+        ctx.fitLine(true);
+        await ctx.sleep(1000);
+
+        [["R²", "0.19 → 0.97"],
+         ["new data collected", "none"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        await ctx.sleep(1200);
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "it was spreading in circles all along — on the other map"));
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "Now you turn the ruler",
+      note: "Your hand on it now. Slide from kilometres to effective distance and back: the cloud gathers and scatters, and the fit climbs from 0.19 to 0.97. Nothing about the countries changes — only where you agree to stand.",
+      async run(ctx) {
+        ctx.dim(1);
+        ctx.land(true);
+        ctx.fitLine(true);
+        const c = ctx.card("now you turn it");
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          "<span>ruler: <b data-r>kilometres</b></span>" +
+          "<span style=\"color:var(--_amber)\">R&sup2; <b data-q>0.19</b></span>");
+        c.appendChild(read);
+        const outR = read.querySelector("[data-r]");
+        const outQ = read.querySelector("[data-q]");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "drag it: at 0% the axis is kilometres from Mexico City, at 100% it is effective distance"));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence, so the plot is yours
+           until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DET - 1, step: 1, value: 0,
+          label: "Blend the axis from geographic to effective distance",
+          format: (i) => pct(i) + " per cent effective distance",
+          onGrab: () => ctx.pause(),
+          onInput: (i) => {
+            outR.textContent = ruler(i);
+            outQ.textContent = R2B[i].toFixed(2);
+            ctx.setX(i);
+          }
+        });
+
+        /* Skipping, or reading with motion off: land on the answer, because
+           the answer is what this figure is about. */
+        if (ctx.fast()) {
+          ctx.setX(DET - 1, true);
+          dial.set(DET - 1);
+          say("<span>same dots, same days.</span><b>R&sup2; 0.19 → 0.97</b>");
+          return;
+        }
+
+        dial.set(0);
+        await ctx.sleep(1000);
+        for (let i = 1; i < DET; i++) { dial.set(i); await ctx.sleep(105); }
+        say("<span>gathered.</span><b>R&sup2; 0.97</b>");
+        await ctx.sleep(1900);
+
+        for (let i = DET - 2; i >= 0; i--) { dial.set(i); await ctx.sleep(70); }
+        say("<span>scattered again.</span><b>R&sup2; 0.19</b>");
+        await ctx.sleep(1500);
+
+        for (let i = 1; i < DET; i++) { dial.set(i); await ctx.sleep(80); }
+        say("<span>same dots, same days.</span><b>only the ruler moved</b>");
+        await ctx.sleep(2600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("h1n1-ruler"), scenes, {
+    stepsLabel: "Ruler steps",
+
+    /* The one thing only this animation has: a scatter that survives all four
+       steps, whose dots never change their arrival day and only ever slide
+       sideways. Built once per run by step 1, handed to every scene on ctx. */
+    helpers(ctx) {
+      const plot = ctx.$("[data-h1-plot]");
+      const side = ctx.$("[data-h1-side]");
+      const S = { hook: null };
+
+      function drawPlot() {
+        plot.textContent = "";
+        const svg = ctx.svgRoot("0 0 470 264", "h1-plot");
+        const put = (tag, attrs, cls, txt) => {
+          const n = ctx.svgEl(tag, attrs);
+          if (cls) n.setAttribute("class", cls);
+          if (txt != null) n.textContent = txt;
+          return svg.appendChild(n);
+        };
+
+        put("line", { x1: 58, y1: 214, x2: 446, y2: 214 }, "anim-axis");
+        put("line", { x1: 58, y1: 214, x2: 58, y2: 30 }, "anim-axis");
+        DAY_TICK.forEach((t) => {
+          put("line", { x1: 53, y1: t[0], x2: 58, y2: t[0] }, "anim-axis");
+          put("text", { x: 49, y: t[0] + 4, "text-anchor": "end" }, "anim-label", t[1]);
+        });
+        put("text", { x: 16, y: 122, "text-anchor": "middle",
+          transform: "rotate(-90 16 122)" }, "anim-label", "arrival day");
+        GEO_TICK.forEach((t) => {
+          put("line", { x1: t[0], y1: 214, x2: t[0], y2: 219 }, "anim-axis");
+        });
+
+        /* Both tick rows share one baseline and cross-fade in place, so the
+           axis relabels itself instead of sliding a second row in. */
+        const row = (ticks) => {
+          const g = ctx.svgEl("g");
+          ticks.forEach((t) => {
+            const n = ctx.svgEl("text",
+              { x: t[0], y: 232, "text-anchor": "middle", "class": "anim-label" });
+            n.textContent = t[1];
+            g.appendChild(n);
+          });
+          return svg.appendChild(g);
+        };
+        S.tGeo = row(GEO_TICK);
+        S.tEff = row(EFF_TICK);
+        S.title = put("text", { x: 252, y: 252, "text-anchor": "middle" },
+          "anim-label", "distance from Mexico City (1000 km)");
+
+        S.fit = put("line", { x1: SEG[0][0], y1: SEG[0][1], x2: SEG[0][2], y2: SEG[0][3] },
+          "anim-amber-stroke");
+        S.fit.style.opacity = 0;
+        S.mark = put("line", { x1: KM9, y1: 30, x2: KM9, y2: 219 }, "anim-marker");
+        S.mark.style.opacity = 0;
+
+        /* Two layers, so the four named dots always sit over the cloud. */
+        const gCloud = svg.appendChild(ctx.svgEl("g"));
+        const gNamed = svg.appendChild(ctx.svgEl("g"));
+        const named = {};
+        NAMED.forEach((n) => { named[n[0]] = n; });
+
+        const slow = !ctx.fast();
+        S.pts = [];
+        S.circ = [];
+        S.named = [];
+        GEOX.forEach((x, k) => {
+          const n = named[k];
+          const g = ctx.svgEl("g", { "class": "h1-pt" + (slow ? " anim-fade" : "") });
+          if (slow) g.style.animationDelay = (0.25 + k * 0.055) + "s";
+          const c = ctx.svgEl("circle", {
+            cx: x, cy: DAYY[k], r: n ? 5.6 : 4.4,
+            "class": n ? "anim-accent-fill h1-named" : "anim-faint"
+          });
+          if (!n) c.style.opacity = 0.72;
+          g.appendChild(c);
+          if (n) {
+            const t = ctx.svgEl("text", {
+              x: x + n[2], y: DAYY[k] + n[3], "text-anchor": n[4],
+              "class": "anim-label anim-knockout"
+            });
+            t.textContent = n[1];
+            g.appendChild(t);
+          }
+          (n ? gNamed : gCloud).appendChild(g);
+          S.pts.push(g);
+          S.circ.push(c);
+          S.named.push(!!n);
+        });
+
+        S.svg = svg;
+        plot.appendChild(svg);
+        plot.appendChild(ctx.el("div", "anim-caption",
+          "28 countries, redrawn schematically after Brockmann &amp; Helbing (2013). " +
+          "The R&sup2; on screen is measured on these redrawn points, and matches " +
+          "the 0.973 they publish."));
+        setX(0, true);
+      }
+
+      /* Detent i of the blend. Pure lookup: a dot is where the two rulers put
+         it, weighted i/20, and the fitted line is an array entry. */
+      function setX(i, instant) {
+        if (instant) S.pts.forEach((g) => { g.style.transition = "none"; });
+        const t = i / (DET - 1);
+        S.pts.forEach((g, k) => {
+          g.style.transform =
+            "translate(" + ((EFFX[k] - GEOX[k]) * t).toFixed(2) + "px,0px)";
+        });
+        if (instant) {
+          S.svg.getBoundingClientRect();            /* commit before re-arming */
+          S.pts.forEach((g) => { g.style.transition = ""; });
+        }
+        S.tGeo.style.opacity = Math.pow(1 - t, 1.5).toFixed(3);
+        S.tEff.style.opacity = Math.pow(t, 1.5).toFixed(3);
+        S.title.textContent = i === 0 ? "distance from Mexico City (1000 km)"
+          : i === DET - 1 ? "effective distance from Mexico City"
+          : "ruler: " + pct(i) + "% effective distance, " + (100 - pct(i)) + "% kilometres";
+        const s = SEG[i];
+        ctx.attr(S.fit, { x1: s[0], y1: s[1], x2: s[2], y2: s[3] });
+        if (S.hook) S.hook(i);
+      }
+
+      function fitLine(on) {
+        if (on && !ctx.fast() && S.fit.style.opacity !== "1") {
+          S.fit.style.setProperty("--dash", 460);
+          S.fit.classList.remove("anim-draw");
+          S.fit.getBoundingClientRect();
+          S.fit.classList.add("anim-draw");
+        }
+        S.fit.style.opacity = on ? 1 : 0;
+      }
+
+      /* The cloud arrives grey and lawless; once the ruler is the network's,
+         it is the same ink as everything else in the notes. */
+      function land(on) {
+        S.circ.forEach((c, k) => {
+          if (S.named[k]) return;
+          c.setAttribute("class", on ? "anim-accent-fill" : "anim-faint");
+        });
+      }
+
+      function spot(k, on) {
+        S.circ[k].setAttribute("class", on ? "h1-hi" : "anim-accent-fill h1-named");
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      const mark = (on) => { S.mark.style.opacity = on ? 1 : 0; };
+      const dim = (v) => { S.svg.style.opacity = v; };
+      const watch = (fn) => { S.hook = fn; };
+
+      /* S is filled by drawPlot(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { drawPlot, setX, fitLine, land, spot, mark, dim, watch, card };
+    },
+
+    clear(ctx) { ctx.watch(null); }
+  });
+});
+</script>
+<p>There is a trend: far-away places do tend to be later. But look along the dashed line at nine thousand kilometres in the first step. Five countries sit within four hundred kilometres of it, and the virus reached the first of them on day 41 and the last on day 121 — six weeks against four months. Kilometres put them in the same place; the epidemic did not. Whatever sets the arrival day, it is not the distance you can measure on a map.</p>
 </section>
-<section id="how-to-represent-a-network" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="how-to-represent-a-network"><span class="header-section-number">2</span> How to represent a network</h2>
-<p>Although networks come from vastly different fields, <strong>we can represent them all using the same universal language</strong> 😉. Whether we’re studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This abstraction is what makes network science so interdisciplinary.</p>
-<p>A network is simply a collection of <em>nodes</em> connected by <em>edges</em>. Despite this simplicity, it’s one of the most powerful abstractions we have for understanding complex systems.</p>
-<p>We can represent any network in two equivalent ways. <strong>Schematically</strong>, we draw them as <em>dots and lines</em> - nodes connected by edges, as shown in this network diagram:</p>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png" class="img-fluid figure-img"></p>
-<figcaption>Schematic network</figcaption>
-</figure>
+<section id="a-route-that-carries-more-traffic-is-a-shorter-route" class="level2">
+<h2 class="anchored" data-anchor-id="a-route-that-carries-more-traffic-is-a-shorter-route">A Route That Carries More Traffic Is a Shorter Route</h2>
+<p>Dirk Brockmann and Dirk Helbing <span class="citation" data-cites="brockmann2013hidden">(<a href="#ref-brockmann2013hidden" role="doc-biblioref">Brockmann and Helbing 2013</a>)</span> asked what happens if you stop measuring distance across the ground and start measuring it along the routes people actually travel.</p>
+<p>Air travel is the obvious candidate, and it is easy to write down. Take every commercial airport and call it a <strong>node</strong>. Wherever a scheduled route connects two airports, draw an <strong>edge</strong> between them. Dots and lines — that is the whole vocabulary of this course, and you have now met all of it.</p>
+<p>Here is the move that makes it work. The edges are not all the same length. Of everyone who boards a plane in Mexico City, a large share land in Los Angeles and a very small share land in Ljubljana. A route that carries a big share of the traffic is a <em>short</em> route, because a traveller — and therefore the virus — is likely to take it. A route that carries a trickle is a long one. The <strong>effective distance</strong> between two airports is then the smallest total you can accumulate along any chain of flights joining them, exactly the way a road atlas gives you the shortest drive, except that “long” and “short” now mean traffic share instead of kilometres.</p>
+<p>Put numbers on it. Suppose one in ten passengers leaving Mexico City lands in Madrid, and one in a thousand lands in Guatemala City. On Brockmann and Helbing’s scale the Madrid leg has length 3.3 and the Guatemala City leg has length 7.9. Madrid is the near neighbour, Guatemala City the far one, and the map says the opposite.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="The formula, if you want it">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>The formula, if you want it
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://www.kyoto-aquarium.com/sokanzu/assets/img/img_sokanzu_2022.jpg" class="img-fluid figure-img"></p>
-<figcaption>A network of penguins in the Kyoto Aquarium.</figcaption>
-</figure>
+<div class="callout-body-container callout-body">
+<p>If a fraction <span class="math inline">p</span> of the passengers leaving an airport take a particular route, that leg is given length <span class="math inline">1 - \log p</span> (natural log). A leg carrying all the traffic, <span class="math inline">p = 1</span>, has length 1; halving the share adds about 0.7. The effective distance between two airports is the smallest sum of leg lengths over all routes between them — an ordinary shortest path, on these lengths. That is the whole definition; <span class="math inline">p = 0.1</span> gives <span class="math inline">1 - \log 0.1 = 3.3</span> and <span class="math inline">p = 0.001</span> gives <span class="math inline">7.9</span>.</p>
 </div>
 </div>
-</div>
-</div>
-<p>While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to obtain a quantitative understanding of network properties and behaviors.</p>
-<p><strong>Tables</strong> are a natural way to represent networks. The idea is to list the pairs of nodes that are connected by an edge. For example:</p>
+<p>That is the ruler the stage above switches to at step three, and it is the whole reason the cloud collapsed. Brockmann and Helbing report a fit of <span class="math inline">R^2 = 0.973</span>. (An <span class="math inline">R^2</span> runs from 0, meaning the line tells you nothing about arrival day, to 1, meaning the line is exact.) The same picture holds for the 2003 SARS outbreak. No new data was collected between the two rulers and nothing about the virus changed. Only the ruler changed.</p>
+<p>That is the claim the rest of this course rests on: <strong>network structure, not geography, determines how things spread</strong>.</p>
+</section>
+<section id="the-same-skeleton-under-a-food-web-a-bank-and-your-brain" class="level2">
+<h2 class="anchored" data-anchor-id="the-same-skeleton-under-a-food-web-a-bank-and-your-brain">The Same Skeleton Under a Food Web, a Bank and Your Brain</h2>
+<p>Nothing in that argument was about influenza. It needed only two things: a set of items, and a record of which pairs are joined. Any system that offers those two things gets the same treatment.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Source</th>
-<th>Target</th>
+<th>System</th>
+<th>A node is</th>
+<th>An edge is</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Node1</td>
-<td>Node2</td>
+<td>Air travel</td>
+<td>an airport</td>
+<td>a scheduled route between two airports</td>
 </tr>
 <tr class="even">
-<td>Node1</td>
-<td>Node3</td>
+<td>The brain</td>
+<td>a neuron</td>
+<td>a synapse from one neuron to another</td>
 </tr>
 <tr class="odd">
-<td>Node2</td>
-<td>Node3</td>
+<td>A cell</td>
+<td>a protein</td>
+<td>two proteins that bind to each other</td>
 </tr>
 <tr class="even">
-<td>Node2</td>
-<td>Node4</td>
+<td>An ecosystem</td>
+<td>a species</td>
+<td>“this one eats that one”</td>
 </tr>
 <tr class="odd">
-<td>Node3</td>
-<td>Node5</td>
+<td>Banking</td>
+<td>a bank</td>
+<td>an overnight loan one bank owes another</td>
+</tr>
+<tr class="even">
+<td>The power grid</td>
+<td>a substation</td>
+<td>a transmission line</td>
+</tr>
+<tr class="odd">
+<td>Wikipedia</td>
+<td>an article</td>
+<td>a hyperlink from one article to another</td>
 </tr>
 </tbody>
 </table>
-<p>This is called an <strong><em>edge table</em></strong>. Each row represents a connection between two nodes. Once we write down networks in this <strong>tabular format</strong>, we can apply the <strong><em>same analytical tools</em></strong> regardless of the domain - whether it’s routers, people, neurons, or molecules.</p>
+<!-- TODO(anim): one skeleton, several systems - the same dot-and-line drawing relabelled as airports, neurons, banks, substations, in a single ink colour. -->
+<p>Read the middle column again. Nothing in the raw data forced any of those choices. From the same airline timetable you could have made cities the nodes instead of airports, or countries; you could have said an edge exists when <em>any</em> route connects two places, or only when more than a thousand passengers a week do. <strong>Deciding what counts as a node and what counts as an edge is a modelling decision, not something the data hands you.</strong> It is also the decision that fixes what you will be able to see: effective distance is measurable at all only because the airports, not the countries, are the things that carry a measurable share of the traffic.</p>
 </section>
-<section id="are-we-done-with-networks" class="level2 page-columns page-full" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="are-we-done-with-networks"><span class="header-section-number">3</span> Are we done with networks?</h2>
-<p>If we can represent a network in a table—a familiar data format that can be analyzed by statistical methods, machine learning, and other tools—can we just use these tools to analyze networks? Why do we need to learn network science?</p>
-<p><strong>Long story short, a network is not just a collection of nodes and edges. They work in tandem to create a complex system</strong>. And this view—that a system is not just a collection of parts—represents a critical shift in science.</p>
-<p>For centuries, scientists believed in <strong>reductionism</strong>. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson’s 18th century <a href="https://en.wikipedia.org/wiki/Digesting_Duck">Digesting Duck</a> seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg" class="img-fluid figure-img"></p>
-<figcaption>Vaucanson’s Digesting Duck</figcaption>
-</figure>
+<section id="what-a-brain-and-a-power-grid-have-in-common-is-a-table" class="level2">
+<h2 class="anchored" data-anchor-id="what-a-brain-and-a-power-grid-have-in-common-is-a-table">What a Brain and a Power Grid Have in Common Is a Table</h2>
+<p>Once the nodes and edges are chosen, a network can be put down in two forms. You can draw it — dots with lines between them. Or you can write it down as a list of the joined pairs, one pair per row, which is called an <strong>edge table</strong>. They are the same object, and it is worth checking that claim by hand rather than taking it on trust: every line on the left is one row on the right.</p>
+<figure class="anim-stage figure">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewbox="0 0 260 190" role="img" aria-label="A network of five numbered nodes. Node 1 joins 2 and 3; node 2 joins 3 and 4; node 3 joins 5.">
+<line class="anim-edge" x1="70" y1="42" x2="165" y2="38"></line> <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"></line> <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"></line> <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"></line> <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"></line> <circle class="anim-node" cx="70" cy="42" r="14"></circle> <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text> <circle class="anim-node" cx="165" cy="38" r="14"></circle> <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text> <circle class="anim-node" cx="105" cy="110" r="14"></circle> <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text> <circle class="anim-node" cx="228" cy="92" r="14"></circle> <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text> <circle class="anim-node" cx="48" cy="165" r="14"></circle> <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
 </div>
-<p>Find more details in <a href="https://en.wikipedia.org/wiki/Digesting_Duck">Wikipedia</a></p>
-</div></div><p>However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the <em>interactions</em> between components, not from the components themselves. You can understand every individual neuron in the brain, but this won’t tell you how consciousness emerges. You can analyze every person in a social movement, but this won’t predict how ideas spread through the population. You can study every computer on the internet, but this won’t explain how global information patterns form.</p>
-<p>The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition; while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences; removing one connection might fragment an entire network, while removing another has no effect at all. This is why network science exists as a distinct field: the traditional reductionist toolkit simply isn’t sufficient for understanding interconnected systems where the connections themselves are the source of complexity!</p>
+<div class="anim-panel">
+<table>
+<thead>
+<tr>
+<th>
+Source
+</th>
+<th>
+Target
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+1
+</td>
+<td>
+2
+</td>
+</tr>
+<tr>
+<td>
+1
+</td>
+<td>
+3
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td>
+3
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td>
+4
+</td>
+</tr>
+<tr>
+<td>
+3
+</td>
+<td>
+5
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="anim-caption">
+One network, two forms. Five lines on the left, five rows on the right.
+</figcaption>
+</figure>
+<!-- TODO(anim): draw an edge in the picture and watch the matching row appear in the table, and the reverse. -->
+<p>Five nodes fit in a picture. The air-travel network behind the H1N1 result does not: it has thousands of airports and tens of thousands of routes, and drawn as dots and lines it is a black smudge in which no individual connection can be seen. Zooming does not help, and neither does a better layout algorithm — there is simply more ink than the page has room for. The edge table is unbothered by size. It just gets longer, and a computer reads a long table as happily as a short one.</p>
+<p>The table is also what makes this one field instead of ten. Two columns of labels look identical whether the labels are airports, neurons, banks or Wikipedia articles, so a method that works on one works on all of them. That is the bargain of the abstraction, and it is worth stating what each side of it costs: the table <em>keeps</em> exactly one kind of information, which pairs are joined, and <em>discards</em> everything else — how far apart the nodes are, how big they are, what they are made of, what year it is. The H1N1 story is what that bargain buys. Throwing away the kilometres is precisely what let the arrival times line up.</p>
+</section>
+<section id="if-it-fits-in-a-spreadsheet-why-is-there-a-whole-field" class="level2">
+<h2 class="anchored" data-anchor-id="if-it-fits-in-a-spreadsheet-why-is-there-a-whole-field">If It Fits in a Spreadsheet, Why Is There a Whole Field?</h2>
+<p>A two-column table is exactly the sort of thing statistics and machine learning already handle. So why not load the edge table into the usual tools and be done?</p>
+<p>Because nothing interesting about a network lives in a row. It lives in how the rows combine.</p>
+<p>In 1739 Jacques de Vaucanson exhibited a mechanical duck in Paris. It flapped its wings, took grain from a visitor’s hand, swallowed it, and some minutes later excreted pellets. It was the great advertisement for <strong>reductionism</strong>: understand each part, build each part, put the parts together, and the behaviour of the whole follows.</p>
+<p>It was also a fraud. The duck digested nothing. The swallowed grain went into one compartment, and the pellets it produced had been loaded into a second compartment before the show — the conjurer Jean-Eugène Robert-Houdin, who restored the machine a century later, reported the hidden mechanism. Keep that image, because it is the honest one: a machine assembled from duck-shaped parts produced duck-shaped output, and there was still no duck inside it. (<a href="https://en.wikipedia.org/wiki/Digesting_Duck">Digesting Duck</a>)</p>
+<p>Networks break the reductionist recipe in a specific and repeatable way: the properties that matter belong to the pattern of connections, not to any component. You can know every neuron in a brain and still not know how a memory is stored. You can profile every person in a movement and still not predict which slogan spreads. You can own every computer on the internet and still not explain a traffic jam that appears on it.</p>
+<p>Two things go wrong at once. Scale overwhelms intuition: you can hold the relationships among three people in your head, and you cannot do it for three million. And the effects of a change are wildly uneven. Go back to the five-node network above and take away a single edge.</p>
+<figure class="anim-stage figure">
+<div class="anim-grid-2">
+<div class="anim-panel">
+<svg class="anim-svg" viewbox="0 0 260 190" role="img" aria-label="The same five-node network with the edge between 2 and 3 cut. All five nodes are still reachable.">
+<line class="anim-edge" x1="70" y1="42" x2="165" y2="38"></line> <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"></line> <line x1="165" y1="38" x2="105" y2="110" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"></line> <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"></line> <line class="anim-edge" x1="105" y1="110" x2="48" y2="165"></line> <line class="anim-amber-stroke" x1="127" y1="66" x2="143" y2="82"></line> <line class="anim-amber-stroke" x1="143" y1="66" x2="127" y2="82"></line> <circle class="anim-node" cx="70" cy="42" r="14"></circle> <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text> <circle class="anim-node" cx="165" cy="38" r="14"></circle> <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text> <circle class="anim-node" cx="105" cy="110" r="14"></circle> <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text> <circle class="anim-node" cx="228" cy="92" r="14"></circle> <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text> <circle class="anim-node" cx="48" cy="165" r="14"></circle> <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:#fff;font-size:13px">5</text>
+</svg>
+<div class="anim-caption">
+Cut 2–3: nothing happens.
+</div>
+</div>
+<div class="anim-panel">
+<svg class="anim-svg" viewbox="0 0 260 190" role="img" aria-label="The same five-node network with the edge between 3 and 5 cut. Node 5 is now isolated.">
+<line class="anim-edge" x1="70" y1="42" x2="165" y2="38"></line> <line class="anim-edge" x1="70" y1="42" x2="105" y2="110"></line> <line class="anim-edge" x1="165" y1="38" x2="105" y2="110"></line> <line class="anim-edge" x1="165" y1="38" x2="228" y2="92"></line> <line x1="105" y1="110" x2="48" y2="165" stroke="var(--_amber)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="5 5"></line> <line class="anim-amber-stroke" x1="68" y1="130" x2="84" y2="146"></line> <line class="anim-amber-stroke" x1="84" y1="130" x2="68" y2="146"></line> <circle class="anim-node" cx="70" cy="42" r="14"></circle> <text class="anim-label" x="70" y="46" text-anchor="middle" style="fill:#fff;font-size:13px">1</text> <circle class="anim-node" cx="165" cy="38" r="14"></circle> <text class="anim-label" x="165" y="42" text-anchor="middle" style="fill:#fff;font-size:13px">2</text> <circle class="anim-node" cx="105" cy="110" r="14"></circle> <text class="anim-label" x="105" y="114" text-anchor="middle" style="fill:#fff;font-size:13px">3</text> <circle class="anim-node" cx="228" cy="92" r="14"></circle> <text class="anim-label" x="228" y="96" text-anchor="middle" style="fill:#fff;font-size:13px">4</text> <circle class="anim-node-off" cx="48" cy="165" r="14"></circle> <text class="anim-label" x="48" y="169" text-anchor="middle" style="fill:var(--_ink-faint);font-size:13px">5</text>
+</svg>
+<div class="anim-caption">
+Cut 3–5: node 5 is gone.
+</div>
+</div>
+</div>
+<figcaption class="anim-caption">
+One edge removed, two different networks. The edge table gives no hint which removal is which.
+</figcaption>
+</figure>
+<!-- TODO(anim): let the reader click any edge of a small network to delete it, and colour the pieces that fall off. -->
+<p>Cut edge 2–3 and nothing is lost: 2 still reaches 3, by way of 1. Cut edge 3–5 instead and node 5 drops off the network entirely — nothing reaches it and it reaches nothing. Same network, same size of edit, opposite consequence. Both edges look identical in the edge table: one row of two numbers each. You cannot tell them apart by looking at a row; you have to look at the pattern the rows make together.</p>
+<p>Now scale that question up. Of the hundred thousand transmission lines in a power grid, which ones are the 3–5? That question has no answer in ordinary statistics, and it is the reason this field exists.</p>
+</section>
+<section id="what-you-can-now-do" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-can-now-do">What You Can Now Do</h2>
+<ul>
+<li>Explain why distance measured through a network beats distance measured across a map when you want to predict when something arrives, and say what effective distance counts.</li>
+<li>Take a system you care about and state what its nodes and edges are — while knowing that you decided that, and the data did not.</li>
+<li>Write any network as an edge table, and say what the table keeps (which pairs are joined) and what it throws away (everything else).</li>
+<li>Say why a table of pairs is where network science starts rather than where it stops.</li>
+</ul>
+<p>Next, <a href="../m01-euler_tour/01-concepts.html">Module 1: A Stroll, Seven Bridges, and a Mathematical Revolution</a>, where a Sunday walk through an 18th-century city turns into the first theorem of this subject — and where the act of throwing information away becomes a deliberate technique with a name.</p>
 
-
-<!-- -->
 
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-brockmann2013hidden" class="csl-entry" role="listitem">
 Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidden Geometry of Complex, Network-Driven Contagion Phenomena</span>.”</span> <em>Science</em> 342 (6164): 1337–42. <a href="https://doi.org/10.1126/science.1245200">https://doi.org/10.1126/science.1245200</a>.
 </div>
 </div></section></div></main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="../assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1062,13 +1512,14 @@ Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidde
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1080,57 +1531,6 @@ Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidde
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1463,8 +1863,8 @@ Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidde
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../course/how-to-submit-assignment.html" class="pagination-link" aria-label="How to submit assignment">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">How to submit assignment</span>
+      <a href="../course/mini-project.html" class="pagination-link" aria-label="Group Mini-Project">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Group Mini-Project</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1472,127 +1872,7 @@ Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidde
         <span class="nav-page-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Networks</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Networks are everywhere and they matter</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>In 2009, the H1N1 influenza pandemic started in Mexico and spread around the world. Dirk Brockmann and Dirk Helbing tracked how the disease reached different countries and made a surprising discovery that would revolutionize how we understand spreading processes.</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>The most natural way to think about disease spread is through geographic distance.</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>If you looked at a traditional world map, you might expect the disease to spread in expanding circles - first to nearby countries like Guatemala and the United States, then gradually to more distant places. But look at what the data actually shows:</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>::: {#fig-geo-vs-arrival-time}</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://www.science.org/cms/10.1126/science.1245200/asset/59290a15-76de-4a0f-9107-259201f98bcf/assets/graphic/342_1337_f1.jpeg)</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Geographic distance shows only weak correlation with disease arrival times for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Distance does explain the arrival time to some extent - there's a rough trend where farther places tend to be infected later (C, D, E). But it doesn't tell the whole story. At the same distances, some cities experienced early arrival while others experienced much later arrival. What explains this variation?</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>This mystery was solved by Dirk Brockmann and his colleagues, who realized that disease spread follows the hidden geometry of mobility networks - not geographic maps. Air travel connections, not physical distance, determined how quickly the pandemic reached different parts of the world.</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>::: {#fig-network-distance-vs-arrival-time}</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://www.science.org/cms/10.1126/science.1245200/asset/66d5a7ec-a683-4135-af2f-149c91007e48/assets/graphic/342_1337_f2.jpeg)</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>Effective distance (based on mobility networks) shows strong correlation with disease arrival times (R² = 0.973) for simulated pandemics (C), H1N1 2009 (D), and SARS 2003 (E).</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>See <span class="co">[</span><span class="ot">@brockmann2013hidden</span><span class="co">]</span> for more details.</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>The H1N1 example above reveals a fundamental truth: ***network structure determines how things spread***. Geographic distance became irrelevant once we understood the underlying mobility network. This principle extends far beyond disease outbreaks.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>Networks are everywhere. Look around you: plants depend on pollinators in ecological networks, predators and prey form intricate food webs, your brain operates through neural networks, and modern medicine maps drug interactions. At the molecular level, proteins interact in complex networks that sustain life. Socially, we're connected through friendship networks, while globally, financial institutions form interconnected webs that can trigger worldwide crises. Every flight you take follows airport networks, every light switch connects to power grids, and every river flows through branching networks to the sea. Even the internet connecting you to this text and the knowledge graphs organizing human understanding - all are networks.</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>::: {layout-nrow=4}</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="al">![Plant pollinator network](https://mlurgi.github.io/networks_for_r/lesson-images/plant-pollinator.png)</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="al">![Food web](https://mlurgi.github.io/networks_for_r/images/food-web.png)</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="al">![Brain network](https://assets.thehansindia.com/h-upload/2020/03/08/952035-brain.webp)</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="al">![Medicine network](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41746-019-0141-x/MediaObjects/41746_2019_141_Fig1_HTML.png)</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="al">![Protein-protein interaction](https://upload.wikimedia.org/wikipedia/commons/5/56/1dfj_RNAseInhibitor-RNAse_complex.jpg)</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="al">![Social network](https://miro.medium.com/v2/resize:fit:1400/1*4MXaZGRjWL_X-LgDNjd-9w.png)</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="al">![International financial network](https://www.researchgate.net/profile/Douglas-White-4/publication/26692139/figure/fig1/AS:652592984096773@1532601700652/A-sample-of-the-international-financial-network-where-the-nodes-represent-major.png)</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="al">![US airport network](https://www.researchgate.net/profile/Victor-Eguiluz/publication/287325801/figure/fig1/AS:613998437363713@1523400043126/Map-of-the-US-airport-network-for-July-13-Airports-are-represented-as-nodes-and-edges-as.png)</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="al">![Power grid network](https://www.sciencenews.org/wp-content/uploads/2020/02/021520_power_inline-1_680.png)</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">River network</span><span class="co">]</span>(https://www.treehugger.com/thmb/ScAa4BnU5Ld_rzGNo0IIZNv91U4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8747607969_65098e4af6_o-f3ebcfa0d1894613995f1c086d1442ac.png)</span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="al">![Internet network](https://www.researchgate.net/profile/Quan-Nguyen-123/publication/325794369/figure/fig2/AS:639787606220801@1529548660141/Example-of-large-and-complex-networks-Visualization-of-the-Internet-graph-by-the-Opte.png)</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="al">![Knowledge graph](https://miro.medium.com/v2/resize:fit:617/1*chWX0v67nJ0JUzbGiN8ulQ.png)</span></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## How to represent a network</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>Although networks come from vastly different fields, **we can represent them all using the same universal language** 😉. Whether we're studying brain connections, protein interactions, or social relationships, the mathematical representation remains identical. This abstraction is what makes network science so interdisciplinary.</span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>A network is simply a collection of *nodes* connected by *edges*. Despite this simplicity, it's one of the most powerful abstractions we have for understanding complex systems.</span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>We can represent any network in two equivalent ways. **Schematically**, we draw them as *dots and lines* - nodes connected by edges, as shown in this network diagram:</span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>::: {layout-ncol=2}</span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="al">![Schematic network](https://memgraph.com/images/blog/graph-algorithms-list/memgraph-graph-algorithms-image14.png)</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="al">![A network of penguins in the Kyoto Aquarium.](https://www.kyoto-aquarium.com/sokanzu/assets/img/img_sokanzu_2022.jpg)</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>While the schematic representation is useful, things can get complicated as soon as the network becomes large. Also, we want to represent data quantitatively to obtain a quantitative understanding of network properties and behaviors.</span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>**Tables** are a natural way to represent networks. The idea is to list the pairs of nodes that are connected by an edge. For example:</span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Source <span class="pp">|</span> Target <span class="pp">|</span></span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|--------|</span></span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node2 <span class="pp">|</span></span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node1 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node3 <span class="pp">|</span></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node2 <span class="pp">|</span> Node4 <span class="pp">|</span></span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Node3 <span class="pp">|</span> Node5 <span class="pp">|</span></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>This is called an ***edge table***. Each row represents a connection between two nodes. Once we write down networks in this **tabular format**, we can apply the ***same analytical tools*** regardless of the domain - whether it's routers, people, neurons, or molecules.</span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Are we done with networks?</span></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>If we can represent a network in a table---a familiar data format that can be analyzed by statistical methods, machine learning, and other tools---can we just use these tools to analyze networks? Why do we need to learn network science?</span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>**Long story short, a network is not just a collection of nodes and edges. They work in tandem to create a complex system**. And this view---that a system is not just a collection of parts---represents a critical shift in science.</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>For centuries, scientists believed in **reductionism**. If you could create modules that function like duck organs and assemble them together, the machine would eventually behave like a duck. Vaucanson's 18th century <span class="co">[</span><span class="ot">Digesting Duck</span><span class="co">](https://en.wikipedia.org/wiki/Digesting_Duck)</span> seemed to prove this approach worked remarkably well: break down complex systems into fundamental components, understand each part, then reassemble them to understand the whole.</span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>::: {.column-margin}</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="al">![Vaucanson's Digesting Duck](https://upload.wikimedia.org/wikipedia/commons/8/8f/Digesting_Duck.jpg)</span></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>Find more details in <span class="co">[</span><span class="ot">Wikipedia</span><span class="co">](https://en.wikipedia.org/wiki/Digesting_Duck)</span></span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>However, scientists began to realize that not all systems can be decomposed into units that provide sufficient understanding of the system as a whole. Networks represent a fundamental challenge to reductionist thinking because their most important properties emerge from the *interactions* between components, not from the components themselves. You can understand every individual neuron in the brain, but this won't tell you how consciousness emerges. You can analyze every person in a social movement, but this won't predict how ideas spread through the population. You can study every computer on the internet, but this won't explain how global information patterns form.</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>The difficulty lies not in the individual nodes or edges, but in how they combine to create system-level behaviors that are genuinely novel. Scale overwhelms intuition; while you can mentally track relationships between three people, the same intuition fails completely with three million. Small changes can have massive consequences; removing one connection might fragment an entire network, while removing another has no effect at all. This is why network science exists as a distinct field: the traditional reductionist toolkit simply isn't sufficient for understanding interconnected systems where the connections themselves are the source of complexity!</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1601,7 +1881,7 @@ Brockmann, Dirk, and Dirk Helbing. 2013. <span>“<span class="nocase">The Hidde
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/intro/why-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/intro/why-networks.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

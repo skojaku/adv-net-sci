@@ -2,60 +2,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2025-10-30">
+<meta name="dcterms.date" content="2026-08-16">
 
-<title>Welcome to SSIE 641 Advanced Topics on Network Science – Advanced Topics in Network Science</title>
+<title>SSIE 641 — Advanced Topics in Network Science – Advanced Topics in Network Science</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -67,16 +38,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./course/welcome.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-0348920b7671f696dc9078d39bff215e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e6dc204ec8b52f55243daf2cac742210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -101,9 +73,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<style>
+.course-map {
+  margin: 1.6rem 0 2.6rem;
+  border-top: 1px solid var(--rule);
+}
+.course-map .stop {
+  padding: 1rem 0 .95rem;
+  border-bottom: 1px solid var(--rule);
+}
+.course-map .stop p { margin: 0; }
+.course-map .stop p + p { margin: .3rem 0 0 3.1rem; }
+.stop-no {
+  display: inline-block;
+  min-width: 3.1rem;
+  font-size: .82rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--anim-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+a.stop-title {
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--anim-ink);
+  text-decoration: none;
+}
+a.stop-title:hover,
+a.stop-title:focus {
+  color: var(--anim-accent);
+  text-decoration: underline;
+}
+/* The question keeps body size even when it is the stop's last line. */
+.stop-q {
+  display: block;
+  font-size: 1rem;
+  color: var(--anim-ink-soft);
+}
+/* The worksheet line is always the last paragraph of a stop. */
+.course-map .stop p:last-child {
+  margin-top: .45rem;
+  font-size: .85rem;
+  color: var(--anim-ink-soft);
+}
+/* Links there are marked by their underline, as everywhere on the site. */
+.course-map .stop p:last-child a { color: inherit; }
+@media (max-width: 620px) {
+  .course-map .stop p + p { margin-left: 0; }
+  .stop-no { display: block; min-width: 0; }
+}
+</style>
 
 
-<link rel="stylesheet" href="assets/custom.css">
+<link rel="stylesheet" href="assets/anim.css">
 </head>
 
 <body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
@@ -114,7 +136,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./logo.jpg" alt="" class="navbar-logo">
+    <img src="./assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="./assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
@@ -137,192 +160,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
     <a class="dropdown-item" href="./course/welcome.html">
- <span class="dropdown-text">Welcome</span></a>
+ <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./course/about.html">
- <span class="dropdown-text">About</span></a>
+ <span class="dropdown-text">About us</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./course/activities.html">
+ <span class="dropdown-text">How this course works</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./course/setup.html">
+ <span class="dropdown-text">Set up your machine</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./course/pair-notebook.html">
+ <span class="dropdown-text">Pair Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./course/mini-project.html">
+ <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./course/minidora-usage.html">
- <span class="dropdown-text">Minidora</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./course/setup.html">
- <span class="dropdown-text">Setup</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-intro" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Intro</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-modules" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Modules</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-intro">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
     <a class="dropdown-item" href="./intro/why-networks.html">
- <span class="dropdown-text">Why Networks?</span></a>
+ <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-foundations" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Foundations</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-foundations">    
-        <li class="dropdown-header">─── M01: Euler Path ───</li>
         <li>
     <a class="dropdown-item" href="./m01-euler_tour/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m01-euler_tour/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m01-euler_tour/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m01-euler_tour/04-advanced.html">
- <span class="dropdown-text">Advanced</span></a>
-  </li>  
-        <li class="dropdown-header">─── M02: Small World ───</li>
         <li>
     <a class="dropdown-item" href="./m02-small-world/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m02-small-world/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m02-small-world/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m02-small-world/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M03: Robustness ───</li>
         <li>
     <a class="dropdown-item" href="./m03-robustness/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m03-robustness/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m03-robustness/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m03-robustness/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-core-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Core Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-core-topics">    
-        <li class="dropdown-header">─── M04: Friendship Paradox ───</li>
         <li>
     <a class="dropdown-item" href="./m04-node-degree/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m04-node-degree/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m04-node-degree/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M05: Clustering ───</li>
         <li>
     <a class="dropdown-item" href="./m05-clustering/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m05-clustering/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m05-clustering/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M06: Centrality ───</li>
         <li>
     <a class="dropdown-item" href="./m06-centrality/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./m06-centrality/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m06-centrality/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-advanced-topics" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Advanced Topics</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-advanced-topics">    
-        <li class="dropdown-header">─── M07: Random Walks ───</li>
         <li>
     <a class="dropdown-item" href="./m07-random-walks/01-concepts.html">
- <span class="dropdown-text">Concepts</span></a>
+ <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./m07-random-walks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
+    <a class="dropdown-item" href="./m08-embedding/01-concepts.html">
+ <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./m07-random-walks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li class="dropdown-header">─── M08: Embedding ───</li>
-        <li>
-    <a class="dropdown-item" href="./m08-embedding/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m08-embedding/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m08-embedding/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m08-embedding/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
-  </li>  
-        <li class="dropdown-header">─── M09: Graph Neural Networks ───</li>
-        <li>
-    <a class="dropdown-item" href="./m09-graph-neural-networks/01-concepts.md">
- <span class="dropdown-text">Concepts</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m09-graph-neural-networks/02-coding.html">
- <span class="dropdown-text">Coding</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m09-graph-neural-networks/03-exercises.html">
- <span class="dropdown-text">Exercises</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./m09-graph-neural-networks/04-appendix.html">
- <span class="dropdown-text">Appendix</span></a>
+    <a class="dropdown-item" href="./m09-graph-neural-networks/01-concepts.html">
+ <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
   </li>
@@ -342,12 +251,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Welcome to SSIE 641 Advanced Topics on Network Science</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">SSIE 641 — Advanced Topics in Network Science</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
@@ -355,13 +261,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
@@ -374,7 +281,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./course/welcome.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+ <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -385,26 +292,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./course/activities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How this course works</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./course/minidora-usage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Using Minidora</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./course/setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+ <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./course/how-to-submit-assignment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">How to submit assignment</span></a>
+  <a href="./course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pair Notebook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./course/mini-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
       </ul>
@@ -421,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro/why-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Networks</span></a>
+ <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
       </ul>
@@ -429,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">M01: Euler Path</span></a>
+ <span class="menu-text">M01: Euler Tour</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -443,20 +356,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Five Words You Will Use All Semester</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding Networks in Python</span></a>
+ <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./m01-euler_tour/04-advanced.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced: Sparse Matrices for Large-Scale Networks</span></a>
+  <a href="./m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
       </ul>
@@ -473,13 +392,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Efficient Network Representation and Computing Paths</span></a>
+ <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -491,7 +410,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix - Brief Introduction to igraph</span></a>
+ <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
       </ul>
@@ -508,13 +427,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Network Robustness Analysis</span></a>
+ <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -526,7 +445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises and Assignments</span></a>
+ <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
       </ul>
@@ -543,19 +462,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Visualizing Degree Distributions in Python</span></a>
+ <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
       </ul>
@@ -572,19 +497,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Core Concepts</span></a>
+ <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Clustering Algorithms and Implementation</span></a>
+ <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
       </ul>
@@ -601,19 +532,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Centrality Concepts</span></a>
+ <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Centrality</span></a>
+ <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
       </ul>
@@ -630,19 +567,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Random Walks Concepts</span></a>
+ <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding - Random Walks</span></a>
+ <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises &amp; Assignments</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
       </ul>
@@ -659,25 +602,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Concepts</span></a>
+ <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Network Embedding Coding</span></a>
+ <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Advanced Topics in Network Science</span></a>
+ <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
       </ul>
@@ -694,31 +637,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preparation - Image processing</span></a>
+ <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Concepts - From image to graph</span></a>
+ <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Coding: Graph Neural Networks Implementation</span></a>
+ <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exercises: Graph Neural Networks</span></a>
+ <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Appendix: Graph Neural Networks</span></a>
+ <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
       </ul>
@@ -734,7 +677,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Welcome to SSIE 641 Advanced Topics on Network Science</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<h1 class="title">SSIE 641 — Advanced Topics in Network Science</h1>
 </div>
 
 
@@ -751,7 +694,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 30, 2025</p>
+      <p class="date">August 16, 2026</p>
     </div>
   </div>
   
@@ -763,83 +706,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>``Don’t think! Feeeeeel’’ is a famous quote by Bruce Lee in the movie <em>Enter the Dragon</em>, and this is my guiding philosophy of learning.</p>
-<p>This course is designed to help you <em>feel</em> the concepts and tools of network science through pen-and-paper exercises and hands-on coding.</p>
-<section id="list-of-exercises-and-assignments" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="list-of-exercises-and-assignments"><span class="header-section-number">1</span> List of Exercises and Assignments</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Module</th>
-<th>Pen and Paper Exercise</th>
-<th>Assignment</th>
-<th>Slides</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>M01: Euler Tour</td>
-<td><a href="http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">The Koningsberg Bridge</a></td>
-<td>-</td>
-<td><a href="https://github.com/skojaku/adv-net-sci/tree/main/docs/slide/m01">Slides</a></td>
-</tr>
-<tr class="even">
-<td>M02: Small World</td>
-<td><a href="http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf">It’s a small world!! 6 degrees of separation</a></td>
-<td><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/starter.ipynb">Exercise</a></td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m02/slide02.html">Slides</a></td>
-</tr>
-<tr class="odd">
-<td>M03: Robustness</td>
-<td><a href="m03-robustness/pen-and-paper/exercise.pdf">Build it, Break it, and Build it back!</a></td>
-<td><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb">Exercise</a></td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m03/slide03.html">Slides</a></td>
-</tr>
-<tr class="even">
-<td>M04: Friendship Paradox</td>
-<td><a href="m04-friendship-paradox/pen-and-paper/exercise.pdf">Data Visualization</a></td>
-<td><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m04-friendship-paradox/exercise.ipynb">Exercise</a></td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m04/slide04.html">Slides</a></td>
-</tr>
-<tr class="odd">
-<td>M05: Clustering</td>
-<td><a href="m05-clustering/pen-and-paper/exercise.pdf">Perfect vs.&nbsp;Almost Perfect</a></td>
-<td><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m05-clustering/exercise-m05-clustering.ipynb">Community detection</a></td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m05/slide05.html">Slides</a></td>
-</tr>
-<tr class="even">
-<td>M06: Centrality</td>
-<td><a href="m06-centrality/pen-and-paper/exercise.pdf">Who’s the Big Cheese in the University Clubs?</a></td>
-<td><a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/exercise-m06-centrality.ipynb">Roads to Rome</a></td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m06/slide06.html">Slides</a></td>
-</tr>
-<tr class="odd">
-<td>M07: Random Walks</td>
-<td><a href="m07-random-walks/pen-and-paper/exercise.pdf">Random Walks on Networks</a></td>
-<td>-</td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m07/slide07.html">Slides</a></td>
-</tr>
-<tr class="even">
-<td>M08: Embedding</td>
-<td><a href="m08-embedding/pen-and-paper/exercise.pdf">Network Embeddings</a></td>
-<td>-</td>
-<td><a href="https://skojaku.github.io/adv-net-sci/assets/slides/m08/slide08.html">Slides</a></td>
-</tr>
-<tr class="odd">
-<td>M09: Graph Neural Networks</td>
-<td><a href="m09-graph-neural-networks/pen-and-paper/exercise.pdf">Graph Neural Networks</a></td>
-<td>-</td>
-<td><a href="https://github.com/skojaku/adv-net-sci/tree/main/docs/slide/m09">Slides</a></td>
-</tr>
-</tbody>
-</table>
+<p><strong>“Don’t think! Feeeeel.”</strong> — Bruce Lee, <em>Enter the Dragon</em>. That is the method here, and it is meant literally.</p>
+<p>Every module starts with something you do with your own hands, before anything is defined. You trace the seven bridges of Königsberg on a map and fail, again, to cross each one exactly once. You count how many of your own friends know each other. You cut cables out of a power grid, one at a time, until the towns go dark. The definition arrives afterwards, as a name for something you have already felt.</p>
+<p>No prior network science is assumed. The main text asks no linear algebra of you; the derivations sit on each module’s appendix page, to take or to leave. Code is folded shut until you click it.</p>
+<p>Outside class you hand in two things: a <a href="./course/pair-notebook.html">Pair Notebook</a> — a module taught as a one-on-one session with an AI tutor in your terminal, where the conversation is what gets graded, not the code — and a <a href="./course/mini-project.html">Group Mini-Project</a> built with up to two teammates. <a href="./course/activities.html">Activities and grading</a> lists everything that counts.</p>
+<section id="the-nine-modules" class="level2">
+<h2 class="anchored" data-anchor-id="the-nine-modules">The nine modules</h2>
+<p>One question opens the course, and each of the nine modules asks another. Every question is a link into the lecture note; the worksheet under it is the one you do before that lecture, with a pencil.</p>
+<!-- TODO(anim): course-as-one-journey, nine stops -->
+<div class="course-map">
+<div class="stop">
+<p><span class="stop-no">Start</span> <a href="./intro/why-networks.html" class="stop-title">Why Networks?</a></p>
+<p><span class="stop-q">Why do we need a science of networks instead of ordinary statistics?</span></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M01</span> <a href="./m01-euler_tour/01-concepts.html" class="stop-title">Euler Tour</a></p>
+<p><span class="stop-q">Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?</span></p>
+<p>Worksheet: <a href="https://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">the Königsberg bridges</a> (PDF, hosted by Esteban Moro)</p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M02</span> <a href="./m02-small-world/01-concepts.html" class="stop-title">Small World</a></p>
+<p><span class="stop-q">Why is a stranger on the other side of the world only about six handshakes away?</span></p>
+<p>Worksheets: <a href="m02-small-world/pen-and-paper/six-handshakes.pdf">Six Handshakes</a> · <a href="m02-small-world/pen-and-paper/turning-the-dial.pdf">Turning the Dial</a> · <a href="m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf">Do Your Friends Know Each Other?</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M03</span> <a href="./m03-robustness/01-concepts.html" class="stop-title">Robustness</a></p>
+<p><span class="stop-q">How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?</span></p>
+<p>Worksheet: <a href="m03-robustness/pen-and-paper/exercise.pdf">Build it, Break it, and Build it Back</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M04</span> <a href="./m04-node-degree/01-concepts.html" class="stop-title">Friendship Paradox</a></p>
+<p><span class="stop-q">Why do your friends have more friends than you do?</span></p>
+<p>Worksheet: <a href="m04-node-degree/pen-and-paper/exercise.pdf">Reading Heavy Tails</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M05</span> <a href="./m05-clustering/01-concepts.html" class="stop-title">Clustering</a></p>
+<p><span class="stop-q">What is a community in a network, and how would you know if the one you found is real?</span></p>
+<p>Worksheet: <a href="m05-clustering/pen-and-paper/exercise.pdf">Discovering Friend Groups</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M06</span> <a href="./m06-centrality/01-concepts.html" class="stop-title">Centrality</a></p>
+<p><span class="stop-q">Which node is the most important — and important in what sense?</span></p>
+<p>Worksheet: <a href="m06-centrality/pen-and-paper/exercise.pdf">Who’s the Big Cheese in the University Clubs?</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M07</span> <a href="./m07-random-walks/01-concepts.html" class="stop-title">Random Walks</a></p>
+<p><span class="stop-q">What does a network look like to a walker who has no idea where they are going?</span></p>
+<p>Worksheet: <a href="m07-random-walks/pen-and-paper/exercise.pdf">Where Does the Drunkard Sleep?</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M08</span> <a href="./m08-embedding/01-concepts.html" class="stop-title">Embedding</a></p>
+<p><span class="stop-q">How do you turn a network into coordinates without throwing away what makes it a network?</span></p>
+<p>Worksheet: <a href="m08-embedding/pen-and-paper/exercise.pdf">From Matrix to Map</a></p>
+</div>
+<div class="stop">
+<p><span class="stop-no">M09</span> <a href="./m09-graph-neural-networks/01-concepts.html" class="stop-title">Graph Neural Networks</a></p>
+<p><span class="stop-q">An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?</span></p>
+<p>Worksheet: <a href="m09-graph-neural-networks/pen-and-paper/exercise.pdf">Convolution and the Weisfeiler-Lehman Test</a></p>
+</div>
+</div>
+</section>
+<section id="everything-else" class="level2">
+<h2 class="anchored" data-anchor-id="everything-else">Everything else</h2>
+<p><a href="./course/welcome.html">Welcome</a> · <a href="./course/about.html">About the course</a> · <a href="./course/activities.html">Activities and grading</a> · <a href="./course/setup.html">Setup</a> · <a href="./course/pair-notebook.html">Pair Notebook</a> · <a href="./course/mini-project.html">Group Mini-Project</a> · <a href="./course/discord.html">Discord</a></p>
+<p>Slides are handed out in class and live in the course repository, not on this site: <a href="https://github.com/skojaku/adv-net-sci/tree/main/slides">slides/</a> holds the current decks for the introduction and M01–M06, while M07–M09 are still the older decks under <a href="https://github.com/skojaku/adv-net-sci/tree/main/slides/legacy">slides/legacy/</a>.</p>
 
-
-<!-- -->
 
 </section>
 
 </main> <!-- /main -->
+<!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
+     at assets/anim.js directly would dump raw JavaScript into the body as text.
+     The leading slash is the site root; Quarto rewrites it per page. -->
+<script src="./assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -891,13 +830,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -909,57 +849,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
-    }
-    const viewSource = window.document.getElementById('quarto-view-source') ||
-                       window.document.getElementById('quarto-code-tools-source');
-    if (viewSource) {
-      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-      viewSource.addEventListener("click", function(e) {
-        if (sourceUrl) {
-          // rstudio viewer pane
-          if (/\bcapabilities=\b/.test(window.location)) {
-            window.open(sourceUrl);
-          } else {
-            window.location.href = sourceUrl;
-          }
-        } else {
-          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-          modal.show();
-        }
-        return false;
-      });
-    }
-    function toggleCodeHandler(show) {
-      return function(e) {
-        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-        for (let i=0; i<detailsSrc.length; i++) {
-          const details = detailsSrc[i].parentElement;
-          if (show) {
-            details.open = true;
-          } else {
-            details.removeAttribute("open");
-          }
-        }
-        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-        const fromCls = show ? "hidden" : "unhidden";
-        const toCls = show ? "unhidden" : "hidden";
-        for (let i=0; i<cellCodeDivs.length; i++) {
-          const codeDiv = cellCodeDivs[i];
-          if (codeDiv.classList.contains(fromCls)) {
-            codeDiv.classList.remove(fromCls);
-            codeDiv.classList.add(toCls);
-          } 
-        }
-        return false;
-      }
-    }
-    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-    if (hideAllCode) {
-      hideAllCode.addEventListener("click", toggleCodeHandler(false));
-    }
-    const showAllCode = window.document.getElementById("quarto-show-all-code");
-    if (showAllCode) {
-      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1289,30 +1178,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       }
     }
   });
-  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Welcome to SSIE 641 Advanced Topics on Network Science"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>``Don't think! Feeeeeel'' is a famous quote by Bruce Lee in the movie *Enter the Dragon*, and this is my guiding philosophy of learning.</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>This course is designed to help you *feel* the concepts and tools of network science through pen-and-paper exercises and hands-on coding.</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## List of Exercises and Assignments</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Module <span class="pp">|</span> Pen and Paper Exercise <span class="pp">|</span> Assignment <span class="pp">|</span> Slides <span class="pp">|</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="pp">|--------|------------------------|------------------|------------------|</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M01: Euler Tour <span class="pp">|</span> <span class="co">[</span><span class="ot">The Koningsberg Bridge</span><span class="co">](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)</span> <span class="pp">|</span> - <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://github.com/skojaku/adv-net-sci/tree/main/docs/slide/m01)</span> <span class="pp">|</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M02: Small World <span class="pp">|</span> <span class="co">[</span><span class="ot">It’s a small world!! 6 degrees of separation</span><span class="co">](http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Exercise</span><span class="co">](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/starter.ipynb)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m02/slide02.html)</span> <span class="pp">|</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M03: Robustness <span class="pp">|</span> <span class="co">[</span><span class="ot">Build it, Break it, and Build it back!</span><span class="co">](m03-robustness/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Exercise</span><span class="co">](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/exercise.ipynb)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m03/slide03.html)</span> <span class="pp">|</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M04: Friendship Paradox <span class="pp">|</span> <span class="co">[</span><span class="ot">Data Visualization</span><span class="co">](m04-friendship-paradox/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Exercise</span><span class="co">](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m04-friendship-paradox/exercise.ipynb)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m04/slide04.html)</span> <span class="pp">|</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M05: Clustering <span class="pp">|</span> <span class="co">[</span><span class="ot">Perfect vs. Almost Perfect</span><span class="co">](m05-clustering/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Community detection</span><span class="co">](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m05-clustering/exercise-m05-clustering.ipynb)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m05/slide05.html)</span> <span class="pp">|</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M06: Centrality <span class="pp">|</span> <span class="co">[</span><span class="ot">Who's the Big Cheese in the University Clubs?</span><span class="co">](m06-centrality/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Roads to Rome</span><span class="co">](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m06-centrality/exercise-m06-centrality.ipynb)</span> <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m06/slide06.html)</span> <span class="pp">|</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M07: Random Walks <span class="pp">|</span> <span class="co">[</span><span class="ot">Random Walks on Networks</span><span class="co">](m07-random-walks/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> - <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m07/slide07.html)</span> <span class="pp">|</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M08: Embedding <span class="pp">|</span> <span class="co">[</span><span class="ot">Network Embeddings</span><span class="co">](m08-embedding/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> - <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://skojaku.github.io/adv-net-sci/assets/slides/m08/slide08.html)</span> <span class="pp">|</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> M09: Graph Neural Networks <span class="pp">|</span> <span class="co">[</span><span class="ot">Graph Neural Networks</span><span class="co">](m09-graph-neural-networks/pen-and-paper/exercise.pdf)</span> <span class="pp">|</span> - <span class="pp">|</span> <span class="co">[</span><span class="ot">Slides</span><span class="co">](https://github.com/skojaku/adv-net-sci/tree/main/docs/slide/m09)</span> <span class="pp">|</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./course/welcome.html" class="pagination-link" aria-label="Welcome to SSIE 641">
+        <span class="nav-page-text">Welcome to SSIE 641</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
