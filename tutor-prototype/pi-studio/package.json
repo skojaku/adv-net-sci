@@ -1,0 +1,45 @@
+{
+  "name": "@sk-classroom/pi-studio",
+  "version": "0.1.0",
+  "description": "Pi extension that turns a coding agent into a Socratic tutor working with a student inside a marimo notebook: a high-level nb_* toolkit, chapter-at-a-time curriculum, verbatim session log, and a referee the student can appeal to.",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "marimo",
+    "teaching",
+    "tutoring",
+    "network-science"
+  ],
+  "license": "MIT",
+  "author": "Sadamori Kojaku <skojaku@binghamton.edu>",
+  "homepage": "https://github.com/sk-classroom/pi-studio#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sk-classroom/pi-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sk-classroom/pi-studio/issues"
+  },
+  "type": "module",
+  "files": [
+    "extensions/",
+    "bridge/",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "pi": {
+    "extensions": [
+      "extensions/notebook-tool.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

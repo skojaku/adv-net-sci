@@ -22,19 +22,26 @@
 import { execFile } from "node:child_process";
 import * as fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { Type } from "typebox";
 import { uuidv7 } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
 import { Text } from "@earendil-works/pi-tui";
 import { keyHint, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-// How every nb_* call reaches the marimo kernel. The script ships inside the
-// marimo-pair skill, but under pi the SKILL must not be installed: the model
-// reaches for it mid-hint and a bare "[skill] marimo-pair" line lands in the
-// student's terminal. So run_tutor.sh stages just the scripts outside any
-// skills directory, and that copy is tried first. (Deleting the skill without
-// staging the bridge was briefly shipped and killed every notebook call.)
+/** This file's directory — the package ships its own bridge next to it. */
+const EXT_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+// How every nb_* call reaches the marimo kernel. The script is marimo-pair's,
+// and it used to be fetched at first run: `git clone` into a cache, copy the
+// skill's scripts/ out, delete the rest. Under pi the SKILL must not be
+// installed — the model reaches for it mid-hint and a bare "[skill]
+// marimo-pair" line lands in the student's terminal — so only the scripts were
+// ever wanted, and they now ship inside this package (bridge/scripts/,
+// unmodified, Apache-2.0; see bridge/README.md). The staged copies below are
+// kept as fallbacks: a module folder from before the package still has one.
 const SCRIPT_CANDIDATES = [
+  path.join(EXT_DIR, "..", "bridge", "scripts", "execute-code.sh"),
   ".pi/marimo-bridge/scripts/execute-code.sh",
   ".pi/skills/marimo-pair/scripts/execute-code.sh",
   ".claude/skills/marimo-pair/scripts/execute-code.sh",
@@ -127,16 +134,23 @@ const focusCellCode = (cellIdExpr: string, indent: string) =>
 let reviewSrcCache: string | null = null;
 function reviewSource(): string {
   if (reviewSrcCache === null) {
-    try {
-      reviewSrcCache = fs.readFileSync(
-        path.join(process.cwd(), ".pi", "extensions", "nb_review.py"),
-        "utf-8",
-      );
-    } catch {
-      reviewSrcCache = "";
+    // Beside this file inside the package; the cwd path is the pre-package
+    // layout, kept so an older module folder still reviews its cells.
+    const candidates = [
+      path.join(EXT_DIR, "nb_review.py"),
+      path.join(process.cwd(), ".pi", "extensions", "nb_review.py"),
+    ];
+    reviewSrcCache = "";
+    for (const c of candidates) {
+      try {
+        reviewSrcCache = fs.readFileSync(c, "utf-8");
+        break;
+      } catch {
+        /* try the next one */
+      }
     }
   }
-  return reviewSrcCache;
+  return reviewSrcCache ?? "";
 }
 
 const indentBlock = (s: string, n: number) =>
@@ -153,11 +167,13 @@ const BOOTSTRAP =
 
 function runKernel(code: string, signal?: AbortSignal): Promise<{ out: string; failed: boolean }> {
   const cwd = process.cwd();
-  const script = SCRIPT_CANDIDATES.map((p) => path.join(cwd, p)).find(fs.existsSync);
+  // resolve, not join: the packaged candidate is already absolute.
+  const script = SCRIPT_CANDIDATES.map((p) => path.resolve(cwd, p)).find(fs.existsSync);
   if (!script) {
     return Promise.resolve({
       out:
-        "The notebook bridge (.pi/marimo-bridge/scripts/execute-code.sh) is missing, so " +
+        "The notebook bridge (bridge/scripts/execute-code.sh, inside the pi-studio package) " +
+        "is missing, so " +
         "nothing can reach the notebook. Tell the student, in one warm sentence, that the " +
         "notebook needs restarting with ./run_tutor.sh — then keep teaching in the terminal.",
       failed: true,

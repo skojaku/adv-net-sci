@@ -12,6 +12,7 @@ more words that a template puts on the page must appear in the golden too.
 
     python3 review_golden_sync.py     # lists drift, exit 1 if any
 """
+import os
 import re
 import sys
 from pathlib import Path
@@ -78,7 +79,27 @@ elif re.sub(r"\s+", " ", m.group(0)) not in GOLDEN:
 # markdown headed for the notebook, not refusal text the tutor reads. Only the
 # 📨 lines are checked — those are the ones that go stale in a finished
 # notebook, and that is how this one drifted.
-for line in (HERE / ".pi/extensions/notebook-tool.ts").read_text().split("\n"):
+#
+# The toolkit is the pi-studio package, so it is not in this folder: look where
+# pi installs it, then where the authoring repo keeps its working tree, and let
+# $STUDIO_EXTENSION override both. Not found -> say so and skip this check
+# rather than fail; a student who cloned only the module has nothing to sync.
+toolkit = next(
+    (
+        p
+        for p in (
+            Path(os.environ["STUDIO_EXTENSION"]) if os.environ.get("STUDIO_EXTENSION") else None,
+            HERE / ".pi/git/github.com/sk-classroom/pi-studio/extensions/notebook-tool.ts",
+            HERE / "../pi-studio/extensions/notebook-tool.ts",
+        )
+        if p is not None and p.is_file()
+    ),
+    None,
+)
+if toolkit is None:
+    print("note: pi-studio's notebook-tool.ts not found — skipping the emitted-prose check.")
+    print("      (set STUDIO_EXTENSION=/path/to/notebook-tool.ts to include it)")
+for line in (toolkit.read_text().split("\n") if toolkit else []):
     if "📨" not in line or "`" not in line or "<span" not in line:
         continue
     for lit in re.findall(r'"([^"]+)"', line):
@@ -94,4 +115,5 @@ if drift:
     for d in drift:
         print(" -", d)
     sys.exit(1)
-print("notebook.golden.py is in sync with cells/, the netviz helper and the emitted prose.")
+checked = "cells/, the netviz helper and the emitted prose" if toolkit else "cells/ and the netviz helper"
+print(f"notebook.golden.py is in sync with {checked}.")

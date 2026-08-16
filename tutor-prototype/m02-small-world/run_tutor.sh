@@ -1,94 +1,60 @@
 #!/usr/bin/env bash
-# One-command launcher for the m02 AI-guided tutoring session.
+# One-command launcher for the Studio 02 session.
 #
 # What it does:
-#   1. Installs the marimo-pair skill for your agent (first run only)
-#   2. Starts the marimo notebook server (opens in your browser)
-#   3. Starts the tutor agent (pi if installed, otherwise Claude Code)
+#   1. Asks continue-or-fresh (before anything loads)
+#   2. Starts the marimo notebook server and opens it in your browser
+#   3. Starts your tutor (pi), which loads the tools it needs from
+#      .pi/settings.json on first run
 #
-# Requirements: uv, git, and either pi or claude on PATH.
-# Your API key must already be configured for your agent
-# (see README.md, "Setting up your API key").
+# Requirements: uv and pi on PATH, and the course model configured
+# (see README.md, "One-time setup").
 
 set -euo pipefail
 cd "$(dirname "$0")"
 
-MARIMO_PAIR_REPO="https://github.com/marimo-team/marimo-pair"
-
-# Course model: Muse Glimmer 30B via OpenRouter (needs OPENROUTER_API_KEY,
-# same as the vision/referee defaults below). Override with TUTOR_MODEL.
-TUTOR_MODEL="${TUTOR_MODEL:-openrouter/meta/muse-glimmer-30b}"
+# The course gateway hands out one key per student and publishes three models:
+# tutor, vision, referee. What is actually behind those names lives on the
+# server. Override any of them to run on your own account instead, e.g.
+#   TUTOR_MODEL="openrouter/z-ai/glm-5.2" ./run_tutor.sh
+TUTOR_MODEL="${TUTOR_MODEL:-netsci/tutor}"
 
 # The tutor model is TEXT-ONLY — photo uploads (chapter 3) are described to it
-# by a separate vision-capable model. Default: Gemini 3.6 Flash via OpenRouter
-# (needs OPENROUTER_API_KEY; MiniMax-M3 misread hand-drawn chord endpoints).
-# Without credentials the session still works: the tutor asks the student to
-# describe the drawing in words instead.
-export TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-openrouter/google/gemini-3.6-flash}"
+# by a separate vision-capable model. Without one the session still works: the
+# tutor asks the student to describe the drawing in words instead.
+export TUTOR_VISION_MODEL="${TUTOR_VISION_MODEL:-netsci/vision}"
 
 # The ⚖️ "Tutor gets stuck" button in the notebook appeals over the tutor's
 # head to a STRONGER referee model, whose ruling is binding (redo the problem,
-# count the work shown, move on...). Default: GLM-5.2 via OpenRouter (needs
-# OPENROUTER_API_KEY, same as the vision default). Unreachable -> the tutor
-# is told to resolve the appeal itself, generously.
-export TUTOR_REFEREE_MODEL="${TUTOR_REFEREE_MODEL:-openrouter/z-ai/glm-5.2}"
+# count the work shown, move on...). Unreachable -> the tutor is told to
+# resolve the appeal itself, generously.
+export TUTOR_REFEREE_MODEL="${TUTOR_REFEREE_MODEL:-netsci/referee}"
 
 say() { printf '\n\033[1;36m[tutor]\033[0m %s\n' "$*"; }
 die() { printf '\n\033[1;31m[tutor]\033[0m %s\n' "$*" >&2; exit 1; }
 
 command -v uv >/dev/null 2>&1 || die "uv is not installed. Install it first: https://docs.astral.sh/uv/  (macOS: brew install uv)"
-command -v git >/dev/null 2>&1 || die "git is not installed."
+command -v pi >/dev/null 2>&1 || die "pi is not installed. Run: npm install -g @earendil-works/pi-coding-agent  (see README.md)"
 
-# Pick the agent: pi preferred, claude as fallback.
-AGENT=""
-if command -v pi >/dev/null 2>&1; then AGENT="pi";
-elif command -v claude >/dev/null 2>&1; then AGENT="claude";
-else die "Neither 'pi' nor 'claude' found. Install one first (see README.md)."; fi
+# The tutor's toolkit (nb_* tools, logging, the referee) is the pi-studio
+# package, declared in .pi/settings.json. pi installs it on startup; say so,
+# because the first run pauses here for a few seconds and a silent pause on a
+# student's first evening looks like a hang.
+[ -d ".pi/git/github.com/sk-classroom/pi-studio" ] ||
+  say "First run: fetching your tutor's toolkit (a few seconds)..."
 
-# 1. Install the marimo-pair skill into the agent's project-level skills dir.
-#    (The skill lives at skills/marimo-pair/ inside the repo, so clone to a
-#    cache and copy just that folder — agents only look one level deep.)
-install_skill() {
-  local dest="$1"
-  if [ ! -d "$dest" ]; then
-    say "Installing marimo-pair skill -> $dest"
-    local cache=".skill-cache"
-    rm -rf "$cache"
-    git clone --depth 1 "$MARIMO_PAIR_REPO" "$cache"
-    mkdir -p "$(dirname "$dest")"
-    cp -R "$cache/skills/marimo-pair" "$dest"
-    rm -rf "$cache"
-  fi
-}
-# Under pi the notebook tool does every notebook operation, so the SKILL is
-# not wanted — installed, the model reaches for it mid-hint and a bare
-# "[skill] marimo-pair" line lands in the student's terminal. But the
-# extension talks to the kernel through that skill's execute-code.sh, so the
-# scripts are staged outside any skills directory and only the skill itself
-# is removed. (Removing both, briefly shipped, killed every notebook call.)
-install_bridge() {
-  local dest=".pi/marimo-bridge"
-  [ -f "$dest/scripts/execute-code.sh" ] && return 0
-  local cache=".skill-cache"
-  say "Installing the notebook bridge -> $dest"
-  rm -rf "$cache"
-  git clone --depth 1 "$MARIMO_PAIR_REPO" "$cache"
-  mkdir -p "$dest"
-  cp -R "$cache/skills/marimo-pair/scripts" "$dest/scripts"
-  rm -rf "$cache"
-}
-if [ "$AGENT" = "pi" ]; then
-  install_bridge
-  rm -rf ".pi/skills/marimo-pair"
-  [ -f ".pi/marimo-bridge/scripts/execute-code.sh" ] ||
-    die "Notebook bridge missing at .pi/marimo-bridge/scripts/execute-code.sh"
-else
-  install_skill ".claude/skills/marimo-pair"
-fi
+# A missing provider block is the single most common setup mistake, and pi's
+# own error for it ("model not found") does not point anywhere useful.
+case "$TUTOR_MODEL" in
+  netsci/*)
+    grep -q '"netsci"' "${HOME}/.pi/agent/models.json" 2>/dev/null ||
+      die "The course model is not configured yet: ~/.pi/agent/models.json has no \"netsci\" provider.
+      See README.md, \"One-time setup\" — it is one JSON block plus the key your instructor issued you." ;;
+esac
 
 mkdir -p session_artifacts
 
-# 2. Continue or start over — asked HERE, before anything loads.
+# 1. Continue or start over — asked HERE, before anything loads.
 #    A reset done at file level cannot half-succeed. The in-session
 #    nb_fresh_start has to delete cells one at a time through a live kernel,
 #    and one failure there leaves the "clean slate" opening on the middle of
@@ -120,8 +86,8 @@ if ! grep -q '"igraph"' notebook.py; then
   say "      mv notebook.py \"session_artifacts/notebook-old-\$(date +%Y%m%d%H%M).py\" && ./run_tutor.sh"
 fi
 
-# 3. Start the marimo server (background). --no-token lets the skill discover
-#    it; --headless because we open the browser ourselves in app view below.
+# 2. Start the marimo server (background). --no-token lets the bridge reach it;
+#    --headless because we open the browser ourselves in app view below.
 say "Starting the notebook server (your browser will open)..."
 uvx marimo edit --sandbox --no-token --headless notebook.py >session_artifacts/marimo_server.log 2>&1 &
 MARIMO_PID=$!
@@ -129,7 +95,7 @@ cleanup() { kill "$MARIMO_PID" 2>/dev/null || true; }
 trap cleanup EXIT
 
 # Wait for the server URL (marimo may pick a different port if 2718 is busy),
-# then export it for the notebook tool (.pi/extensions/notebook-tool.ts).
+# then export it for the notebook toolkit.
 MARIMO_URL=""
 for _ in $(seq 1 30); do
   kill -0 "$MARIMO_PID" 2>/dev/null || die "marimo failed to start — see session_artifacts/marimo_server.log"
@@ -151,19 +117,16 @@ elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$STUDENT_URL"
 else say "Open this in your browser: $STUDENT_URL"
 fi
 
-# 4. Start the tutor.
-say "Notebook is up. Starting your tutor ($AGENT, model: $TUTOR_MODEL) — say hello!"
+# 3. Start the tutor.
+say "Notebook is up. Starting your tutor (model: $TUTOR_MODEL) — say hello!"
 KICKOFF="Please start the tutoring session. Your CHAPTER SCRIPT message contains the current curriculum — begin at its first checkpoint, unless a RESUME CONTEXT message is present (then greet the student back and follow it). Keep replies short and conversational (1-3 spoken sentences, one question at a time), and use the nb_* notebook tools for all notebook work — the student is watching this terminal."
-if [ "$AGENT" = "pi" ]; then
-  # bash is disabled on purpose: every notebook/log operation goes through the
-  # quiet `notebook` tool, so no raw commands ever scroll past the student.
-  # thinking "low" gives the model a hidden place to reason (hideThinkingBlock
-  # keeps it invisible); starving it of thinking made it reason in plain text.
-  pi --model "$TUTOR_MODEL" --thinking low --exclude-tools bash "$KICKOFF"
-else
-  # Claude Code fallback uses its own default model (TUTOR_MODEL is pi-only)
-  # and the marimo-pair skill directly (no custom notebook tool).
-  claude "$KICKOFF"
-fi
+
+# -a trusts this folder's own AGENTS.md, settings and packages for the run, so
+# the session starts on a "hello" instead of a permission question.
+# bash is disabled on purpose: every notebook/log operation goes through the
+# quiet nb_* tools, so no raw commands ever scroll past the student.
+# thinking "low" gives the model a hidden place to reason (hideThinkingBlock
+# keeps it invisible); starving it of thinking made it reason in plain text.
+pi --model "$TUTOR_MODEL" --thinking low --exclude-tools bash -a "$KICKOFF"
 
 say "Session ended. Your work is saved in notebook.py and session_artifacts/."

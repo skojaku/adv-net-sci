@@ -1,15 +1,19 @@
-__marimo__/
-.skill-cache/
+# NOTE what is NOT here: notebook.py, session_artifacts/, assets/uploads/ and
+# assets/exercises/ are your work — the notebook, the log, your photographs and
+# the code you wrote. They are what you submit, so they are meant to be
+# committed. `git add -A` picks them all up.
+
+# Fetched, never edited: the toolkit pi installs from .pi/settings.json.
+.pi/git/
+.pi/npm/
 .pi/skills/
 .pi/marimo-bridge/
+.skill-cache/
 .claude/skills/
-session_artifacts/
-notebook.py
-# Student photo uploads live WITH the notebook (nb_view_image writes here so
-# the keepsake still renders when session_artifacts/ is left behind), but they
-# are session data, not module source.
-assets/uploads/
-# Same for the code a student writes in an exercise box: their work, saved
-# beside the notebook so the keepsake still renders it, but not module
-# source. A solved cp6 committed here is an answer key in the repo.
-assets/exercises/
+
+# marimo's own scratch directory.
+__marimo__/
+
+__pycache__/
+*.py[cod]
+.DS_Store

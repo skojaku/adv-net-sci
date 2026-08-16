@@ -21,29 +21,31 @@ done
 
 SANDBOX=$(mktemp -d "${TMPDIR:-/tmp}/tutor-e2e-XXXXXX")
 rsync -a --exclude session_artifacts --exclude __marimo__ --exclude .skill-cache \
-  --exclude notebook.py --exclude '.pi/extensions/__pycache__' \
+  --exclude notebook.py --exclude '.pi/git' \
   --exclude '.pi/skills' --exclude '.claude/skills' \
   "$MODULE_DIR/" "$SANDBOX/"
 cp "$SANDBOX/notebook.template.py" "$SANDBOX/notebook.py"
 mkdir -p "$SANDBOX/session_artifacts"
 
-# The extension reaches the kernel through execute-code.sh, which ships inside
-# the marimo-pair skill. The SKILL is excluded above on purpose (a pi tutor
-# that can see it prints "[skill] marimo-pair" into the student's terminal),
-# so stage the scripts on their own. Fail loudly: without this every nb_* call
-# returns "bridge missing" and the whole run is a silent write-off.
-if [ ! -f "$SANDBOX/.pi/marimo-bridge/scripts/execute-code.sh" ]; then
-  for src in "$MODULE_DIR/.pi/marimo-bridge/scripts" \
-             "$MODULE_DIR/.pi/skills/marimo-pair/scripts" \
-             "$MODULE_DIR/.claude/skills/marimo-pair/scripts"; do
-    [ -d "$src" ] || continue
-    mkdir -p "$SANDBOX/.pi/marimo-bridge"
-    cp -R "$src" "$SANDBOX/.pi/marimo-bridge/scripts"
-    break
+# The nb_* toolkit is the pi-studio package, not part of the module. Test the
+# WORKING TREE by default — the whole point of the harness is to exercise the
+# fix you just made — and fall back to the copy pi installed in the module.
+# Fail loudly: with the wrong toolkit (or none) every nb_* call fails and the
+# whole run is a silent write-off. Its bridge/ carries execute-code.sh, so
+# nothing needs staging any more.
+STUDIO_EXTENSION="${STUDIO_EXTENSION:-}"
+if [ -z "$STUDIO_EXTENSION" ]; then
+  for cand in "$(cd "$(dirname "$0")/../pi-studio" 2>/dev/null && pwd)/extensions/notebook-tool.ts" \
+              "$MODULE_DIR/.pi/git/github.com/sk-classroom/pi-studio/extensions/notebook-tool.ts"; do
+    [ -f "$cand" ] && { STUDIO_EXTENSION="$cand"; break; }
   done
 fi
-[ -f "$SANDBOX/.pi/marimo-bridge/scripts/execute-code.sh" ] || {
-  echo "error: no execute-code.sh anywhere in $MODULE_DIR — run ./run_tutor.sh there once first" >&2
+[ -f "$STUDIO_EXTENSION" ] || {
+  echo "error: no pi-studio toolkit found — set STUDIO_EXTENSION=/path/to/extensions/notebook-tool.ts" >&2
+  exit 1
+}
+[ -f "$(dirname "$STUDIO_EXTENSION")/../bridge/scripts/execute-code.sh" ] || {
+  echo "error: $STUDIO_EXTENSION has no bridge/scripts/execute-code.sh beside it — incomplete checkout?" >&2
   exit 1
 }
 
@@ -121,11 +123,15 @@ fi
 # them tests the wrong tutor: it falls back to plain text and P8 can never be
 # assessed. Explicit -e still works under --no-extensions, so load each
 # declared package by path.
-EXTS=(-e "$SANDBOX/.pi/extensions/notebook-tool.ts")
+EXTS=(-e "$STUDIO_EXTENSION")
 while IFS= read -r pkg; do
-  [ -n "$pkg" ] || continue
-  entry="$SANDBOX/.pi/npm/node_modules/${pkg#npm:}/index.ts"
-  [ -f "$entry" ] || entry="$SANDBOX/.pi/npm/node_modules/${pkg#npm:}/index.js"
+  # git: entries are the toolkit itself, loaded above from the working tree.
+  case "$pkg" in ""|git:*|https://*|ssh://*|/*|./*) continue ;; esac
+  # npm:@scope/name@1.2.3 -> @scope/name (the directory npm installs it into).
+  name="${pkg#npm:}"
+  [ "${name#@}" = "$(printf '%s' "${name#@}" | sed 's/@.*//')" ] || name="${name%@*}"
+  entry="$SANDBOX/.pi/npm/node_modules/$name/index.ts"
+  [ -f "$entry" ] || entry="$SANDBOX/.pi/npm/node_modules/$name/index.js"
   if [ -f "$entry" ]; then
     EXTS+=(-e "$entry")
   else

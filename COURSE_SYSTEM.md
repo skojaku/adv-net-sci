@@ -184,11 +184,12 @@ membership. Nothing else crosses.
 
 ## 4. Assignments
 
-### The walkthrough assignment (individual)
+### The Studio (individual)
 
-Not a problem set. The student runs a **marimo notebook driven by a Pi agent
-tutor** — the format prototyped in [`tutor-prototype/`](tutor-prototype/) — and
-submits the lecture note that session produced.
+Not a problem set. The student runs a **marimo notebook driven by a pi agent
+tutor** — authored in [`tutor-prototype/`](tutor-prototype/) — and submits the
+lecture note that session produced. One Studio per module: *Studio 02 — The
+Small-World Puzzle*, and so on.
 
 The session is a one-on-one dialogue: the tutor asks the student to predict,
 explain, calculate, and photograph pen-and-paper work, and builds the notebook
@@ -200,7 +201,20 @@ penalized; the log is read for how the student reasoned. This is why the
 assignment cannot be autograded on output correctness the way the Fall 2025
 assignments were — grading reads the session record.
 
-Distribution and submission: Classroom 50, `mode: individual`.
+It is two public repositories under `sk-classroom`, and a student's clone of
+the second one is where their work is committed:
+
+| repo | what |
+|---|---|
+| [`pi-studio`](https://github.com/sk-classroom/pi-studio) | the pi package: `nb_*` toolkit, chapter orchestration, checkpoint ceremony, verbatim logging, referee. Installed by pi from the module's `.pi/settings.json`, pinned by tag |
+| [`advnetsci-studio-m02-small-world`](https://github.com/sk-classroom/advnetsci-studio-m02-small-world) | the module: curriculum, premade cells, assets, launcher |
+
+Both are exports of this repo — publish with `tools/publish_studio.sh`, never
+by committing to them directly.
+
+Distribution and submission: Classroom 50, `mode: individual`. The tutor runs
+on the course gateway's three aliases (`tutor`, `vision`, `referee`), so a
+student needs one issued key and no account of their own.
 
 ### The mini-project (group)
 
@@ -294,7 +308,7 @@ gateway are things Hermes already ships.
 - **No attendance.** Removed with Chibi. Attendance is handled in class.
 - **No "stump the LLM" challenge.** The Discord game is retired.
 - **No LLM quiz-question generation as an assignment.** The graded artifact is
-  the walkthrough notebook now.
+  the Studio notebook now.
 - **No reading Brightspace.**
 - **No numeric grades to students in a shared channel.**
 
