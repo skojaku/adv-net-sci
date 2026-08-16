@@ -1,2 +1,35 @@
 
 /* Custom collapsible callout */
+
+/* Inline code.
+ *
+ * `highlight-style: github-dark` is chosen for code *blocks*, but Quarto
+ * applies that theme's background (#24292e) to inline `code` too, while the
+ * page theme keeps the text colour dark — dark on dark, unreadable. Blocks
+ * keep the dark theme; inline code goes back to the light page. */
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+td code:not(.sourceCode),
+p code.sourceCode,
+li code.sourceCode,
+td code.sourceCode,
+dd code,
+figcaption code {
+  background-color: #f1ecfa;
+  color: #4a2c85;
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+
+/* Inside a link, the link colour wins — otherwise the two fight. */
+a > code {
+  background-color: #f1ecfa;
+}
+
+/* Callout bodies and tables carry inline code too; keep it on the light
+ * treatment rather than inheriting the callout's tint. */
+.callout code:not(.sourceCode),
+.callout code.sourceCode {
+  background-color: #f1ecfa;
+  color: #4a2c85;
+}

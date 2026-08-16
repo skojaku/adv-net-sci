@@ -572,7 +572,7 @@
     },
     {
       label: "You hand it in from the terminal",
-      note: "Nothing to upload by hand, no file to email. Tell your tutor you are done and it commits the session to your GitHub Classroom repository.",
+      note: "Nothing to upload by hand, no file to email. Tell your tutor you are done and it commits the session to your Classroom 50 repository.",
       async run() {
         await sleep(250);
         await say("you", "that's me done for today — hand it in", 34);
@@ -581,7 +581,7 @@
         await sleep(400);
         flat("pn-line-cmd", "$ git add -A && git commit -m \"Pair Notebook 02\" && git push");
         await sleep(900);
-        flat("pn-line-ok", "✓ pushed to your Classroom repository — 12 checkpoints, 1h 12m");
+        flat("pn-line-ok", "✓ pushed to your Classroom 50 repository — 12 checkpoints, 34m");
         await sleep(500);
         const c = cell("cell 12");
         c.appendChild(el("div", "pn-cell-title", "Session record"));
