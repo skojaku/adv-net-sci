@@ -441,10 +441,10 @@ do not fade at the same rate.
 Take the case from the original paper: $N = 1{,}000$ nodes and $k = 10$, so
 5,000 edges, an average path length of about 50 and a clustering coefficient of
 about 0.67. Now set $p = 0.01$ — roughly 50 edges moved out of 5,000, one
-percent of the network. The average path length collapses to about a third of
-its lattice value, while the clustering is still within a few percent of it
-[@watts1998collective]. Fifty shortcuts buy you the whole small-world effect and
-cost you almost none of the local structure.
+percent of the network. The average path length falls to about a *fifth* of its
+lattice value, while the clustering is still within a couple of percent of its
+own [@watts1998collective]. Fifty shortcuts buy you the whole small-world effect
+and cost you almost none of the local structure.
 
 You do not have to take the paper's word for it. Below is a village of twenty
 you can count by hand: walk across it, move one edge, walk across it again, and
@@ -520,14 +520,24 @@ then turn the dial yourself.
      value, on 24 log-spaced detents from p = 1e-4 to p = 1. Shared verbatim
      with course/_pair-notebook-walkthrough.qmd. */
   const P_STEPS = 24;
-  const L_RAT = [1, .99, .97, .93, .86, .75, .62, .48, .36, .27, .21, .17, .14, .12, .105, .095, .085, .078, .072, .067, .063, .059, .056, .053];
-  const C_RAT = [1, 1, .99, .99, .98, .97, .96, .94, .92, .88, .83, .76, .67, .57, .46, .35, .26, .19, .13, .09, .06, .04, .026, .016];
+  /* Simulated, not sketched: 20 Watts-Strogatz realisations per detent at
+     N = 1000, k = 10, averaged, each curve divided by its own lattice value.
+     The lattice itself comes out at L = 47.1 and C = 0.667, which is the
+     "about 50" and "about 0.67" the prose above quotes. Reproduce with
+     igraph: Graph.Lattice([1000], circular=True, nei=5), rewire each edge
+     with probability p to a random non-neighbour, then
+     average_path_length() and transitivity_avglocal_undirected(). */
+  const L_RAT = [1, .932, .882, .854, .748, .641, .582, .440, .367, .277, .261, .206, .176, .152, .133, .118, .106, .096, .089, .082, .077, .073, .070, .069];
+  const C_RAT = [1, 1, .999, .999, .999, .998, .997, .995, .993, .988, .986, .976, .966, .950, .925, .887, .834, .761, .656, .522, .353, .178, .048, .013];
   /* How many of the ring's 40 edges have moved at each detent: round(40p),
      floored at the one the reader moved by hand. It stays at that single
      chord through detent 14 — which is the whole point, because by then the
      distance curve has already done all of its falling. */
   const COUNT = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,4,5,8,12,18,27,40];
-  const PARK = 8;     /* where auto-play stops: L 0.36 of the lattice, C 0.92 */
+  /* Where auto-play stops: detent 11, p = 0.0082 — the detent nearest the
+     p = 0.01 the prose above quotes. There L is 0.21 of its lattice value
+     and C is still 0.98 of its own. */
+  const PARK = 11;
 
   const pval = (i) => Math.pow(10, -4 + (4 * i) / (P_STEPS - 1));
   const px = (i) => 26 + (i / (P_STEPS - 1)) * 180;

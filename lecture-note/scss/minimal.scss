@@ -464,12 +464,17 @@ figcaption, .figure-caption {
   margin-top: 0.5rem;
 }
 
-/* Graphviz blocks are emitted as an intrinsically-sized <svg>, so a wide
- * diagram pushes the whole document sideways on a phone rather than shrinking.
- * Measured before this rule: m05's concepts page had a 576px polygon on a
- * 500px viewport and scrolled to 777px. Scale the diagram down instead. */
-svg:not(.anim-svg):not(.katex-svg) {
-  max-width: 100%;
+/* Graphviz emits an intrinsically-sized <svg> carrying an INLINE
+ * `max-width: none`, so it stays at its natural width — 576px for most of the
+ * diagrams here — and on a phone the reader gets a scroll box instead of a
+ * diagram. Nothing in a stylesheet outranks an inline style except
+ * `!important`, so that is what this takes. Scoped to `.cell-output-display`,
+ * which on this site only ever wraps graphviz: `execute` is disabled, so no
+ * other cell produces output. The animations' own SVGs are untouched — they
+ * live in `.anim-stage`, size themselves off `--anim-svg-max`, and must not be
+ * caught by a blanket `svg` rule. */
+.cell-output-display svg {
+  max-width: 100% !important;
   height: auto;
 }
 
