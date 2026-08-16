@@ -30,8 +30,6 @@ That vagueness is not a defect to be tidied away. It is the subject. Every measu
 [Who's the Big Cheese in the University Clubs?](./pen-and-paper/exercise.pdf) — rank the members of a small club network by hand before you read a single formula.
 :::
 
-![](../figs/centrality.jpg){width="50%" fig-align="center"}
-
 ### One small network, carried through the whole module
 
 Every measure below is worked on the same five-node network, so you can compare the answers directly.
@@ -40,7 +38,465 @@ Every measure below is worked on the same five-node network, so you can compare 
 
 Node 3 sits in a triangle with 1 and 2, and it also holds the only link to the tail 4–5. Node 5 dangles off the end. Sketch it on paper — it takes ten seconds, and every number in this module refers back to it.
 
-<!-- TODO(anim): draw this five-node network once and let the reader switch which centrality colours and sizes it. -->
+A network that small does not argue with itself. Whatever you ask of it, node 3
+answers: most connections, shortest distances to everyone, most paths running
+through it, best-connected friends — node 3 wins all four. That makes it a good
+place to check arithmetic and a bad place to learn what centrality *is*.
+
+So before any formula, here is a network of fifteen where the four questions
+give four different winners. One drawing, four buttons, and a crown that will
+not sit still. Press them in any order.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The moving crown — only the rules this one figure needs. Paper, panels,
+   buttons, tallies and motion all come from assets/anim.css; the sequencer
+   from assets/anim.js. Colours are the kit's resolved tokens (var(--_ink),
+   var(--_accent), …) — never literals.
+   -------------------------------------------------------------------------- */
+
+/* Two crowds and a bridge is a 2:1 picture, so it takes the whole width and
+   the card sits under it rather than beside it: the kit's 310px default cap
+   would leave this drawing unreadable. */
+#crown-move { --anim-svg-max: 100%; --anim-knockout-w: 2.6px; }
+#crown-move .cm-card-slot { max-width: 25rem; margin: 0.1rem auto 0; }
+
+/* A node is a <g> holding a unit circle, so "how big is this node under this
+   measure" is a transform — the one property that animates everywhere without
+   help. The outline is told not to scale with it. */
+#crown-move .cm-node { transition: transform 0.5s cubic-bezier(0.34, 1.25, 0.64, 1); }
+#crown-move .cm-node circle { vector-effect: non-scaling-stroke; }
+#crown-move .cm-king { fill: var(--_amber); }
+#crown-move .cm-crown { transition: transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1); }
+#crown-move .cm-crown path {
+  fill: var(--_amber);
+  stroke: var(--_ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+/* Every bit of type in the drawing sits on top of the ink, so each of these
+   is drawn with the kit's .anim-knockout as well; only size and fill are the
+   figure's own business. */
+#crown-move .cm-lbl,
+#crown-move .cm-rank,
+#crown-move .cm-row { font-family: var(--_hand); }
+#crown-move .cm-lbl { font-size: 10px; fill: var(--_ink-soft); }
+#crown-move .cm-rank { font-size: 9px; fill: var(--_ink-faint); }
+#crown-move .cm-row { font-size: 10px; fill: var(--_ink-soft); }
+#crown-move .cm-row-hi { font-size: 11.5px; font-weight: 700; fill: var(--_ink); }
+#crown-move .cm-legend { font-size: 10px; fill: var(--_amber); }
+#crown-move .cm-hd { font-family: var(--_hand); font-size: 12.5px; font-weight: 700; fill: var(--_ink); }
+#crown-move .cm-sub { font-family: var(--_hand); font-size: 9.5px; fill: var(--_ink-soft); }
+#crown-move .cm-thread { stroke: var(--_ink-faint); stroke-width: 0.9; fill: none; opacity: 0.32; }
+
+/* The four questions: this figure's only control. */
+#crown-move .cm-ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+}
+#crown-move .cm-ask-lead { font-family: var(--_hand); font-size: 0.82rem; color: var(--_ink-soft); }
+#crown-move .cm-ask-btn { font-size: 0.8rem; }
+#crown-move .cm-ask-btn[aria-pressed="true"] {
+  color: var(--_white);
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #crown-move .cm-node, #crown-move .cm-crown { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="crown-move">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-cm-net></div>
+    <div class="cm-card-slot" data-anim-clear data-cm-card></div>
+  </div>
+
+  <div class="cm-ask" role="group" aria-label="Choose the question">
+    <span class="cm-ask-lead">ask:</span>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="0" aria-pressed="false">most contacts?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="1" aria-pressed="false">closest to all?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="2" aria-pressed="false">most paths?</button>
+    <button class="anim-btn cm-ask-btn" type="button" data-cm-ask="3" aria-pressed="false">best-connected friends?</button>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The moving crown. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css +
+   assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     One network, drawn once. Fifteen people, numbered as they are labelled:
+
+       1        the hub of the left crowd, joined to all seven of 2..8
+       2..8     a ring of seven, each also joined to its two ring neighbours
+       9        joined to 2 and 3, and to the broker
+       10       the broker: two links into the left crowd, one into the right
+       11..15   five people who all know each other — every pair is joined
+
+     29 edges in all. Every score below was computed once, offline, with
+     networkx on exactly this edge list and pasted in; nothing in this file
+     runs a graph algorithm.
+
+       degree       crown 1  (7)      runner-up 2 and 11 (5)
+       closeness    crown 2  (0.519)  runner-up 10 (0.483), then 1 (0.467)
+       betweenness  crown 10 (45)     runner-up 2 (40.5), 11 (40)  [unnormalised]
+       eigenvector  crown 11 (1.000)  runner-up 12..15 (0.900)     [largest = 1]
+
+     Ties are listed worst-first for the four crowned nodes, so no protagonist
+     is ever shown a rank better than it earned: node 10's degree of 3 is the
+     lowest in the network, shared with six others, and it is drawn 15th.
+     ------------------------------------------------------------------------ */
+  const NODE = [[120,128],[176.2,101.8],[175.7,155.2],[133.5,188.5],[81.2,176.3],[58,127.8],[81.5,79.4],[133.9,67.6],[208,128],[258,128],[312,128],[345.2,82.3],[398.8,99.8],[398.8,156.2],[345.2,173.7]];
+  const LBL  = [[100.5,141],[192,88],[193.7,167.4],[137.9,211.5],[68.6,195.4],[38,131.2],[69.1,67.2],[138.4,51.6],[208,148],[258,152],[296,145],[339,66.8],[415,91.5],[415,171.5],[339,196.2]];
+  const EDGE = [[0,1],[1,2],[0,2],[2,3],[0,3],[3,4],[0,4],[4,5],[0,5],[5,6],[0,6],[6,7],[0,7],[7,1],[8,1],[8,2],[9,1],[9,8],[9,10],[10,11],[10,12],[10,13],[10,14],[11,12],[11,13],[11,14],[12,13],[12,14],[13,14]];
+  const BRIDGE = [16, 17, 18];      /* the broker's three edges: 10-2, 10-9, 10-11 */
+  const HOT = [0, 1, 9, 10];        /* the four nodes that ever wear the crown */
+
+  const ASK = [
+    { name: "degree", short: "how many?",
+      q: "who has the most direct contacts?",
+      line: "The hub of the left crowd, and it is not close. This is the answer everyone expects.",
+      v: [7,5,4,3,3,3,3,3,3,3,5,4,4,4,4],
+      ord: [0,1,10,2,11,12,13,14,3,4,5,6,7,8,9],
+      fmt: function (x) { return String(x); } },
+    { name: "closeness", short: "how far?",
+      q: "who can reach everyone else in the fewest steps?",
+      line: "Not the hub — the one standing at its edge, next to the bridge. The broker itself is a whisker behind.",
+      v: [0.467,0.519,0.424,0.350,0.341,0.341,0.341,0.412,0.438,0.483,0.412,0.318,0.318,0.318,0.318],
+      ord: [1,9,0,8,2,7,10,3,4,5,6,11,12,13,14],
+      fmt: function (x) { return x.toFixed(2); } },
+    { name: "betweenness", short: "in the way?",
+      q: "whose removal cuts the most paths?",
+      line: "Node 10 has three links, as few as anyone here. Cut it and the two crowds never speak again.",
+      v: [29.8,40.5,7.5,0.8,0.5,0.5,0.5,3.8,5,45,40,0,0,0,0],
+      ord: [9,1,10,0,2,8,7,3,4,5,6,11,12,13,14],
+      fmt: function (x) { return String(x); } },
+    { name: "eigenvector", short: "whose friends?",
+      q: "whose friends are themselves well connected?",
+      line: "Node 11 sits inside the tight five, where everyone knows everyone. Node 1, with seven friends, comes sixth.",
+      v: [0.816,0.680,0.575,0.436,0.401,0.395,0.407,0.463,0.430,0.513,1.000,0.900,0.900,0.900,0.900],
+      ord: [10,11,12,13,14,0,1,2,9,7,3,8,6,4,5],
+      fmt: function (x) { return x.toFixed(2); } }
+  ];
+
+  /* --------------------------------------------------------------- scenes */
+  function askScene(k, label, note) {
+    return {
+      label: label,
+      note: note,
+      async run(ctx) {
+        ctx.askCard(k);
+        await ctx.sleep(250);
+        ctx.setMeasure(k);
+        await ctx.sleep(4100);
+      }
+    };
+  }
+
+  const scenes = [
+    {
+      label: "One drawing, fifteen people",
+      note: "Fifteen people: nine on the left gathered around one hub, five on the right who all know each other, and one person in the middle who knows both. Nothing has been measured yet.",
+      async run(ctx) {
+        ctx.drawNet();
+        const c = ctx.card("the network");
+        [["people", "15"], ["links", "29"], ["crowds", "9 + 5"]].forEach(function (row, i) {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (2.1 + i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "and node 10, who knows two people on the left and one on the right");
+        last.style.animationDelay = ctx.fast() ? "0s" : "3.3s";
+        c.appendChild(last);
+        await ctx.sleep(4600);
+      }
+    },
+
+    askScene(0, "Ask: most contacts?",
+      "Degree asks who has the most direct contacts. The crown lands on node 1, the hub, with seven — the obvious node, and the answer everyone expects."),
+
+    askScene(1, "Ask: closest to all?",
+      "Closeness asks who can reach everyone else in the fewest steps. The crown moves to node 2, on the edge of the left crowd: 0.52 against the hub's 0.47."),
+
+    askScene(2, "Ask: most paths?",
+      "Betweenness asks whose removal cuts the most paths. The crown jumps to node 10, the broker — which has the fewest links of anyone here."),
+
+    askScene(3, "Ask: best-connected friends?",
+      "Eigenvector asks whose friends are themselves well connected. The crown crosses to node 11, inside the tight five. The hub falls to sixth."),
+
+    {
+      label: "Four questions, four kings",
+      note: "Four questions, four different winners, one unchanged network. The amber thread is node 10, the broker: joint last on direct contacts, first of fifteen on paths.",
+      async run(ctx) {
+        await ctx.board();
+        await ctx.sleep(2600);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("crown-move"), scenes, {
+    stepsLabel: "Centrality questions",
+
+    /* The three things only this animation has: a network that persists across
+       five scenes, a card the scenes rewrite, and the four question buttons.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const net = ctx.$("[data-cm-net]");
+      const side = ctx.$("[data-cm-card]");
+      const asks = ctx.$$("[data-cm-ask]");
+      const S = { built: false };
+
+      /* Radius is min-max scaled inside each measure, so what you see is the
+         spread of that measure's scores rather than the size of its numbers —
+         degree runs 3..7 and eigenvector 0.32..1. */
+      ASK.forEach(function (m) {
+        const lo = Math.min.apply(null, m.v), hi = Math.max.apply(null, m.v);
+        m.r = m.v.map(function (x) { return 5 + 6.6 * (x - lo) / (hi - lo); });
+        m.row = [];
+        m.ord.forEach(function (n, i) { m.row[n] = i; });
+      });
+
+      const len = function (a, b) {
+        return Math.hypot(NODE[a][0] - NODE[b][0], NODE[a][1] - NODE[b][1]);
+      };
+
+      function press(k) {
+        asks.forEach(function (b, i) {
+          b.setAttribute("aria-pressed", i === k ? "true" : "false");
+        });
+      }
+
+      /* Scene 1 builds the network; scenes 2-5 only ever re-size it. */
+      function drawNet() {
+        net.textContent = "";
+        const svg = ctx.svgRoot("28 38 400 186");
+        const g = function () { return svg.appendChild(ctx.svgEl("g")); };
+        const gEdge = g(), gNode = g(), gLbl = g(), gCrown = g();
+        const slow = !ctx.fast();
+
+        S.edges = EDGE.map(function (e, i) {
+          const p = ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            p.style.setProperty("--dash", Math.ceil(len(e[0], e[1])) + 4);
+            p.style.animationDelay = (0.2 + i * 0.045) + "s";
+          }
+          return gEdge.appendChild(p);
+        });
+
+        S.nodes = NODE.map(function (q, i) {
+          const gg = ctx.svgEl("g", { "class": "cm-node" + (slow ? " anim-fade" : "") });
+          gg.style.transform = "translate(" + q[0] + "px," + q[1] + "px) scale(0.75)";
+          gg.appendChild(ctx.svgEl("circle", { r: 10, "class": "anim-node" }));
+          if (slow) gg.style.animationDelay = (1 + i * 0.05) + "s";
+          return gNode.appendChild(gg);
+        });
+
+        LBL.forEach(function (q, i) {
+          const t = ctx.svgEl("text", {
+            x: q[0], y: q[1], "text-anchor": "middle",
+            "class": "anim-knockout cm-lbl" + (slow ? " anim-fade" : "")
+          });
+          t.textContent = String(i + 1);
+          if (slow) t.style.animationDelay = (1.6 + i * 0.04) + "s";
+          gLbl.appendChild(t);
+        });
+
+        const cr = ctx.svgEl("g", { "class": "cm-crown" });
+        cr.appendChild(ctx.svgEl("path",
+          { d: "M -10 5 L -12 -7 L -6 -1 L 0 -9 L 6 -1 L 12 -7 L 10 5 Z" }));
+        cr.style.opacity = 0;
+        gCrown.appendChild(cr);
+
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "Fifteen people — a different network from the five-node one above, built so the four measures disagree. The numbers are names, not scores."));
+
+        S.crown = cr;
+        S.built = true;
+        press(-1);
+      }
+
+      /* Pure lookup: a node's size and the crown's seat are array entries. */
+      function setMeasure(k) {
+        if (!S.built) return;
+        const m = ASK[k], king = m.ord[0];
+        S.nodes.forEach(function (gg, i) {
+          gg.style.transform = "translate(" + NODE[i][0] + "px," + NODE[i][1] +
+            "px) scale(" + (m.r[i] / 10).toFixed(3) + ")";
+          gg.firstChild.setAttribute("class", "anim-node" + (i === king ? " cm-king" : ""));
+        });
+        S.crown.style.opacity = 1;
+        S.crown.style.transform =
+          "translate(" + NODE[king][0] + "px," + (NODE[king][1] - 24) + "px)";
+        /* Only betweenness is about the bridge, so only betweenness lights it. */
+        S.edges.forEach(function (e, i) {
+          e.setAttribute("class",
+            "anim-edge" + (k === 2 && BRIDGE.indexOf(i) >= 0 ? " anim-amber-stroke" : ""));
+        });
+        press(k);
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      function askCard(k) {
+        const m = ASK[k];
+        const c = card(m.name);
+        c.appendChild(ctx.el("div", "anim-quote", m.q));
+        m.ord.slice(0, 3).forEach(function (n, i) {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>node " + (n + 1) + "</span><b>" + m.fmt(m.v[n]) + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (0.5 + i * 0.35) + "s";
+          c.appendChild(t);
+        });
+        const w = ctx.el("div", "anim-caption anim-fade", m.line);
+        w.style.animationDelay = ctx.fast() ? "0s" : "1.7s";
+        c.appendChild(w);
+        return c;
+      }
+
+      /* The last beat: the same fifteen nodes ranked four times, threaded so
+         the crossings show. It takes over the drawing's slot — except for a
+         reader who asked for no motion, who never sees the scenes play and
+         would otherwise be left with the rankings and no network at all. */
+      async function board() {
+        if (!ctx.reduced) {
+          S.built = false;
+          press(-1);
+          side.textContent = "";
+          net.textContent = "";
+        }
+
+        const COL = [104, 244, 384, 524], Y0 = 54, DY = 13.4;
+        const slow = !ctx.fast();
+        const svg = ctx.svgRoot("20 0 552 292");
+        const gThread = svg.appendChild(ctx.svgEl("g"));
+        const gHot = svg.appendChild(ctx.svgEl("g"));
+        const gTxt = svg.appendChild(ctx.svgEl("g"));   /* last, so type wins */
+        net.appendChild(svg);
+
+        function label(box, x, y, cls, text, anchor, delay) {
+          const t = ctx.svgEl("text", {
+            x: x, y: y, "text-anchor": anchor || "middle",
+            "class": cls + (slow ? " anim-fade" : "")
+          });
+          t.textContent = text;
+          if (slow) t.style.animationDelay = delay + "s";
+          return box.appendChild(t);
+        }
+
+        ASK.forEach(function (m, c) {
+          label(gTxt, COL[c], 18, "cm-hd", m.name, "middle", 0.1 + c * 0.15);
+          label(gTxt, COL[c], 32, "cm-sub", m.short, "middle", 0.2 + c * 0.15);
+        });
+        for (let i = 0; i < 15; i++) {
+          label(gTxt, 54, Y0 + i * DY + 3.4, "anim-knockout cm-rank", (i + 1) + ".", "end", 0.7 + i * 0.02);
+        }
+        await ctx.sleep(700);
+
+        ASK.forEach(function (m, c) {
+          m.ord.forEach(function (n, i) {
+            const hot = HOT.indexOf(n) >= 0;
+            label(gTxt, COL[c], Y0 + i * DY + 3.4,
+              "anim-knockout cm-row" + (hot ? " cm-row-hi" : ""), String(n + 1),
+              "middle", 0.9 + c * 0.35 + i * 0.02);
+          });
+        });
+        await ctx.sleep(2300);
+
+        const pts = function (n) {
+          return ASK.map(function (m, c) {
+            return COL[c] + "," + (Y0 + m.row[n] * DY);
+          }).join(" ");
+        };
+        for (let n = 0; n < 15; n++) {
+          if (HOT.indexOf(n) >= 0) continue;
+          const p = ctx.svgEl("polyline",
+            { points: pts(n), "class": "cm-thread" + (slow ? " anim-fade" : "") });
+          if (slow) p.style.animationDelay = (n * 0.05) + "s";
+          gThread.appendChild(p);
+        }
+        await ctx.sleep(900);
+
+        [0, 1, 10, 9].forEach(function (n, i) {
+          const broker = (n === 9);
+          const p = ctx.svgEl("polyline", {
+            points: pts(n),
+            "class": (broker ? "anim-amber-stroke" : "anim-accent-stroke") +
+                     (slow ? " anim-draw" : "")
+          });
+          p.style.strokeWidth = broker ? "2.8" : "1.7";
+          if (!broker) p.style.opacity = "0.72";
+          if (slow) {
+            p.style.setProperty("--dash", 900);
+            p.style.animationDuration = "0.7s";
+            p.style.animationDelay = (i * 0.45) + "s";
+          }
+          gHot.appendChild(p);
+        });
+        await ctx.sleep(2200);
+
+        label(gTxt, 54, 264, "anim-knockout cm-row cm-legend",
+          "amber: node 10, the broker. As few links as anyone here — and every", "start", 0);
+        label(gTxt, 54, 278, "anim-knockout cm-row cm-legend",
+          "path between the two crowds runs through it.", "start", 0.2);
+      }
+
+      /* The one control. Pressing a question pauses the sequence and re-asks
+         the drawing; on the last scene the drawing is gone, so it jumps back
+         to that question's step instead. */
+      asks.forEach(function (b) {
+        b.addEventListener("click", function () {
+          const k = parseInt(b.getAttribute("data-cm-ask"), 10);
+          if (!S.built) { ctx.go(k + 1); return; }
+          ctx.pause();
+          askCard(k);
+          setMeasure(k);
+        });
+      });
+
+      return { drawNet, setMeasure, card, askCard, board };
+    }
+  });
+});
+</script>
+```
+
+Nothing in the picture changed between those four crowns. Only the question
+did — and that is the whole module in one object. The rest of this page makes
+each question precise, and adds a few more.
 
 ## Just count the friends
 
@@ -292,7 +748,9 @@ Such nodes are called **bridges** or **brokers**, and they are the reason betwee
 
 This is also why Girvan-Newman (Module 5) detects communities by deleting *edges* with the highest betweenness: the edges that bridge groups carry the most shortest paths, so removing them peels the communities apart.
 
-<!-- TODO(anim): two clusters joined by one broker; toggle the node colouring between degree and betweenness so the broker jumps from last place to first. -->
+The widget at the top of this module is exactly that picture. Press *most
+contacts?* and then *most paths?*, and watch node 10 — two crowds, one broker —
+travel from the bottom of the list to the top.
 
 ## There is no best centrality, only a matching question
 

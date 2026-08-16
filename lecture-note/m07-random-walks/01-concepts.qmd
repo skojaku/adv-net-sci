@@ -12,19 +12,734 @@ You are not trying to get anywhere, and that is exactly the point. You have no m
 
 While your feet are taking you to a random street, after making many steps and looking back, you will realize that you have been to certain places more frequently than others. If you were to map the frequency of your visits to each street, you will end up with a distribution that tells you about salient structure of the street network. The drunkard, who understood nothing, has produced a measurement.
 
-<!-- TODO(anim): A1 — a walker stepping on a small network, with a bar next to each node filling up in proportion to visit counts, so the bars visibly converge to the degree sequence. -->
+Here is that measurement being made, on ten nodes. Take the first few steps one
+at a time to see the rule, then let the tally run: the bars are the walker's own
+record of where it has been.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The walker's tally — only the rules this one stage needs. The paper, the
+   panels, the buttons, the ink and the motion all come from assets/anim.css;
+   the sequencer from assets/anim.js. Every colour here is one of the kit's
+   resolved tokens — no literals.
+   -------------------------------------------------------------------------- */
+#rw-degree .rw-nlabel {
+  font-family: var(--_hand);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--_white);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+#rw-degree .rw-tick {
+  font-family: var(--_hand);
+  font-size: 10.5px;
+  fill: var(--_ink);
+  text-anchor: middle;
+}
+#rw-degree .rw-dim { fill: var(--_ink-faint); }
+#rw-degree .rw-end { text-anchor: end; }
+
+/* The two states an edge takes while the walker is choosing. */
+#rw-degree .rw-edge-cand { stroke: var(--_accent); stroke-width: 3.4; }
+#rw-degree .rw-edge-hot { stroke: var(--_amber); stroke-width: 4.6; }
+
+/* The walker is a ring round the node it is standing on, not a disc, so the
+   node's own number still reads through it. */
+#rw-degree .rw-glow { fill: var(--_amber); fill-opacity: 0.16; stroke: none; }
+#rw-degree .rw-ring { fill: none; stroke: var(--_amber); stroke-width: 3.2; }
+
+/* The start picker of the last scene. Dead until that scene turns it on, so
+   the earlier scenes cannot be clicked out from under themselves. */
+#rw-degree .rw-hit { fill: transparent; pointer-events: none; }
+#rw-degree .rw-pick .rw-hit { pointer-events: auto; cursor: pointer; }
+#rw-degree .rw-pick .rw-hit:hover { fill: var(--_accent); fill-opacity: 0.2; }
+
+/* Bars for walkers two and three; walker one uses the kit's .anim-accent-fill. */
+#rw-degree .rw-bar-b { fill: var(--_amber); }
+#rw-degree .rw-bar-c { fill: var(--_ink-faint); }
+</style>
+
+<figure class="anim-stage" id="rw-degree">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rw-net></div>
+    <div>
+      <div data-anim-clear data-rw-bars></div>
+      <div data-anim-clear data-rw-say></div>
+    </div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* The walker's tally. Markup above, scenes below, and nothing in between: the
+   paper, the pen, the motion and the sequencer all come from assets/anim.css +
+   assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, from one fixed seed, and
+     pasted in. Nothing here runs a graph algorithm or draws a random number at
+     page load, so every reader watches the identical walk and sees exactly the
+     numbers this caption claims.
+
+     The network is the one the rest of this module uses: 10 nodes, 13 edges,
+     degrees (2,4,3,4,4,3,2,1,2,1). So 2m = 26 and
+       k/2m = (.077, .154, .115, .154, .154, .115, .077, .038, .077, .038).
+     It is connected and it contains triangles, so the walk is neither
+     reducible nor periodic and a stationary distribution exists.
+     ------------------------------------------------------------------------ */
+  const NODE = [[38,70],[100,34],[166,48],[54,134],[126,104],[92,186],[158,162],[200,22],[196,118],[200,190]];
+  const EDGE = [[0,1],[0,3],[1,2],[1,3],[1,4],[2,4],[2,7],[3,4],[3,5],[4,5],[5,6],[6,8],[8,9]];
+  const DEG  = [2,4,3,4,4,3,2,1,2,1];
+  const ADJ  = [[1,3],[0,2,3,4],[1,4,7],[0,1,4,5],[1,2,3,5],[3,4,6],[5,8],[2],[6,9],[8]];
+  const TWO_M = 26;
+  const PI = DEG.map((k) => k / TWO_M);
+
+  /* One recorded walk, started at node 0. Each character is a node: SEQ[0] is
+     the start and SEQ[t] is where the walker stands after t steps. 600 steps,
+     replayed here one at a time. */
+  const SEQ =
+    "010141356898986865412143530135431345689898689898653568686868686865689898689865410301272421034303565456530354310303541353" +
+    "427272454312727241421012721035456898653531310356545689868654345301453434212424130303131272135353430313013010342103145456" +
+    "541035654303013568653124143568686565689868689865412724241431456568653012421434541303568989898989898654142724343535427242" +
+    "721214568989868689898989865431412435414243456541353030143014272143453124313135310354127245421245343014565435454312134356" +
+    "898653121242431342430310134342410121242727241272721303568989865421301272453568986545454568654210141245689868989868989898" +
+    "6";
+
+  /* The same walk carried past step 600 and tallied at nine checkpoints. Each
+     row is [steps, share of all visits per node in parts per thousand, the node
+     the walker is standing on]. Counting SEQ character by character reproduces
+     the first row exactly, so the hand-played part and the pasted part meet
+     without a seam. */
+  const LADDER = [
+    [   600, [62,123,100,143,148,125,98,30,113,58], 6],
+    [  1000, [66,143,124,153,154,112,80,44, 83,42], 2],
+    [  1700, [66,146,120,146,150,115,82,45, 86,44], 2],
+    [  3000, [68,145,116,152,151,116,80,43, 85,46], 9],
+    [  5200, [78,152,112,153,149,114,80,38, 82,42], 2],
+    [  9000, [73,145,115,151,153,118,81,40, 82,42], 4],
+    [ 16000, [74,147,113,154,153,119,79,38, 81,43], 8],
+    [ 28000, [73,152,118,152,153,117,78,41, 77,39], 7],
+    [ 50000, [75,152,117,153,154,117,78,39, 77,39], 3]
+  ];
+
+  /* Three more recorded walks, from three deliberately unalike nodes: the leaf
+     7, the hub 1, and the leaf 9 at the far end of the tail. Same tally, taken
+     at 6, 30, 200, 2000 and 20000 steps. */
+  const TRIO_T = [6, 30, 200, 2000, 20000];
+  const TRIO_START = [7, 1, 9];
+  const TRIO = [
+    [[0,143,143,143,286,143,0,143,0,0],[32,226,226,97,258,32,0,129,0,0],[95,159,114,174,199,124,60,55,20,0],[83,158,114,170,159,114,70,44,59,27],[76,157,120,155,154,115,76,41,72,35]],
+    [[0,143,0,143,429,286,0,0,0,0],[65,258,32,258,258,129,0,0,0,0],[55,159,90,179,179,154,75,10,65,35],[60,161,128,149,179,114,68,37,69,34],[76,152,116,152,154,117,78,40,77,38]],
+    [[0,0,143,0,286,143,143,0,143,143],[0,129,226,161,194,129,32,65,32,32],[75,174,124,129,144,119,90,25,80,40],[78,151,121,146,139,115,84,39,83,42],[76,154,113,157,153,118,77,37,77,39]]
+  ];
+
+  /* One recorded walk per possible starting node, for the scene the reader
+     drives. SHORT[s] is its first 20 steps written out node by node; MID[s] and
+     FIN[s] are that same walk's tally after 300 and after 20000 steps, again in
+     parts per thousand. */
+  const SHORT = ["031413542721427242413","121212134303568653542","242121031213013142424","356545421427272143013","456568689898686868989","568989865689868689898","653124565356898656898","727245656865653142413","865314245314213545427","986865653012131245454"];
+  const MID = [[56,126,166,130,133,113,80,90,73,33],[60,166,130,133,166,123,93,33,70,27],[80,186,176,150,163,113,47,60,20,7],[70,166,96,126,140,136,120,23,96,27],[73,150,140,130,136,100,86,63,86,37],[43,106,83,133,176,120,110,20,136,73],[63,133,113,126,143,116,90,40,110,66],[70,146,126,176,173,116,66,50,53,23],[113,163,83,206,176,120,47,20,47,27],[56,130,110,146,166,126,86,33,96,50]];
+  const FIN = [[74,153,115,152,153,118,79,38,78,39],[75,151,113,151,153,117,83,37,81,39],[79,154,112,157,152,121,80,36,74,36],[76,157,118,153,158,115,75,38,74,37],[81,153,113,161,151,112,73,38,77,40],[76,153,110,158,156,119,78,35,76,38],[77,157,112,153,152,111,76,38,81,42],[76,153,117,157,160,117,75,39,71,34],[76,153,117,156,159,120,77,37,72,34],[75,155,119,152,159,116,75,38,74,37]];
+
+  const SLOW = 7;              /* steps of SEQ played out one at a time */
+  const KEY = ["var(--_accent)", "var(--_amber)", "var(--_ink-faint)"];
+
+  /* ------------------------------------------------------------- geometry --- */
+  const GX = (i) => 46 + 21 * i;   /* centre of node i's bar group */
+  const YB = 132;                  /* the baseline */
+  const PLOT = 110;                /* full height of the plot */
+  /* The tally starts absurd — one visit, all of it at the start node — so the
+     top of the scale steps down through these as it settles. From about step 30
+     on it is pinned at 20 % and never moves again. */
+  const AXIS = [1, 0.6, 0.4, 0.3, 0.25, 0.2];
+  const axisFor = (mx) => {
+    let a = AXIS[0];
+    for (let i = 0; i < AXIS.length; i++) if (AXIS[i] >= mx + 0.004) a = AXIS[i];
+    return a;
+  };
+  const pct = (a) => Math.round(a * 100) + "%";
+  const f3 = (x) => x.toFixed(3);
+  const f2 = (x) => x.toFixed(2).replace(/^0/, "");
+  const thou = (n) => n.toLocaleString("en-US");
+  const swatch = (j) => '<span style="color:' + KEY[j] + '">&#9632;</span>';
+
+  /* --------------------------------------------------------------- scenes --- */
+  const scenes = [
+    {
+      label: "One step: pick a neighbour",
+      note: "The whole rule, seven steps of it. Standing on a node, the walker looks at that node's neighbours and takes one at random — every one of them equally likely. Each landing raises that node's bar by one.",
+      async run(ctx) {
+        ctx.build();
+        const c = ctx.say("the rule");
+        const line = ctx.el("div", "anim-tally", "<span>standing on</span><b>0</b>");
+        const odds = ctx.el("div", "anim-caption", "");
+        c.appendChild(line);
+        c.appendChild(odds);
+
+        if (ctx.fast()) {
+          ctx.prefix(SEQ.slice(0, SLOW + 1));
+          line.querySelector("b").textContent = SEQ[SLOW];
+          odds.textContent = "landed on " + SEQ[SLOW] + " — its bar goes up by one";
+          return;
+        }
+
+        ctx.visit(0, false);
+        await ctx.sleep(900);
+        for (let t = 1; t <= SLOW; t++) {
+          const from = +SEQ[t - 1], to = +SEQ[t];
+          line.querySelector("b").textContent = String(from);
+          odds.textContent = "neighbours of " + from + ": " + ADJ[from].join(", ") +
+            " — each with chance 1/" + DEG[from];
+          ctx.offer(from);
+          await ctx.sleep(680);
+          ctx.take(from, to);
+          ctx.visit(to, true);
+          /* The card follows the walker, so it never reads as standing on the
+             node it has just left. */
+          line.querySelector("b").textContent = String(to);
+          odds.textContent = "landed on " + to + " — its bar goes up by one";
+          await ctx.sleep(540);
+          if (t === 2) {
+            c.appendChild(ctx.el("div", "anim-quote anim-fade",
+              "step 2 went straight back where step 1 came from — the walker keeps no memory of the street it just used"));
+          }
+        }
+        ctx.cool();
+        await ctx.sleep(1600);
+      }
+    },
+    {
+      label: "Let it run",
+      note: "Now let it go. Six hundred steps arrive one at a time and the bars stay lumpy: nodes 0 and 8 have the same degree, yet at step 600 node 8 has been visited nearly twice as often. Then the counter runs to fifty thousand, and the bars stop moving.",
+      async run(ctx) {
+        const c = ctx.say("let it run");
+        const big = ctx.el("div", "anim-big", "0");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+        const last = LADDER[LADDER.length - 1];
+
+        if (ctx.fast()) {
+          ctx.snapshot(last);
+          big.textContent = thou(last[0]);
+          verdict.innerHTML = "<span>they stopped moving.</span><b>at what?</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        /* SEQ replayed at a rising pace — single steps first, so one bar can
+           still be seen going up, then handfuls. */
+        let t = SLOW;
+        while (t < 600) {
+          const chunk = t < 34 ? 1 : t < 100 ? 3 : t < 260 ? 8 : 20;
+          for (let k = 0; k < chunk && t < 600; k++) { t++; ctx.visit(+SEQ[t], true); }
+          big.textContent = thou(t);
+          await ctx.sleep(1);
+        }
+        verdict.innerHTML = "<span>600 steps in</span><b>still lumpy</b>";
+        verdict.style.visibility = "visible";
+        await ctx.sleep(1600);
+
+        for (let i = 1; i < LADDER.length; i++) {
+          ctx.snapshot(LADDER[i]);
+          big.textContent = thou(LADDER[i][0]);
+          await ctx.sleep(540);
+        }
+        verdict.innerHTML = "<span>they stopped moving.</span><b>at what?</b>";
+        await ctx.sleep(2400);
+      }
+    },
+    {
+      label: "The bars are the degrees",
+      note: "Freeze it, and lay a dashed marker across each bar at k over 2m — that node's degree divided by the 26 edge endpoints in the network. Every bar is sitting on its marker. The bottom row of the chart is the answer.",
+      async run(ctx) {
+        const c = ctx.say("what the bars settled on");
+        ctx.marks(true);
+        if (!ctx.fast()) await ctx.sleep(1300);
+        ctx.degrees(true);
+        if (!ctx.fast()) await ctx.sleep(1300);
+
+        [["node 1, k = 4", "0.154 &rarr; 0.152"],
+         ["node 7, k = 1", "0.038 &rarr; 0.039"]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.6) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "k/2m predicted &rarr; share measured over 50,000 steps"));
+        if (!ctx.fast()) await ctx.sleep(2000);
+
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "the walker&rsquo;s long-run share of time at a node is just that node&rsquo;s degree over the total");
+        c.appendChild(q);
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "It forgets where it started",
+      note: "Three walkers now, from a leaf, from the hub, and from the leaf at the far end of the tail. Six steps in, the three tallies have nothing in common. Twenty thousand steps in they are the same picture — and it is the one the markers already predicted.",
+      async run(ctx) {
+        const c = ctx.say("three walkers, three starting nodes");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "started at &nbsp;" + swatch(0) + " 7 &nbsp; " + swatch(1) + " 1 &nbsp; " +
+          swatch(2) + " 9"));
+        const big = ctx.el("div", "anim-big", "6");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken, each of the three"));
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        ctx.starts(TRIO_START);
+        const last = TRIO_T.length - 1;
+
+        if (ctx.fast()) {
+          ctx.trio(last);
+          big.textContent = thou(TRIO_T[last]);
+          verdict.innerHTML = "<span>same profile</span><b>start erased</b>";
+          verdict.style.visibility = "visible";
+          return;
+        }
+
+        for (let i = 0; i < TRIO_T.length; i++) {
+          ctx.trio(i);
+          big.textContent = thou(TRIO_T[i]);
+          if (i === 0) {
+            verdict.innerHTML = "<span>six steps in</span><b>nothing in common</b>";
+            verdict.style.visibility = "visible";
+          }
+          await ctx.sleep(i === 0 ? 2400 : 1600);
+        }
+        verdict.innerHTML = "<span>same profile</span><b>start erased</b>";
+        await ctx.sleep(3200);
+      }
+    },
+    {
+      label: "Now you choose the start",
+      note: "Click any node in the network to drop the walker there and run it again. Twenty steps in, the tally is all about where you put it. Twenty thousand steps in it is back on the markers — every time, from every node.",
+      async run(ctx) {
+        const c = ctx.say("you choose where it starts");
+        const big = ctx.el("div", "anim-big", "&mdash;");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "steps taken"));
+        const hint = ctx.el("div", "anim-tally", "<span>click any node</span><b>&#9758;</b>");
+        c.appendChild(hint);
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const show = (n, txt) => {
+          big.innerHTML = n;
+          if (txt) { verdict.innerHTML = txt; verdict.style.visibility = "visible"; }
+        };
+
+        const tour = [9, 7, 4];
+        let rounds = 0;
+        let queued = null;
+
+        /* Waiting, in slices, so a click gets an answer inside a tenth of a
+           second instead of at the end of whatever pause is running. Returns
+           false once this run has been superseded. */
+        async function nap(ms, id) {
+          for (let left = ms; left > 0; left -= 110) {
+            await ctx.sleep(Math.min(110, left));
+            if (id !== ctx.runId()) return false;
+          }
+          return true;
+        }
+
+        /* One run from node s: twenty steps played out on the network, then the
+           same recorded walk's tally at 300 and at 20000 steps. */
+        async function runFrom(s, instant) {
+          const id = ctx.newRun();
+          ctx.reset();
+          hint.querySelector("b").textContent = "start = " + s;
+          show("0", "<span>starting at " + s + "</span><b>&hellip;</b>");
+          const w = SHORT[s];
+          if (!instant) {
+            for (let t = 0; t <= 20; t++) {
+              ctx.visit(+w[t], t > 0);
+              show(String(t));
+              if (!await nap(t < 6 ? 280 : 130, id)) return;
+            }
+            show("20", "<span>20 steps</span><b>nowhere near</b>");
+            if (!await nap(1600, id)) return;
+          }
+          ctx.snapshot([300, MID[s], -1]);
+          show(thou(300));
+          if (!instant && !await nap(950, id)) return;
+          ctx.snapshot([20000, FIN[s], -1]);
+          show(thou(20000), "<span>20,000 steps</span><b>on the markers</b>");
+          if (!instant) await nap(2400, id);
+        }
+
+        /* The one loop that ever starts a run, so the reader's node cannot be
+           stolen back by the tour. */
+        let looping = false;
+        async function pump() {
+          if (looping) return;
+          looping = true;
+          try {
+            while (rounds < tour.length || queued !== null) {
+              let s;
+              if (queued !== null) { s = queued; queued = null; }
+              else { s = tour[rounds]; rounds++; }
+              await runFrom(s, false);
+            }
+          } finally { looping = false; }
+        }
+
+        /* A click files a request and cancels whatever is in flight. A reader
+           who asked for no motion gets the finished tally in one shot instead. */
+        ctx.pickable(function (n) {
+          if (ctx.reduced) { runFrom(n, true).catch(function () {}); return; }
+          ctx.resume();
+          queued = n;
+          rounds = 0;
+          ctx.newRun();
+          pump().catch(function () {});
+        });
+
+        if (ctx.fast()) {
+          await runFrom(9, true);
+          return;
+        }
+        await pump();
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("rw-degree"), scenes, {
+    stepsLabel: "Random-walk steps",
+
+    /* The two things only this animation has: a network the walker moves on and
+       a tally chart every scene writes into. Both are built once, in scene 1,
+       and only mutated afterwards — so jumping to a step still lands on a
+       drawing, because the kit fast-forwards the earlier scenes first. */
+    helpers(ctx) {
+      const net = ctx.$("[data-rw-net]");
+      const bars = ctx.$("[data-rw-bars]");
+      const side = ctx.$("[data-rw-say]");
+      const S = { run: 0 };
+
+      /* Two index tables, not algorithms: which edges touch a node, and which
+         edge joins a given pair. */
+      const INC = NODE.map(() => []);
+      EDGE.forEach((e, i) => { INC[e[0]].push(i); INC[e[1]].push(i); });
+      const EIDX = {};
+      EDGE.forEach((e, i) => { EIDX[e[0] + "-" + e[1]] = i; EIDX[e[1] + "-" + e[0]] = i; });
+
+      /* ---------------------------------------------------------- the build */
+      function build() {
+        net.textContent = "";
+        bars.textContent = "";
+        S.count = NODE.map(() => 0);
+        S.total = 0;
+        S.rows = null;
+        S.mode = "one";
+        S.cand = [];
+        S.hot = -1;
+        S.onPick = null;
+        const slow = !ctx.fast();
+
+        /* ---- the network ---- */
+        const svg = ctx.svgRoot("0 0 220 212");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gEdge = g(), gTok = g(), gNode = g(), gHit = g();
+
+        S.edges = EDGE.map((e, i) => {
+          const a = NODE[e[0]], b = NODE[e[1]];
+          const p = ctx.svgEl("line", {
+            x1: a[0], y1: a[1], x2: b[0], y2: b[1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            p.style.setProperty("--dash", Math.ceil(Math.hypot(a[0] - b[0], a[1] - b[1])) + 2);
+            p.style.animationDelay = (0.15 + i * 0.06) + "s";
+          }
+          return gEdge.appendChild(p);
+        });
+
+        S.startG = gTok.appendChild(ctx.svgEl("g"));
+        const tok = ctx.svgEl("g", { "class": "anim-glide" });
+        tok.appendChild(ctx.svgEl("circle", { r: 15, "class": "rw-glow" }));
+        tok.appendChild(ctx.svgEl("circle", { r: 15, "class": "rw-ring" }));
+        tok.style.opacity = 0;
+        gTok.appendChild(tok);
+        S.token = tok;
+        S.svg = svg;
+
+        NODE.forEach((q, i) => {
+          const h = ctx.svgEl("g", { "class": slow ? "anim-fade" : null });
+          if (slow) h.style.animationDelay = (0.9 + i * 0.05) + "s";
+          h.appendChild(ctx.svgEl("circle", { cx: q[0], cy: q[1], r: 10, "class": "anim-node" }));
+          const lb = ctx.svgEl("text", { x: q[0], y: q[1], "class": "rw-nlabel" });
+          lb.textContent = String(i);
+          h.appendChild(lb);
+          gNode.appendChild(h);
+
+          const hit = ctx.svgEl("circle", { cx: q[0], cy: q[1], r: 17, "class": "rw-hit" });
+          hit.addEventListener("click", function () { if (S.onPick) S.onPick(i); });
+          gHit.appendChild(hit);
+        });
+
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "ten nodes, thirteen edges &mdash; the network this module keeps coming back to"));
+
+        /* ---- the tally ---- */
+        S.read = ctx.el("div", "anim-readout anim-readout--tight",
+          '<span>steps <b data-t>0</b></span>' +
+          '<span>node 1 <b data-r1>&mdash;</b></span>' +
+          '<span>node 7 <b data-r7>&mdash;</b></span>');
+        bars.appendChild(S.read);
+        S.outT = S.read.querySelector("[data-t]");
+        S.out1 = S.read.querySelector("[data-r1]");
+        S.out7 = S.read.querySelector("[data-r7]");
+
+        const bsvg = ctx.svgRoot("0 0 250 168");
+        const bg = () => bsvg.appendChild(ctx.svgEl("g"));
+        const gBar = bg(), gMark = bg(), gAx = bg();
+
+        S.bar = [0, 1, 2].map((k) => NODE.map((_, i) =>
+          gBar.appendChild(ctx.svgEl("rect", {
+            x: GX(i) - 7, y: YB, width: 14, height: 0,
+            "class": k === 0 ? "anim-accent-fill" : k === 1 ? "rw-bar-b" : "rw-bar-c"
+          }))));
+
+        S.mark = NODE.map((_, i) => {
+          const l = ctx.svgEl("line",
+            { x1: GX(i) - 11, x2: GX(i) + 11, y1: YB, y2: YB, "class": "anim-marker" });
+          l.style.opacity = 0;
+          return gMark.appendChild(l);
+        });
+
+        gAx.appendChild(ctx.svgEl("line",
+          { x1: 34, y1: YB, x2: 246, y2: YB, "class": "anim-axis" }));
+        S.top = ctx.svgEl("text", { x: 30, y: YB - PLOT + 4, "class": "rw-tick rw-end" });
+        gAx.appendChild(S.top);
+        const zero = ctx.svgEl("text", { x: 30, y: YB + 4, "class": "rw-tick rw-end" });
+        zero.textContent = "0";
+        gAx.appendChild(zero);
+
+        const rowLab = (y, txt) => {
+          const t = ctx.svgEl("text", { x: 30, y: y, "class": "rw-tick rw-end rw-dim" });
+          t.textContent = txt;
+          return gAx.appendChild(t);
+        };
+        rowLab(YB + 15, "node");
+        S.deg = [rowLab(YB + 29, "k")];
+        NODE.forEach((_, i) => {
+          const n = ctx.svgEl("text", { x: GX(i), y: YB + 15, "class": "rw-tick" });
+          n.textContent = String(i);
+          gAx.appendChild(n);
+          const d = ctx.svgEl("text", { x: GX(i), y: YB + 29, "class": "rw-tick rw-dim" });
+          d.textContent = String(DEG[i]);
+          gAx.appendChild(d);
+          S.deg.push(d);
+        });
+        S.deg.forEach((d) => { d.style.opacity = 0; });
+
+        bars.appendChild(bsvg);
+        bars.appendChild(ctx.el("div", "anim-caption",
+          "bar = share of every visit so far. One walk on the network at left, recorded once with a fixed seed, so this is the same walk for every reader."));
+        redraw();
+      }
+
+      /* Bars, markers and the top of the scale, from whatever S is holding. */
+      function redraw() {
+        const rows = S.rows ||
+          [S.total ? S.count.map((c) => c / S.total) : S.count.map(() => 0)];
+        let mx = 0;
+        rows.forEach((r) => r.forEach((v) => { if (v > mx) mx = v; }));
+        /* An empty chart shows the scale the first single visit will need. */
+        const axis = (!S.rows && !S.total) ? AXIS[0] : axisFor(Math.max(mx, PI[1]));
+        S.top.textContent = pct(axis);
+        const h = (v) => Math.max(0, (v / axis) * PLOT);
+
+        for (let k = 0; k < 3; k++) {
+          const r = rows[k] || null;
+          const one = S.mode === "one";
+          S.bar[k].forEach((rect, i) => {
+            rect.setAttribute("x", one ? GX(i) - 7 : GX(i) - 9.5 + k * 6.5);
+            rect.setAttribute("width", one ? 14 : 6);
+            const v = (r && !(one && k)) ? h(r[i]) : 0;
+            rect.setAttribute("y", YB - v);
+            rect.setAttribute("height", v);
+          });
+        }
+        S.mark.forEach((l, i) => {
+          const y = YB - h(PI[i]);
+          l.setAttribute("y1", y);
+          l.setAttribute("y2", y);
+        });
+      }
+
+      function say(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* ----------------------------------------------------------- the walk */
+      function place(n, glide) {
+        S.token.style.opacity = 1;
+        if (!glide) S.token.classList.remove("anim-glide");
+        S.token.style.transform = "translate(" + NODE[n][0] + "px," + NODE[n][1] + "px)";
+        if (!glide) {
+          S.token.getBoundingClientRect();      /* commit before re-arming */
+          S.token.classList.add("anim-glide");
+        }
+      }
+
+      function readout(t, row) {
+        S.outT.textContent = thou(t);
+        S.out1.textContent = f3(row[1]);
+        S.out7.textContent = f3(row[7]);
+      }
+
+      /* One landing: the walker stands on n, and n's bar goes up by one. */
+      function visit(n, glide) {
+        place(n, glide);
+        S.count[n] += 1;
+        S.total += 1;
+        S.rows = null;
+        S.mode = "one";
+        readout(S.total - 1, S.count.map((c) => c / S.total));
+        redraw();
+      }
+
+      /* The neighbours the walker is about to choose between, then the one it
+         took. */
+      function offer(from) {
+        cool();
+        S.cand = INC[from];
+        S.cand.forEach((e) => S.edges[e].setAttribute("class", "anim-edge rw-edge-cand"));
+      }
+      function take(from, to) {
+        cool();
+        S.hot = EIDX[from + "-" + to];
+        S.edges[S.hot].setAttribute("class", "anim-edge rw-edge-hot");
+      }
+      function cool() {
+        S.cand.forEach((e) => S.edges[e].setAttribute("class", "anim-edge"));
+        if (S.hot >= 0) S.edges[S.hot].setAttribute("class", "anim-edge");
+        S.cand = [];
+        S.hot = -1;
+      }
+
+      /* ------------------------------------------------------- the pastings */
+      /* [steps, parts-per-thousand row, node the walker is on, or -1 for "not
+         claiming a position"]. */
+      function snapshot(row) {
+        cool();
+        S.mode = "one";
+        S.rows = [row[1].map((v) => v / 1000)];
+        S.total = row[0] + 1;
+        S.count = S.rows[0].map((v) => v * S.total);
+        if (row[2] >= 0) place(row[2], true); else S.token.style.opacity = 0;
+        readout(row[0], S.rows[0]);
+        redraw();
+      }
+
+      const triple = (i, k) => TRIO.map((w, j) =>
+        '<span style="color:' + KEY[j] + '">' + f2(w[k][i] / 1000) + "</span>").join("/");
+
+      function trio(k) {
+        cool();
+        S.mode = "three";
+        S.rows = TRIO.map((w) => w[k].map((v) => v / 1000));
+        S.token.style.opacity = 0;
+        S.outT.textContent = thou(TRIO_T[k]);
+        S.out1.innerHTML = triple(1, k);
+        S.out7.innerHTML = triple(7, k);
+        redraw();
+      }
+
+      /* A ring in each walker's own colour on the node it started from. */
+      function starts(list) {
+        S.startG.textContent = "";
+        list.forEach((n, j) => {
+          S.startG.appendChild(ctx.svgEl("circle", {
+            cx: NODE[n][0], cy: NODE[n][1], r: 15,
+            "class": "rw-ring", style: "stroke:" + KEY[j]
+          }));
+        });
+      }
+
+      function marks(on) { S.mark.forEach((l) => { l.style.opacity = on ? 1 : 0; }); }
+      function degrees(on) { S.deg.forEach((d) => { d.style.opacity = on ? 1 : 0; }); }
+
+      function reset() {
+        S.startG.textContent = "";
+        S.count = NODE.map(() => 0);
+        S.total = 0;
+        S.rows = null;
+        S.mode = "one";
+        S.token.style.opacity = 0;
+        cool();
+        readout(0, S.count);
+        redraw();
+      }
+
+      function pickable(fn) {
+        S.onPick = fn;
+        S.svg.classList.add("rw-pick");
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies these
+         onto ctx by value at mount time. */
+      return {
+        build: build, say: say, visit: visit, offer: offer, take: take, cool: cool,
+        snapshot: snapshot, trio: trio, starts: starts, marks: marks,
+        degrees: degrees, reset: reset, pickable: pickable,
+        newRun: function () { return ++S.run; },
+        runId: function () { return S.run; },
+        /* Skipping or reading without motion: lay down a recorded prefix with
+           no animation at all. */
+        prefix: function (str) {
+          for (let t = 0; t < str.length; t++) visit(+str[t], true);
+        }
+      };
+    }
+  });
+});
+</script>
+```
+
+The bars were not decoration. Two things happened in that widget, and the rest
+of this module is spent earning both: the tally settled onto the degrees, and it
+settled onto the *same* degrees no matter where the walk began.
 
 ::: {.column-margin}
 Random walks are not a toy. Your Netflix session is one: you click a movie, then a recommended movie, then another. So is a Wikipedia binge from "Coffee" to "Brazil" to "Soccer". So is a day of stock prices. In each case the object being walked on is a network, and the walk is what reveals it.
 :::
 
-A random walk in undirected networks follows this process:
+Written out, the rule you just watched is:
 
 1. Start at a node $i$
 2. Randomly choose an edge to traverse to a neighbor node $j$
 3. Repeat step 2 until you have taken $T$ steps
-
-![](../figs/random-walk.png){width=50% fig-align="center"}
 
 ::: {.column-margin}
 In directed networks, a random walker can only move along the edge direction, and it can be that the random walker is stuck in a so-called "dead end" that does not have any outgoing edges.
@@ -233,7 +948,7 @@ $$
 In the long run, the fraction of time the walker spends at a node is its share of the edge endpoints in the network. Nothing else about the structure survives.
 :::
 
-Put numbers on it with @fig-m07-net, which has $m = 13$ edges and therefore $2m = 26$ edge endpoints. Node 1, with $k_1 = 4$, gets $\pi_1 = 4/26 \approx 0.154$; node 7, with $k_7 = 1$, gets $\pi_7 = 1/26 \approx 0.038$. Rounded to two decimals, $0.15$ and $0.04$ are exactly the numbers printed in every row of @fig-long-term-P.
+Put numbers on it with @fig-m07-net, which has $m = 13$ edges and therefore $2m = 26$ edge endpoints. Node 1, with $k_1 = 4$, gets $\pi_1 = 4/26 \approx 0.154$; node 7, with $k_7 = 1$, gets $\pi_7 = 1/26 \approx 0.038$. Rounded to two decimals, $0.15$ and $0.04$ are exactly the numbers printed in every row of @fig-long-term-P — and they are the two markers the walker's bars landed on at the top of this page.
 
 Checking the guess takes one line. Substitute it into the balance condition $\boldsymbol{\pi} = \boldsymbol{\pi} \mathbf{P}$:
 

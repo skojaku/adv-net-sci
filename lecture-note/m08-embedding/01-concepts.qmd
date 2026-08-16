@@ -29,7 +29,524 @@ Suppose we have an adjacency matrix $\mathbf{A}$ of a network.
 The adjacency matrix is high-dimensional data, i.e., a matrix of size $N \times N$ for a network of $N$ nodes.
 We want to compress it into a lower-dimensional matrix $\mathbf{U}$ of size $N \times d$ for a user-defined small integer $d < N$.
 A good $\mathbf{U}$ should preserve the network structure and thus can reconstruct the original data $\mathbf{A}$ as closely as possible.
-This leads to the following optimization problem:
+
+Before any algebra, watch that trade happen on twenty people. Throw the table
+away, keep two numbers per person, then try to rebuild the network from those
+numbers alone — and at the end, choose $d$ yourself.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Lossy compression — only the rules this one stage needs. Paper, pen, panels,
+   buttons, knob and motion all come from assets/anim.css; the sequencer from
+   assets/anim.js. Colours are the kit's resolved tokens, never literals.
+   -------------------------------------------------------------------------- */
+
+/* The drawing is one wide canvas (network + matrix on the left, the plane on
+   the right) so a node can physically fly from one to the other. The kit caps
+   .anim-svg at 310px, which is right for a square figure and far too narrow
+   for this one. */
+#emb-lossy { --anim-svg-max: 100%; }
+#emb-lossy [data-emb-side] { max-width: 27rem; margin: 0.5rem auto 0; }
+
+/* Flight time, set per scene: a long arc when the nodes leave the network,
+   a short one when the reader is dragging the dial. */
+#emb-lossy .emb-dot {
+  transition: transform var(--emb-t, 0.34s) cubic-bezier(0.4, 0.05, 0.5, 1);
+}
+
+/* 42 edges on 20 nodes goes to mush at the kit's 2.2 stroke. */
+#emb-lossy .emb-thin { stroke-width: 1.7; }
+
+/* The two kinds of error, one colour: an edge the reconstruction dropped
+   (dashed, because it is a hole) and one it made up (solid, because it is
+   there in the copy and not in the original). */
+#emb-lossy .emb-lost { stroke: var(--_amber); stroke-dasharray: 3.5 3; }
+#emb-lossy .emb-new  { stroke: var(--_amber); stroke-width: 1.7; fill: none; }
+
+/* The reconstruction drawn on the plane itself — thin and quiet, because the
+   points are the subject and these are only the inference from them. */
+#emb-lossy .emb-rec {
+  stroke: var(--_ink); stroke-width: 1.4; stroke-opacity: 0.5; fill: none;
+}
+
+/* One cell of the adjacency matrix. 400 of them; the outline is what makes
+   "400 numbers" a thing you can see rather than a thing you are told. */
+#emb-lossy .emb-cell { fill: none; stroke: var(--_rule); stroke-width: 0.4; }
+#emb-lossy .emb-cell-on  { fill: var(--_ink); stroke: var(--_ink); }
+#emb-lossy .emb-cell-bad { fill: var(--_amber); stroke: var(--_amber); }
+
+#emb-lossy .emb-frame {
+  fill: none; stroke: var(--_ink); stroke-width: 1.8; stroke-dasharray: 6 4;
+}
+#emb-lossy .emb-mid { text-anchor: middle; }
+</style>
+
+<figure class="anim-stage" id="emb-lossy">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-emb-plot></div>
+    <div data-anim-clear data-emb-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* Lossy compression, drawn. Markup above, scenes below, nothing in between:
+   everything a scene calls arrives on `ctx`, from assets/anim.js. The kit is
+   loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number here was computed once, offline, and pasted in. Nothing in
+     this file runs a graph algorithm, an eigensolver or a layout.
+
+     THE NETWORK. 20 nodes drawn from a planted-partition model with three
+     groups of 7, 7 and 6, edge probability 0.6 inside a group and 0.03
+     between; connected, minimum degree 2, 42 edges. NODE is a spring layout
+     computed inside each group and then set on a triangle, so the three
+     groups are visible in the wiring diagram too.
+
+     THE EMBEDDING. Adjacency spectral embedding exactly as defined above:
+     U = [sqrt(l1) u1, ..., sqrt(ld) ud] over the d largest signed eigenvalues
+     of A, which here are 4.818, 3.597, 3.308, 1.266, 0.811, 0.730, 0.666,
+     0.480 — all positive, so the square roots are all real.
+
+     THE RECONSTRUCTION. Score every one of the 190 node pairs by (U U^T)_ij
+     and keep the 42 highest — the same number of edges the network has, so
+     lost and invented always come out equal. RECON[d-1] is that list. NCORR
+     counts how many of the 42 are real:
+
+        d      1    2    3    4    5    6    7    8
+        kept  19   31   31   32   34   35   36   37
+        lost  23   11   11   10    8    7    6    5
+
+     THE PICTURE. The plane always shows the first two coordinates, so PLANE
+     is the same for every d >= 2 — adding a dimension changes the
+     reconstruction, not the view. At d = 1 there is no second coordinate at
+     all and every point sits on the axis, at AXIS_Y.
+     ------------------------------------------------------------------------ */
+  const NODE = [[124.7,105.3],[142.0,133.7],[118.5,128.1],[137.0,110.0],[100.1,108.7],[114.2,115.6],[117.8,91.2],[30.6,56.9],[44.6,68.4],[28.9,83.9],[70.1,83.9],[58.7,69.7],[48.8,87.0],[54.8,99.4],[130.9,23.0],[90.2,30.7],[110.9,28.2],[110.7,16.1],[94.8,54.3],[117.7,41.3]];
+  const EDGE = [[0,2],[0,3],[0,5],[0,6],[0,8],[1,2],[1,3],[2,4],[2,5],[3,5],[3,6],[3,7],[3,12],[4,5],[4,6],[7,8],[7,9],[7,11],[8,9],[8,10],[8,11],[8,12],[8,17],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[13,16],[14,16],[14,17],[14,19],[15,16],[15,17],[15,18],[16,17],[16,19],[17,19],[18,19]];
+  const COMM = [0,0,0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2,2,2];
+  const PLANE = [[315.0,246.6],[260.3,196.8],[271.4,237.5],[330.8,244.9],[259.5,219.9],[283.5,248.0],[275.2,221.2],[340.7,162.4],[398.8,133.6],[348.4,133.5],[355.3,124.2],[374.1,128.8],[392.6,145.1],[357.2,96.1],[266.0,40.2],[261.2,56.3],[292.8,12.0],[299.9,20.2],[245.2,86.2],[268.4,28.3]];
+  const ORIGIN = [231.3, 141.1];   /* where both coordinates are zero        */
+  const NCORR = [19,31,31,32,34,35,36,37];
+  const RECON = [
+    [[0,7],[0,8],[0,9],[0,10],[0,11],[0,12],[0,13],[3,7],[3,8],[3,9],[3,10],[3,11],[3,12],[3,13],[5,8],[7,8],[7,9],[7,10],[7,11],[7,12],[7,13],[8,9],[8,10],[8,11],[8,12],[8,13],[8,16],[8,17],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[11,16],[11,17],[12,13],[12,16],[12,17]],
+    [[0,2],[0,3],[0,5],[0,8],[0,12],[2,3],[3,5],[3,6],[3,7],[3,8],[3,11],[3,12],[7,8],[7,9],[7,10],[7,11],[7,12],[7,13],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[13,16],[13,17],[14,16],[14,17],[14,19],[15,16],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[2,3],[2,4],[2,5],[2,6],[3,4],[3,5],[3,6],[4,5],[5,6],[7,8],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,15],[14,16],[14,17],[14,19],[15,16],[15,17],[15,19],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[2,3],[2,4],[2,5],[3,5],[3,6],[3,7],[3,8],[4,5],[5,6],[7,8],[7,9],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,15],[14,16],[14,17],[14,19],[15,16],[15,17],[15,19],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[1,3],[2,4],[2,5],[2,6],[3,5],[3,6],[3,7],[4,5],[5,6],[7,8],[7,9],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,15],[14,16],[14,17],[14,19],[15,16],[15,17],[15,19],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[1,3],[2,4],[2,5],[2,6],[3,5],[3,6],[3,7],[4,5],[5,6],[7,8],[7,9],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,16],[14,17],[14,19],[15,16],[15,17],[15,18],[15,19],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[2,4],[2,5],[3,5],[3,6],[3,7],[4,5],[5,6],[7,8],[7,9],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[9,10],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,16],[14,17],[14,19],[15,16],[15,17],[15,18],[15,19],[16,17],[16,19],[17,19]],
+    [[0,2],[0,3],[0,4],[0,5],[0,6],[0,8],[1,2],[1,3],[2,4],[2,5],[3,5],[3,6],[3,7],[4,5],[5,6],[7,8],[7,9],[7,11],[7,12],[8,9],[8,10],[8,11],[8,12],[9,11],[9,12],[9,13],[10,11],[10,12],[10,13],[11,12],[11,13],[12,13],[14,16],[14,17],[14,19],[15,16],[15,17],[15,18],[15,19],[16,17],[16,19],[17,19]]
+  ];
+
+  const AXIS_Y = ORIGIN[1];      /* the second coordinate reads zero here */
+  const DMAX = 8;
+  const N = NODE.length;         /* 20  */
+  const M = EDGE.length;         /* 42  */
+  const CELLS = N * N;           /* 400 — every number on screen is derived   */
+  const KEEP = 2;                /* where autoplay and a skipped read park    */
+
+  const key = (a, b) => (a < b ? a + "," + b : b + "," + a);
+  const ADJ = [];
+  for (let i = 0; i < N; i++) ADJ.push(new Array(N).fill(0));
+  EDGE.forEach((e) => { ADJ[e[0]][e[1]] = 1; ADJ[e[1]][e[0]] = 1; });
+  const RSET = RECON.map((r) => new Set(r.map((p) => key(p[0], p[1]))));
+
+  /* d = 1 keeps only the first coordinate, so the second is zero for
+     everyone: the same x, all on the axis. */
+  const LINE = PLANE.map((p) => [p[0], AXIS_Y]);
+  const at = (d) => (d === 1 ? LINE : PLANE);
+
+  const store = (d) => N * d;      /* how many numbers the embedding costs */
+
+  /* the small "edges recovered against d" chart in scene 4 */
+  const cx = (d) => 30 + ((d - 1) / (DMAX - 1)) * 184;
+  const cy = (f) => 80 - f * 62;
+  const curve = NCORR.map((n, i) => cx(i + 1) + "," + cy(n / M)).join(" ");
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "Twenty people, four hundred numbers",
+      note: "Twenty people and forty-two friendships. The only description any one of them has is a row of the table: twenty numbers each, four hundred in all, and almost every one of them a zero.",
+      async run(ctx) {
+        ctx.build();
+        const c = ctx.card("what you are given");
+        [["people", String(N)],
+         ["friendships", String(M)],
+         ["numbers in the table", String(CELLS)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (3.2 + i * 0.4) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "one row per person, one column per person — and the plane on the right is still empty");
+        last.style.animationDelay = ctx.fast() ? "0s" : "4.5s";
+        c.appendChild(last);
+        await ctx.sleep(5400);
+      }
+    },
+    {
+      label: "Two numbers each",
+      note: "Now give every person two numbers and let them go stand on the plane. Four hundred numbers became forty — and the three groups arrived intact, without ever being told about each other.",
+      async run(ctx) {
+        const c = ctx.card("keep two numbers each");
+        ctx.hideHint();
+        await ctx.sleep(400);
+
+        /* Group by group, so you can watch a blob leave the network and
+           arrive as a blob: that is the whole claim of the scene. */
+        for (let g = 0; g < 3; g++) {
+          ctx.fly(2, g);
+          await ctx.sleep(1000);
+        }
+        await ctx.sleep(300);
+
+        [["points", String(N)],
+         ["numbers each", "2"],
+         ["numbers in all", CELLS + " → " + store(2)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade", "ten times smaller");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.5s";
+        c.appendChild(q);
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "Rebuild it from the points",
+      note: "Rebuild the network from the forty numbers alone: score every pair by U Uᵀ and keep the forty-two best. Thirty-one friendships come back. Eleven are lost and eleven invented, and the amber marks show exactly which.",
+      async run(ctx) {
+        const c = ctx.card("rebuild it from the points alone");
+        c.appendChild(ctx.el("div", "anim-caption",
+          "U Uᵀ scores every pair of points; keep its " + M +
+          " largest entries and call those the friendships"));
+        await ctx.sleep(500);
+
+        ctx.setD(2, true);            /* draw the reconstruction on the plane */
+        await ctx.sleep(1500);
+        ctx.overlay(2);               /* fold it back onto the original       */
+        await ctx.sleep(900);
+
+        const gone = M - NCORR[1];
+        [["friendships back", NCORR[1] + " of " + M],
+         ["lost", String(gone)],
+         ["invented", String(gone)]].forEach((row, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + row[0] + "</span><b>" + row[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        const q = ctx.el("div", "anim-quote anim-fade",
+          "compression is lossy — and you can see what was lost");
+        q.style.animationDelay = ctx.fast() ? "0s" : "1.5s";
+        c.appendChild(q);
+        await ctx.sleep(3000);
+      }
+    },
+    {
+      label: "Now you choose d",
+      note: "Now you choose d. One number each and the three groups smear onto a line. Two, and they separate — twelve friendships come back at once. After that every extra dimension costs twenty more numbers and buys about one more edge.",
+      async run(ctx) {
+        const c = ctx.card("how many numbers is enough?");
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          '<span>d = <b data-d>2</b></span>' +
+          '<span style="color:var(--_accent)">stored <b data-s>40</b> of ' + CELLS + '</span>' +
+          '<span style="color:var(--_amber)">edges back <b data-r>31</b> of ' + M + '</span>');
+        c.appendChild(read);
+
+        const svg = ctx.svgRoot("0 0 232 98");
+        svg.innerHTML =
+          '<line class="anim-axis" x1="30" y1="80" x2="222" y2="80"/>' +
+          '<line class="anim-axis" x1="30" y1="14" x2="30" y2="80"/>' +
+          '<polyline class="anim-accent-stroke" points="' + curve + '"/>' +
+          '<line class="anim-marker" data-mark x1="30" y1="12" x2="30" y2="83"/>' +
+          '<text class="anim-label" x="12" y="22">' + M + '</text>' +
+          '<text class="anim-label" x="16" y="84">0</text>' +
+          '<text class="anim-label" x="26" y="95">d = 1</text>' +
+          '<text class="anim-label" x="196" y="95">d = 8</text>' +
+          '<text class="anim-label anim-accent-fill" x="86" y="46">edges recovered</text>';
+        c.appendChild(svg);
+        /* Honest label: the plane can only ever show two numbers, so past
+           d = 2 it is the reconstruction that changes, not the picture. */
+        c.appendChild(ctx.el("div", "anim-caption",
+          "the plane always draws the first two coordinates, so past d = 2 the " +
+          "points stop moving and only the rebuilt network changes"));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outD = read.querySelector("[data-d]");
+        const outS = read.querySelector("[data-s]");
+        const outR = read.querySelector("[data-r]");
+        const mark = svg.querySelector("[data-mark]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the dial is yours. */
+        const dial = ctx.mountKnob(knob, {
+          min: 1, max: DMAX, step: 1, value: KEEP,
+          label: "Number of dimensions d",
+          format: (d) => "d = " + d,
+          onGrab: () => ctx.pause(),
+          onInput: (d) => {
+            outD.textContent = String(d);
+            outS.textContent = String(store(d));
+            outR.textContent = String(NCORR[d - 1]);
+            mark.setAttribute("x1", cx(d));
+            mark.setAttribute("x2", cx(d));
+            ctx.setD(d);
+            ctx.overlay(d);
+          }
+        });
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipping, or reading with motion turned off: land on the knee,
+           because the knee is what this figure is about. */
+        if (ctx.fast()) {
+          ctx.quick();
+          dial.set(KEEP);
+          say("<span>two numbers each</span><b>and the groups are already there</b>");
+          return;
+        }
+
+        ctx.quick();
+        dial.set(1);
+        await ctx.sleep(1600);
+        say("<span>one number each</span><b>everyone on one line</b>");
+        await ctx.sleep(2200);
+
+        dial.set(2);
+        await ctx.sleep(1400);
+        say("<span>+1 number each</span><b>+" + (NCORR[1] - NCORR[0]) + " friendships back</b>");
+        await ctx.sleep(2600);
+
+        for (let d = 3; d <= DMAX; d++) { dial.set(d); await ctx.sleep(520); }
+        say("<span>+6 dimensions, +" + (store(DMAX) - store(2)) + " numbers</span><b>+" +
+            (NCORR[DMAX - 1] - NCORR[1]) + " friendships</b>");
+        await ctx.sleep(3200);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("emb-lossy"), scenes, {
+    stepsLabel: "Compression steps",
+
+    /* One canvas holds the network, its matrix and the plane, so a node can
+       physically travel between them. Built once in scene 1; scenes 2 to 4
+       only ever mutate it. */
+    helpers(ctx) {
+      const plot = ctx.$("[data-emb-plot]");
+      const side = ctx.$("[data-emb-side]");
+      const S = {};
+      const CELL = 4.6, MX = 49, MY = 160;
+
+      function build() {
+        plot.textContent = "";
+        const svg = ctx.svgRoot("0 0 452 272", "emb-canvas");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gFrame = g(), gNet = g(), gNew = g(), gSock = g(),
+              gMat = g(), gRec = g(), gDot = g(), gLab = g();
+        const slow = !ctx.fast();
+
+        /* the plane: a dashed sheet with the two axes crossing at ORIGIN */
+        gFrame.appendChild(ctx.svgEl("rect", {
+          x: 196, y: 6, width: 252, height: 248, rx: 10, "class": "emb-frame"
+        }));
+        gFrame.appendChild(ctx.svgEl("line", {
+          x1: ORIGIN[0], y1: 12, x2: ORIGIN[0], y2: 248,
+          "class": "anim-axis anim-faint"
+        }));
+        gFrame.appendChild(ctx.svgEl("line", {
+          x1: 202, y1: ORIGIN[1], x2: 442, y2: ORIGIN[1],
+          "class": "anim-axis anim-faint"
+        }));
+
+        S.net = EDGE.map((e, i) => {
+          const ln = ctx.svgEl("line", {
+            x1: NODE[e[0]][0], y1: NODE[e[0]][1],
+            x2: NODE[e[1]][0], y2: NODE[e[1]][1],
+            "class": "anim-edge emb-thin" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            ln.style.setProperty("--dash",
+              Math.ceil(Math.hypot(NODE[e[0]][0] - NODE[e[1]][0],
+                                   NODE[e[0]][1] - NODE[e[1]][1])) + 2);
+            ln.style.animationDelay = (0.4 + i * 0.03) + "s";
+          }
+          return gNet.appendChild(ln);
+        });
+
+        /* the sockets stay behind when the nodes leave */
+        NODE.forEach((p) => gSock.appendChild(ctx.svgEl("circle", {
+          cx: p[0], cy: p[1], r: 4.8, "class": "anim-node-off"
+        })));
+
+        /* 400 cells, faded in one by one: the count is the point */
+        S.cells = [];
+        for (let i = 0; i < N; i++) {
+          for (let j = 0; j < N; j++) {
+            const r = ctx.svgEl("rect", {
+              x: MX + j * CELL, y: MY + i * CELL, width: CELL, height: CELL,
+              "class": "emb-cell" + (slow ? " anim-fade" : "")
+            });
+            if (slow) r.style.animationDelay = (1.7 + (i * N + j) * 0.0035) + "s";
+            S.cells.push(gMat.appendChild(r));
+          }
+        }
+
+        /* Each node is a circle in its own <g>, so the group carries the
+           journey and the circle keeps its geometry. */
+        S.dots = NODE.map((p, i) => {
+          const gg = ctx.svgEl("g", { "class": "emb-dot" });
+          gg.appendChild(ctx.svgEl("circle", { r: 4.8, "class": "anim-node" }));
+          gg.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+          if (slow) {
+            gg.classList.add("anim-fade");
+            gg.style.animationDelay = (i * 0.05) + "s";
+          }
+          return gDot.appendChild(gg);
+        });
+
+        const lab = (x, y, t, cls) => {
+          const e = ctx.svgEl("text", { x: x, y: y, "class": "anim-label" + (cls ? " " + cls : "") });
+          e.textContent = t;
+          return gLab.appendChild(e);
+        };
+        /* Short on purpose: anything longer runs under the plane's frame. */
+        lab(MX, MY + N * CELL + 12,
+          "A: " + N + " × " + N + " = " + CELLS + " numbers");
+        S.hint = lab(322, 122, "an empty plane", "emb-mid anim-faint");
+
+        S.gNew = gNew;
+        S.gRec = gRec;
+        S.svg = svg;
+        plot.appendChild(svg);
+        setMat(0);
+        flight("0.85s");
+      }
+
+      const flight = (t) => S.svg.style.setProperty("--emb-t", t);
+      const quick = () => flight("0.3s");
+      const hideHint = () => { S.hint.setAttribute("class", "anim-label emb-mid anim-faint anim-fade-out"); };
+
+      /* Send group g (or every node, when g is undefined) to its place in the
+         d-dimensional picture. */
+      function fly(d, g) {
+        const P = at(d);
+        S.dots.forEach((dot, i) => {
+          if (g != null && COMM[i] !== g) return;
+          dot.classList.remove("anim-fade");
+          dot.style.transform = "translate(" + P[i][0] + "px," + P[i][1] + "px)";
+        });
+      }
+
+      /* The reconstruction, drawn on the plane: the 42 pairs the embedding
+         scores highest, joined. Pure lookup — RECON[d-1] was computed
+         offline. A pair the network does not actually have is drawn amber
+         here too, which is what explains the long lines across the gaps. */
+      function setD(d, draw) {
+        fly(d);
+        const P = at(d);
+        S.gRec.textContent = "";
+        RECON[d - 1].forEach((pr, i) => {
+          const ln = ctx.svgEl("line", {
+            x1: P[pr[0]][0], y1: P[pr[0]][1], x2: P[pr[1]][0], y2: P[pr[1]][1],
+            "class": ADJ[pr[0]][pr[1]] ? "emb-rec" : "emb-new"
+          });
+          if (draw && !ctx.fast()) {
+            ln.classList.add("anim-draw");
+            ln.style.setProperty("--dash",
+              Math.ceil(Math.hypot(P[pr[0]][0] - P[pr[1]][0],
+                                   P[pr[0]][1] - P[pr[1]][1])) + 2);
+            ln.style.animationDelay = (i * 0.028) + "s";
+          }
+          S.gRec.appendChild(ln);
+        });
+      }
+
+      /* Fold the reconstruction back onto the original: a friendship the copy
+         kept stays in ink, one it dropped goes amber and dashed, one it made
+         up is drawn in amber. The matrix says the same thing cell by cell. */
+      function overlay(d) {
+        const R = RSET[d - 1];
+        S.net.forEach((ln, e) => {
+          ln.classList.toggle("emb-lost", !R.has(key(EDGE[e][0], EDGE[e][1])));
+        });
+        S.gNew.textContent = "";
+        RECON[d - 1].forEach((pr) => {
+          if (ADJ[pr[0]][pr[1]]) return;
+          S.gNew.appendChild(ctx.svgEl("line", {
+            x1: NODE[pr[0]][0], y1: NODE[pr[0]][1],
+            x2: NODE[pr[1]][0], y2: NODE[pr[1]][1], "class": "emb-new"
+          }));
+        });
+        setMat(d);
+      }
+
+      /* d = 0 means "just A". Otherwise a cell is ink where both agree there
+         is an edge, amber wherever they disagree, blank where both say no.
+         classList, not setAttribute: scene 1 fades the 400 cells in one by
+         one and a whole-attribute write would strip .anim-fade off them. */
+      function setMat(d) {
+        const R = d ? RSET[d - 1] : null;
+        for (let i = 0; i < N; i++) {
+          for (let j = 0; j < N; j++) {
+            const a = ADJ[i][j];
+            const r = R ? (i !== j && R.has(key(i, j)) ? 1 : 0) : a;
+            const c = S.cells[i * N + j];
+            c.classList.toggle("emb-cell-on", !!(a && r));
+            c.classList.toggle("emb-cell-bad", a !== r);
+          }
+        }
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by build(), i.e. after helpers() has already run, so
+         everything reaching into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { build, fly, setD, overlay, card, quick, hideHint };
+    }
+  });
+});
+</script>
+```
+
+Nothing there was free. Eleven friendships did not survive the round trip, and
+eleven that never existed were invented in their place. That is the general
+situation: compression is lossy, and the only question is how much you lose per
+number you keep. Writing that question down is the optimization problem:
 
 $$
 \min_{\mathbf{U}} J(\mathbf{U}),\quad J(\mathbf{U}) = \| \mathbf{A} - \mathbf{U}\mathbf{U}^\top \|_F^2
@@ -277,8 +794,6 @@ More specifically, the method contains the following steps:
 2. Treat the random walks as sentences and feed them to word2vec to learn the node embeddings.
 
 DeepWalk typically uses the skip-gram model with hierarchical softmax for efficient training.
-
-<!-- TODO(anim): the DeepWalk pipeline — a walker tracing a path on a small network while the visited node ids stack up as a "sentence" below, then that sentence sliding into the word2vec window. -->
 
 ### node2vec
 

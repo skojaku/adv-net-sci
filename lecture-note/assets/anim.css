@@ -260,6 +260,34 @@
   flex-wrap: wrap;
 }
 .anim-readout b { font-weight: 700; }
+/* Three readouts in one half of .anim-grid-2 overrun a ~285px column by a
+   hair at the default size and orphan the last one onto its own line. This
+   buys back enough to hold the row together on any font stack. */
+.anim-readout--tight { gap: 0.5rem; font-size: 0.64rem; }
+
+/* One line of the drawing's own bookkeeping — a tally, a count, a
+   before/after. Darker and larger than .anim-caption, which is an aside.
+   Two children land as label-left / value-right:
+     <div class="anim-tally"><span>triangles</span><b>20 → 19</b></div> */
+.anim-tally {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-family: var(--_hand);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--_ink);
+}
+.anim-tally b { font-weight: 700; }
+
+/* The one number a scene is about, hand-lettered at headline size. */
+.anim-big {
+  font-family: var(--_hand);
+  font-size: 2.4rem;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--_ink);
+}
 
 /* The per-scene prose. It is the screen-reader account of an animation that
    is otherwise aria-hidden, and it carries aria-live="polite".
@@ -279,11 +307,20 @@
 /* --------------------------------------------------------------------------
    6. SVG ink
    -------------------------------------------------------------------------- */
-/* Capped so the drawing's own type stays near the surrounding type size. */
+/* Capped so the drawing's own type stays near the surrounding type size.
+   310px is right for a square diagram of a dozen nodes and wrong for a wide
+   one — a two-panel figure, a labelled scatter, a map, a chart with an axis.
+   Seven stages needed a different cap, so the cap is a variable: set it on
+   the stage (or on whichever wrapper holds the wide drawing) rather than
+   re-declaring .anim-svg and fighting the cascade.
+
+     #my-stage { --anim-svg-max: 100%; }
+     #my-stage .chart { --anim-svg-max: 460px; }
+     @media (max-width: 820px) { #my-stage { --anim-svg-max: 100%; } } */
 .anim-svg {
   display: block;
   width: 100%;
-  max-width: 310px;
+  max-width: var(--anim-svg-max, 310px);
   height: auto;
   margin: 0 auto;
 }
@@ -311,9 +348,49 @@
 .anim-amber-fill { fill: var(--_amber); }
 
 .anim-axis { stroke: var(--_ink); stroke-width: 1.4; }
+/* A dashed guide line dropped onto a chart: a mean, a threshold, the knob's
+   own position. Amber by default, because usually the marker is the thing
+   being pointed at. When amber is already spoken for as a data colour — two
+   dashed means at once, or a cursor beside an amber curve — take a modifier
+   instead of inventing a private class. Three stages needed exactly this. */
 .anim-marker { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+.anim-marker--accent { stroke: var(--_accent); }
+.anim-marker--faint { stroke: var(--_ink-faint); }
 .anim-label { font-family: var(--_hand); font-size: 11px; fill: var(--_ink); }
 .anim-faint { stroke: var(--_ink-faint); fill: var(--_ink-faint); }
+
+/* Type inside a drawing sits on top of the ink and has to survive it — a
+   name that travels with its dot, a rank printed over an edge. Knock the
+   paper out behind the letters instead of dodging the ink. Add-on class:
+   keep fill and font-size on your own rule.
+     <text class="anim-label anim-knockout"> */
+.anim-knockout {
+  paint-order: stroke fill;
+  stroke: var(--_paper);
+  stroke-width: var(--anim-knockout-w, 3px);
+  stroke-linejoin: round;
+}
+
+/* A faintly filled region: a shaded triangle, a community, a band under a
+   curve. Draw them into their own <g> below the edges. Pair with .anim-fade
+   / .anim-fade-out to bring one in and out, or drive style.opacity directly
+   when a knob has to raise and lower it repeatedly. */
+.anim-shade { fill: var(--_accent); fill-opacity: 0.16; stroke: none; }
+
+/* A route laid over the ink — a shortest path, a random walk, a tour. Wide
+   and translucent so the edges it covers still read underneath. */
+.anim-trail {
+  stroke: var(--_amber);
+  stroke-width: 4.5;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* The thing doing the walking. Put it in a <g class="anim-glide"> and move
+   the group, so the circle itself keeps its geometry. */
+.anim-token { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
 
 /* --------------------------------------------------------------------------
    7. Motion primitives
@@ -331,6 +408,17 @@
 
 .anim-fade { opacity: 0; animation: anim-fade 0.3s ease forwards; }
 @keyframes anim-fade { to { opacity: 1; } }
+
+/* The reverse, for something the drawing takes away — an edge that leaves, a
+   triangle that stops being one. `from` is stated so it still starts opaque
+   when it replaces .anim-fade on an element that already faded in. */
+.anim-fade-out { animation: anim-fade-out 0.45s ease forwards; }
+@keyframes anim-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Anything that moves from one place to another. Set style.transform on the
+   element; inside an SVG the lengths are user units, so
+   translate(110px, 26px) lands on the point you computed in the viewBox. */
+.anim-glide { transition: transform 0.34s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
 
 .anim-pop { animation: anim-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
 @keyframes anim-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
@@ -408,9 +496,10 @@
   }
   .anim-draw { stroke-dashoffset: 0 !important; animation: none !important; }
   .anim-fade { opacity: 1 !important; animation: none !important; }
+  .anim-fade-out { opacity: 0 !important; animation: none !important; }
   .anim-pop { animation: none !important; }
   .anim-caret { animation: none !important; opacity: 1; }
-  .anim-knob { transition: none !important; }
+  .anim-knob, .anim-glide { transition: none !important; }
 }
 
 /* --------------------------------------------------------------------------
@@ -427,5 +516,6 @@
   .anim-caret { display: none !important; }
   .anim-draw { stroke-dashoffset: 0 !important; animation: none !important; }
   .anim-fade { opacity: 1 !important; animation: none !important; }
+  .anim-fade-out { opacity: 0 !important; animation: none !important; }
   .anim-pop { animation: none !important; }
 }

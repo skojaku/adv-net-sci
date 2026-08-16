@@ -212,7 +212,555 @@ In the spectral picture the effect is precise. Write the node signal in the Lapl
 
 This is **over-smoothing**: the collapse of node representations toward a single vector as depth increases. Past a few layers nodes become indistinguishable and node classification accuracy *falls*. It is why most GCNs in practice are only 2 or 3 layers deep — an odd fact if you come from computer vision, where more depth reliably helps.
 
-<!-- TODO(anim): a small network with node colors updated one GCN layer at a time; by layer 6 every node is the same color. A slider for depth, and a readout of how far apart the two most different nodes still are. -->
+Reach and collapse are not two facts about depth. They are the same fact, seen
+from two ends, and one dial produces both. Below is a network of fifteen nodes,
+each carrying a single number drawn as a colour. Watch one node average its
+neighbours, then take the depth knob yourself and watch the two readouts move in
+opposite directions.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The depth dial (m09) — only the rules this one widget needs. The paper, the
+   panels, the buttons, the knob and the motion primitives all come from
+   assets/anim.css; the sequencer from assets/anim.js. Every colour here is a
+   kit token, and the node fills are interpolated between two of them in JS.
+   -------------------------------------------------------------------------- */
+#gcn-depth .gcn-node {
+  stroke: var(--_ink);
+  stroke-width: 1.8;
+  transition: fill 0.45s ease, opacity 0.35s ease;
+}
+#gcn-depth .anim-edge { transition: opacity 0.35s ease; }
+/* The receptive field: one soft disc behind each node inside the ball. */
+#gcn-depth .gcn-halo {
+  fill: var(--_accent);
+  fill-opacity: 0.3;
+  stroke: none;
+  transition: opacity 0.35s ease;
+}
+/* Two rings, and they mean different things: accent for the node whose reach
+   we are following, amber for the two nodes still furthest apart — the same
+   two colours as the two curves in the last scene. */
+#gcn-depth .gcn-ring-reach { fill: none; stroke: var(--_accent); stroke-width: 2.6; }
+#gcn-depth .gcn-ring-gap { fill: none; stroke: var(--_amber); stroke-width: 2.4; }
+/* A ring drawn straight onto a dark node vanishes, and the fills run the
+   whole ramp, so every ring gets a paper collar underneath it. */
+#gcn-depth .gcn-ring-back { fill: none; stroke: var(--_paper); stroke-width: 5; }
+#gcn-depth .gcn-tok { stroke: var(--_ink); stroke-width: 1.1; }
+#gcn-depth .gcn-swatch { stroke: var(--_ink); stroke-width: 0.7; }
+#gcn-depth .gcn-dim { opacity: 0.15; }
+/* The knob's own position line uses the kit's faint marker: .anim-marker is
+   amber, and amber is already spoken for by the falling curve. */
+#gcn-depth .gcn-barbg { fill: var(--_rule); }
+#gcn-depth .gcn-bar { fill: var(--_amber); transition: width 0.45s ease; }
+#gcn-depth .gcn-rule {
+  height: 0;
+  margin: 0.4rem 0 0.3rem;
+  border: 0;
+  border-top: 1.6px solid var(--_rule);
+}
+@media (prefers-reduced-motion: reduce) {
+  #gcn-depth .gcn-node,
+  #gcn-depth .gcn-halo,
+  #gcn-depth .anim-edge,
+  #gcn-depth .gcn-bar { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="gcn-depth">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">&#9664;</button>
+    <button class="anim-btn" type="button" data-anim-play>&#9208; Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">&#9654;</button>
+    <button class="anim-btn" type="button" data-anim-replay>&#8635; Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-gcn-net></div>
+    <div data-anim-clear data-gcn-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script>
+/* One knob, two consequences. Markup above, scenes below, and nothing in
+   between: everything a scene calls arrives on `ctx` — see assets/anim.js.
+   The kit is loaded after this file, hence the animReady queue. */
+(window.animReady = window.animReady || []).push(function () {
+
+  /* ---------------------------------------------------------------- data ---
+     Every number below was computed once, offline, and pasted in. Nothing on
+     this page runs a graph algorithm or a matrix multiply.
+
+     The network: 15 nodes, 26 edges, drawn with no crossings. Degrees run
+     from 2 to 5 and the diameter is 5. Each node carries one number in
+     [0, 1], drawn as a colour.
+
+     One layer = the plain average over the closed neighbourhood,
+        x_i  <-  ( x_i + sum of x_j over the neighbours j of i ) / (k_i + 1),
+     which is the renormalized GCN operator with one D-tilde^-1 in place of
+     the two D-tilde^-1/2. Same low-pass, arithmetic you can check in your
+     head; the caption under the drawing says which one it is.
+     ------------------------------------------------------------------------ */
+  const POS = [[167.9,31.7],[193.5,74.6],[141.1,98.5],[178.9,162],[73.8,163.7],[98,117.2],[65.1,37.3],[90.3,73.5],[34.9,137.8],[32.6,181.1],[29.9,62],[139.9,143.2],[112.2,31.6],[199.2,121.3],[117.6,182.2]];
+  const EDGE = [[0,1],[0,12],[1,2],[1,13],[2,5],[2,7],[2,11],[2,13],[3,11],[3,13],[3,14],[4,5],[4,8],[4,9],[4,14],[5,7],[5,8],[5,11],[6,7],[6,10],[6,12],[7,10],[7,12],[8,9],[11,13],[11,14]];
+
+  /* VAL[l][i] = node i's number after l layers, l = 0 … 8. Row 0 is the
+     input. Read down any column and you are watching that node forget
+     itself: every column ends at 0.597, the degree-weighted mean of row 0. */
+  const VAL = [
+    [0.700,0.900,1.000,0.400,0.400,0.900,0.400,0.400,0.800,0.900,0.200,0.200,0.900,0.700,0.100],
+    [0.833,0.825,0.683,0.350,0.620,0.617,0.475,0.633,0.750,0.700,0.333,0.550,0.600,0.640,0.275],
+    [0.753,0.745,0.658,0.454,0.592,0.642,0.510,0.557,0.672,0.690,0.481,0.519,0.635,0.610,0.449],
+    [0.711,0.691,0.622,0.508,0.609,0.607,0.546,0.581,0.649,0.651,0.516,0.555,0.614,0.597,0.504],
+    [0.672,0.655,0.609,0.541,0.604,0.604,0.564,0.581,0.629,0.636,0.547,0.565,0.613,0.595,0.544],
+    [0.647,0.633,0.602,0.561,0.603,0.599,0.576,0.586,0.618,0.623,0.564,0.576,0.607,0.593,0.564],
+    [0.629,0.619,0.598,0.574,0.601,0.597,0.584,0.589,0.611,0.615,0.576,0.582,0.604,0.593,0.576],
+    [0.617,0.610,0.596,0.581,0.600,0.597,0.588,0.591,0.606,0.609,0.583,0.587,0.601,0.593,0.583],
+    [0.609,0.604,0.596,0.586,0.599,0.596,0.591,0.593,0.603,0.605,0.587,0.590,0.600,0.593,0.588]
+  ];
+
+  /* The widest gap in the network at each depth — max(VAL[l]) - min(VAL[l]) —
+     and which two nodes are holding it open. */
+  const GAP = [0.900,0.558,0.304,0.208,0.131,0.086,0.056,0.036,0.023];
+  const HI = [2,0,0,0,0,0,0,0,0];
+  const LO = [14,14,14,14,3,3,3,3,3];
+
+  /* Scene 1's node: 5, degree 5. Its own 0.90 plus 1.00, 0.40, 0.40, 0.80
+     and 0.20 makes 3.70, and 3.70 / 6 = 0.617 — which is VAL[1][5]. */
+  const HUB = 5, HUB_NB = [2,4,7,8,11], HUB_SUM = 3.70;
+
+  /* Scenes 3 and 5 follow node 9, in the bottom-left corner. DIST[i] is its
+     hop distance to node i, so the ball of radius l is {i : DIST[i] <= l},
+     and REACH[l] is how big that ball is. Node 9 is never the highest or the
+     lowest node, so its accent ring never lands on an amber one. */
+  const MARK = 9;
+  const DIST = [5,4,3,3,1,2,4,3,1,0,4,3,4,4,2];
+  const REACH = [1,3,5,9,14,15,15,15,15];
+
+  const DEPTH = 8;          /* the knob: 0 layers … 8 layers */
+  const PARK = 2;           /* where the auto-sweep stops to make its point */
+  const px = (l) => 26 + (l / DEPTH) * 186;
+  const py = (v) => 96 - v * 76;
+  const poly = (a) => a.map((v, i) => px(i) + "," + py(v)).join(" ");
+  const REACH_F = REACH.map((r) => r / 15);
+  const GAP_F = GAP.map((g) => g / GAP[0]);
+  /* Interpolating between the two arrays above, the rising curve overtakes
+     the falling one at 2.012 layers — the dot at (72.8, 70.4) below. */
+
+  /* --------------------------------------------------------------- scenes */
+  const scenes = [
+    {
+      label: "One node collects",
+      note: "Fifteen nodes, one number each, drawn as a colour. Pick one: it takes its own number together with its five neighbours' numbers and keeps the average. 3.70 shared six ways is 0.62, so a dark node turns middling.",
+      async run(ctx) {
+        ctx.drawNet();
+        await ctx.sleep(2600);
+
+        const c = ctx.card("one node collects");
+        ctx.only([HUB].concat(HUB_NB));
+        ctx.markGap([HUB]);
+        await ctx.sleep(700);
+
+        /* One number to a line, so the column adds up on the page. The label
+           appears once: after that it is a bag of numbers, and a bag has no
+           first element. */
+        [["itself", VAL[0][HUB].toFixed(2)]].concat(
+          HUB_NB.map((n, k) => [k === 0 ? "its neighbours" : "", VAL[0][n].toFixed(2)])
+        ).forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.32) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "an unordered bag — nothing says which neighbour is first"));
+        await ctx.sleep(2400);
+
+        await ctx.flow(HUB_NB.map((n) => [n, HUB]));
+        ctx.setVal(HUB, VAL[1][HUB]);
+        await ctx.sleep(600);
+
+        c.appendChild(ctx.el("hr", "gcn-rule"));
+        [["sum", HUB_SUM.toFixed(2)], ["÷ 6", VAL[1][HUB].toFixed(2)]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.5) + "s";
+          c.appendChild(t);
+        });
+        const last = ctx.el("div", "anim-caption anim-fade",
+          "six, not five: a node's own value is in the sum. That is the +I in &Atilde; = A + I.");
+        last.style.animationDelay = ctx.fast() ? "0s" : "1s";
+        c.appendChild(last);
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "All fifteen at once",
+      note: "That is one layer: the same averaging at all fifteen nodes at the same instant, every node sending its number down every edge. The picture is already flatter — the widest gap in the network falls from 0.90 to 0.56.",
+      async run(ctx) {
+        const c = ctx.card("one layer, everywhere");
+        ctx.markGap([]);
+        ctx.only(null);
+        await ctx.sleep(500);
+
+        const both = [];
+        EDGE.forEach((e) => { both.push([e[0], e[1]]); both.push([e[1], e[0]]); });
+        await ctx.flow(both);
+        ctx.paint(1);
+        await ctx.sleep(800);
+
+        [["messages sent", "52"], ["nodes updated", "15"],
+         ["widest gap", "0.90 &rarr; 0.56"]].forEach((r, i) => {
+          const t = ctx.el("div", "anim-tally anim-fade",
+            "<span>" + r[0] + "</span><b>" + r[1] + "</b>");
+          t.style.animationDelay = ctx.fast() ? "0s" : (i * 0.45) + "s";
+          c.appendChild(t);
+        });
+        c.appendChild(ctx.el("div", "anim-caption",
+          "two messages per edge, one each way: 26 edges, 52 messages"));
+        await ctx.sleep(2800);
+      }
+    },
+    {
+      label: "The good news",
+      note: "Back to the raw numbers, and follow the ringed node in the corner. After one layer its value depends on 3 nodes, after two on 5, after three on 9. Depth is reach: stack ℓ layers and a node sees ℓ hops out, and nothing further.",
+      async run(ctx) {
+        const c = ctx.card("what one node can see");
+        ctx.markGap([]);
+        ctx.paint(0);
+        ctx.markReach(MARK);
+        ctx.ball(-1);
+        await ctx.sleep(800);
+
+        for (let l = 1; l <= 5; l++) {
+          ctx.ball(l);
+          ctx.only(DIST.map((d, i) => (d <= l ? i : -1)).filter((i) => i >= 0));
+          c.appendChild(ctx.el("div", "anim-tally anim-fade",
+            "<span>after " + l + (l === 1 ? " layer" : " layers") + "</span><b>" +
+            REACH[l] + " of 15</b>"));
+          await ctx.sleep(l < 5 ? 1150 : 500);
+        }
+        c.appendChild(ctx.el("div", "anim-caption anim-fade",
+          "five layers and it has reached everybody — this network is five hops wide"));
+        await ctx.sleep(2600);
+      }
+    },
+    {
+      label: "The bad news",
+      note: "Now keep averaging. Every layer pulls neighbours toward each other, and the two nodes still furthest apart — ringed here — close on one another. By layer 6 the widest gap anywhere in the network is 0.06. The picture is one colour.",
+      async run(ctx) {
+        const c = ctx.card("keep going");
+        ctx.only(null);
+        ctx.ball(-1);
+        ctx.markReach(-1);
+        ctx.paint(0);
+        ctx.markGap([HI[0], LO[0]]);
+
+        const big = ctx.el("div", "anim-big", "0");
+        c.appendChild(big);
+        c.appendChild(ctx.el("div", "anim-caption", "layers"));
+        const tal = ctx.el("div", "anim-tally", "<span>widest gap</span><b>0.90</b>");
+        c.appendChild(tal);
+        const bar = ctx.svgRoot("0 0 200 14");
+        bar.innerHTML =
+          '<rect class="gcn-barbg" x="0" y="3" width="200" height="8" rx="4"/>' +
+          '<rect class="gcn-bar" data-bar x="0" y="3" width="200" height="8" rx="4"/>';
+        c.appendChild(bar);
+        const val = tal.querySelector("b");
+        const fill = bar.querySelector("[data-bar]");
+
+        const put = (l) => {
+          ctx.paint(l);
+          ctx.markGap([HI[l], LO[l]]);
+          big.textContent = String(l);
+          val.textContent = GAP[l].toFixed(2);
+          fill.setAttribute("width", (200 * GAP[l] / GAP[0]).toFixed(1));
+        };
+
+        /* Skipped to, or read with motion off: the end state is the point. */
+        if (ctx.fast()) { put(DEPTH); return; }
+
+        await ctx.sleep(900);
+        for (let l = 1; l <= 6; l++) { put(l); await ctx.sleep(950); }
+        c.appendChild(ctx.el("div", "anim-quote anim-fade",
+          "0.90 &rarr; 0.06: the network has forgotten who is who"));
+        await ctx.sleep(2400);
+        for (let l = 7; l <= DEPTH; l++) { put(l); await ctx.sleep(750); }
+        await ctx.sleep(1800);
+      }
+    },
+    {
+      label: "Now you turn it",
+      note: "One knob, both consequences. Drag it: the rising curve is how much of the network the ringed node can see, the falling curve is how different the two most different nodes still are. They cross at two layers.",
+      async run(ctx) {
+        const c = ctx.card("now you turn it");
+        ctx.only(null);
+        ctx.markReach(MARK);
+
+        const track = ctx.el("div", "anim-track");
+        const knob = ctx.el("div", "anim-knob");
+        track.appendChild(knob);
+        c.appendChild(track);
+
+        const read = ctx.el("div", "anim-readout",
+          '<span>layers <b data-d>0</b></span>' +
+          '<span style="color:var(--_accent)">sees <b data-r>1</b> of 15</span>' +
+          '<span style="color:var(--_amber)">widest gap <b data-g>0.90</b></span>');
+        c.appendChild(read);
+
+        const svg = ctx.svgRoot("0 0 220 122");
+        svg.innerHTML =
+          '<line class="anim-axis" x1="26" y1="96" x2="212" y2="96"/>' +
+          '<line class="anim-axis" x1="26" y1="14" x2="26" y2="96"/>' +
+          '<polyline class="anim-amber-stroke" points="' + poly(GAP_F) + '"/>' +
+          '<polyline class="anim-accent-stroke" points="' + poly(REACH_F) + '"/>' +
+          '<circle class="anim-amber-fill" cx="72.8" cy="70.4" r="3.6"/>' +
+          '<line class="anim-marker anim-marker--faint" data-cursor x1="26" y1="12" x2="26" y2="99"/>' +
+          '<text class="anim-label" x="12" y="26">1</text>' +
+          '<text class="anim-label" x="12" y="100">0</text>' +
+          '<text class="anim-label" x="16" y="115">0 layers</text>' +
+          '<text class="anim-label" x="172" y="115">8 layers</text>' +
+          '<text class="anim-label anim-accent-fill" x="126" y="42">how far it sees</text>' +
+          '<text class="anim-label anim-amber-fill" x="140" y="80">widest gap</text>';
+        c.appendChild(svg);
+        c.appendChild(ctx.el("div", "anim-caption",
+          "both curves are this same 15-node network, each drawn as a fraction " +
+          "of its own largest value. The dot is where they cross: 2.0 layers."));
+
+        const verdict = ctx.el("div", "anim-tally anim-fade");
+        verdict.style.visibility = "hidden";
+        c.appendChild(verdict);
+
+        const outD = read.querySelector("[data-d]");
+        const outR = read.querySelector("[data-r]");
+        const outG = read.querySelector("[data-g]");
+        const cur = svg.querySelector("[data-cursor]");
+
+        /* One knob, and a real one: pointer, touch and arrow keys all land in
+           onInput, and grabbing it pauses the sequence so the drawing is
+           yours until you let go. */
+        const dial = ctx.mountKnob(knob, {
+          min: 0, max: DEPTH, step: 1, value: 0,
+          label: "Number of GCN layers",
+          format: (l) => l + (l === 1 ? " layer" : " layers"),
+          onGrab: () => ctx.pause(),
+          onInput: (l) => {
+            outD.textContent = String(l);
+            outR.textContent = String(REACH[l]);
+            outG.textContent = GAP[l].toFixed(2);
+            cur.setAttribute("x1", px(l));
+            cur.setAttribute("x2", px(l));
+            ctx.paint(l);
+            ctx.ball(l);
+            ctx.markGap([HI[l], LO[l]]);
+          }
+        });
+        dial.set(0);
+
+        const say = (t) => { verdict.innerHTML = t; verdict.style.visibility = "visible"; };
+
+        /* Skipping, or reading without motion: land on the crossing, because
+           the crossing is the thing this figure is about. */
+        if (ctx.fast()) {
+          dial.set(PARK);
+          say("<span>two layers</span><b>a third seen, a third kept</b>");
+          return;
+        }
+
+        await ctx.sleep(900);
+        for (let l = 1; l <= PARK; l++) { dial.set(l); await ctx.sleep(950); }
+        say("<span>two layers</span><b>a third seen, a third kept</b>");
+        await ctx.sleep(2800);
+
+        for (let l = PARK + 1; l <= DEPTH; l++) { dial.set(l); await ctx.sleep(650); }
+        say("<span>eight layers</span><b>all seen, nothing kept</b>");
+        await ctx.sleep(3000);
+      }
+    }
+  ];
+
+  mountScenes(document.getElementById("gcn-depth"), scenes, {
+    stepsLabel: "Message-passing steps",
+
+    /* The two things only this animation has: a network that persists across
+       all five scenes, and a card on the right that each scene rewrites.
+       Built once at mount, handed to every scene on ctx. */
+    helpers(ctx) {
+      const net = ctx.$("[data-gcn-net]");
+      const side = ctx.$("[data-gcn-side]");
+      const S = {};
+
+      /* ---- the colour of a number ----------------------------------------
+         Low is --_accent-soft, high is --_accent, and both are read off the
+         stage rather than written here, so the ramp follows the theme. The
+         literals are the same fallbacks assets/anim.css declares, and are
+         reached only if a browser hands back something unparseable. */
+      const CS = getComputedStyle(ctx.root);
+      function rgb(text, fallback) {
+        const s = String(text || "").trim();
+        let m = /^#([0-9a-f]{6})$/i.exec(s);
+        if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16),
+                       parseInt(m[1].slice(4, 6), 16)];
+        m = /^#([0-9a-f]{3})$/i.exec(s);
+        if (m) return m[1].split("").map((h) => parseInt(h + h, 16));
+        m = /rgba?\(([^)]+)\)/i.exec(s);
+        if (m) return m[1].split(/[,\s/]+/).slice(0, 3).map(Number);
+        return fallback;
+      }
+      const LOW = rgb(CS.getPropertyValue("--_accent-soft"), [240, 233, 251]);
+      const HIGH = rgb(CS.getPropertyValue("--_accent"), [89, 49, 150]);
+      const hue = (v) => {
+        const t = Math.max(0, Math.min(1, v));
+        return "rgb(" + LOW.map((c, i) => Math.round(c + (HIGH[i] - c) * t)).join(",") + ")";
+      };
+
+      /* ---- the drawing ---------------------------------------------------
+         Scene 1 builds it; scenes 2–5 only ever mutate it. Separate <g>s so
+         the haloes land under the edges, the messages over them and the rings
+         over everything, with no z fiddling. */
+      function drawNet() {
+        net.textContent = "";
+        const svg = ctx.svgRoot("14 12 202 200");
+        const g = () => svg.appendChild(ctx.svgEl("g"));
+        const gHalo = g(), gEdge = g(), gNode = g(), gTok = g(), gRing = g();
+        const slow = !ctx.fast();
+
+        S.halos = POS.map((p) => {
+          const c = ctx.svgEl("circle", { cx: p[0], cy: p[1], r: 17, "class": "gcn-halo" });
+          c.style.opacity = 0;
+          return gHalo.appendChild(c);
+        });
+
+        S.edges = EDGE.map((e, i) => {
+          const l = ctx.svgEl("line", {
+            x1: POS[e[0]][0], y1: POS[e[0]][1], x2: POS[e[1]][0], y2: POS[e[1]][1],
+            "class": "anim-edge" + (slow ? " anim-draw" : "")
+          });
+          if (slow) {
+            /* --dash must clear the line's own length or it pops in late
+               instead of drawing. */
+            const d = Math.hypot(POS[e[0]][0] - POS[e[1]][0], POS[e[0]][1] - POS[e[1]][1]);
+            l.style.setProperty("--dash", Math.ceil(d) + 4);
+            l.style.animationDelay = (0.5 + i * 0.045) + "s";
+          }
+          return gEdge.appendChild(l);
+        });
+
+        S.nodes = POS.map((p, i) => {
+          const c = ctx.svgEl("circle", {
+            cx: p[0], cy: p[1], r: 10,
+            "class": "gcn-node" + (slow ? " anim-fade" : "")
+          });
+          c.style.fill = hue(VAL[0][i]);
+          if (slow) c.style.animationDelay = (1.7 + i * 0.05) + "s";
+          return gNode.appendChild(c);
+        });
+
+        /* The legend lives in the same viewBox, so it scales with the drawing
+           and cannot drift away from it. */
+        for (let i = 0; i <= 10; i++) {
+          const r = ctx.svgEl("rect", {
+            x: 44 + i * 13, y: 198, width: 13, height: 10, "class": "gcn-swatch"
+          });
+          r.style.fill = hue(i / 10);
+          svg.appendChild(r);
+        }
+        [[30, "0"], [190, "1"]].forEach((t) => {
+          const lab = ctx.svgEl("text", { x: t[0], y: 207, "class": "anim-label" });
+          lab.textContent = t[1];
+          svg.appendChild(lab);
+        });
+
+        S.toks = gTok;
+        S.ringBox = gRing;
+        net.appendChild(svg);
+        net.appendChild(ctx.el("div", "anim-caption",
+          "one number per node, drawn as a colour. A layer replaces it with " +
+          "the plain average over the closed neighbourhood; GCN weights by " +
+          "&radic;degree instead and smooths the same way."));
+      }
+
+      /* ---- painting ---- */
+      const setVal = (i, v) => { S.nodes[i].style.fill = hue(v); };
+      const paint = (l) => { S.nodes.forEach((n, i) => { n.style.fill = hue(VAL[l][i]); }); };
+
+      /* ---- attention: dim everything that is not in `keep` (null = all) --- */
+      function only(keep) {
+        const on = keep ? new Set(keep) : null;
+        S.nodes.forEach((n, i) => { n.classList.toggle("gcn-dim", !!on && !on.has(i)); });
+        S.edges.forEach((e, i) => {
+          e.classList.toggle("gcn-dim",
+            !!on && !(on.has(EDGE[i][0]) && on.has(EDGE[i][1])));
+        });
+      }
+
+      /* ---- the receptive field: the ball of radius l around MARK ---- */
+      function ball(l) {
+        S.halos.forEach((h, i) => { h.style.opacity = (l >= 0 && DIST[i] <= l) ? 1 : 0; });
+      }
+
+      /* ---- the two kinds of ring, kept apart so setting one does not
+             disturb the other ---- */
+      function redraw() {
+        S.ringBox.textContent = "";
+        const put = (i, cls) => {
+          S.ringBox.appendChild(ctx.svgEl("circle", {
+            cx: POS[i][0], cy: POS[i][1], r: 13.5, "class": "gcn-ring-back"
+          }));
+          S.ringBox.appendChild(ctx.svgEl("circle", {
+            cx: POS[i][0], cy: POS[i][1], r: 13.5, "class": cls
+          }));
+        };
+        if (S.reach != null) put(S.reach, "gcn-ring-reach");
+        (S.gap || []).forEach((i) => put(i, "gcn-ring-gap"));
+      }
+      const markReach = (i) => { S.reach = (i >= 0 ? i : null); redraw(); };
+      const markGap = (list) => { S.gap = list || []; redraw(); };
+
+      /* ---- messages: a dot of the sender's colour sliding down the edge --- */
+      async function flow(pairs) {
+        if (ctx.fast()) return;
+        const dots = pairs.map((p) => {
+          const t = ctx.svgEl("g", { "class": "anim-glide" });
+          const c = ctx.svgEl("circle", { r: 4.5, "class": "gcn-tok" });
+          c.style.fill = S.nodes[p[0]].style.fill;
+          t.appendChild(c);
+          t.style.transform = "translate(" + POS[p[0]][0] + "px," + POS[p[0]][1] + "px)";
+          return S.toks.appendChild(t);
+        });
+        S.toks.getBoundingClientRect();            /* commit before re-arming */
+        dots.forEach((t, k) => {
+          t.style.transform =
+            "translate(" + POS[pairs[k][1]][0] + "px," + POS[pairs[k][1]][1] + "px)";
+        });
+        await ctx.sleep(720);
+        dots.forEach((t) => { t.style.opacity = 0; });
+        await ctx.sleep(280);
+        S.toks.textContent = "";
+      }
+
+      function card(title) {
+        side.textContent = "";
+        const c = ctx.el("div", "anim-panel anim-pop");
+        if (title) c.appendChild(ctx.el("div", "anim-caption", title));
+        side.appendChild(c);
+        return c;
+      }
+
+      /* S is filled by drawNet(), i.e. after helpers() has already run, so
+         everything that reaches into it has to be a function — the kit copies
+         these onto ctx by value at mount time. */
+      return { drawNet, paint, setVal, only, ball, markReach, markGap, flow, card };
+    }
+  });
+});
+</script>
+```
 
 Note that this is a different failure from vanishing gradients. Vanishing gradients are an *optimization* problem: the model cannot be trained. Over-smoothing is a *representational* problem: even trained perfectly, the model has thrown away what distinguishes one node from another.
 
@@ -253,7 +801,7 @@ Reading the architectures through this lens:
 
 Two consequences follow immediately from this form.
 
-**Depth equals reach.** After $\ell$ layers a node's representation depends on exactly its $\ell$-hop neighborhood, and nothing further. A 2-layer GNN cannot see anything 3 hops away. This is why the receptive field grows with depth — and, given over-smoothing, why the useful range of depths is so narrow.
+**Depth equals reach.** After $\ell$ layers a node's representation depends on exactly its $\ell$-hop neighborhood, and nothing further. A 2-layer GNN cannot see anything 3 hops away. This is why the receptive field grows with depth — and, given over-smoothing, why the useful range of depths is so narrow. It is the pair of crossing curves you turned the knob on above.
 
 **Features and structure are learned jointly.** A GNN consumes two inputs: the graph ${\bf A}$ and the node features ${\bf X}$. If the features are informative the model can lean on them; if they are uninformative (all-ones, or a one-hot node ID) the model has nothing but topology and degenerates into a structural method. This is worth checking before blaming an architecture: on a network with no meaningful node attributes, a GNN often does no better than the embeddings of Module 8.
 

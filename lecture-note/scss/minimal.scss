@@ -464,6 +464,34 @@ figcaption, .figure-caption {
   margin-top: 0.5rem;
 }
 
+/* Graphviz blocks are emitted as an intrinsically-sized <svg>, so a wide
+ * diagram pushes the whole document sideways on a phone rather than shrinking.
+ * Measured before this rule: m05's concepts page had a 576px polygon on a
+ * 500px viewport and scrolled to 777px. Scale the diagram down instead. */
+svg:not(.anim-svg):not(.katex-svg) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Display mathematics is the other thing that cannot wrap. Give each equation
+ * its own scroll box so a long derivation slides under the reader's thumb
+ * without taking the page with it. KaTeX renders the same expression twice —
+ * visible HTML plus a MathML copy for assistive tech — and the MathML copy is
+ * what actually leaked into the layout, so it is clipped explicitly. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0 0.6rem;
+}
+.katex-mathml {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
 /* ===========================================================================
    Footer & odds and ends
    =========================================================================== */
