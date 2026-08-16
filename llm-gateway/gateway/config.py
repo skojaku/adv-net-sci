@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import yaml
@@ -18,6 +18,10 @@ import yaml
 
 class ConfigError(Exception):
     """The config file is unusable. Raised at startup, never per-request."""
+
+
+# Stand-in for "count everything", used when a term has not opened yet.
+EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 
 @dataclass(frozen=True)
@@ -93,9 +97,14 @@ class Config:
         if self.period == "week":
             midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
             return midnight - timedelta(days=midnight.weekday())
-        return datetime.combine(
-            self.term_start, datetime.min.time(), tzinfo=self.timezone
-        )
+
+        start = datetime.combine(self.term_start, datetime.min.time(), tzinfo=self.timezone)
+        if now < start:
+            # Keys get handed out before the first class. Counting from a date
+            # in the future would leave that whole window unmetered, so early
+            # usage counts against the term's allowance instead.
+            return EPOCH
+        return start
 
     def price(self, target: Target) -> dict[str, float]:
         return self.pricing.get(target.pricing_key, {"input": 0.0, "output": 0.0})

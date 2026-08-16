@@ -106,6 +106,7 @@ def test_unknown_alias_is_404_and_lists_options(client, keys):
     )
     assert r.status_code == 404
     assert "tutor" in r.json()["error"]["message"]
+    assert "gpt-5" not in r.text, "the error must not reflect client input back"
     assert_no_leak(r.text)
 
 

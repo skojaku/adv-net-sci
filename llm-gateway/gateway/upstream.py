@@ -43,6 +43,10 @@ ALLOWED_FIELDS = frozenset(
 # Response fields that identify the upstream and must not survive masking.
 LEAKY_FIELDS = ("provider", "system_fingerprint", "model_name", "openrouter")
 
+# 4xx codes that describe the upstream rather than the request. See
+# is_retryable_status for why these are worth another hop.
+RETRYABLE_4XX = frozenset({401, 402, 403, 404, 408, 409, 429})
+
 
 class UpstreamError(Exception):
     """An attempt failed. `retryable` decides whether we try the next hop."""
@@ -85,12 +89,19 @@ def new_request_id() -> str:
 
 
 def is_retryable_status(status: int) -> bool:
-    """429 and 5xx mean "this upstream is unwell"; 4xx means the client is.
+    """Decide whether the next hop is worth trying.
 
-    Falling back on a client error would burn the paid provider on a request
-    that is going to fail there too, and would double-charge the same mistake.
+    A malformed request (400, 413, 422) fails identically everywhere, so
+    retrying it only burns the paid fallback on the same mistake. Everything
+    that points at the upstream rather than at the request gets another go.
+
+    That includes several 4xx codes, which is the non-obvious part: an expired
+    course credential (401), a key without access to a model (403), or a model
+    id the provider has retired (404) are all *our* problems, and the next hop
+    carries a different credential and a different catalogue. Treating them as
+    fatal would let one stale key take the tutor down for the whole class.
     """
-    return status == 429 or status >= 500
+    return status in RETRYABLE_4XX or status >= 500
 
 
 def build_payload(
@@ -141,7 +152,30 @@ def mask_body(obj: dict, alias_id: str, request_id: str) -> dict:
             k: v for k, v in usage.items()
             if k in {"prompt_tokens", "completion_tokens", "total_tokens"}
         }
+
+    # Reasoning models carry a `reasoning_details[].format` tag naming the
+    # provider's reasoning dialect ("anthropic-claude-v1", "openai-responses-v1"
+    # and so on). Normalise rather than delete: clients round-trip the field's
+    # shape, and "unknown" is a value the API already produces.
+    if obj.get("choices"):
+        obj["choices"] = [_mask_choice(c) for c in obj["choices"]]
     return obj
+
+
+def _mask_choice(choice: dict) -> dict:
+    for key in ("message", "delta"):
+        part = choice.get(key)
+        details = part.get("reasoning_details") if isinstance(part, dict) else None
+        if not isinstance(details, list):
+            continue
+        choice = dict(choice)
+        part = dict(part)
+        part["reasoning_details"] = [
+            {**d, "format": "unknown"} if isinstance(d, dict) and "format" in d else d
+            for d in details
+        ]
+        choice[key] = part
+    return choice
 
 
 def extract_usage(obj: dict) -> tuple[int, int, int] | None:

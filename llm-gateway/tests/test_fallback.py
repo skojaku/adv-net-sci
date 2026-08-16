@@ -65,11 +65,29 @@ def test_retry_policy():
     assert is_retryable_status(429)
     assert is_retryable_status(500)
     assert is_retryable_status(503)
+    # Our credential, not the student's request: the next hop has a different
+    # key and a different catalogue, so it is worth trying. A stale course key
+    # must not take the tutor down for everyone.
+    assert is_retryable_status(401)
+    assert is_retryable_status(403)
+    assert is_retryable_status(404)
     # A malformed request fails identically on the fallback, and paying twice
     # for the same mistake helps nobody.
     assert not is_retryable_status(400)
-    assert not is_retryable_status(401)
-    assert not is_retryable_status(404)
+    assert not is_retryable_status(413)
+    assert not is_retryable_status(422)
+
+
+@respx.mock
+async def test_falls_back_when_our_credential_is_rejected(client, cfg):
+    """The scenario that shows up first in production: a bad or expired key."""
+    respx.post(OLLAMA).mock(return_value=httpx.Response(401, text="invalid api key"))
+    respx.post(OPENROUTER).mock(return_value=ok("secret-vendor/secret-fallback"))
+
+    att = Attempt(request_id="chatcmpl-x", alias="tutor")
+    out = await call_json(client, cfg, cfg.aliases["tutor"], BODY, att)
+    assert att.fell_back
+    assert out["model"] == "tutor"
 
 
 @respx.mock

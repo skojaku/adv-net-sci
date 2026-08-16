@@ -177,9 +177,11 @@ async def chat_completions(request: Request, key: KeyRecord = Depends(authentica
     alias_id = body.get("model")
     alias: Alias | None = cfg.aliases.get(alias_id) if isinstance(alias_id, str) else None
     if alias is None:
+        # Deliberately does not echo what was asked for. Reflecting client input
+        # back into an error is how a scanner ends up unable to tell a real leak
+        # from the caller's own string, and it is one less injection surface.
         raise HTTPException(
-            404,
-            f"unknown model {alias_id!r}. Available: {', '.join(sorted(cfg.aliases))}",
+            404, f"unknown model. Available: {', '.join(sorted(cfg.aliases))}"
         )
 
     check_quota(cfg, db, key.student_id)

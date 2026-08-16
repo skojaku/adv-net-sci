@@ -20,12 +20,16 @@ pi ──Bearer sk-nsci-…──▶ gateway ──┬─▶ Ollama       (prima
 | **Keys** | `sk-nsci-…`, one or more per student, stored as SHA-256 hashes. Revocable, optionally expiring. |
 | **Allowance** | Requests and total tokens, per term / week / day. Per-student overrides. Failed requests do not count. |
 | **Aliases** | `tutor` → a route of real models. `/v1/models` lists only aliases. |
-| **Fallback** | Connection failure, timeout, 429, 5xx. Never on a 4xx the client caused. |
+| **Fallback** | Connection failure, timeout, 5xx, and the 4xx codes that describe *us* rather than the request (401/403/404/429). Never on a malformed request. |
 | **Ledger** | One SQLite row per request: student, alias, real upstream, tokens, dollar cost, latency, whether it fell back. |
 
 Dollar cost is recorded for the instructor but is **not** what students are
 limited by — the quota is requests and tokens, which is stable even when the
 model behind an alias changes.
+
+With `period: term`, usage before `term_start` counts too. Keys get handed out
+in the week before the first class, and a window that opens in the future would
+leave exactly that period unmetered.
 
 ## Hiding the model name
 
@@ -44,6 +48,17 @@ four places a model name would otherwise escape:
    in the ledger.
 4. **`usage.cost`.** OpenRouter can attach the dollar cost, which identifies
    the model to anyone holding a price list. Stripped.
+5. **`reasoning_details[].format`.** Reasoning models tag their chain of
+   thought with the provider's dialect (`anthropic-claude-v1`,
+   `openai-responses-v1`). Normalised to `unknown`, in both the message and the
+   streamed delta.
+
+> **What this does not hide: the model's own self-knowledge.** A student who
+> asks the tutor "what model are you?" may well get an honest answer, and no
+> amount of field masking changes that. Aliasing hides the plumbing — the
+> config, the catalogue, the wire format — so that nothing *the gateway emits*
+> names the backend. Treat it as removing the obvious signposts, not as a
+> guarantee.
 
 There is also a fifth, in the opposite direction: **the request**. OpenRouter
 honours `models` and `provider` fields in the request body, so a passthrough
@@ -61,9 +76,14 @@ rather than the term.
 ## Install
 
 ```bash
-scp -r llm-gateway root@smallvm:/opt/
+rsync -az --exclude .venv --exclude 'config.yaml' llm-gateway/ root@smallvm:/opt/llm-gateway/
 ssh root@smallvm 'bash /opt/llm-gateway/deploy/provision.sh llm.example.edu'
 ```
+
+Run it without a hostname (or with a bare IP) on a box that has no DNS record
+yet: it provisions everything, skips Caddy, and leaves the gateway on loopback,
+reachable for testing over `ssh -N -L 8080:127.0.0.1:8080 <host>`. Re-run with
+a real name once you have one to add HTTPS.
 
 Then, on the VM:
 

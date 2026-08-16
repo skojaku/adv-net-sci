@@ -29,6 +29,54 @@ def test_mask_rewrites_model_and_id(cfg):
     assert_no_leak(json.dumps(masked))
 
 
+def test_mask_normalises_reasoning_format(cfg):
+    """`reasoning_details[].format` names the provider's reasoning dialect."""
+    upstream = {
+        "model": "secret-vendor/secret-fallback",
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "content": None,
+                    "reasoning": "thinking...",
+                    "reasoning_details": [
+                        {"type": "reasoning.text", "text": "hm", "format": "anthropic-claude-v1"}
+                    ],
+                },
+            }
+        ],
+    }
+    masked = mask_body(upstream, "tutor", "chatcmpl-abc")
+    details = masked["choices"][0]["message"]["reasoning_details"][0]
+    assert details["format"] == "unknown"
+    assert details["text"] == "hm", "the reasoning itself is left alone"
+    assert "anthropic" not in json.dumps(masked)
+    # The upstream object must not be edited in place.
+    assert upstream["choices"][0]["message"]["reasoning_details"][0]["format"] == (
+        "anthropic-claude-v1"
+    )
+
+
+def test_mask_normalises_reasoning_format_in_stream_delta(cfg):
+    upstream = {
+        "model": "secret-primary:cloud",
+        "choices": [
+            {"index": 0, "delta": {"reasoning_details": [{"format": "openai-responses-v1"}]}}
+        ],
+    }
+    masked = mask_body(upstream, "tutor", "chatcmpl-abc")
+    assert masked["choices"][0]["delta"]["reasoning_details"][0]["format"] == "unknown"
+
+
+def test_mask_leaves_plain_choices_alone(cfg):
+    upstream = {
+        "model": "secret-primary:cloud",
+        "choices": [{"index": 0, "message": {"role": "assistant", "content": "hi"}}],
+    }
+    masked = mask_body(upstream, "tutor", "chatcmpl-abc")
+    assert masked["choices"][0]["message"] == {"role": "assistant", "content": "hi"}
+
+
 def test_mask_does_not_mutate_input(cfg):
     upstream = {"model": "secret-primary:cloud", "provider": "x"}
     mask_body(upstream, "tutor", "chatcmpl-abc")
