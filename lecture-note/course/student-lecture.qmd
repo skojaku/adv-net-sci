@@ -54,142 +54,195 @@ first.
 "Start from" is a place to begin, not a reading list. One good paper plus the
 textbook chapter around it is usually the right amount.
 
-Twenty-six topics for a class of about thirteen, so nobody is left picking from
+Two of the groups split on a distinction worth having before you choose.
+**Dynamics *on* a network** holds the wiring still and asks what moves across it:
+a disease, an opinion, a phase. **Dynamics *of* a network** lets the wiring
+itself move: ties form, ties break, and the network you measured last month is
+not the one you have. Almost every real system does both at once, which is what
+the last topic in group C is about.
+
+Thirty-five topics for a class of about thirteen, so nobody is left picking from
 scraps.
 
 ## A. Networks this course never drew
 
 Every network in this course had one kind of node, one kind of edge, no direction
-of time and no sign. Each of these relaxes one of those.
+of time, no sign, and nothing inside it but nodes. Each of these relaxes one of
+those.
 
 **SL-01 · Bipartite networks and the projection trap**<br>
 What happens to a network of actors and films when you throw the films away?<br>
 *The room:* projects a five-actor, three-film table by hand and counts the triangles the projection invented. *Start from:* Newman, *Networks*, on bipartite networks.
 
-**SL-02 · Temporal networks: paths that respect the clock**<br>
-A path exists in the aggregated network. Can anything actually travel it?<br>
-*The room:* gets a table of timestamped contacts and works out who could have infected whom, and who could not. *Start from:* Holme and Saramaki, "Temporal networks", Physics Reports 2012.
-
-**SL-03 · Signed networks and structural balance**<br>
+**SL-02 · Signed networks and structural balance**<br>
 Is "the enemy of my enemy is my friend" a theorem or a folk saying?<br>
 *The room:* signs the edges of a small graph, finds every unbalanced triangle, then repairs the graph with the fewest sign flips. *Start from:* Cartwright and Harary 1956; Leskovec, Huttenlocher and Kleinberg, "Signed networks in social media", CHI 2010.
 
-**SL-04 · Beyond pairs: hypergraphs and simplicial complexes**<br>
+**SL-03 · Beyond pairs: hypergraphs and simplicial complexes**<br>
 Three people in a room is not three pairs. What does an edge list lose?<br>
 *The room:* writes a list of three-author papers in both encodings, then finds a question only one of them can answer. *Start from:* Battiston et al., "Networks beyond pairwise interactions", Physics Reports 2020.
 
-## B. Things that spread
+**SL-04 · Multilayer networks: the same people on five platforms**<br>
+Email, coffee and Slack are three networks over one set of people. What breaks when you flatten them into one?<br>
+*The room:* ranks the same six people by degree layer by layer, then on the flattened network, and finds the person the flattening hides. *Start from:* Kivela et al., "Multilayer networks", Journal of Complex Networks 2014.
 
-Module 3 broke networks by removing nodes. These are about what moves across one
-while it is still standing.
+**SL-05 · Networks of networks: when the grid and the internet take each other down**<br>
+The power grid needs the control network, and the control network needs power. What does a single failure do to a pair like that?<br>
+*The room:* two small networks drawn side by side with dependency links between them; the room kills one node and traces the cascade back and forth until it stops. *Start from:* Buldyrev, Parshani, Paul, Stanley and Havlin, "Catastrophic cascade of failures in interdependent networks", Nature 2010.
 
-**SL-05 · The epidemic threshold**<br>
+## B. Dynamics *on* networks
+
+The wiring holds still and something moves across it. Module 3 broke networks by
+removing nodes; these are about what happens on one while it is still standing.
+
+**SL-06 · The epidemic threshold**<br>
 How infectious does a disease have to be before it takes off, and why does that depend on the hubs?<br>
 *The room:* runs an SIR round by hand with dice on a ten-node graph, once on a lattice and once with a hub added. *Start from:* Pastor-Satorras and Vespignani, "Epidemic spreading in scale-free networks", PRL 2001.
 
-**SL-06 · Complex contagion: when one exposure is not enough**<br>
+**SL-07 · Complex contagion: when one exposure is not enough**<br>
 Why do rumours travel on long ties and behaviours do not?<br>
 *The room:* adopts under a two-neighbour rule on a ring lattice, then on the same lattice with shortcuts, and watches the shortcuts stop helping. *Start from:* Centola and Macy, "Complex contagions and the weakness of long ties", AJS 2007.
 
-**SL-07 · Global cascades: the Watts threshold model**<br>
+**SL-08 · Global cascades: the Watts threshold model**<br>
 Why does one small shock do nothing and the next one, identical to it, take down everything?<br>
 *The room:* each student is a node with a threshold on a card; run the cascade twice from two different seeds. *Start from:* Watts, "A simple model of global cascades on random networks", PNAS 2002.
 
-**SL-08 · Opinion dynamics: the voter model**<br>
+**SL-09 · Opinion dynamics: the voter model**<br>
 If everyone copies a random neighbour forever, what does the network end up believing?<br>
 *The room:* coloured cards, one per student, five rounds of copy-a-neighbour; count how long consensus takes on a line against a clique. *Start from:* Castellano, Fortunato and Loreto, "Statistical physics of social dynamics", Reviews of Modern Physics 2009.
 
-## C. Where structure comes from
-
-Module 4 showed what degree distributions look like. These are about the
-mechanisms that produce structure, and about testing whether a mechanism is
-really there.
-
-**SL-09 · Fitness: why the first mover does not always win**<br>
-Preferential attachment says the oldest node wins. Google was not the first search engine.<br>
-*The room:* grows two networks side by side on the board, one with fitness and one without, six steps each, and compares who ends up the hub. *Start from:* Bianconi and Barabasi, "Competition and multiscaling in evolving networks", EPL 2001.
-
-**SL-10 · Network motifs**<br>
-Which small subgraphs appear more often than chance, and what does that say about the system?<br>
-*The room:* counts all three-node patterns in a small directed graph by hand, then in a rewired copy, and compares. *Start from:* Milo et al., "Network motifs: simple building blocks of complex networks", Science 2002.
-
-**SL-11 · Exponential random graph models**<br>
-How do you fit a *statistical* model to a network when you only have one of them?<br>
-*The room:* proposes statistics for a small friendship graph, then argues about which set would be enough to reproduce it. *Start from:* Robins, Pattison, Kalish and Lusher, "An introduction to exponential random graph (p\*) models", Social Networks 2007.
-
-**SL-12 · Synchronization: Kuramoto on a network**<br>
+**SL-10 · Synchronization: Kuramoto on a network**<br>
 Fireflies, power grids and clapping audiences all lock into step. What structure makes that easy?<br>
 *The room:* claps, first with everyone listening to everyone, then with each person listening to two neighbours only. Time both. *Start from:* Arenas, Diaz-Guilera, Kurths, Moreno and Zhou, "Synchronization in complex networks", Physics Reports 2008.
 
-## D. Structure the community lens misses
+**SL-11 · Evolutionary games: why cooperation survives on a lattice**<br>
+Defection wins every well-mixed prisoner's dilemma. Put the players on a network and it stops winning. Why?<br>
+*The room:* plays three rounds on a five-by-five paper grid, copying whichever neighbour scored best, and watches clusters of cooperators hold their edges. *Start from:* Nowak and May, "Evolutionary games and spatial chaos", Nature 1992; Santos and Pacheco, PRL 2005.
+
+## C. Dynamics *of* networks
+
+Now the wiring is the thing that moves. Ties form, ties break, and the network
+you measured last month is not the one you have.
+
+**SL-12 · Temporal networks: paths that respect the clock**<br>
+A path exists in the aggregated network. Can anything actually travel it?<br>
+*The room:* gets a table of timestamped contacts and works out who could have infected whom, and who could not. *Start from:* Holme and Saramaki, "Temporal networks", Physics Reports 2012.
+
+**SL-13 · Graphs over time: densification and shrinking diameters**<br>
+Everyone assumes a growing network keeps its average degree. Measured, it does not, and the diameter goes the wrong way too.<br>
+*The room:* gets three snapshots of a growing network, plots edges against nodes on log-log paper, reads the exponent off the slope, and predicts what happened to the diameter. *Start from:* Leskovec, Kleinberg and Faloutsos, "Graphs over time: densification laws, shrinking diameters and possible explanations", KDD 2005.
+
+**SL-14 · Fitness: why the first mover does not always win**<br>
+Preferential attachment says the oldest node wins. Google was not the first search engine.<br>
+*The room:* grows two networks side by side on the board, one with fitness and one without, six steps each, and compares who ends up the hub. *Start from:* Bianconi and Barabasi, "Competition and multiscaling in evolving networks", EPL 2001.
+
+**SL-15 · Adaptive networks: when the structure and the state rewire each other**<br>
+Real people do not only copy their neighbours. They also drop the neighbours they disagree with. What does that change?<br>
+*The room:* reruns the voter model with one extra move, cutting and rewiring a tie on disagreement, and watches consensus turn into two silent camps. *Start from:* Holme and Newman, "Nonequilibrium phase transition in the coevolution of networks and opinions", PRE 2006; Gross and Blasius, "Adaptive coevolutionary networks: a review", J. R. Soc. Interface 2008.
+
+## D. Controlling a network
+
+Nothing in this course ever tried to *steer* a network. This is the part of the
+field that does, and it turns out to be a question about matchings.
+
+**SL-16 · Controllability: which nodes do you have to grab?**<br>
+You may inject a signal at a few nodes. How few, and which ones, before you can drive the whole system anywhere you like?<br>
+*The room:* finds a maximum matching by hand on a small directed graph, reads the unmatched nodes off as the drivers, then adds one edge and watches the driver count change. *Start from:* Liu, Slotine and Barabasi, "Controllability of complex networks", Nature 2011.
+
+**SL-17 · Observability: where do you put the sensors?**<br>
+The mirror image. You cannot measure every node, so which handful tells you the state of all the others?<br>
+*The room:* places two sensors on a drawn network, marks every node whose state can be reconstructed from them, then tries to do better with the same two. *Start from:* Liu, Slotine and Barabasi, "Observability of complex systems", PNAS 2013.
+
+## E. Structure beyond communities, and how to test for it
 
 Module 5 asked "which group is this node in?" Not every network is made of
-groups, and these are what you ask instead.
+groups, and a pattern you can see is not yet a pattern that is there.
 
-**SL-13 · Core-periphery structure**<br>
+**SL-18 · Network motifs**<br>
+Which small subgraphs appear more often than chance, and what does that say about the system?<br>
+*The room:* counts all three-node patterns in a small directed graph by hand, then in a rewired copy, and compares. *Start from:* Milo et al., "Network motifs: simple building blocks of complex networks", Science 2002.
+
+**SL-19 · Exponential random graph models**<br>
+How do you fit a *statistical* model to a network when you only have one of them?<br>
+*The room:* proposes statistics for a small friendship graph, then argues about which set would be enough to reproduce it. *Start from:* Robins, Pattison, Kalish and Lusher, "An introduction to exponential random graph (p\*) models", Social Networks 2007.
+
+**SL-20 · Core-periphery structure**<br>
 What if a network has no communities at all, but a dense middle and a loose edge?<br>
 *The room:* gets a shuffled adjacency matrix and reorders the rows by hand until the core is visible. *Start from:* Borgatti and Everett, "Models of core/periphery structures", Social Networks 2000.
 
-**SL-14 · Node roles: within-module degree and participation**<br>
+**SL-21 · Node roles: within-module degree and participation**<br>
 Two nodes have the same degree and sit in the same community. Are they doing the same job?<br>
 *The room:* computes both coordinates for six labelled nodes and places each on the role diagram. *Start from:* Guimera and Amaral, "Functional cartography of complex metabolic networks", Nature 2005.
 
-**SL-15 · How many communities? The detectability limit**<br>
+**SL-22 · How many communities? The detectability limit**<br>
 Below a certain contrast no algorithm can find the communities. Not a hard problem: impossible.<br>
 *The room:* splits two planted-partition graphs on paper, one above the threshold and one below, and finds out which was which. *Start from:* Decelle, Krzakala, Moore and Zdeborova, "Inference and phase transitions in the detection of modules in sparse networks", PRL 2011.
 
-**SL-16 · Navigability: Kleinberg's exponent and greedy routing**<br>
+**SL-23 · Navigability: Kleinberg's exponent and greedy routing**<br>
 Module 2 said short paths exist. Milgram's letters had to *find* them without a map. How?<br>
 *The room:* routes a message across a printed grid with long-range shortcuts, forwarding greedily, and counts hops against its own guess. *Start from:* Kleinberg, "Navigation in a small world", Nature 2000.
 
-## E. Learning and prediction on graphs
+## F. Learning and prediction on graphs
 
 Modules 8 and 9 built embeddings and GNNs. These are the questions that arrive
 the moment you try to use one.
 
-**SL-17 · Link prediction without learning, and how to evaluate it honestly**<br>
+**SL-24 · Link prediction without learning, and how to evaluate it honestly**<br>
 Common neighbours is one line of code. When does it beat an embedding, and how would you know?<br>
 *The room:* ranks candidate pairs by common neighbours for three hidden edges, then sees what a random split hid from it. *Start from:* Liben-Nowell and Kleinberg, "The link-prediction problem for social networks", JASIST 2007.
 
-**SL-18 · Knowledge graphs and TransE**<br>
+**SL-25 · Knowledge graphs and TransE**<br>
 What changes when an edge has a *type*, and the type is part of what you embed?<br>
 *The room:* does the vector arithmetic for three facts by hand and predicts a fourth. *Start from:* Bordes et al., "Translating embeddings for modeling multi-relational data", NeurIPS 2013.
 
-**SL-19 · Over-squashing: the bottleneck deep GNNs cannot pass**<br>
+**SL-26 · Over-squashing: the bottleneck deep GNNs cannot pass**<br>
 Over-smoothing is not the only reason deep GNNs fail. What else breaks?<br>
 *The room:* counts how many nodes get squeezed into one vector across a bridge, on a drawn graph, at two, three and four hops. *Start from:* Alon and Yahav, "On the bottleneck of graph neural networks and its practical implications", ICLR 2021.
 
-**SL-20 · Explaining a GNN's prediction**<br>
+**SL-27 · Explaining a GNN's prediction**<br>
 The model says fraud. Which edges made it say so?<br>
 *The room:* proposes the subgraph that explains a prediction, then checks it by deleting edges and re-running the aggregation by hand. *Start from:* Ying et al., "GNNExplainer: generating explanations for graph neural networks", NeurIPS 2019.
 
-## F. Networks meet data and people
+## G. Seeing a network
+
+Every figure in this course was a drawing somebody chose. These are about the
+choosing, and about when to stop drawing nodes and edges altogether.
+
+**SL-28 · Force-directed layout: what the picture is actually optimizing**<br>
+Springs and repulsion produce a picture. What does a short edge in it mean, and why do two runs disagree?<br>
+*The room:* everyone draws the same twelve-edge graph by hand in sixty seconds; compare a dozen drawings of one network before looking at what the algorithm minimizes. *Start from:* Fruchterman and Reingold, "Graph drawing by force-directed placement", Software: Practice and Experience 1991; Kobourov, "Force-directed drawing algorithms", Handbook of Graph Drawing and Visualization 2013.
+
+**SL-29 · The hairball, and what to do instead**<br>
+At a few thousand edges the node-link picture stops answering questions. What replaces it?<br>
+*The room:* gets the same network as a hairball and as an aggregated or bundled drawing, answers one question from each, and reports which was answerable at all. *Start from:* Holten, "Hierarchical edge bundles", IEEE TVCG 2006.
+
+**SL-30 · Node-link or matrix: which picture answers which question**<br>
+The hairball is not always the wrong drawing either. When is a matrix better?<br>
+*The room:* same network, two printouts; time it on "are these two nodes connected?" and on "find the densest group". *Start from:* Ghoniem, Fekete and Castagliola, "A comparison of the readability of graphs using node-link and matrix-based representations", InfoVis 2004.
+
+## H. Networks meet data and people
 
 Where the network came from, and what it does once it is pointed at people.
 
-**SL-21 · Networks built from correlations**<br>
+**SL-31 · Networks built from correlations**<br>
 Brain and gene networks are usually thresholded correlation matrices. What structure does that invent?<br>
 *The room:* correlates four short series by hand, thresholds at two values, and watches the triangle count move. *Start from:* Zalesky, Fornito and Bullmore, "On the use of correlation as a measure of network connectivity", NeuroImage 2012.
 
-**SL-22 · Weighted networks: which edges are real?**<br>
+**SL-32 · Weighted networks: which edges are real?**<br>
 Every pair has some weight. How do you throw away the noise without throwing away the small nodes?<br>
 *The room:* prunes one weighted graph twice, once with a global threshold and once locally, and compares what survives at a low-degree node. *Start from:* Serrano, Boguna and Vespignani, "Extracting the multiscale backbone of complex weighted networks", PNAS 2009.
 
-**SL-23 · De-anonymizing a social graph**<br>
+**SL-33 · De-anonymizing a social graph**<br>
 The names were removed. Why is that not anonymity?<br>
 *The room:* gets an unlabelled graph plus one labelled fragment and re-identifies nodes from degree and neighbourhood alone. *Start from:* Narayanan and Shmatikov, "De-anonymizing social networks", IEEE Symposium on Security and Privacy 2009.
 
-**SL-24 · Ranking, recommendation and the glass ceiling**<br>
+**SL-34 · Ranking, recommendation and the glass ceiling**<br>
 "People you may know" is a link predictor. What does running it for years do to a minority group?<br>
 *The room:* runs three rounds of a recommend-the-most-connected rule on a small mixed graph and watches the shares diverge. *Start from:* Karimi, Genois, Wagner, Singer and Strohmaier, "Homophily influences ranking of minorities in social networks", Scientific Reports 2018.
 
-**SL-25 · How false news spreads**<br>
+**SL-35 · How false news spreads**<br>
 True and false stories travel the same network. Why do they not travel the same way?<br>
 *The room:* predicts which of six cascade shapes came from true stories, commits to an answer, and then sees it. *Start from:* Vosoughi, Roy and Aral, "The spread of true and false news online", Science 2018.
-
-**SL-26 · Node-link or matrix: which picture answers which question**<br>
-The hairball is not always the right drawing. When is a matrix better?<br>
-*The room:* same network, two printouts; time it on "are these two nodes connected?" and on "find the densest group". *Start from:* Ghoniem, Fekete and Castagliola, "A comparison of the readability of graphs using node-link and matrix-based representations", InfoVis 2004.
 
 ## Propose your own
 
