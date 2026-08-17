@@ -30,7 +30,7 @@ through, live coding. A slide presentation on its own does not count.
 ## Assignments
 
 **[Pair Notebook](pair-notebook.qmd)** — individual, one per module for modules
-1 through 6. A module taught as a one-on-one session with an AI tutor that runs
+2 through 6. A module taught as a one-on-one session with an AI tutor that runs
 in your terminal. A marimo notebook fills up beside it as you go, and that
 notebook, together with the log of the conversation, is what you hand in.
 **What is read is how you reasoned, not whether your code ran.** Needing hints
