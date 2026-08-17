@@ -696,7 +696,7 @@ How the course is built, and why it is built that way.
 * You need a **GitHub account**, and you need to accept the invitation to the course organization. Until you do, no grade can reach you.
 * Each assignment hands you a **private repository** of your own, through **Classroom 50**.
 * You clone it, work in it, and **push** it back. Nothing is emailed and nothing is uploaded by hand.
-* Two of them, every module: one you do alone, one you do in a team.
+* Two of them, from Module 2 on: one you do alone, one you do in a team.
 
 ---
 
@@ -706,7 +706,7 @@ How the course is built, and why it is built that way.
 
 <hr>
 
-* One per module for modules 1 to 6, on your own.
+* One per module for modules 2 to 6, on your own.
 * A module taught as a tutoring session: an **AI tutor** in your terminal, and a **marimo** notebook filling up beside it in your browser.
 * Sixty to ninety minutes. Stop anywhere and pick it up later.
 * What is read is how you reasoned, not whether your code ran. Needing hints is not penalized.
