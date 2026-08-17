@@ -21,6 +21,12 @@ lecture-note/figs/*.svg
 # --- Slides -----------------------------------------------------------------
 # Marp/Quarto renders, review screenshot sweeps, and script-built figures.
 # The .md under review/ are design specs and fix logs — those are sources.
+# Marp exports. `marp -o deck.html` lands beside the deck; the lecture is given
+# from it, but it is rebuilt by one command and must not be tracked.
+slides/**/*.html
+slides/**/*.pdf
+slides/**/*.pptx
+
 slides/**/review/*.png
 slides/**/review/*.json
 slides/**/review/small/
