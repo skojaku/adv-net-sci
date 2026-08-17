@@ -22,9 +22,9 @@ one that counts.** Online students submit through Brightspace.
 
 **Lecture.** Delivered by the instructor, starting from the worksheet.
 
-**Student Lecture.** Once in the semester you teach. Pick a topic from the list
-the instructor publishes and build a **15 to 20 minute** lecture on it. **An
-interactive part is required** — a worksheet, an exercise the room works
+**[Student Lecture](student-lecture.qmd).** Once in the semester you teach. Pick
+a topic from the published list and build a **15 to 20 minute** lecture on it.
+**An interactive part is required** — a worksheet, an exercise the room works
 through, live coding. A slide presentation on its own does not count.
 
 ## Assignments
