@@ -1,33 +1,73 @@
 # Course intro deck
 
-Marp rebuild of `slides/legacy/archive/intro/slide00.qmd`.
+The first session: the H1N1 story, three systems with one shape, and how the
+course works.
 
 ## Build
 
 ```sh
-cd slides/legacy/intro
+cd slides/intro
 python3 figures/prep_photos.py     # crop the photographs to their container's aspect
 python3 figures/make_figures.py    # TikZ figures, 4 px per bp, gates included
-marp intro.md --theme theme.css --allow-local-files --images png \
-     -o review/slide.png --no-stdin
+marp intro.md --theme theme.css --allow-local-files --html --no-stdin \
+     --images png -o review/slide.png
 python3 check_render.py            # pixel-level gate; run it bare and read its exit status
 ```
 
-Or the whole pipeline in one command:
+Or the whole pipeline in one command, from `slides/`:
 
 ```sh
-cd ~/.claude/skills/slide
-python3 -m gatelib review /path/to/slides/legacy/intro
+python3 -m gatelib review intro
 ```
 
 ## Layout
 
 - `intro.md` — the deck
-- `theme.css` — the bundled `network-science` theme
+- `theme.css` — the `network-science` theme, byte-identical to
+  `slides/m01/network-science.css`. Change one, copy to the other.
 - `figures/make_figures.py` — every generated figure, authored at 4 px per bp
 - `figures/prep_photos.py` — deterministic crops of the photographs in `figures/src/`
 - `figures/src/` — untouched originals; never referenced by the deck
 - `review/` — `DECK_SPEC.md`, rendered slides, review notes
+
+## `--html` is not optional, and it is not a front-matter directive
+
+The "Drag the ruler yourself" slide carries a live stage: `<button>`s and two
+`<script src>` tags. Without `--html`, Marp escapes them to literal text and
+prints the source on the slide, in every export, images and PDF included.
+
+`html: true` in the front matter does **not** do this — Marpit has no such
+directive, so the line is silently inert. (An earlier version of this file
+claimed otherwise; the `<div class="cols">` layout it credited to that line
+survives on its own, which is what made the claim look true.) Pass the flag to
+every invocation, including the one the gate measures.
+
+## Animation
+
+The ruler swap is a scene array in `lecture-note/assets/anim/h1n1-ruler.js`,
+mounted against the shared kit in `lecture-note/assets/anim.{css,js}`. The
+lecture note's own `intro/why-networks.qmd` mounts the same file; this deck
+carries only the markup and two `<script src>` tags pointing back at it. The
+slide-sized port of the kit's stylesheet lives in `theme.css`.
+
+The two published Brockmann and Helbing panels stay on the two slides before it.
+They are the evidence; the stage is the thing a student can put a hand on.
+
+## Design tokens
+
+    accent (purple)   #593196    structure: nodes, edges, rules, part label
+    contrast (red)    #c2410c    emphasis: key terms, the thing pointed at
+    accent, lighter   #7a51c0    where a drawing needs a third value
+    contrast, lighter #e0a184    the same, for the contrast
+    ink               #22212b
+    annotation        #76757c
+    rule              #e6e4e0
+
+    body              Iowan Old Style / Palatino / Georgia (system serif)
+    hand              Excalifont, embedded in the theme as a data: URI
+
+Nothing is fetched from a CDN. The palette is the lecture note's
+(`lecture-note/scss/minimal.scss`); change it there and here together.
 
 ## Conventions worth not relearning
 
@@ -36,12 +76,10 @@ python3 -m gatelib review /path/to/slides/legacy/intro
 - A figure taller than 0.352 × width (full) or 0.708 × width (`cols`) is scaled down
   by the 380 px height cap, which shrinks its type. `prep_photos.py` crops for that.
 - No em-dashes anywhere in the deck; the gate fails on them.
-- Fragments use `*`; `-` lists do not fragment.
+- Fragments use `*`; `-` lists do not fragment. Four items per list, no more.
 - Imported images (journal figures, comics, screenshots) live in `figures/src/` and get a
   `prep_photos.py` entry. The gate's container check runs *before* `exempt_figures`, so an
   import still has to fit: aspect ≤ 0.352 full width, ≤ 0.708 in a column, and a file under
   ~3000 px wide is read as column-authored whatever the deck does with it.
 - A portrait cannot meet either cap. Use `fit="pad"` rather than cropping through the subject.
-- `html: true` is set, so `marp --html` keeps raw HTML (including an `<iframe>`) in the HTML
-  export. The `--images png` and PDF paths escape it to visible text, so do not embed an
-  iframe in a slide that has to survive the PDF.
+- Do not embed an `<iframe>` in a slide that has to survive the PDF.

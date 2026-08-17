@@ -28,12 +28,15 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# theme palette — nothing else may appear in a figure
-ACCENT = "3959A6"
-ACCENT2 = "B14434"
-ACCENT3 = "DAB167"
-GRAY = "6b6b6b"
-INK = "000000"
+# The deck palette — nothing else may appear in a figure. It is the lecture
+# note's palette (lecture-note/scss/minimal.scss): ONE accent, ONE contrast, and
+# neutrals. ACCENT3 is a second *value* of the accent, not a third hue.
+ACCENT = "593196"   # purple: structure — nodes, edges, rules
+ACCENT2 = "c2410c"  # red: emphasis — the thing being pointed at
+ACCENT3 = "7a51c0"  # lighter purple, where a drawing needs a third value
+ACCENT2_SOFT = "e0a184"  # ...and the same for the contrast
+GRAY = "76757c"
+INK = "22212b"
 
 LABEL_PT = 36  # 36 pt => 15.5 px x-height at 1 bp = 1 px
 DISC_D = 40  # node disc diameter in bp (gate band is 26-52 px)
@@ -230,7 +233,7 @@ class Fig:
             PREAMBLE
             + "".join(
                 f"\\definecolor{{c{c}}}{{HTML}}{{{c.upper()}}}"
-                for c in (ACCENT, ACCENT2, ACCENT3, GRAY, INK, "ffffff")
+                for c in (ACCENT, ACCENT2, ACCENT3, ACCENT2_SOFT, GRAY, INK, "ffffff")
             )
             + r"\begin{document}\begin{tikzpicture}[x=1bp,y=1bp]"
             + f"\\useasboundingbox (0,0) rectangle ({self.w},{self.h});"
@@ -492,10 +495,17 @@ def fig_konigsberg():
     return f
 
 
-# The labels are the deck's own words for these items: "Lecture" is the Student Lecture
-# slide, "Assignments" the GitHub Classroom slide. Rename here and there together.
-GRADE = [("Quiz", 10), ("Lecture", 10), ("Assignments", 20), ("Exam", 30), ("Project", 30)]
-GRADE_FILL = [ACCENT, ACCENT2, ACCENT3, GRAY, INK]
+# The labels are the deck's own words for these items, and the weights are the
+# table in lecture-note/course/activities.md. The one "Assignments" block of 20
+# is split, because the deck now gives the Pair Notebook and the mini-project a
+# slide each and they are graded separately. Rename here and there together.
+#
+# Colour carries the kind of work, not the item: the two weekly obligations are
+# neutral, the two assignments take the accent, the two big pieces take the
+# contrast. Within a pair the second one is the lighter value.
+GRADE = [("Quiz", 10), ("Lecture", 10), ("Pair Notebook", 10),
+         ("Mini-Project", 10), ("Exam", 30), ("Project", 30)]
+GRADE_FILL = [INK, GRAY, ACCENT, ACCENT3, ACCENT2, ACCENT2_SOFT]
 
 
 def fig_grading():
@@ -503,15 +513,23 @@ def fig_grading():
     assert sum(n for _, n in GRADE) == 100, "the grade must add to 100"
     f = Fig("grading.png", 1080, 320, 1080)
     pitch, side, rows = 46, 40, 5
+    # Six labels over twenty columns do not fit on one line -- "Lecture" and
+    # "Pair Notebook" sit 92bp apart and are 126 and 234bp wide, which the
+    # generator's own overlap gate catches. They alternate between two lines
+    # instead, so a label's neighbours on its own line are two groups away.
+    # Shortening the type is not an option (36pt is the legibility floor) and
+    # shortening the names would stop them matching the slides that define them.
+    y_squares, y_label = 8, (248, 284)
     x = 32
-    for (name, n), fill in zip(GRADE, GRADE_FILL):
+    for i, ((name, n), fill) in enumerate(zip(GRADE, GRADE_FILL)):
         cols = n // rows
         for c in range(cols):
             for r in range(rows):
-                f.box(x + c * pitch + side / 2, 40 + r * pitch + side / 2, side, side,
+                f.box(x + c * pitch + side / 2, y_squares + r * pitch + side / 2, side, side,
                       fill=fill, draw=fill, lw=0.4)
-        f.text(x + cols * pitch / 2 - 3, 280, name, anchor="south")
+        f.text(x + cols * pitch / 2 - 3, y_label[i % 2], name, anchor="south")
         x += cols * pitch + 24
+    assert x - 24 <= 1080, f"grading: the waffle runs to {x - 24}bp, wider than the canvas"
     return f
 
 

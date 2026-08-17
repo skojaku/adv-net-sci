@@ -3,7 +3,6 @@ marp: true
 theme: network-science
 paginate: true
 math: katex
-html: true
 ---
 
 <!-- _class: mid -->
@@ -130,6 +129,31 @@ The same arrival times, with distance now counted along air routes.
 <figcaption>Same three panels, one axis changed, and every country falls on a line.</figcaption>
 
 </div>
+
+---
+
+## Drag the ruler yourself
+
+<hr>
+
+<figure class="anim-stage" id="h1n1-ruler">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="h1-col" data-anim-canvas>
+    <div data-anim-clear data-h1-plot></div>
+    <div class="h1-side" data-anim-clear data-h1-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/h1n1-ruler.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
 ---
 
@@ -656,22 +680,70 @@ How the course is built, and why it is built that way.
 
 <hr>
 
-* Every class opens with a short written quiz on last week.
-* A few questions, graded and reviewed during class.
-* One resubmission allowed.
-* Online students submit through Brightspace.
+* Every class opens with a short written quiz on last week. Online students submit through Brightspace.
+* You work it out on paper, then submit through the course quiz form: the answers go in directly, and you photograph your working into the same form.
+* Sign in with your Binghamton account. That is how the answer reaches your name.
+* You may retake it, and your best attempt is the one that counts.
 
 ---
 
 <!-- _class: mid -->
 
-## Assignments
+## Everything is handed in through GitHub
 
 <hr>
 
-* Most modules have an assignment. Some are code; some are not.
-* Handed out through GitHub Classroom.
-* Autograded, unlimited attempts until the deadline.
+* You need a **GitHub account**, and you need to accept the invitation to the course organization. Until you do, no grade can reach you.
+* Each assignment hands you a **private repository** of your own, through **Classroom 50**.
+* You clone it, work in it, and **push** it back. Nothing is emailed and nothing is uploaded by hand.
+* Two of them, every module: one you do alone, one you do in a team.
+
+---
+
+<!-- _class: mid -->
+
+## Pair Notebook: hand in the conversation
+
+<hr>
+
+* One per module for modules 1 to 6, on your own.
+* A module taught as a tutoring session: an **AI tutor** in your terminal, and a **marimo** notebook filling up beside it in your browser.
+* Sixty to ninety minutes. Stop anywhere and pick it up later.
+* What is read is how you reasoned, not whether your code ran. Needing hints is not penalized.
+
+---
+
+<!-- _class: mid -->
+
+## Group Mini-Project: the same ideas, on real data
+
+<hr>
+
+<div class="note">
+
+Exactly one person accepts the assignment. Everybody else waits to be invited.
+
+</div>
+
+* Teams of up to three, in class, for modules 2 to 6.
+* One shared repository, **autograded** on every push, and one score for the whole team.
+* Three teammates each clicking accept makes three one-person repositories that cannot be merged afterwards.
+* Sort out who accepts before anyone clicks.
+
+---
+
+<!-- _class: mid -->
+
+## Set up your machine, once
+
+<hr>
+
+Twenty minutes, before the second week: <a href="https://skojaku.github.io/adv-net-sci/course/setup.html">skojaku.github.io/adv-net-sci/course/setup.html</a>
+
+* **git** keeps the history of your work, and is what hands it in. On Windows, install **Git for Windows**: it brings Git Bash, a terminal that understands the same commands as a Mac.
+* **uv** fetches Python and runs the notebooks, so you never install Python yourself.
+* **Node.js** is what your AI tutor runs on.
+* Your **course API key** arrives by email in the first week and goes in your shell profile.
 
 ---
 
@@ -802,6 +874,19 @@ The question was which single new charger shortens the most journeys.
 
 - Lecture notes: <a href="https://skojaku.github.io/adv-net-sci">skojaku.github.io/adv-net-sci</a>
 - Everything else: <a href="https://github.com/skojaku/adv-net-sci/">github.com/skojaku/adv-net-sci</a>
+
+---
+
+<!-- _class: mid -->
+
+## Discord
+
+<hr>
+
+* Questions about lectures, assignments and setup; announcements; finding teammates.
+* Four channels: welcome, network-science, artifacts, random.
+* Nothing on Discord is graded. Ask half-formed questions there; that is what it is for.
+* The invitation link comes through Brightspace.
 
 ---
 

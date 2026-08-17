@@ -88,10 +88,22 @@ annotated number. Bars encode one number as a length and then need a scale to de
 which is where Module 01's memory-comparison figure went wrong: it drew a 7:1 ratio under a
 label reading 7,700:1.
 
-### No green
+### No green, and only two hues
 
-The palette is `#3959A6` (accent), `#B14434` (accent-2), `#DAB167` (accent-3), `#6b6b6b`
-(annotation gray), `#000000` (ink). Nothing else.
+The palette is the lecture note's, so that a figure and the page or slide around it are
+made of the same colours: `#593196` (accent, purple), `#c2410c` (contrast, red), `#76757c`
+(annotation grey), `#22212b` (ink). Nothing else.
+
+Where a drawing genuinely needs a third value — two routes over one graph, a highlighted
+slice beside a highlighted row — take another **value of one of those two hues**, not a
+third hue: `#7a51c0` is the lighter purple, `#e0a184` the lighter red. A fill that sits
+under ink needs a wash rather than a mid tone (`#e4d8f6`): ink on `#7a51c0` measures 2.9:1,
+under every legibility floor this repo holds elsewhere.
+
+Modules 02 to 06 still draw with the old `#3959A6` / `#B14434` / `#DAB167` set. Restyle a
+module's generator and its deck theme in one commit, or its figures and its slide chrome
+will disagree; `check_render.py` takes the deck's own palette through `colour_words`, so a
+figcaption that names a colour is checked against what the figure actually contains.
 
 ### One colour, one meaning, per figure — and say what it means
 

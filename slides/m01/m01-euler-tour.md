@@ -5,6 +5,7 @@ paginate: true
 math: katex
 ---
 
+
 <!-- _class: lead -->
 
 <div class="eyebrow">Advanced Topics in Network Science · Module 01</div>
@@ -82,21 +83,26 @@ Cross each bridge exactly once and return to the start?
 
 <hr>
 
-<div class="cols">
-<div>
+Click a bridge to cross it. [Worksheet (Esteban Moro)](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)
 
-Take ten minutes. Trace a route — or work the pen-and-paper worksheet.
+<figure class="anim-stage" id="kb-tracer">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-kb-map></div>
+    <div data-anim-clear data-kb-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
 
-[Worksheet (Esteban Moro)](http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf)
-
-</div>
-<div class="fig">
-
-![w:520](figures/konigsberg-sketch.png)
-<figcaption>four landmasses, same layout as the engraving</figcaption>
-
-</div>
-</div>
+<script src="../../lecture-note/assets/anim/kb-tracer.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
 ---
 
@@ -1299,7 +1305,7 @@ Walks, not paths — repetition is allowed. Later modules reuse this for cluster
 <div class="fig">
 
 ![w:520](figures/adjacency-squared.png)
-<figcaption>red route 1–2–4, gold route 1–3–4 — both land in cell (1,4)</figcaption>
+<figcaption>red route 1–2–4, purple route 1–3–4 — both land in cell (1,4)</figcaption>
 
 </div>
 </div>

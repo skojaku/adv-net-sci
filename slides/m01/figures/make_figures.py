@@ -35,13 +35,19 @@ from PIL import Image
 
 OUT = Path(__file__).resolve().parent
 
-ACCENT = "#3959A6"
-ACCENT2 = "#B14434"
-ACCENT3 = "#DAB167"
-INK = "#000000"
-MUTED = "#6b6b6b"
-PANEL = "#f7f4f1"
-RULE = "#dddddd"
+# The deck palette, and nothing else may appear in a figure. It is the lecture
+# note's palette (lecture-note/scss/minimal.scss): ONE accent, ONE contrast, and
+# neutrals. ACCENT3 is a second *value* of the accent, not a third hue — where
+# the drawing used to reach for gold it now reaches for a lighter purple, so a
+# figure and the page around it are made of the same two colours.
+ACCENT = "#593196"       # purple: structure — nodes, edges, rules
+ACCENT2 = "#c2410c"      # red: emphasis — the thing being pointed at
+ACCENT3 = "#7a51c0"      # lighter purple: a second route, a second highlight
+ACCENT3_SOFT = "#e4d8f6"  # ...and its wash, for a fill that sits under ink
+INK = "#22212b"
+MUTED = "#76757c"
+PANEL = "#f6f4f9"
+RULE = "#e6e4e0"
 
 plt.rcParams.update(
     {
@@ -2847,7 +2853,8 @@ def fig_adjacency_squared():
     # R7 fix (Major 17): the route-name captions this used to print here ("1->2->4" /
     # "1->3->4") rendered at 9-10px once the deck downscaled this figure to its usual
     # display width -- under the 20px matrix digits and 23px body text beside them, and the
-    # gold one (ACCENT3, #DAB167) sat directly on white at that size, close to unreadable.
+    # ACCENT3 one (gold, #DAB167, at the time) sat directly on white at that size,
+    # close to unreadable.
     # The figcaption already states both routes; the two colours (also tied to their own
     # matrix-adjacent labels below) already distinguish which edge belongs to which route.
     # Deleted rather than resized -- this file's own documented fallback -- instead of
@@ -3718,7 +3725,10 @@ def _fig_csr(name, payoff=False):
 
     def row(y, values, label, highlight_range=None):
         for i, v in enumerate(values):
-            fc = ACCENT3 if highlight_range and highlight_range[0] <= i < highlight_range[1] else PANEL
+            # The slice is a fill with a digit sitting on it, so it takes the
+            # accent's wash, not the accent itself: ink on #7a51c0 measures
+            # 2.9:1, under any legibility floor this deck holds elsewhere.
+            fc = ACCENT3_SOFT if highlight_range and highlight_range[0] <= i < highlight_range[1] else PANEL
             # Minor fix (slide 053): 0.88-wide boxes let two-digit values (10, 12) touch
             # their own box edge and abut the next cell, reading as "8 1012"; a touch wider.
             box = FancyBboxPatch((i - 0.5, y - 0.34), 1.0, 0.68,
