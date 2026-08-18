@@ -1066,7 +1066,7 @@ One-way streets get you out, not necessarily back.
 
 <hr>
 
-Click any arrow to flip it. Two of the eight orientations survive.
+Click a street to turn it round. Six of the 64 orientations survive.
 
 <figure class="anim-stage" id="dir-reach">
   <div class="anim-bar">
@@ -1088,7 +1088,7 @@ Click any arrow to flip it. Two of the eight orientations survive.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. Beats: 1 one question becomes two. 2 flood from each of the three in turn; every one reaches both others. 3 turn C→A round and C reaches nobody — every arrow at C points inward. 4 arrowheads off, still one piece: strong implies weak, weak does not imply strong, and this is the counterexample. 5 ask the room to guess how many of the eight orientations are strongly connected before you hand it over.
+Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. The number beside a corner is how many of the other four it reaches, so five fours is the verdict and the drawing carries it. Beats: 1 the counts appear, all four. 2 flood from A and from C so the number means something. 3 turn the chord round and nothing moves — that street's direction is free, because it is not on the only cycle through all five corners. 4 turn A–B round as well: both of A's streets now point in, A drops to zero, and one beat with the arrowheads rubbed out shows weak surviving what strong did not. 5 hand it over. Ask for a guess first: six of the 64 work, and in every one of the six each corner sits on a directed cycle. Flipping the chord turns any of them into another, so the room finds them in pairs.
 -->
 
 ---

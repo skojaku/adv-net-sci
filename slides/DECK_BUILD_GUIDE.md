@@ -259,6 +259,21 @@ reachability, naming your own route walk/trail/path, and building an Eulerian tr
 stranding it. What they replaced was nothing — the static slides stayed, because the lecturer
 wanted the deck long and only wanted it to stop being monotonous.
 
+**Give the room something to discover, which means the state space has to be big enough that
+not every move matters.** m01's directed-reachability stage first shipped on the deck's own
+three-node triangle: eight orientations, two of them strongly connected, and every single
+flip kills the verdict. Tidy, faithful to the neighbouring figure — and boring, because the
+first click teaches you everything the widget knows. Five corners and six streets give 64
+orientations, six of them strongly connected, and one street whose direction does not matter
+at all while the other five each break it alone. That last fact is the lesson (the chord is
+not on the only cycle through all five corners), and it does not exist on a triangle. Growing
+the graph costs a precomputed table of 64 rows and buys a stage worth handing over.
+
+The corollary is that the payoff has to be **readable off the drawing, not off the card**: put
+the per-node answer next to the node — that stage prints how many of the other four each
+corner can reach, so five fours *is* the verdict — and the card shrinks to a flag and a
+score. Bigger drawing, less text, in the same frame.
+
 What a stage costs: `--html` on every render (above), and a browser to verify it. A render
 proves the markup survived, not that the thing works. Serve the repo, point headless Chrome
 at the stage with `--virtual-time-budget`, and dispatch the clicks from a small script in

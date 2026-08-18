@@ -59,7 +59,7 @@ No stage is written here. Each is a scene array under
     euler-builder   25  two odd corners: the trail built, and the same graph strand
     route-namer     35  click a route, get it named walk / trail / path / cycle
     comp-sweep      41  breadth-first sweeps finding the three components
-    dir-reach       50  flip an arrow; watch strong die and weak survive
+    dir-reach       50  point a five-corner town 64 ways; six of them work
     walk-power      67  the two routes behind (A^2) at (1,4), then k on a knob
 
 `kb-tracer` is also mounted by the lecture note
