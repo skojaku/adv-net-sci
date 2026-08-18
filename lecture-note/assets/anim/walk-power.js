@@ -232,21 +232,27 @@
 
       /* ---------------------------------------------------------- the matrix */
       /* Five by five plus a header row and column, built as cells rather than
-         drawn, so the highlighted row, column and cell are one class each. */
+         drawn, so the highlighted row, column and cell are one class each.
+
+         Which power this is gets its own headline above the grid. It used to
+         be the grid's own corner cell at header size, which is how a slide
+         ends up showing a wall of numbers nobody can name. */
       function matrix(k, opts) {
         const o = opts || {};
         S.k = k;
         if (!S.mBox) return;
         const M = POW[k - 1];
+        S.mTitle.innerHTML = "A" + (k > 1 ? "<sup>" + k + "</sup>" : "");
+        S.mSub.textContent = k === 1
+          ? "the adjacency matrix"
+          : "walks of length " + k;
         S.mBox.innerHTML = "";
         const head = (txt, cls) => {
           const c = ctx.el("i", "wp-h " + (cls || ""));
           c.textContent = txt;
           return c;
         };
-        /* Superscript digits are not contiguous in Unicode, so they are a
-           lookup and not arithmetic. */
-        S.mBox.appendChild(head("A" + ["", "²", "³", "⁴", "⁵"][k - 1]));
+        S.mBox.appendChild(head(""));
         for (let j = 0; j < 5; j++) {
           S.mBox.appendChild(head(String(j), o.col === j ? "wp-h-on" : ""));
         }
@@ -265,8 +271,16 @@
       /* ------------------------------------------------------------ the card */
       function card(title) {
         side.textContent = "";
+        /* The power, the grid, and what the grid counts — one stack, so the
+           headline belongs to the numbers under it and not to the card. */
+        const wrap = ctx.el("div", "wp-mwrap");
+        S.mTitle = ctx.el("div", "wp-title", "A");
         S.mBox = ctx.el("div", "wp-m");
-        side.appendChild(S.mBox);
+        S.mSub = ctx.el("div", "wp-sub", "");
+        wrap.appendChild(S.mTitle);
+        wrap.appendChild(S.mBox);
+        wrap.appendChild(S.mSub);
+        side.appendChild(wrap);
         S.panel = ctx.el("div", "anim-panel anim-pop wp-card");
         if (title) S.panel.appendChild(ctx.el("div", "anim-caption", title));
         side.appendChild(S.panel);
@@ -322,8 +336,9 @@
         const show = (k) => {
           matrix(k, { hi: CELL });
           const v = POW[k - 1][CELL[0]][CELL[1]];
-          read.innerHTML = "<b>k = " + k + "</b> &nbsp; walks of length " + k +
-            " from 1 to 4: <b>" + v + "</b>";
+          /* The headline over the grid already says which power this is and
+             what it counts; all this line owes is the one entry. */
+          read.innerHTML = "entry (1, 4) &nbsp;=&nbsp; <b>" + v + "</b>";
           S.gLeg.textContent = "";
           if (k === 2) TWO.forEach(function (r) { drawNow(r); });
           if (k === 3) THREE.forEach(function (r) { drawNow(r); });

@@ -1045,19 +1045,45 @@ section #walk-power .wp-leg { stroke-width: 5; fill: none; stroke-linecap: round
 /* The two route colours the deck's own adjacency-squared.png already uses. */
 section #walk-power .wp-red { stroke: var(--_amber); }
 section #walk-power .wp-purple { stroke: var(--_accent); }
+/* The power, the grid, and what the grid counts, as one stack. The power used
+   to be the grid's own corner cell at header size, which is how a slide ends
+   up showing a wall of numbers nobody can name. */
+section #walk-power .wp-mwrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+}
+section #walk-power .wp-title {
+  font-family: var(--_hand);
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.02;
+  color: var(--_accent);
+}
+section #walk-power .wp-title sup { font-size: 0.62em; }
+section #walk-power .wp-sub {
+  font-family: var(--_hand);
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--_ink-soft);
+}
 section #walk-power .wp-m {
   display: grid;
-  grid-template-columns: repeat(6, 28px);
+  grid-template-columns: repeat(6, 30px);
   gap: 2px;
   flex: none;
 }
 section #walk-power .wp-m > i {
   display: inline-grid;
   place-items: center;
-  height: 28px;
+  height: 30px;
   font-family: var(--_mono);
-  font-size: 16px;
+  font-size: 18px;
   font-style: normal;
+  /* Zeros recede so the sparsity pattern is the first thing the eye gets. */
+  color: var(--_ink-faint);
   background: var(--_white);
   border: 1px solid var(--_rule);
 }
@@ -1066,6 +1092,8 @@ section #walk-power .wp-m > i {
    is exactly how the highlighted cell first shipped as white on white. */
 section #walk-power .wp-m > i.wp-h { border: 0; background: none; color: var(--_ink-soft); font-weight: 700; }
 section #walk-power .wp-m > i.wp-h-on { color: var(--_amber); }
+/* Every nonzero in the accent, so the shape of the matrix reads at a glance
+   and the one amber cell is unmistakably the one being talked about. */
 section #walk-power .wp-m > i.wp-on { background: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
 section #walk-power .wp-m > i.wp-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
 section #walk-power .wp-m > i.wp-hi {
@@ -1085,7 +1113,7 @@ section #walk-power .wp-card .anim-range {
   margin-left: 0;
   margin-right: 0;
 }
-section #walk-power .wp-formula { font-family: var(--_mono); font-size: 18px; color: var(--_accent); }
+section #walk-power .wp-formula { font-family: var(--_mono); font-size: 21px; color: var(--_accent); }
 section #walk-power .wp-terms { display: flex; gap: 7px; flex-wrap: wrap; }
 section #walk-power .wp-term {
   padding: 1px 8px;
