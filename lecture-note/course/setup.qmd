@@ -10,7 +10,8 @@ This page is for the work you **hand in**. The
 [Pair Notebook](pair-notebook.qmd) and the
 [group mini-project](mini-project.qmd) both live in a GitHub repository on your
 own computer, and both need the same things: a terminal, git, a GitHub login,
-two small runtimes, and one environment variable.
+two small runtimes, one environment variable, and `pi` — the AI agent your
+tutor runs on.
 
 About twenty minutes, once per machine. Do it before the second week. Getting
 stuck here is not part of any assignment — ask in `#network-science` on
@@ -243,11 +244,147 @@ Three things worth knowing:
 
 <!-- TODO(anim): commit vs push — a file changes on the laptop, a commit stacks one snapshot on a local pile, a push copies the pile to GitHub; nothing leaves the laptop until the third step. -->
 
+## 6. Install `pi`, your AI agent
+
+`pi` is an AI agent that runs **in your terminal**. You type what you want in
+plain words; it reads the files in the folder you started it in, edits them,
+runs commands, and tells you what it did. There is no web page and no chat
+window, and nothing is copied back and forth: it is already inside the folder
+your work is in.
+
+Your Pair Notebook tutor *is* `pi`, with the course's teaching toolkit loaded.
+The same `pi`, started in any other folder, is an ordinary coding assistant —
+use it on the mini-project, the final project, or anything else you write.
+
+Install it once, from any folder:
+
+```{.bash .no-fold}
+npm install -g @earendil-works/pi-coding-agent
+```
+
+Same command on Windows and macOS — this is what the Node.js in step 2 was for.
+Then **open a new terminal** and check:
+
+```{.bash .no-fold}
+pi --version
+```
+
+### Point it at the course models
+
+A fresh `pi` knows how to talk to language models but has an account with none
+of them. One script hands it the course's. It ships inside every Pair Notebook
+repository, so clone your first one (step 5) and run this **inside that
+folder**:
+
+```{.bash .no-fold}
+node setup-pi.mjs
+```
+
+It is the same command on Windows and macOS. It registers the course models in
+`~/.pi/agent/models.json` — a file in your **home** folder, so this is once per
+machine and not once per assignment — tells `pi` that this folder is yours,
+downloads the notebook's Python packages so your first session starts fast, and
+makes **one real request** so you find out here, not mid-lesson, whether your
+key works. It is safe to re-run, it backs up any `models.json` you already had,
+and it leaves your other providers alone.
+
+::: {.callout-important title="It will look like it has hung. It has not."}
+The package download is **a few hundred megabytes** and takes a couple of
+minutes on a slow connection. That is the slowest part of the whole setup, and
+it happens exactly once. Leave it alone until it finishes.
+:::
+
+::: {.callout-note title="If `pi` ever asks \"Trust project folder?\""}
+Answer **Trust**, the first option. It is asking whether this folder may set up
+your tutor, and this folder is your own assignment. The setup script normally
+answers it for you, so you will only see the question if you skipped the script
+or moved the folder. If you answered "Do not trust" by mistake, your tutor will
+start but have no notebook and no tools; run `pi --approve` once to undo it.
+:::
+
+When it prints `You are set`, you are done. From then on, in any folder, the
+whole command is:
+
+```{.bash .no-fold}
+pi
+```
+
+### Packages worth having
+
+On its own `pi` can read, write and run things, and little else. **Packages**
+add to it, one command each:
+
+```{.bash .no-fold}
+pi install npm:pi-web-access
+```
+
+Five that earn their keep. None of them is required for any assignment in this
+course:
+
+| Package | What it adds |
+|---|---|
+| `pi-web-access` | web search, fetching a page, reading a PDF or a YouTube video — no key of its own needed |
+| `context-mode` | keeps long sessions coherent: what it reads is filed away and searched back, instead of being carried around |
+| `@ayulab/pi-rewind` | `/rewind` — jump back to an earlier point in the session, your files with it |
+| `@juicesharp/rpiv-ask-user-question` | lets the agent put a multiple-choice question to you instead of guessing |
+| `@juicesharp/rpiv-btw` | `/btw` — a one-off side question that leaves the main conversation untouched |
+
+All five in one command:
+
+::: {.panel-tabset}
+
+#### macOS / Git Bash
+
+```{.bash .no-fold}
+for p in pi-web-access context-mode @ayulab/pi-rewind @juicesharp/rpiv-ask-user-question @juicesharp/rpiv-btw; do pi install "npm:$p"; done
+```
+
+#### PowerShell
+
+```{.powershell .no-fold}
+foreach ($p in "pi-web-access","context-mode","@ayulab/pi-rewind","@juicesharp/rpiv-ask-user-question","@juicesharp/rpiv-btw") { pi install "npm:$p" }
+```
+
+:::
+
+`pi list` prints what you have, `pi update` brings them all up to date, and
+`pi remove npm:<name>` takes one back out. They live in your home folder, so
+they follow you into every project — if one ever makes a session behave oddly,
+`pi config` turns packages on and off.
+
+### The tutor's toolkit installs itself
+
+The Pair Notebook's own two packages are not on that list, and you never
+install them by hand. The assignment folder's `.pi/settings.json` pins them, and
+`pi` fetches them the first time you run it there:
+
+```{.json .no-fold}
+"packages": [
+  "git:github.com/sk-classroom/pi-pair-notebook@v0.3.0",
+  "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
+]
+```
+
+That first start therefore takes a few seconds longer than every one after it.
+
+<details>
+<summary>If the fetch fails and you want to install them by hand</summary>
+
+```{.bash .no-fold}
+pi install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0
+pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0
+pi list     # both should be listed
+```
+
+Use the **same version tags** as the folder — a module and its toolkit are
+tested together.
+
+</details>
+
 ## You are set. What now?
 
-- **[Pair Notebook](pair-notebook.qmd)** — your first assignment. One more
-  command (`node setup-pi.mjs`) inside the folder you clone, and then a single
-  word starts every session.
+- **[Pair Notebook](pair-notebook.qmd)** — your first assignment. Once step 6 is
+  done, a single word starts every session.
 - **[Group Mini-Project](mini-project.qmd)** — the in-class team assignment, and
   the one rule about accepting it that decides whether your team is a team.
 
@@ -285,6 +422,7 @@ which no autocomplete can supply.
 | What you see | What it means | What to do |
 |---|---|---|
 | `command not found` right after installing something | this terminal was open while the install ran | close it, open a new one |
+| `pi: command not found`, in a new terminal too | the global npm install did not finish | run it again and read what it prints: `npm install -g @earendil-works/pi-coding-agent` |
 | `brew: command not found` (macOS) | Homebrew is not installed | the box in step 2 |
 | git asks for a username and password when you push | git is not signed in to GitHub | `gh auth login` |
 | `repository not found` when cloning | you are signed in as the wrong account, or you never accepted the assignment | `gh auth status`, then accept the assignment again |

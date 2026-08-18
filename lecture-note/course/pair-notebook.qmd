@@ -30,7 +30,7 @@ The plain facts, before anything else:
 | How many | **One per module, for modules 2 through 6.** Each is handed out on Classroom 50 — the site this course uses to distribute and collect work — when its module starts. |
 | What it is worth | **10 points of your final grade**, the five together. See [how this course works](activities.md). |
 | How long | **About 60 to 90 minutes.** You can stop anywhere and pick it up later, as many times as you like. |
-| What you need | A terminal, git, Node.js, uv, and your course API key — see [Set up your machine](setup.qmd). |
+| What you need | A terminal, git, Node.js, uv, `pi`, and your course API key — see [Set up your machine](setup.qmd). |
 
 ## A session, start to finish
 
@@ -42,8 +42,9 @@ Here is what the two windows do. Use ◀ ▶ to step through it yourself.
 
 Everything on this page assumes you have already done the one-time
 **[machine setup](setup.qmd)**: a terminal, git, GitHub CLI, Node.js 24+, uv,
-and `NETSCI_API_KEY` in your shell profile. That page also says where the key
-comes from and what to do if yours has not arrived.
+[`pi`](setup.qmd#install-pi-your-ai-agent), and `NETSCI_API_KEY` in your shell
+profile. That page also says where the key comes from and what to do if yours
+has not arrived.
 
 Ten seconds to check you are ready. In a terminal:
 
@@ -51,6 +52,7 @@ Ten seconds to check you are ready. In a terminal:
 node --version          # v24 or newer
 uv --version
 git --version
+pi --version
 echo $NETSCI_API_KEY    # your key, starting sk-nsci-
 ```
 
@@ -60,7 +62,7 @@ this page are written for Git Bash; in PowerShell the last check above is
 `echo $env:NETSCI_API_KEY`. If you have no preference, use Git Bash.
 :::
 
-Four of those five printed something, but not the key? Go back to
+Everything printed but the key? Go back to
 [step 4 of the setup page](setup.qmd#set-your-course-api-key) — a missing key is
 the one thing that stops a session dead in the middle.
 
@@ -86,62 +88,21 @@ cd <the folder it made>
 
 ### 2. Run the setup script
 
-Inside that folder:
+Inside that folder, once per machine:
 
 ```{.bash .no-fold}
 node setup-pi.mjs
 ```
 
-It is the same command on Windows and macOS. It installs `pi` (the agent your
-tutor runs on), registers the course models in `~/.pi/agent/models.json`, tells
-`pi` that this folder is yours, downloads the notebook's Python packages so your
-first session starts fast, and makes **one real request** so you find out here —
-not mid-lesson — whether your key works. It is safe to re-run, it backs up any
-`models.json` you already had, and it leaves your other providers alone.
+It hands `pi` the course models and gets the notebook's Python packages down
+before you need them, and it prints `You are set` when it is done. What it does
+line by line, why it looks like it has hung, and what to answer if you are asked
+to trust the folder: [Point it at the course
+models](setup.qmd#point-it-at-the-course-models) on the setup page.
 
-::: {.callout-important title="It will look like it has hung. It has not."}
-The package download is **a few hundred megabytes** and takes a couple of
-minutes on a slow connection. That is the slowest part of the whole setup, and
-it happens exactly once. Leave it alone until it finishes.
-:::
-
-::: {.callout-note title="If `pi` ever asks \"Trust project folder?\""}
-Answer **Trust**, the first option. It is asking whether this folder may set up
-your tutor, and this folder is your own assignment. The setup script normally
-answers it for you, so you will only see the question if you skipped the script
-or moved the folder. If you answered "Do not trust" by mistake, your tutor will
-start but have no notebook and no tools; run `pi --approve` once to undo it.
-:::
-
-When it prints `You are set`, you are done.
-
-### 3. The tutor's toolkit installs itself
-
-You do not install it by hand. The folder's `.pi/settings.json` pins the two
-packages your tutor needs, and `pi` fetches them the first time you run:
-
-```{.json .no-fold}
-"packages": [
-  "git:github.com/sk-classroom/pi-pair-notebook@v0.3.0",
-  "npm:@juicesharp/rpiv-ask-user-question@2.4.0"
-]
-```
-
-That first start therefore takes a few seconds longer than every one after it.
-
-<details>
-<summary>If the fetch fails and you want to install them by hand</summary>
-
-```{.bash .no-fold}
-pi install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0
-pi install npm:@juicesharp/rpiv-ask-user-question@2.4.0
-pi list     # both should be listed
-```
-
-Use the **same version tags** as the folder — a module and its toolkit are
-tested together.
-
-</details>
+Your tutor's own toolkit is not something you install — see [The tutor's toolkit
+installs itself](setup.qmd#the-tutors-toolkit-installs-itself) for what it
+fetches and what to do if the fetch fails.
 
 ## Starting a session
 
@@ -239,7 +200,7 @@ Find the line you actually saw on screen:
 
 | What you see | What it means | What to do |
 |---|---|---|
-| `pi: command not found` | the install put `pi` on your `PATH`, and this terminal started before that | open a new terminal; if it persists, re-run `node setup-pi.mjs` |
+| `pi: command not found` | the install put `pi` on your `PATH`, and this terminal started before that | open a new terminal; if it persists, [install `pi` again](setup.qmd#install-pi-your-ai-agent) |
 | `⚠ Your tutor cannot reach the course server` | your key or the address is wrong — the message says which | do what it says; it usually means re-running `node setup-pi.mjs` |
 | `invalid_api_key` | the key is wrong, or was never set in *this* terminal window | check it, open a new terminal, run `node setup-pi.mjs` again |
 | `Connection error.`, repeated | your computer cannot reach the internet, or the course server is down | check your connection, wait a few minutes, run `pi` again |
