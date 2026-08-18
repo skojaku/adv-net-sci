@@ -159,7 +159,14 @@ Now average over every pair. Four nodes give $\binom{4}{2} = 6$ pairs:
 | C - D   | C $\rightarrow$ D                        | 1      |
 
 The **average path length** $\overline{L}$ is the mean of these distances:
-$(1+1+2+1+1+1)/6 = 7/6 \simeq 1.17$.
+
+$$
+\overline{L} = \frac{1}{\binom{n}{2}} \sum_{i < j} d(i,j)
+             = \frac{1+1+2+1+1+1}{6} = \frac{7}{6} \simeq 1.17
+$$
+
+where $n$ is the number of nodes, so $\binom{n}{2}$ is how many pairs there are
+to average over.
 
 The **diameter** is a different summary of the same table: the *largest* entry
 rather than the average. Here it is 2. Average path length is the typical case;
