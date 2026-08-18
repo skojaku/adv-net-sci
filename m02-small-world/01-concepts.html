@@ -942,7 +942,12 @@ Figure&nbsp;2: A four-node network. Node A is the one we measure from.
 </tr>
 </tbody>
 </table>
-<p>The <strong>average path length</strong> <span class="math inline">\overline{L}</span> is the mean of these distances: <span class="math inline">(1+1+2+1+1+1)/6 = 7/6 \simeq 1.17</span>.</p>
+<p>The <strong>average path length</strong> <span class="math inline">\overline{L}</span> is the mean of these distances:</p>
+<p><span class="math display">
+\overline{L} = \frac{1}{\binom{n}{2}} \sum_{i &lt; j} d(i,j)
+             = \frac{1+1+2+1+1+1}{6} = \frac{7}{6} \simeq 1.17
+</span></p>
+<p>where <span class="math inline">n</span> is the number of nodes, so <span class="math inline">\binom{n}{2}</span> is how many pairs there are to average over.</p>
 <p>The <strong>diameter</strong> is a different summary of the same table: the <em>largest</em> entry rather than the average. Here it is 2. Average path length is the typical case; diameter is the worst case. The rest of this module works with the average, so whenever you read “the world is six steps wide”, it is an average, not a guarantee.</p>
 </section>
 </section>
