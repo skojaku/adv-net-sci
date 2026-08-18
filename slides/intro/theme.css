@@ -1041,6 +1041,10 @@ section #walk-power .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(
 section #walk-power [data-wp-side] { display: flex; gap: 16px; align-items: flex-start; }
 section #walk-power .wp-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
 section #walk-power .wp-name { font-family: var(--_hand); font-size: 19px; font-weight: 700; fill: var(--_white); }
+/* The two corners the watched entry is about, ringed in the same amber as the
+   watched cell — so at k = 4, where eleven walks are too many to draw, the
+   graph still says which pair the number belongs to. */
+section #walk-power .wp-end { fill: none; stroke: var(--_amber); stroke-width: 3; }
 section #walk-power .wp-leg { stroke-width: 5; fill: none; stroke-linecap: round; stroke-opacity: 0.85; }
 /* The two route colours the deck's own adjacency-squared.png already uses. */
 section #walk-power .wp-red { stroke: var(--_amber); }
