@@ -288,6 +288,30 @@ Three traps that cost a round each while adding those five, all of them silent:
   margins beat `stretch`, the track resolves to its content width — zero — and all that
   renders is a knob floating in the middle of the card. Zero out the side margins.
 
+### A stage's own text budget
+
+The lecturer's verdict on m01's first cut: *"animation is text heavy… too much text
+is distracting."* He was right, and the fix is a rule, not a trim.
+
+**The scene note is a caption, not narration.** The kit reserves three lines because in
+the lecture note the note *is* the account of a drawing the reader cannot see. On a slide
+the lecturer is that account, and a paragraph under the picture competes with them for the
+room. One line, ≤ 80 characters, naming what just changed — enough for a glance and for a
+screen reader — and `min-height: 1.3em` per stage so it does not reserve the other two.
+The prose that used to sit there belongs in the slide's `<!-- speaker notes -->`, per step.
+
+**Then delete whatever the drawing already says.** Three separate offenders in m01's five,
+all of them written without noticing:
+
+- a "degrees 2 · 2 · 3 · 3 · 2" row beside a drawing that had just written all five numbers
+  inside their own discs
+- "still untaken: TL–BL" beside the one edge the drawing had just dashed
+- an `.anim-quote` at the end of nearly every scene, editorialising a conclusion the note
+  already carried in its one line
+
+What is left on the card is the running count, the verdict, and the reply to the last
+click. That is the bookkeeping a drawing genuinely cannot hold.
+
 Two things that make an animation teach rather than decorate:
 
 - **Loop back to what the deck shows next.** The CSR animation settles on the exact frame

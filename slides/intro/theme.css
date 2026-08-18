@@ -745,6 +745,19 @@ section .anim-knob-live { transition: none; cursor: grabbing; }
    lecture-note/assets/anim/, which both mount.
    Colours are the kit's resolved tokens, never literals. */
 
+/* One line of note, not the kit's three. The kit reserves three because the
+   note is a reader's whole account of a drawing they cannot see; on a slide
+   the lecturer is the account, and a paragraph under the picture competes with
+   them for the room. These five keep a one-line caption that names what just
+   changed — enough for a glance and for a screen reader — and the prose that
+   used to sit here is in the slide's speaker notes. kb-tracer is left alone:
+   the lecture note mounts the same file and reads it on its own. */
+section #comp-sweep .anim-note,
+section #route-namer .anim-note,
+section #euler-builder .anim-note,
+section #dir-reach .anim-note,
+section #walk-power .anim-note { min-height: 1.3em; }
+
 /* Konigsberg tracer (m01). The map is the argument, so it takes the wider half.
    Keyframe names cannot be scoped, hence the kb- prefix. */
 /* 430px, not the note's 470: a 320x200 map at 470 stands 294px tall, and the
@@ -951,7 +964,7 @@ section #euler-builder .eb-msg {
   font-family: var(--_hand);
   font-size: 21px;
   line-height: 1.32;
-  min-height: calc(3 * 1.32em);
+  min-height: calc(2 * 1.32em);
   margin-top: 2px;
 }
 section #euler-builder .eb-msg-no { color: var(--_amber); }

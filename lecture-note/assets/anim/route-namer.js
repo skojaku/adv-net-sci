@@ -57,22 +57,20 @@
   const scenes = [
     {
       label: "One route, five names",
-      note: "Four places, five paths between them. Any route through this graph gets a name, and the name is decided by two questions and nothing else: does an edge come round twice, and does a node? Everything else — length, direction, where you start — is free.",
+      note: "Two questions settle the name: does an edge come round twice, and does a node?",
       async run(ctx) {
         ctx.idle();
         ctx.drawGraph();
+        /* The ladder's right-hand column already asks both questions, one word
+           per name. Narrating them underneath was the same thing twice. */
         ctx.card("the two questions");
         ctx.ladder();
-        await ctx.sleep(2200);
-        ctx.tell("Does an <b>edge</b> come round twice? Then it is only a walk.");
-        await ctx.sleep(2400);
-        ctx.tell("No edge twice, but a <b>node</b> twice? A trail, and not a path.");
-        await ctx.sleep(2800);
+        await ctx.sleep(4000);
       }
     },
     {
       label: "Dorm → Cafe → Gym → Cafe → Lib",
-      note: "Out to the cafe, down to the gym, back up to the cafe, on to the library. The cafe–gym path is walked in both directions, so the same edge is used twice. That rules out every name but the loosest one: this is a walk, and only a walk.",
+      note: "The cafe–gym edge is walked in both directions. Only a walk, then.",
       async run(ctx) {
         ctx.idle();
         ctx.card("what is this?");
@@ -83,7 +81,7 @@
     },
     {
       label: "Lib → Gym → Dorm → Cafe → Gym",
-      note: "Four different edges, none reused — so this one clears the trail bar. But the gym turns up twice, at the start of the route and at the end of it, and that is the one thing a path may not do. A trail, then, and not a path.",
+      note: "No edge twice, but the gym twice. A trail, and not a path.",
       async run(ctx) {
         ctx.idle();
         ctx.card("and this one?");
@@ -94,7 +92,7 @@
     },
     {
       label: "Lib → Cafe → Dorm → Gym",
-      note: "Three edges, four places, nothing seen twice. No repeated node means no repeated edge either — which is why every path is a trail and the reverse fails. Shorten a walk enough and it becomes a path; that is the whole hierarchy.",
+      note: "Nothing repeats at all — a path. And every path is a trail.",
       async run(ctx) {
         ctx.idle();
         ctx.card("and this?");
@@ -105,7 +103,7 @@
     },
     {
       label: "Now you try",
-      note: "Your turn. Click a place to start, then click a neighbour to walk there. The name updates on every step, and it can only get looser, never tighter. Try to finish where you began and watch two more names arrive.",
+      note: "Your turn. Click a place, then a neighbour, and watch the name move.",
       async run(ctx) {
         /* No card title here: this is the only scene carrying a Reset button,
            and the caption's 34px is exactly what would push it off the slide. */
@@ -403,8 +401,7 @@
         const on = S.route[S.route.length - 1];
         if (!nb(i, on)) {
           nope(i);
-          tell("<b>" + NAME[i] + "</b> is not next to <b>" + NAME[on] +
-            "</b>. A route walks along edges.", true);
+          tell("<b>" + NAME[i] + "</b> is not next to <b>" + NAME[on] + "</b>", true);
           return;
         }
         step(i);

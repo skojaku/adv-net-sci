@@ -81,60 +81,58 @@
   const scenes = [
     {
       label: "Twelve nodes, and no map",
-      note: "Twelve nodes and thirteen edges, and nothing tells you how many pieces they form. You cannot read a component off the picture — a component is not drawn, it is found. So pick a node and start walking.",
+      note: "Twelve nodes. How many pieces? You cannot see it — you have to go and find it.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();
         ctx.card();
-        ctx.say("Nothing is marked yet. Every node is a node you have not visited.");
-        await ctx.sleep(2600);
+        await ctx.sleep(1400);
         ctx.tally("nodes", "12");
         await ctx.sleep(700);
         ctx.tally("edges", "13");
         await ctx.sleep(700);
         ctx.tally("components", "?");
-        await ctx.sleep(2400);
-      }
-    },
-    {
-      label: "One sweep, ring by ring",
-      note: "Start at L0. Visit its unvisited neighbours, then theirs, then theirs — the amber ring is the frontier, and the number on a node is how many edges from the seed it sits. When the frontier comes up empty, everything you touched is one component: eight nodes.",
-      async run(ctx) {
-        ctx.idle();
-        ctx.reset();
-        ctx.card();
-        ctx.say("Pencil down on L0 and take the neighbours in rings.");
-        await ctx.sleep(900);
-        await ctx.sweep(0);
-        await ctx.sleep(600);
-        ctx.close(0, 0);
-        ctx.say("Frontier empty. Everything reached from L0 is <b>component 1</b>.");
         await ctx.sleep(2800);
       }
     },
     {
+      label: "One sweep, ring by ring",
+      note: "Start at L0 and take the neighbours in rings. Amber is the frontier.",
+      async run(ctx) {
+        ctx.idle();
+        ctx.reset();
+        ctx.card();
+        await ctx.sleep(700);
+        await ctx.sweep(0);
+        await ctx.sleep(600);
+        ctx.close(0, 0);
+        ctx.say("frontier empty — that is one whole component");
+        await ctx.sleep(3000);
+      }
+    },
+    {
       label: "Repeat until nothing is left",
-      note: "Four nodes are still unmarked, so the graph is not done. Seed a second sweep at M0 — three nodes — and a third at R0, which reaches nobody at all. One node with no edges is still a component: there is no pair inside it left to fail the test.",
+      note: "Four still unmarked. Seed again, and again. A lone node is a component too.",
       async run(ctx) {
         ctx.idle();
         ctx.reset();
         ctx.card();
         await ctx.sweep(0, true);
         ctx.close(0, 0);
-        ctx.say("Eight down, four to go. Seed the next sweep anywhere unmarked.");
+        ctx.say("eight down, four to go — seed anywhere unmarked");
         await ctx.sleep(1300);
         await ctx.sweep(8);
         ctx.close(1, 8);
         await ctx.sleep(1100);
-        ctx.say("Two left? No — one. R0 has no edges, and reaches only itself.");
+        ctx.say("R0 has no edges, and reaches only itself");
         await ctx.sweep(11);
         ctx.close(2, 11);
-        await ctx.sleep(2800);
+        await ctx.sleep(3000);
       }
     },
     {
       label: "What the sweep cost, and what it threw in",
-      note: "Each node is entered once and each edge is looked at twice, once from either end, so the whole partition costs O(N + M) — thirteen edges, not seventy-eight pairs. And the ring number you watched grow is the shortest-path distance from the seed, free of charge. Module 2 spends it.",
+      note: "Each node once, each edge twice: O(N + M). The ring number is the distance.",
       async run(ctx) {
         ctx.idle();
         ctx.reset();
@@ -145,26 +143,23 @@
         ctx.close(1, 8);
         await ctx.sweep(11, true);
         ctx.close(2, 11);
-        ctx.say("Three sweeps, twelve nodes, thirteen edges, nothing looked at twice over.");
-        await ctx.sleep(1600);
-        ctx.tally("nodes entered", "12, once each");
-        await ctx.sleep(1000);
-        ctx.tally("edges looked at", "13, twice each");
-        await ctx.sleep(1000);
-        ctx.tally("cost", "O(N + M)");
-        await ctx.sleep(1200);
-        ctx.quote("and the ring number is the distance from the seed — free.");
-        await ctx.sleep(3000);
+        await ctx.sleep(900);
+        ctx.tally("nodes, once each", "12");
+        await ctx.sleep(900);
+        ctx.tally("edges, twice each", "13");
+        await ctx.sleep(900);
+        ctx.tally("so the whole partition costs", "O(N + M)");
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Now you try — pick the seeds yourself",
-      note: "Your turn. Click any unmarked node to sweep from there, then another, until the graph is used up. Whatever order you choose, you will need three sweeps and you will get the same three groups. The visit order is yours; the partition is the graph's.",
+      note: "Your turn — click any unmarked node. Same three groups, whatever order you pick.",
       async run(ctx) {
         ctx.reset();
         ctx.card();
         ctx.hand();
-        ctx.say("Click any node to sweep from it.");
+        ctx.say("click any node to sweep from it");
         if (ctx.fast()) return;
         await ctx.sleep(17000);
         ctx.idle();
@@ -307,8 +302,7 @@
           paint();
           if (!quiet) {
             const total = S.seen.filter(function (v) { return v; }).length;
-            say("Ring <b>" + k + "</b> — " + now.length +
-              (now.length > 1 ? " nodes" : " node") + ", " + total + " marked of 12.");
+            say("ring <b>" + k + "</b> · <b>" + total + "</b> of 12 marked");
           }
           prev = now;
           await wait(quiet ? 0 : 720);
@@ -384,7 +378,7 @@
           S.nodes[i].classList.remove("cs-nope");
           S.nodes[i].getBoundingClientRect();
           S.nodes[i].classList.add("cs-nope");
-          say("<b>" + NAME[i] + "</b> is already marked. Seed somewhere unmarked.");
+          say("<b>" + NAME[i] + "</b> is already marked — seed somewhere else");
           return;
         }
         S.busy = true;                        /* no second click while one runs */
@@ -394,10 +388,9 @@
         close(c, i);
         const left = S.seen.filter(function (v) { return !v; }).length;
         if (left) {
-          say("Sweep " + S.sweeps + " done — " + SIZE[c] + " nodes. <b>" + left +
-            "</b> still unmarked.");
+          say("sweep " + S.sweeps + " · " + SIZE[c] + " nodes · <b>" + left + "</b> left");
         } else {
-          say("<b>" + S.sweeps + " sweeps, three components.</b> Your order, the graph's answer.");
+          say("<b>" + S.sweeps + " sweeps, three components</b> — the same three as anyone else's");
           idle();
         }
       }

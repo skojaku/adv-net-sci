@@ -56,7 +56,7 @@
   const scenes = [
     {
       label: "One empty cell",
-      note: "Five nodes, six edges, and the adjacency matrix beside them. Look at row 1, column 4: a zero, because no single edge joins node 1 to node 4. Now square the matrix and watch that zero become a two. Where does the two come from?",
+      note: "No single edge joins 1 to 4, so entry (1,4) is zero. Now square the matrix.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();
@@ -64,14 +64,12 @@
         ctx.matrix(1, { hi: CELL });
         await ctx.sleep(2000);
         ctx.tally("entry (1, 4) of A", "0");
-        await ctx.sleep(1000);
-        ctx.quote("no edge runs from 1 to 4. One step is not enough.");
-        await ctx.sleep(2600);
+        await ctx.sleep(3000);
       }
     },
     {
       label: "Two steps, two routes",
-      note: "Take two steps instead of one. From node 1 you can reach node 4 through node 2, or through node 3, and those are the only two ways. Two routes — and squaring the matrix puts exactly that 2 in the cell that held a zero.",
+      note: "Two two-step routes from 1 to 4 — and A squared puts a 2 in that cell.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();
@@ -80,21 +78,23 @@
         const big = ctx.big("0");
         ctx.caption("walks of length 2 from 1 to 4");
         await ctx.sleep(700);
+        /* keep from the second one on: the count is two, so both routes have to
+           be on the graph at the end. Letting each clear the last left the card
+           saying 2 over a drawing showing 1. */
         for (let i = 0; i < TWO.length; i++) {
-          await ctx.route(TWO[i]);
+          await ctx.route(TWO[i], i > 0);
           big.textContent = String(i + 1);
           ctx.tally("route " + (i + 1), TWO[i].p.join(" – "));
           await ctx.sleep(900);
         }
         await ctx.sleep(500);
         ctx.matrix(2, { hi: CELL });
-        ctx.quote("and there it is, in A squared.");
-        await ctx.sleep(3000);
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Where the two comes from",
-      note: "The arithmetic says the same thing. Entry (1,4) of A squared is row 1 of A read against column 4 of A, term by term: a product is 1 only when both factors are, which happens only at the middle node of a genuine two-step route. Two such middles, so the sum is two.",
+      note: "Row 1 against column 4: a term counts only where both factors are 1.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();
@@ -110,14 +110,12 @@
           if (a && b) await ctx.route({ p: [1, m, 4], c: m === 2 ? "wp-red" : "wp-purple" }, true);
           await ctx.sleep(700);
         }
-        await ctx.sleep(600);
-        ctx.quote("only a real middle node contributes — the rest are 1 × 0.");
-        await ctx.sleep(2800);
+        await ctx.sleep(3000);
       }
     },
     {
       label: "Walks, not paths",
-      note: "Nothing in the count forbids repeating yourself. Look at the diagonal: entry (1,1) of A squared is three, and the three are step out to a neighbour and step straight back — one per neighbour. So the diagonal of A squared is the degree, and a path could never produce it. Walks are the looser word, on purpose.",
+      note: "Out and straight back is a walk too, so the diagonal of A squared is the degree.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();
@@ -126,21 +124,20 @@
         const big = ctx.big("0");
         ctx.caption("walks of length 2 from 1 back to 1");
         await ctx.sleep(700);
+        /* All three stay up — one lens per neighbour is the picture of the 3. */
         for (let i = 0; i < BACK.length; i++) {
-          await ctx.route(BACK[i]);
+          await ctx.route(BACK[i], i > 0);
           big.textContent = String(i + 1);
           await ctx.sleep(700);
         }
         await ctx.sleep(500);
         ctx.tally("degree of node 1", "3");
-        await ctx.sleep(900);
-        ctx.quote("the diagonal of A squared is the degree.");
-        await ctx.sleep(3000);
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Turn the crank",
-      note: "Drag k and watch. One step: nothing. Two: two routes. Three: exactly one, 1–0–2–4. Four: eleven, because by then a walk has room to wander and come back. The counts grow because walks may repeat; and the diagonal of A cubed counts each triangle twice, which is where Module 2's clustering comes from.",
+      note: "Drag k. The counts climb because a walk is allowed to repeat itself.",
       async run(ctx) {
         ctx.idle();
         ctx.draw();

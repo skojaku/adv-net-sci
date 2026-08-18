@@ -550,7 +550,7 @@ Two odd corners, six edges. Step through it, then trace one yourself.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-The deck proves only the easy half. Step 2 is the converse doing its work; step 3 is the part students never believe until they watch it — starting on an even corner strands you every time.
+The deck proves only the easy half; this is the converse doing its work. Beats: 1 two odd corners, in red, and Euler allows two. 2 open on TL and all six go, finishing on the other odd corner — not luck, the spare edge-end at an odd corner can only be a start or a finish. 3 open on BL, an even corner, and you strand at five with TL–BL nowhere near: two odd corners want both ends of the walk and BL took one. 4 lay a second TL–TR, every degree goes even, there is no end left to be, so the trail has to close. 5 hand it over — the part students never believe until they try it is step 3.
 -->
 
 ---
@@ -777,7 +777,7 @@ Click a place, then a neighbour. The name updates on every step.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Five slides gave five names one at a time. This one runs the other way: the room produces a route and the definitions have to name it. Ask for a trail that is not a path before pressing play on step 5.
+Five slides gave five names one at a time; this runs the other way — the room produces a route and the definitions have to name it. Beats: 1 the ladder, widest first. 2 the cafe–gym edge walked in both directions, so only a walk. 3 four different edges but the gym twice: a trail, not a path. 4 nothing repeats, a path — and every path is a trail, never the reverse. 5 ask for a trail that is not a path before pressing play. Worth knowing: this graph has no circuit that is not also a cycle, because that needs two loops meeting at one corner. That distinction stays on circuit.png and cycle.png.
 -->
 
 ---
@@ -894,7 +894,7 @@ Click any unmarked node to sweep from it — the amber ring is the frontier.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Let two or three students pick the seeds in step 5. The payoff is that the order they choose changes the numbers on the nodes and nothing else — the partition is the graph's, not theirs.
+Beats: 1 twelve nodes, and no way to see how many pieces. 2 rings out of L0, frontier amber, and the number on a node is its distance from the seed. 3 four left, seed again, and R0 alone is still a component — no pair inside it to fail the test. 4 each node entered once and each edge looked at twice, so O(N + M): thirteen edges, not seventy-eight pairs. 5 let two or three students pick the seeds. The payoff is that the order they choose changes the numbers on the nodes and nothing else — the partition is the graph's, not theirs.
 -->
 
 ---
@@ -1088,7 +1088,7 @@ Click any arrow to flip it. Two of the eight orientations survive.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. Ask the room to guess how many of the eight orientations are strongly connected before step 5.
+Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. Beats: 1 one question becomes two. 2 flood from each of the three in turn; every one reaches both others. 3 turn C→A round and C reaches nobody — every arrow at C points inward. 4 arrowheads off, still one piece: strong implies weak, weak does not imply strong, and this is the counterexample. 5 ask the room to guess how many of the eight orientations are strongly connected before you hand it over.
 -->
 
 ---
@@ -1462,7 +1462,7 @@ The two routes, drawn — then the row-times-column that produces the same 2.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Step 4 is the one to linger on: the diagonal of A squared is the degree, and that is only true because walks may repeat. Drag the knob in step 5 rather than stepping it — the growth is the point.
+Beats: 1 no single edge joins 1 to 4, so the cell is zero. 2 two two-step routes, counted by hand, and squaring the matrix puts that 2 in the cell. 3 the same number as row 1 against column 4 — a term counts only where both factors are 1, which is to say at a real middle node. 4 the one to linger on: entry (1,1) of A squared is three, out and straight back once per neighbour, so the diagonal is the degree — and that is only true because walks may repeat. 5 drag the knob rather than stepping it, the growth is the point. The diagonal of A cubed counts each triangle twice, which is where Module 2's clustering comes from.
 -->
 
 ---
