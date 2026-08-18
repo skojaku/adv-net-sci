@@ -524,6 +524,37 @@ Ending back where you began removes the ends — no start, no finish, one loop. 
 
 ---
 
+## Watch the trail get built
+
+<hr>
+
+Two odd corners, six edges. Step through it, then trace one yourself.
+
+<figure class="anim-stage" id="euler-builder">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-eb-map></div>
+    <div data-anim-clear data-eb-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/euler-builder.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+The deck proves only the easy half. Step 2 is the converse doing its work; step 3 is the part students never believe until they watch it — starting on an even corner strands you every time.
+-->
+
+---
+
 ## Which two bridges would you destroy?
 
 <hr>
@@ -720,6 +751,37 @@ A **cycle** is a closed path — back to the start, no node repeated.
 
 ---
 
+## Name your own route
+
+<hr>
+
+Click a place, then a neighbour. The name updates on every step.
+
+<figure class="anim-stage" id="route-namer">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rn-map></div>
+    <div data-anim-clear data-rn-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/route-namer.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+Five slides gave five names one at a time. This one runs the other way: the room produces a route and the definitions have to name it. Ask for a trail that is not a path before pressing play on step 5.
+-->
+
+---
+
 <!-- _class: mid -->
 
 ## Your turn: one trail, both triangles
@@ -803,6 +865,37 @@ This is **BFS** (or **DFS** — visit order differs, the partition doesn't). Cos
 ![w:760](figures/sweep-3.png)
 
 </div>
+
+---
+
+## Run the sweep
+
+<hr>
+
+Click any unmarked node to sweep from it — the amber ring is the frontier.
+
+<figure class="anim-stage" id="comp-sweep">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="cs-col" data-anim-canvas>
+    <div data-anim-clear data-cs-map></div>
+    <div data-anim-clear data-cs-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/comp-sweep.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+Let two or three students pick the seeds in step 5. The payoff is that the order they choose changes the numbers on the nodes and nothing else — the partition is the graph's, not theirs.
+-->
 
 ---
 
@@ -966,6 +1059,37 @@ One-way streets get you out, not necessarily back.
 
 </div>
 </div>
+
+---
+
+## Turn an arrow round
+
+<hr>
+
+Click any arrow to flip it. Two of the eight orientations survive.
+
+<figure class="anim-stage" id="dir-reach">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-dr-map></div>
+    <div data-anim-clear data-dr-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/dir-reach.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. Ask the room to guess how many of the eight orientations are strongly connected before step 5.
+-->
 
 ---
 
@@ -1309,6 +1433,37 @@ Walks, not paths — repetition is allowed. Later modules reuse this for cluster
 
 </div>
 </div>
+
+---
+
+## Where the count comes from
+
+<hr>
+
+The two routes, drawn — then the row-times-column that produces the same 2.
+
+<figure class="anim-stage" id="walk-power">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-wp-map></div>
+    <div data-anim-clear data-wp-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/walk-power.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+Step 4 is the one to linger on: the diagonal of A squared is the degree, and that is only true because walks may repeat. Drag the knob in step 5 rather than stepping it — the growth is the point.
+-->
 
 ---
 

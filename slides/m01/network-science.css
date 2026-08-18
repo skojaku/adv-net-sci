@@ -815,6 +815,266 @@ section #h1n1-ruler .h1-plot { transition: opacity 0.5s ease; }
 section #h1n1-ruler .h1-named { stroke: var(--_ink); stroke-width: 1.5; }
 section #h1n1-ruler .h1-hi { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.6; }
 
+/* Component sweep (m01). The band graph is 4.7 times as wide as it is tall, so
+   this is the one stage that does not split the frame in two: the drawing takes
+   the full width and its bookkeeping sits underneath in a single row. */
+/* 880px, not the full 1120: a 700x156 band at 980 stands 218px tall and the
+   slide's budget under the title, the instruction line, the stage's own bar,
+   the readout row and the note is 199. */
+section #comp-sweep { --anim-svg-max: 880px; }
+section #comp-sweep .cs-col { display: flex; flex-direction: column; gap: 6px; }
+section #comp-sweep .cs-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.2; }
+/* Unvisited and waiting for a click; visited; and the ring the sweep is on. */
+section #comp-sweep .cs-open { stroke: var(--_accent); stroke-dasharray: 3 3; }
+section #comp-sweep .cs-seen { fill: var(--_accent); }
+section #comp-sweep .cs-front { fill: var(--_amber); animation: cs-pulse 1.1s ease-in-out infinite; }
+/* stroke-width and not r: the SVG geometry properties are animatable as CSS in
+   Chrome but not everywhere, and this has to hold up on a lectern machine. */
+@keyframes cs-pulse { 50% { stroke-width: 6; } }
+section #comp-sweep .cs-nope { animation: cs-nope 0.42s ease; }
+@keyframes cs-nope {
+  0%, 100% { opacity: 1; }
+  30% { opacity: 0.25; }
+}
+/* An edge the sweep has looked at — the O(N + M) count is about these. */
+section #comp-sweep .cs-tree { stroke: var(--_accent); stroke-width: 3.4; }
+section #comp-sweep .cs-num { font-family: var(--_hand); font-size: 15px; font-weight: 700; fill: var(--_amber); }
+section #comp-sweep .cs-name { font-family: var(--_hand); font-size: 13px; fill: var(--_ink-soft); }
+section #comp-sweep .cs-box { fill: none; stroke: var(--_accent); stroke-width: 2; stroke-dasharray: 7 5; }
+section #comp-sweep .cs-hit { fill: transparent; stroke: none; pointer-events: all; }
+section #comp-sweep .cs-clickable .cs-hit { cursor: pointer; }
+section #comp-sweep .cs-card { display: flex; flex-direction: column; gap: 5px; }
+/* One line always reserved, so the row underneath never jumps as the sweep
+   narrates itself. */
+section #comp-sweep .cs-msg { font-family: var(--_hand); font-size: 21px; line-height: 1.3; min-height: 1.3em; }
+section #comp-sweep .cs-rows { display: flex; flex-wrap: wrap; gap: 8px 26px; align-items: baseline; }
+section #comp-sweep .cs-rows .anim-tally { gap: 10px; }
+section #comp-sweep .cs-rows .anim-quote { flex-basis: 100%; }
+section #comp-sweep .cs-chip {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  padding: 2px 11px;
+  font-family: var(--_hand);
+  font-size: 20px;
+  background: var(--_accent-soft);
+  border: 1.6px solid var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+section #comp-sweep .cs-chip span { color: var(--_ink-soft); }
+
+/* Route namer (m01). The card carries five names and has to hold them on one
+   screen, so it takes the wider half; the campus square is small and does not
+   need it. */
+section #route-namer { --anim-svg-max: 380px; }
+section #route-namer .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+section #route-namer .rn-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.4; }
+section #route-namer .rn-open { stroke: var(--_accent); stroke-dasharray: 4 3; }
+section #route-namer .rn-been { fill: var(--_accent-soft); }
+section #route-namer .rn-here { fill: var(--_amber); }
+section #route-namer .rn-nope { animation: rn-nope 0.42s ease; }
+@keyframes rn-nope {
+  0%, 100% { opacity: 1; }
+  30% { opacity: 0.25; }
+}
+section #route-namer .rn-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_ink); }
+section #route-namer .rn-hit { fill: transparent; stroke: none; pointer-events: all; }
+section #route-namer .rn-clickable .rn-hit { cursor: pointer; }
+section #route-namer .rn-head { fill: var(--_amber); }
+section #route-namer .rn-step { font-family: var(--_hand); font-size: 15px; font-weight: 700; fill: var(--_ink); }
+/* A leg over an edge that has already been walked: the accent, so a repeat is
+   a different colour and not just a second stroke in the same one. */
+section #route-namer .rn-again { stroke: var(--_accent); }
+section #route-namer .rn-again-fill { fill: var(--_accent); }
+section #route-namer .rn-body { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+section #route-namer .rn-ladder { display: flex; flex-direction: column; gap: 3px; align-self: stretch; }
+section #route-namer .rn-chip {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  font-family: var(--_hand);
+  font-size: 19px;
+  line-height: 1.22;
+  border: 1.6px solid transparent;
+  border-radius: 11px 5px 11px 5px / 5px 11px 5px 11px;
+}
+section #route-namer .rn-chip span { color: var(--_ink-faint); }
+section #route-namer .rn-on {
+  background: var(--_accent-soft);
+  border-color: var(--_accent);
+}
+section #route-namer .rn-on b { color: var(--_accent); }
+section #route-namer .rn-on span { color: var(--_ink-soft); }
+section #route-namer .rn-route { font-family: var(--_mono); font-size: 18px; color: var(--_ink); }
+/* Two lines reserved: narration, verdicts and refusals all land here, and a
+   refusal must not shove the reset button out from under the pointer. */
+section #route-namer .rn-why {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--_ink);
+  min-height: calc(2 * 1.3em);
+  align-self: stretch;
+}
+section #route-namer .rn-why-no { color: var(--_amber); }
+
+/* Euler builder (m01). The degree lives inside each disc, so the discs are
+   large and the drawing needs the room; the card is only a counter. */
+section #euler-builder { --anim-svg-max: 400px; }
+section #euler-builder .anim-grid-2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+section #euler-builder .eb-edge { stroke: var(--_ink); stroke-width: 5; fill: none; stroke-linecap: round; }
+section #euler-builder .eb-open { stroke: var(--_accent); animation: eb-pulse 1.2s ease-in-out infinite; }
+section #euler-builder .eb-used { stroke: var(--_amber); }
+@keyframes eb-pulse { 50% { stroke-width: 8; } }
+/* The one edge a stranded walk could not reach. */
+section #euler-builder .eb-left { stroke: var(--_accent); stroke-dasharray: 6 5; }
+section #euler-builder .eb-nope { animation: eb-nope 0.42s ease; }
+@keyframes eb-nope {
+  0%, 100% { stroke-width: 5; opacity: 1; }
+  30% { stroke-width: 9; opacity: 0.3; }
+}
+section #euler-builder .eb-node { fill: var(--_ink); stroke: var(--_ink); stroke-width: 2; }
+section #euler-builder .eb-odd { fill: var(--_amber); stroke: var(--_amber); }
+section #euler-builder .eb-on { stroke: var(--_accent); stroke-width: 3; }
+section #euler-builder .eb-deg { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_white); }
+section #euler-builder .eb-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_ink); }
+section #euler-builder .eb-order { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_amber); }
+section #euler-builder .eb-here { fill: none; stroke: var(--_accent); stroke-width: 2.4; }
+section #euler-builder .eb-hit { fill: transparent; stroke: transparent; stroke-width: 22; pointer-events: all; }
+/* A quadratic path closes itself for fill purposes, so an edge target must
+   answer on its stroke alone or it swallows half the drawing. */
+section #euler-builder .eb-hit-edge { fill: none; pointer-events: stroke; }
+section #euler-builder .eb-clickable .eb-hit { cursor: pointer; }
+section #euler-builder .eb-card { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+section #euler-builder .eb-msg {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.32;
+  min-height: calc(3 * 1.32em);
+  margin-top: 2px;
+}
+section #euler-builder .eb-msg-no { color: var(--_amber); }
+
+/* Directed reachability (m01). Three nodes and three arcs; the card holds
+   three reachability lines and two verdicts, so it takes the wider half. */
+section #dir-reach { --anim-svg-max: 360px; }
+section #dir-reach .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+section #dir-reach .dr-arc { stroke: var(--_ink); stroke-width: 3.4; fill: none; }
+section #dir-reach .dr-head { fill: var(--_ink); }
+/* An arc the flood has just used. */
+section #dir-reach .dr-on { stroke: var(--_amber); stroke-width: 4.6; }
+section #dir-reach .dr-flipped { stroke: var(--_accent); }
+section #dir-reach .dr-flipped-fill { fill: var(--_accent); }
+/* Scene 4 rubs the arrowheads out — the same three edges, asked the weaker
+   question. */
+section #dir-reach .dr-undirected .dr-head { opacity: 0; }
+section #dir-reach .dr-undirected .dr-arc { stroke: var(--_accent); }
+section #dir-reach .dr-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.4; }
+section #dir-reach .dr-src { fill: var(--_amber); }
+section #dir-reach .dr-lit { fill: var(--_accent); }
+section #dir-reach .dr-name { font-family: var(--_hand); font-size: 20px; font-weight: 700; fill: var(--_ink); }
+section #dir-reach .dr-name-on { fill: var(--_white); }
+section #dir-reach .dr-hit { fill: none; stroke: transparent; stroke-width: 26; pointer-events: stroke; }
+section #dir-reach .dr-clickable .dr-hit { cursor: pointer; }
+section #dir-reach .dr-card { display: flex; flex-direction: column; gap: 5px; }
+section #dir-reach .dr-rows { display: flex; flex-direction: column; gap: 2px; }
+section #dir-reach .dr-row { font-family: var(--_hand); font-size: 20px; line-height: 1.28; }
+section #dir-reach .dr-row span { color: var(--_accent); }
+section #dir-reach .dr-short span { color: var(--_amber); }
+section #dir-reach .dr-verdict { display: flex; gap: 10px; flex-wrap: wrap; }
+/* One line, not two: stacking the verdict under its label cost 26px the slide
+   did not have. */
+section #dir-reach .dr-flag {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  padding: 2px 12px;
+  font-family: var(--_hand);
+  font-size: 19px;
+  line-height: 1.3;
+  border: 1.8px solid var(--_ink);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+section #dir-reach .dr-flag span { font-weight: 700; font-size: 21px; }
+section #dir-reach .dr-yes { background: var(--_accent-soft); border-color: var(--_accent); }
+section #dir-reach .dr-yes span { color: var(--_accent); }
+section #dir-reach .dr-no { background: var(--_amber-soft); border-color: var(--_amber); }
+section #dir-reach .dr-no span { color: var(--_amber); }
+section #dir-reach .dr-msg {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.3;
+  min-height: calc(2 * 1.3em);
+}
+section #dir-reach .dr-msg-no { color: var(--_amber); }
+
+/* A^k counts walks (m01). Three things have to share the frame — the graph,
+   the matrix and the bookkeeping — so the right half splits again in two
+   rather than stacking, which would run the matrix off the bottom. */
+section #walk-power { --anim-svg-max: 380px; }
+section #walk-power .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+section #walk-power [data-wp-side] { display: flex; gap: 16px; align-items: flex-start; }
+section #walk-power .wp-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
+section #walk-power .wp-name { font-family: var(--_hand); font-size: 19px; font-weight: 700; fill: var(--_white); }
+section #walk-power .wp-leg { stroke-width: 5; fill: none; stroke-linecap: round; stroke-opacity: 0.85; }
+/* The two route colours the deck's own adjacency-squared.png already uses. */
+section #walk-power .wp-red { stroke: var(--_amber); }
+section #walk-power .wp-purple { stroke: var(--_accent); }
+section #walk-power .wp-m {
+  display: grid;
+  grid-template-columns: repeat(6, 28px);
+  gap: 2px;
+  flex: none;
+}
+section #walk-power .wp-m > i {
+  display: inline-grid;
+  place-items: center;
+  height: 28px;
+  font-family: var(--_mono);
+  font-size: 16px;
+  font-style: normal;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+}
+/* `> i` on the base rule, so every state below has to carry the child
+   combinator too or it loses on specificity and only its colour lands — which
+   is exactly how the highlighted cell first shipped as white on white. */
+section #walk-power .wp-m > i.wp-h { border: 0; background: none; color: var(--_ink-soft); font-weight: 700; }
+section #walk-power .wp-m > i.wp-h-on { color: var(--_amber); }
+section #walk-power .wp-m > i.wp-on { background: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
+section #walk-power .wp-m > i.wp-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+section #walk-power .wp-m > i.wp-hi {
+  background: var(--_amber);
+  border-color: var(--_amber);
+  color: var(--_white);
+  font-weight: 700;
+}
+section #walk-power .wp-card { display: flex; flex-direction: column; gap: 5px; flex: 1 1 auto; min-width: 0; }
+/* The kit's knob wrapper carries `margin: 8px auto 4px`, written for a block
+   container. As a flex item those auto side margins beat `stretch`, the track
+   resolves to its content width — nothing — and all that renders is a knob
+   floating in the middle of the card. Kill the auto margins, not the rule. */
+section #walk-power .wp-card .anim-range {
+  align-self: stretch;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+section #walk-power .wp-formula { font-family: var(--_mono); font-size: 18px; color: var(--_accent); }
+section #walk-power .wp-terms { display: flex; gap: 7px; flex-wrap: wrap; }
+section #walk-power .wp-term {
+  padding: 1px 8px;
+  font-family: var(--_mono);
+  font-size: 17px;
+  color: var(--_ink-faint);
+  border: 1.4px solid var(--_rule);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+}
+section #walk-power .wp-term-on { color: var(--_amber); border-color: var(--_amber); font-weight: 700; }
+section #walk-power .wp-read { font-family: var(--_hand); font-size: 20px; line-height: 1.3; min-height: calc(2 * 1.3em); }
+section #walk-power .wp-read b { color: var(--_accent); }
+
 /* ---------- pagination ---------- */
 section::after {
   font-family: var(--serif);

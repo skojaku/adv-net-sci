@@ -71,6 +71,17 @@ Open on the outbreak, not on definitions. The whole first part is one story.
   <div class="count">01 / 04</div>
 </div>
 
+---
+
+## Instructor
+
+- Sadamori Kojaku
+- 幸若　完壮 (in Japanese "Happy-Young")
+- skojaku@binghamton.edu
+- Introduce yourself!
+
+---
+
 ## April 2009: a new flu leaves Mexico
 
 Nobody has immunity, and every border is a guess about where it goes next.
@@ -224,13 +235,14 @@ Whoever lent to a failed bank is now missing money, and may fail in turn: **casc
 ## 29 March 2024
 
 <hr>
-
 <div class="cols">
 <div>
 
-A hobby project compresses files. One person maintains it, unpaid, for years.
-
-* How does a backdoor in that project reach the login program of nearly every Linux server on Earth?
+- Most open source software starts as personal curiosity or a hobby project.
+- `OpenSSH` guards remote login to nearly every server.
+- OpenSSH is reviewed by many eyes. Visibility *is* the safety mechanism.
+- Yet, an attacker nearly planted a backdoor without any of those eyes catching it.
+-  How does a backdoor reach the login program of nearly every Linux server on Earth, in plain sight?
 * *Form a group and discuss. Thirty seconds.*
 
 </div>
@@ -242,13 +254,15 @@ A hobby project compresses files. One person maintains it, unpaid, for years.
 </div>
 </div>
 
+
 ---
 
 ## What a compression library touches
 
 <hr>
 
-xz compresses files. Nothing about it is security-critical until you follow what links against it.
+A library called `xz` compresses files, maintained by an individual person. 
+Nothing about it is security-critical until you follow what links against it.
 
 <div class="fig">
 
@@ -336,20 +350,6 @@ Different material, one question: **who is connected to whom?**
 
 ---
 
-<!-- _class: mid -->
-
-## Let's collect a few
-
-<hr>
-
-Two failures, very different reach:
-
-* Your home router dies. You are offline; nobody else notices.
-* Your bank's card processor dies. Every shop in town stops taking cards.
-* *Which of yours is the router, and which is the processor?*
-
----
-
 ## Ones that are easy to miss
 
 <hr>
@@ -357,9 +357,12 @@ Two failures, very different reach:
 <div class="cols">
 <div>
 
-Remove one insect and the plants only it visits go with it.
+Remove one insect and the plants that depend on it alone disappear with it.
 
-Which plant here is safest? Which is one extinction away from trouble?
+- Which plant here is safest? 
+- Which plant would you least want to lose?
+
+
 
 </div>
 <div class="fig">
