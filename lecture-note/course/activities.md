@@ -38,9 +38,10 @@ notebook, together with the log of the conversation, is what you hand in.
 is not penalized.
 
 **[Group Mini-Project](mini-project.qmd)** — in class, in teams of up to three,
-for modules 2 through 6. You apply the module's ideas to real data in a shared
+for modules 1 through 6. You apply the module's ideas to real data in a shared
 repository. It is autograded once, in your team's repository, and every member
-of the team receives that score.
+of the team receives that score. Module 1's also ends with a three-minute
+presentation, and that is scored in the room.
 
 Both are handed out and collected through **Classroom 50**, which gives you a
 private GitHub repository for each one. Nothing is emailed and nothing is
