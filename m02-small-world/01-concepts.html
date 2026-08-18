@@ -1260,6 +1260,11 @@ s_{\text{naive}} = \frac{\overline{C}}{\overline{L}}
 <li>Give every node degree <span class="math inline">k</span> (choose <span class="math inline">k</span> even) by connecting it to its <span class="math inline">k</span> nearest neighbors around the ring — <span class="math inline">k/2</span> on each side.</li>
 <li>This is maximally parochial: clustering is high, and the average path length is roughly <span class="math inline">N/(2k)</span>, which grows <em>linearly</em> with <span class="math inline">N</span>.</li>
 </ul>
+<p>Every neighborhood on the ring is a copy of every other, so counting around a single node settles the whole network. Doing that count gives a closed form for the clustering:</p>
+<p><span class="math display">
+C_{\text{lattice}}(k) = \frac{3(k-2)}{4(k-1)}
+</span></p>
+<p>Note what is <em>not</em> in it: <span class="math inline">N</span>. A ring of twelve and a ring of a million have the same clustering as long as each person has the same <span class="math inline">k</span> friends. That is the asymmetry the model turns on — clustering is capped by <span class="math inline">k</span> and blind to size, while <span class="math inline">N/(2k)</span> grows without bound. For <span class="math inline">k = 2</span> the formula gives 0 (your two neighbors are two steps apart and never adjacent), <span class="math inline">k = 4</span> gives <span class="math inline">0.5</span>, and <span class="math inline">k = 10</span> gives <span class="math inline">0.667</span> — the “about 0.67” quoted in the next paragraph.</p>
 <p><strong>Step 2: Rewire each edge with probability <span class="math inline">p</span>.</strong></p>
 <ul>
 <li>Visit every edge in turn. With probability <span class="math inline">p</span>, detach one endpoint and reconnect it to a node chosen uniformly at random; with probability <span class="math inline">1-p</span>, leave it alone.</li>
