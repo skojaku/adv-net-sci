@@ -64,7 +64,7 @@
   const scenes = [
     {
       label: "Exactly two odd corners",
-      note: "A different city: a square with a lid. Count the edges at each corner and only two counts come out odd — the two on the middle row, in red. Königsberg had four and died on it. Two is the case Euler's theorem allows, so a trail across every edge should be sitting here. Where?",
+      note: "Two odd corners, in red. Euler allows two — so a trail is in here somewhere.",
       async run(ctx) {
         ctx.idle();
         ctx.draw(6);
@@ -72,19 +72,18 @@
         await ctx.sleep(1600);
         ctx.marks();
         await ctx.sleep(900);
+        /* No "degrees" row: marks() just wrote all five inside their own
+           discs, and printing them again beside the drawing is the same
+           sentence twice, 400px apart. */
         ctx.tally("edges", "6");
-        await ctx.sleep(700);
-        ctx.tally("degrees", "2 · 2 · 3 · 3 · 2");
         await ctx.sleep(900);
         ctx.tally("odd corners", "2");
-        await ctx.sleep(1200);
-        ctx.quote("at most two odd — so nothing rules a trail out here.");
-        await ctx.sleep(2800);
+        await ctx.sleep(3000);
       }
     },
     {
       label: "Begin on an odd corner",
-      note: "Put the pencil on TL, one of the two odd corners, and take the edges in the order shown. All six go, none twice, and the trail finishes on TR — the other odd corner. That is not luck. The spare edge-end at an odd corner has nowhere to go except the start or the finish of the walk.",
+      note: "Begin on an odd corner: all six go, and you finish on the other odd one.",
       async run(ctx) {
         ctx.idle();
         ctx.reset();
@@ -99,15 +98,13 @@
           await ctx.sleep(620);
         }
         await ctx.sleep(500);
-        ctx.tally("finished on", "TR — the other odd corner");
-        await ctx.sleep(1000);
-        ctx.quote("six of six. The trail the theorem promised.");
-        await ctx.sleep(2800);
+        ctx.tally("finished on", "TR — the other odd one");
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Begin anywhere else and you strand",
-      note: "Same graph, same rules, pencil down on BL instead — an even corner. Five edges go and then the walk is standing on TR with TL–BL still untaken and nowhere near. Two odd corners need to be the two ends of the walk, and a walk has only two ends; spend one of them on BL and there are not enough left.",
+      note: "Begin on an even corner and you strand at five. Both ends were spoken for.",
       async run(ctx) {
         ctx.idle();
         ctx.reset();
@@ -121,29 +118,25 @@
           n.textContent = String(i + 1);
           await ctx.sleep(620);
         }
+        /* The leftover edge goes dashed on the drawing, so naming it in the
+           card as well would be the second telling of the same thing. */
         ctx.leftover(STRAND.left);
         await ctx.sleep(700);
         ctx.tally("stranded on", "TR");
-        await ctx.sleep(800);
-        ctx.tally("still untaken", "TL–BL");
-        await ctx.sleep(1000);
-        ctx.quote("two odd corners want both ends of the walk. BL took one.");
-        await ctx.sleep(2800);
+        await ctx.sleep(3200);
       }
     },
     {
       label: "One more edge, and the trail closes",
-      note: "Lay a second edge between TL and TR. Both of them go from three to four, every degree in the graph is now even, and the two odd corners that had to be the ends are gone. With no end to be, the trail has to come home: seven edges, start and finish both on TL. That is an Eulerian circuit.",
+      note: "One more edge, every degree even, and the trail has to close into a circuit.",
       async run(ctx) {
         ctx.idle();
         ctx.draw(7);
         ctx.reset();
         ctx.card("every degree even");
         ctx.marks();
-        ctx.tally("degrees", "2 · 2 · 4 · 4 · 2");
-        await ctx.sleep(900);
         ctx.tally("odd corners", "0");
-        await ctx.sleep(1200);
+        await ctx.sleep(1600);
         const n = ctx.big("0");
         ctx.caption("edges crossed, out of 7");
         ctx.stand(TOUR.from);
@@ -154,13 +147,13 @@
           await ctx.sleep(560);
         }
         await ctx.sleep(500);
-        ctx.quote("back on TL, seven of seven — a circuit, not just a trail.");
-        await ctx.sleep(2800);
+        ctx.tally("back on", "TL — where it began");
+        await ctx.sleep(3000);
       }
     },
     {
       label: "Now you try",
-      note: "Back to six edges. Click a corner to put your pencil down, then click edges to cross them; an edge you have already used is refused. Start on TL or TR and all six will go. Start anywhere else and you will get five, every time you try it.",
+      note: "Your turn. Click a corner, then edges. Open on TL or TR and all six will go.",
       async run(ctx) {
         ctx.draw(6);
         ctx.reset();
@@ -368,7 +361,7 @@
 
         S.at = ctx.el("div", "anim-tally", "<span>standing on</span><b>—</b>");
         S.n6 = ctx.el("div", "anim-tally", "<span>edges crossed</span><b>0 of 6</b>");
-        S.msg = ctx.el("div", "eb-msg", "Click a corner to start. Try TL first.");
+        S.msg = ctx.el("div", "eb-msg", "click a corner to start — try TL");
         S.panel.appendChild(S.at);
         S.panel.appendChild(S.n6);
         S.panel.appendChild(S.msg);
@@ -386,7 +379,7 @@
           S.edges.forEach(function (p) { p.classList.remove("eb-left"); });
           paint();
           report();
-          say("ok", "Cleared. Click a corner to start.");
+          say("ok", "cleared — click a corner to start");
         });
         S.panel.appendChild(rst);
         paint();
@@ -425,11 +418,10 @@
           stand(k);
           report();
           const odd = ODD6.indexOf(k) >= 0;
-          say("ok", "Pencil down on <b>" + NAME[k] + "</b>" +
-            (odd ? " — an odd corner. Good place to be." : " — an even corner. Watch what happens.") +
-            " Now click an edge.");
+          say("ok", "pencil down on <b>" + NAME[k] + "</b> — " +
+            (odd ? "odd. Good place to start." : "even. Watch what happens."));
         } else {
-          say("no", "You are already walking. Click an <b>edge</b>, not a corner.");
+          say("no", "click an <b>edge</b>, not a corner");
         }
       }
 
@@ -438,30 +430,29 @@
         grab();
         if (S.on == null) {
           nope(e);
-          say("no", "Put your pencil down first: click a corner.");
+          say("no", "put your pencil down first — click a corner");
           return;
         }
         if (S.used[e]) {
           nope(e);
-          say("no", "That edge is behind you. You may not cross it twice.");
+          say("no", "that edge is behind you");
           return;
         }
         if (!touches(e, S.on)) {
           nope(e);
-          say("no", "That edge does not touch <b>" + NAME[S.on] +
-            "</b>. You cannot reach it from here.");
+          say("no", "that edge does not touch <b>" + NAME[S.on] + "</b>");
           return;
         }
         cross(e);
         report();
         const stuck = !inc(S.on).some(function (k) { return !S.used[k]; });
         if (S.count === 6) {
-          say("ok", "<b>Six of six.</b> You began on an odd corner and finished on the other one.");
+          say("ok", "<b>six of six</b> — odd corner in, odd corner out");
         } else if (stuck) {
-          say("no", "Stuck on <b>" + NAME[S.on] + "</b> with <b>" + S.count +
-            " of 6</b>. Every edge here is behind you. ↻ Reset and open on TL or TR.");
+          say("no", "stuck on <b>" + NAME[S.on] + "</b> at <b>" + S.count +
+            " of 6</b> — reset and open on TL or TR");
         } else {
-          say("ok", "You are on <b>" + NAME[S.on] + "</b>, " + S.count + " of 6 done.");
+          say("ok", "on <b>" + NAME[S.on] + "</b> · " + S.count + " of 6");
         }
       }
 

@@ -55,21 +55,21 @@
   const scenes = [
     {
       label: "Three nodes, three arrows",
-      note: "Point every edge one way and one question becomes two. Undirected, you asked whether a path exists between every pair. Directed, you have to say which way — and a route out is no longer a promise of a route back.",
+      note: "Point the edges one way and the one question becomes two.",
       async run(ctx) {
         ctx.idle();
         ctx.draw(0);
         ctx.card("two questions now");
         await ctx.sleep(1700);
-        ctx.tally("can you get anywhere", "strongly connected?");
+        ctx.tally("with the arrows", "strongly connected?");
         await ctx.sleep(1400);
-        ctx.tally("ignoring the arrows", "weakly connected?");
+        ctx.tally("without them", "weakly connected?");
         await ctx.sleep(2600);
       }
     },
     {
       label: "Every node reaches every node",
-      note: "Start at A and follow the arrows: B, then C, then home. Start at B and the same ride reaches C and A. Start at C and it reaches A and B. Three sources, every other node reached from each — this orientation is strongly connected.",
+      note: "Every node reaches every node. This orientation is strongly connected.",
       async run(ctx) {
         ctx.idle();
         ctx.set(0);
@@ -86,7 +86,7 @@
     },
     {
       label: "Turn one arrow round",
-      note: "Turn C→A into A→C and nothing else. A still reaches both. B still reaches C. But C now reaches nobody at all — every arrow at C points in. One arrowhead, and the strong verdict is gone.",
+      note: "Turn C→A round, and nothing else. Now C reaches nobody, and strong is gone.",
       async run(ctx) {
         ctx.idle();
         ctx.set(0);
@@ -102,14 +102,12 @@
         }
         ctx.clearFlood();
         ctx.verdict();
-        await ctx.sleep(1000);
-        ctx.quote("everything at C points inward. Nothing leaves.");
-        await ctx.sleep(2800);
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Now rub the arrowheads out",
-      note: "Same three edges, arrowheads gone. As an undirected graph it is one connected piece, so the graph is weakly connected — and it was weakly connected a moment ago too, arrowheads and all. Strong implies weak; weak does not imply strong, and this is the counterexample.",
+      note: "Arrowheads off, still one piece — weakly connected either way.",
       async run(ctx) {
         ctx.idle();
         ctx.set(4);
@@ -120,15 +118,13 @@
         ctx.tally("one piece?", "yes — weakly connected");
         await ctx.sleep(1200);
         ctx.undirected(false);
-        ctx.tally("with the arrows back", "still not strongly connected");
-        await ctx.sleep(1400);
-        ctx.quote("weak is the weaker claim, and it survives what strong does not.");
-        await ctx.sleep(3000);
+        ctx.tally("arrows back", "still not strongly connected");
+        await ctx.sleep(3200);
       }
     },
     {
       label: "Now you try — flip any arrow",
-      note: "Your turn. Click an arrow to turn it round; the reachable sets and both verdicts update as you go. There are eight ways to point this triangle. Only two of them are strongly connected — find them, and see what the two have in common.",
+      note: "Your turn — flip any arrow. Only two of the eight orientations survive.",
       async run(ctx) {
         ctx.set(0);
         ctx.card("your orientation");
@@ -376,7 +372,7 @@
         S.svg.classList.add("dr-clickable");
         for (let s = 0; s < 3; s++) row(s);
         verdict();
-        S.msg = ctx.el("div", "dr-msg", "Click any arrow to turn it round.");
+        S.msg = ctx.el("div", "dr-msg", "click any arrow to turn it round");
         S.panel.appendChild(S.msg);
         S.score = ctx.el("div", "anim-tally",
           "<span>orientations seen</span><b>1 of 8</b>");
@@ -409,11 +405,11 @@
         if (STRONG[S.mask]) {
           S.msg.className = "dr-msg";
           S.msg.innerHTML = nFound === STRONG_N
-            ? "<b>Both of them.</b> The two that work are the two that go all the way round."
-            : "<b>Strongly connected.</b> Notice the arrows agree on a direction round the ring.";
+            ? "<b>both of them</b> — and both go all the way round"
+            : "<b>strongly connected</b> — the arrows agree on one direction";
         } else {
           S.msg.className = "dr-msg dr-msg-no";
-          S.msg.innerHTML = "Not strongly connected — one node has no way out, or no way in.";
+          S.msg.innerHTML = "not strongly connected — a node has no way out, or none in";
         }
       }
 
