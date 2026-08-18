@@ -292,7 +292,7 @@ modules:
         level: core
         statement: "Cross each of the seven bridges of Konigsberg exactly once and return to the start - the concrete puzzle that motivates the whole module."
         prereq: []
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-konigsberg-bridge-problem", "slides/m01/m01-euler-tour.md#your-turn"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-konigsberg-bridge-problem", "slides/m01/m01-euler-tour.md#your-turn"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c02
         name: "Abstraction: landmass to node, bridge to edge"
@@ -300,7 +300,7 @@ modules:
         level: core
         statement: "Euler discarded geography, distance and shape, keeping only which landmass touches which bridge; the shape of the map is irrelevant to the answer."
         prereq: [m01.c01]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c03
         name: "Graph as (V, E)"
@@ -308,7 +308,7 @@ modules:
         level: core
         statement: "A graph is a set of nodes V together with a set of edges E, each edge joining a pair of nodes."
         prereq: [m01.c02]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c04
         name: "Multigraph"
@@ -316,7 +316,7 @@ modules:
         level: core
         statement: "Konigsberg has two bridges between the same pair of landmasses, so it is a multigraph - parallel edges are allowed and each one counts."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c05
         name: "Node degree"
@@ -324,7 +324,7 @@ modules:
         level: core
         statement: "The degree of a node is the number of edges attached to it."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c06
         name: "Self-loop and degree"
@@ -340,7 +340,7 @@ modules:
         level: core
         statement: "Every visit to a node uses one edge in and one edge out, so a node of even degree can be passed through, while a node of odd degree must be a start or an end of the walk."
         prereq: [m01.c05]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c08
         name: "Eulerian path condition"
@@ -348,7 +348,7 @@ modules:
         level: core
         statement: "An Eulerian path exists if and only if the graph is connected and has exactly zero or exactly two nodes of odd degree."
         prereq: [m01.c07, m01.c14]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit", "slides/m01/m01-euler-tour.md#the-konigsberg-verdict"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit", "slides/m01/m01-euler-tour.md#the-konigsberg-verdict"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c09
         name: "Eulerian circuit condition"
@@ -356,7 +356,7 @@ modules:
         level: core
         statement: "A closed Eulerian walk (circuit) exists if and only if the graph is connected and every node has even degree; Konigsberg has four odd-degree nodes, so the walk is impossible."
         prereq: [m01.c08]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c10
         name: "Walk"
@@ -364,7 +364,7 @@ modules:
         level: core
         statement: "A walk is any sequence of adjacent nodes; both nodes and edges may repeat."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c11
         name: "Trail"
@@ -372,7 +372,7 @@ modules:
         level: core
         statement: "A trail is a walk that never repeats an edge, though it may revisit nodes."
         prereq: [m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c12
         name: "Path"
@@ -380,7 +380,7 @@ modules:
         level: core
         statement: "A path is a walk that never repeats a node (and hence never repeats an edge)."
         prereq: [m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c13
         name: "Circuit and cycle"
@@ -388,7 +388,7 @@ modules:
         level: core
         statement: "A circuit is a closed trail and a cycle is a closed path; both start and end at the same node, but only the cycle forbids intermediate repetition."
         prereq: [m01.c11, m01.c12]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#circuit-cycle-and-eulers-language"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#circuit-cycle-and-eulers-language"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c14
         name: "Connected vs disconnected graph"
@@ -396,7 +396,7 @@ modules:
         level: core
         statement: "A graph is connected when a path exists between every pair of nodes; otherwise it splits into separate islands."
         prereq: [m01.c12]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c15
         name: "Connected component"
@@ -484,7 +484,7 @@ modules:
         level: extension
         statement: "WWII destroyed two of the seven bridges, leaving only two odd-degree landmasses - the 200-year-old impossible puzzle became possible by accident of war."
         prereq: [m01.c09]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c26
         name: "Real networks are sparse"
