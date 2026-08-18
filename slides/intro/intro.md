@@ -754,7 +754,7 @@ Twenty minutes, before the second week: <a href="https://skojaku.github.io/adv-n
 <hr>
 
 * Twenty-six topics, on the course site: <a href="https://skojaku.github.io/adv-net-sci/course/student-lecture.html">skojaku.github.io/adv-net-sci/course/student-lecture.html</a>
-* Alone, or in a team of up to three. Claim a topic on Discord.
+* Alone, or in a team of up to three. Take a topic and a date on the sign-up sheet.
 * 15 to 20 minutes, with something the class has to do: a worksheet, an exercise, live coding.
 * A talk with no activity does not pass, however good the talk is.
 
