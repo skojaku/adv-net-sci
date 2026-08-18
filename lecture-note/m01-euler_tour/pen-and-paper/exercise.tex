@@ -36,7 +36,6 @@
 \raggedbottom
 
 \newcommand{\ansline}{\underline{\hspace{0.98\textwidth}}}
-\newcommand{\cb}{$\square$~}          % tick box for multiple choice
 \newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
 
 % The molab link printed on the hand-off page. Students type this by hand, so
@@ -110,34 +109,21 @@
 {\ppfont\LARGE Cross Every Bridge Once, Then Teach a Computer to Do It}
 \end{center}
 
-\vspace{0.2em}
-
-{\small Work through this \textbf{before} the lecture. You are not supposed to
-know the technical words yet. Every word you need is defined on the sheet
-itself, and always \emph{after} you have already built the thing it names. Use
-a pencil.}
+{\small Do this before the lecture, in pencil. Nothing here needs a word you
+have not been given on the sheet.}
 
 \parthead{1}{Seven bridges}
 
-A university campus sits on both banks of a creek. There are two islands in the
-middle. Seven footbridges, \emph{a} to \emph{g}, join the four pieces of land:
-the north bank \textbf{N}, the south bank \textbf{S}, the west island
-\textbf{W}, and the east island \textbf{E}.
-
-You are a campus tour guide. Every footbridge has a donor's name on it, so your
-tour must cross \textbf{every bridge exactly once}.
+Seven footbridges, \emph{a} to \emph{g}, join four pieces of land: the north
+bank \textbf{N}, the south bank \textbf{S}, and two islands \textbf{W} and
+\textbf{E}. Cross every bridge exactly once.
 
 \begin{center}
 \campusmap
 \end{center}
 
-{\bf Question 1(a)}: Find a route that crosses all seven bridges, each one
-exactly once. You may start on any piece of land and finish on any piece of
-land. You may step on the same piece of land more than once.
-
-Write your route like this: land, bridge, land, bridge, \dots\ The first two
-steps are done for you. Start on N, cross bridge \emph{a} to reach W, then
-cross bridge \emph{b} back to N.
+{\bf Question 1(a)}: Find such a route. Start and finish anywhere. Land may
+repeat; bridges may not. Two steps are done for you.
 
 \vspace{0.4em}
 
@@ -145,30 +131,20 @@ N \; \emph{a} \; W \; \emph{b} \; N \; \blank[1cm] \; \blank[1cm] \;
 \blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \;
 \blank[1cm]
 
-\vspace{1.6cm}
+\vspace{1.8cm}
 
-{\bf Question 1(b)}: Draw an \textbf{eighth} bridge on the map above. Call it
-\emph{h}, and draw it between W and E, just below bridge \emph{g}. The map now
-has eight bridges. Call it \textbf{Map B}.
+{\bf Question 1(b)}: Draw an eighth bridge \emph{h} on the map, between W and
+E, below \emph{g}. Try again. Which bridge is left over?
 
-Try again on Map B: cross all eight bridges, each one exactly once. Write your
-best attempt, and write which bridge was left over at the end.
-
-\vspace{3cm}
+\vspace{3.4cm}
 
 \clearpage
 
-{\bf Question 2}: Forget the whole map for a moment and look at
-\textbf{one} piece of land, with only the bridge-ends that touch it.
+{\bf Question 2}: One piece of land, on its own. Arriving uses up one bridge,
+leaving uses up another --- so bridges get used in \textbf{pairs}.
 
-You are in the middle of your tour. Every time you \emph{arrive} you use up one
-bridge, and every time you \emph{leave} you use up another. So the bridges at
-this piece of land get used in \textbf{pairs}: one to come in, one to go out.
-
-Below are four pieces of land, with 2, 3, 4 and 5 bridges. On each one, join
-two bridge-ends with a curved line, like this \tikz[baseline=-0.5ex]{\draw[pltblue, dashed, line width=1pt] (0,0) to[bend left=55] (0.7,0);}, to mean
-``in here, out there''. Keep making pairs until no more can be made. The first
-one is done for you.
+Join two bridge-ends with a curved line to mean ``in here, out there''. Pair up
+as far as you can. The first is done.
 
 \vspace{0.4em}
 
@@ -197,23 +173,18 @@ bridges left over & 0 & & & \\[0.45cm] \hline
 \end{tabular}}
 \end{center}
 
-\vspace{0.6em}
+\vspace{0.5em}
 
-(a) On which of the four can you walk straight \emph{through}, without ever
-starting or finishing there? \blank[4.5cm]
+(a) Which ones can you walk straight \emph{through}? \blank[5cm]
 
-(b) What do those numbers of bridges have in common? \blank[5.5cm]
+(b) What do those numbers share? \blank[6cm]
 
-(c) A left-over bridge has no partner, so you can only use it once. That means
-this piece of land must be \\
-\hspace*{1em}\cb the start of the tour \quad \cb the finish \quad
-\cb the start or the finish
+(c) A left-over bridge has no partner, so this land must be the tour's
+\blank[4.5cm]
 
-\vspace{0.7em}
+\vspace{0.8em}
 
-{\bf Question 3}: Back to the map. Count the bridges at each piece of land, and
-write how many of the four have a \textbf{left-over} bridge. Map A, N is filled
-in: three bridges touch N, which is odd, so N has a left-over.
+{\bf Question 3}: Count the bridges on the map. Map A, N is done.
 
 \begin{center}
 {\setlength{\tabcolsep}{7pt}
@@ -228,46 +199,35 @@ Map B (8 bridges) & & & & & \\[0.55cm] \hline
 \end{center}
 
 \begin{minipage}{\textwidth}
-A tour has one start and one finish. So at most \blank[1.2cm] pieces of land
-are allowed to have a left-over bridge.
-
-\vspace{0.3em}
-
-Map A: \cb a tour exists \; \cb no tour \hfill
-Map B: \cb a tour exists \; \cb no tour \hspace*{1cm}
+One start, one finish. So at most \blank[1.2cm] pieces of land may have a
+left-over bridge.
 
 \vspace{0.4em}
 
-Finish the sentence, using the words \emph{left-over} and \emph{start}:
+Map A: \blank[4cm] \hfill Map B: \blank[4cm] \hspace*{0.5cm}
 
-No route can exist on Map B because \underline{\hspace{7.2cm}}
+\vspace{0.4em}
+
+No route on Map B because \underline{\hspace{8.5cm}}
 \end{minipage}
 
-\vspace{0.8em}
+\vspace{0.9em}
 
 \begin{minipage}{0.53\textwidth}
-{\bf Question 4}: Königsberg, 1736. A real city with four pieces of land
-A, B, C, D and seven bridges \emph{a} to \emph{g}. Two pairs of bridges join
-the same two pieces of land; both bridges of a pair must be crossed.
+{\bf Question 4}: Königsberg, 1736. Four pieces of land, seven bridges. Two
+pairs join the same land; both of a pair must be crossed.
 
-\vspace{0.5em}
+\vspace{0.6em}
 
-Count the bridges at each one:
+Bridges: A \blank[0.9cm] B \blank[0.9cm] C \blank[0.9cm] D \blank[0.9cm]
 
-\vspace{0.3em}
+\vspace{0.6em}
 
-A \blank[1cm] \; B \blank[1cm] \; C \blank[1cm] \; D \blank[1cm]
+Is the walk possible? \blank[3.5cm]
 
-\vspace{0.5em}
+\vspace{0.6em}
 
-Use your rule from Question 3. Can the walk be done?
-\quad \cb yes \quad \cb no
-
-\vspace{0.5em}
-
-In 1944 two bridges were destroyed and the walk became possible. Destroying
-just \textbf{one} bridge is already enough. List every single bridge that
-would work: \blank[3cm]
+Destroying one bridge is enough. Which ones work? \blank[3cm]
 \end{minipage}
 \hfill
 \begin{minipage}{0.42\textwidth}
@@ -301,8 +261,7 @@ would work: \blank[3cm]
 
 \parthead{2}{Three kinds of route}
 
-Forget bridges. Here is a different network: five bus stops, and the lines are
-direct bus services between them.
+A different network: five bus stops.
 
 \begin{center}
 \begin{tikzpicture}[x=1cm, y=1cm, thick,
@@ -322,8 +281,7 @@ direct bus services between them.
 \end{tikzpicture}
 \end{center}
 
-{\bf Question 5(a)}: For each route below, look at what it repeats. The first
-row is filled in for you.
+{\bf Question 5(a)}: Fill in the table. First row done.
 
 \begin{center}
 {\setlength{\tabcolsep}{7pt}
@@ -338,41 +296,33 @@ A B C D E & & & \\[0.5cm] \hline
 \end{tabular}}
 \end{center}
 
-{\bf Question 5(b)}: Here are the names. Write the right one in the last column
-of the table above.
+{\bf Question 5(b)}: Write the right name in the last column.
 
 \begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
-A route that repeats \textbf{nothing} is a \textbf{path}. \\
-A route that may repeat stops but \textbf{never repeats a line} is a
-\textbf{trail}. \\
-A route that repeats \textbf{both} is just a \textbf{walk}.
+Repeats nothing: \textbf{path}. \quad Never repeats a line: \textbf{trail}.
+\quad Repeats both: \textbf{walk}.
 \end{tcolorbox}
 
-{\bf Question 5(c)}: Write a route from A to E that repeats a stop but never
-repeats a line. (That is: a trail which is not a path.)
+{\bf Question 5(c)}: A route from A to E that repeats a stop but no line:
 
 \vspace{0.3em}
 
 A \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] E
 
-\vspace{0.8em}
+\vspace{0.9em}
 
-{\bf Question 5(d)}: Go back to your seven-bridge route in Question 1(a). Using
-these three names, it is a \quad \cb walk \quad \cb trail \quad \cb path.
+{\bf Question 5(d)}: Your route in 1(a) is a \blank[3.5cm].
 
-\vspace{0.5em}
+\vspace{0.6em}
 
-{\bf Question 5(e)}: That route can never be a path. Finish the count that
-proves it: a path with 7 lines visits \blank[1.5cm] different pieces of land,
-but the campus map only has \blank[1.5cm].
+{\bf Question 5(e)}: It cannot be a path: 7 lines need \blank[1.5cm] different
+pieces of land, and the map has \blank[1.5cm].
 
 \vspace{0.9cm}
 
-\parthead{3}{Take these predictions to the laptop}
+\parthead{3}{Predictions for the lab}
 
-A computer cannot look at a picture. Fill this page in \textbf{first}, on
-paper, then open the lab with your partner and find out if you were right.
-Here is a new network, with four nodes.
+Fill this in on paper first, then check it in the lab. A new network:
 
 \begin{center}
 \begin{tikzpicture}[x=0.7cm, y=0.7cm, thick,
@@ -390,9 +340,8 @@ Here is a new network, with four nodes.
 \end{center}
 
 \begin{minipage}[t]{0.46\textwidth}
-{\bf Question 6(a)}: Fill in the grid. Write \textbf{1} in row $i$, column $j$
-if a line joins node $i$ and node $j$. Write \textbf{0} if it does not. Row 1
-is done: node 1 is joined to node 2 only.
+{\bf Question 6(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
+$i$ and $j$, else \textbf{0}. Row 1 done.
 
 \vspace{0.4em}
 
@@ -411,67 +360,57 @@ is done: node 1 is joined to node 2 only.
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.5\textwidth}
-{\bf Question 6(b)}: Add up each row of your grid, and compare each total with
-the number of lines meeting that node in the picture.
+{\bf Question 6(b)}: Add up each row, then compare with the picture.
 
-\vspace{0.4em}
+\vspace{0.5em}
 
 row totals: \blank[1cm] \blank[1cm] \blank[1cm] \blank[1cm]
 
-\vspace{0.4em}
+\vspace{0.6em}
 
-What do you find?
+Each row total is the \underline{\hspace{4.4cm}}
 
-\ansline
+\vspace{0.9em}
 
-\vspace{0.8em}
-
-\ansline
+of that node.
 \end{minipage}
 
-\clearpage
-
-{\bf Question 6(c)}: A \textbf{2-step route} from node $i$ to node $j$ means:
-one line from $i$ to somewhere, then one line from there to $j$. Count them on
-the picture, by hand.
-
-\vspace{0.4em}
-
-2-step routes from node 1 to node 3: \; how many? \blank[1.2cm] \;
-list them: $1 \rightarrow$ \blank[1cm] $\rightarrow 3$ \hspace*{2cm}
-
 \vspace{1.2em}
 
-2-step routes from node 1 to node 2: \; how many? \blank[1.2cm] \;
-why? \underline{\hspace{4.6cm}}
+{\bf Question 6(c)}: A \textbf{2-step route} is one line, then one more. Count
+them on the picture.
 
-\vspace{1.2em}
+\vspace{0.5em}
 
-2-step routes from node 2 back to node 2: \; how many? \blank[1.2cm]
+1 to 3: \; how many? \blank[1.2cm] \; list them: $1 \rightarrow$ \blank[1cm]
+$\rightarrow 3$ \hspace*{2cm}
 
-\vspace{1.4em}
+\vspace{1.1cm}
 
-{\bf Question 6(d)}: In the lab you will multiply your grid by itself, giving a
-new grid called $A^2$. Write down, now, what you expect to find in it.
+1 to 2: \; how many? \blank[1.2cm] \; why? \underline{\hspace{4.6cm}}
 
-\vspace{0.4em}
+\vspace{1.1cm}
 
-I expect row 1, column 3 of $A^2$ to be \blank[1.5cm] \qquad
-row 1, column 2 to be \blank[1.5cm]
+2 back to 2: \; how many? \blank[1.2cm]
 
-\vspace{1.2em}
+\vspace{1.2cm}
 
-and the diagonal (row 1 col 1, row 2 col 2, \dots) to be
-\underline{\hspace{6.5cm}}
+{\bf Question 6(d)}: The lab will square your grid. What do you expect in
+$A^2$?
 
-\vspace{1.2em}
+\vspace{0.5em}
 
-\vspace{0.3em}
+row 1, column 3: \blank[1.5cm] \qquad row 1, column 2: \blank[1.5cm]
+
+\vspace{1.1cm}
+
+the diagonal: \underline{\hspace{8cm}}
+
+\vspace{1.3cm}
 
 \begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
-\textbf{Now open the lab, in pairs}, and bring this sheet --- it asks for the
-numbers you just wrote down. One laptop between two people: the person who is
-\emph{not} typing says what they expect before the other one runs the cell.
+\textbf{Now the lab, in pairs.} Bring this sheet. One laptop, two people: the
+one not typing says the answer before the other one runs the cell.
 
 \vspace{0.3em}
 
