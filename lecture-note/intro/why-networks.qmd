@@ -6,11 +6,11 @@ title: "The Pandemic That Ignored the Map"
 
 ## H1N1 Started in Mexico. Spain Was Infected Before Guatemala.
 
-In April 2009 a new strain of influenza, H1N1, began spreading out of Mexico. Nobody had immunity, and every health ministry in the world was asking the same question: when does it get here?
+In April 2009, a new strain of influenza, H1N1, began to spread out of Mexico. No one had immunity. Every health ministry in the world was asking the same question: when does it get here?
 
-The natural way to answer that is with a map. Disease moves from person to person, people are spread across the ground, so an outbreak ought to grow like an ink stain — neighbours first, then outward in rings. Guatemala shares a land border with Mexico. Spain is nine thousand kilometres away, across an ocean.
+The natural way to answer that is with a map. Disease spreads from person to person, and people are spread all over the surface. The outbreak should grow like a stain of ink — neighbours first, then outward in rings. Guatemala shares a land border with Mexico, while Spain is nine thousand kilometres away across an ocean.
 
-The first country outside Mexico to confirm a case was the United States. Spain confirmed its first case before Guatemala did.
+The first country to confirm a case outside Mexico was the United States. Spain confirmed its first case before Guatemala did.
 
 One country pair proves nothing, so here is every country at once. Step through
 the stage below. It opens on the map's own answer — each country's distance from
@@ -67,39 +67,39 @@ the ruler.
 <script src="/assets/anim/h1n1-ruler.js" defer></script>
 ```
 
-There is a trend: far-away places do tend to be later. But look along the dashed
-line at nine thousand kilometres in the first step. Five countries sit within
-four hundred kilometres of it, and the virus reached the first of them on day 41
-and the last on day 121 — six weeks against four months. Kilometres put them in
-the same place; the epidemic did not. Whatever sets the arrival day, it is not
-the distance you can measure on a map.
+The further away a country is, the slower it tends to be to get the infection.
+At 9,000 km along the first dashed line, there are five countries within 400 km
+of that line. The virus reached the first country on day 41 and the last one on
+day 121. That is a difference of six weeks versus four months. Distance puts
+those countries in the same place, but the epidemic did not. What determines the
+date of arrival is not the distance you can measure on a map.
 
 ## A Route That Carries More Traffic Is a Shorter Route
 
-Dirk Brockmann and Dirk Helbing [@brockmann2013hidden] asked what happens if you stop measuring distance across the ground and start measuring it along the routes people actually travel.
+Dirk Brockmann and Dirk Helbing [@brockmann2013hidden] asked what happens if you stop measuring the distance across the ground and start measuring the distance along the path people actually take.
 
-Air travel is the obvious candidate, and it is easy to write down. Take every commercial airport and call it a **node**. Wherever a scheduled route connects two airports, draw an **edge** between them. Dots and lines — that is the whole vocabulary of this course, and you have now met all of it.
+Air travel is an obvious candidate and easy to describe. Call every commercial airport a **node**. Wherever a scheduled route connects two airports, draw an **edge** between them. Dots and lines — that's the whole vocabulary of this course, and you have now met all of it.
 
-Here is the move that makes it work. The edges are not all the same length. Of everyone who boards a plane in Mexico City, a large share land in Los Angeles and a very small share land in Ljubljana. A route that carries a big share of the traffic is a *short* route, because a traveller — and therefore the virus — is likely to take it. A route that carries a trickle is a long one. The **effective distance** between two airports is then the smallest total you can accumulate along any chain of flights joining them, exactly the way a road atlas gives you the shortest drive, except that "long" and "short" now mean traffic share instead of kilometres.
+What makes it work is that the edges are not all the same length. A large share of passengers from Mexico City end up in Los Angeles, while only a very small share end up in Ljubljana. A route that carries a big share of the traffic is a *short* route, because a traveller — and therefore the virus — is likely to take it. A route that carries a trickle is a long one. The **effective distance** between two airports is the smallest possible sum of leg lengths along any chain of flights connecting them. It is exactly like a road atlas showing the shortest drive, except that "long" and "short" refer to traffic share instead of kilometres.
 
-Put numbers on it. Suppose one in ten passengers leaving Mexico City lands in Madrid, and one in a thousand lands in Guatemala City. On Brockmann and Helbing's scale the Madrid leg has length 3.3 and the Guatemala City leg has length 7.9. Madrid is the near neighbour, Guatemala City the far one, and the map says the opposite.
+Suppose that 1 out of 10 passengers leaving Mexico City lands in Madrid, and 1 out of 1000 lands in Guatemala City. On the scale of Brockmann and Helbing, the Madrid leg has length 3.3, whereas the Guatemala City leg has length 7.9. Madrid is the near neighbour, Guatemala City the far one, and the map says the opposite.
 
 ::: {.callout-note title="The formula, if you want it"}
-If a fraction $p$ of the passengers leaving an airport take a particular route, that leg is given length $1 - \log p$ (natural log). A leg carrying all the traffic, $p = 1$, has length 1; halving the share adds about 0.7. The effective distance between two airports is the smallest sum of leg lengths over all routes between them — an ordinary shortest path, on these lengths. That is the whole definition; $p = 0.1$ gives $1 - \log 0.1 = 3.3$ and $p = 0.001$ gives $7.9$.
+If the fraction of passengers leaving the airport who take a particular route is $p$, the length of that leg is defined as $1 - \log p$ (natural log). A leg carrying all the traffic, $p = 1$, has length 1; halving the share adds about 0.7. The effective distance between two airports is the smallest sum of leg lengths over all routes between them — an ordinary shortest path, on these lengths. This is the whole definition; $p = 0.1$ gives $1 - \log 0.1 = 3.3$, and $p = 0.001$ gives $7.9$.
 :::
 
-That is the ruler the stage above switches to at step three, and it is the whole
-reason the cloud collapsed. Brockmann and Helbing report a fit of $R^2 = 0.973$.
-(An $R^2$ runs from 0, meaning the line tells you nothing about arrival day, to
-1, meaning the line is exact.) The same picture holds for the 2003 SARS outbreak.
-No new data was collected between the two rulers and nothing about the virus
-changed. Only the ruler changed.
+The stage above switches to the new ruler at step three, and that is why the
+cloud collapses. Brockmann and Helbing report a fit of $R^2 = 0.973$. (An $R^2$
+runs from 0, meaning the line tells you nothing about arrival day, to 1, meaning
+the line is exact.) The same picture applies to the 2003 SARS outbreak. No new
+data were collected between the two rulers, and nothing changed about the virus.
+Only the ruler changed.
 
 That is the claim the rest of this course rests on: **network structure, not geography, determines how things spread**.
 
 ## The Same Skeleton Under a Food Web, a Bank and Your Brain
 
-Nothing in that argument was about influenza. It needed only two things: a set of items, and a record of which pairs are joined. Any system that offers those two things gets the same treatment.
+The argument was not about influenza. What it needs are just two things: a set of items, and a record of which pairs are joined. Any system providing these two receives the same treatment.
 
 | System | A node is | An edge is |
 |---|---|---|
@@ -113,11 +113,11 @@ Nothing in that argument was about influenza. It needed only two things: a set o
 
 <!-- TODO(anim): one skeleton, several systems - the same dot-and-line drawing relabelled as airports, neurons, banks, substations, in a single ink colour. -->
 
-Read the middle column again. Nothing in the raw data forced any of those choices. From the same airline timetable you could have made cities the nodes instead of airports, or countries; you could have said an edge exists when *any* route connects two places, or only when more than a thousand passengers a week do. **Deciding what counts as a node and what counts as an edge is a modelling decision, not something the data hands you.** It is also the decision that fixes what you will be able to see: effective distance is measurable at all only because the airports, not the countries, are the things that carry a measurable share of the traffic.
+Read the middle column again. The raw data does not force any of those choices. From the same airline timetable, you could have made cities or countries the nodes instead of airports. You could have defined an edge to exist if *any* route connects two points, or only if it carries more than a thousand passengers a week. **Deciding what counts as a node and what counts as an edge is a modelling decision, not something the data hands you.** The decision also sets what you will be able to see: effective distance is measurable at all only because the airports, not the countries, are the things that carry a measurable share of the traffic.
 
 ## What a Brain and a Power Grid Have in Common Is a Table
 
-Once the nodes and edges are chosen, a network can be put down in two forms. You can draw it — dots with lines between them. Or you can write it down as a list of the joined pairs, one pair per row, which is called an **edge table**. They are the same object, and it is worth checking that claim by hand rather than taking it on trust: every line on the left is one row on the right.
+Once you have chosen the nodes and edges, you can represent the network in two forms. One is a set of points connected by lines, and the other is a list of the joined pairs, one pair per row, called an **edge table**. These are the same object, and it is worth checking that claim by hand rather than taking it on trust. Each line on the left corresponds to a row on the right.
 
 <figure class="anim-stage">
 <div class="anim-grid-2">
@@ -159,23 +159,23 @@ Once the nodes and edges are chosen, a network can be put down in two forms. You
 
 <!-- TODO(anim): draw an edge in the picture and watch the matching row appear in the table, and the reverse. -->
 
-Five nodes fit in a picture. The air-travel network behind the H1N1 result does not: it has thousands of airports and tens of thousands of routes, and drawn as dots and lines it is a black smudge in which no individual connection can be seen. Zooming does not help, and neither does a better layout algorithm — there is simply more ink than the page has room for. The edge table is unbothered by size. It just gets longer, and a computer reads a long table as happily as a short one.
+Five nodes fit on a page. The air-travel network behind the H1N1 result does not. It has thousands of airports and tens of thousands of routes, and if you draw it with dots and lines, it becomes a black smudge where individual connections disappear. Zooming in does not help, and neither do better layout algorithms — there is simply too much ink for the page. The edge table is unaffected by size. The table just gets longer, and a computer reads a long table as easily as a short one.
 
-The table is also what makes this one field instead of ten. Two columns of labels look identical whether the labels are airports, neurons, banks or Wikipedia articles, so a method that works on one works on all of them. That is the bargain of the abstraction, and it is worth stating what each side of it costs: the table *keeps* exactly one kind of information, which pairs are joined, and *discards* everything else — how far apart the nodes are, how big they are, what they are made of, what year it is. The H1N1 story is what that bargain buys. Throwing away the kilometres is precisely what let the arrival times line up.
+The table is also the reason this is one field and not ten. The two columns of labels look the same whether they are airports, neurons, banks or Wikipedia articles, so any method that works on one will work on them all. This is the bargain of the abstraction, and it is worth stating the cost on each side. The table *keeps* only one piece of information — which pairs are joined — and *discards* everything else: how far apart the nodes are, how big they are, what they are made of, what year it is. The H1N1 story is what that bargain buys. Throwing away the kilometres was exactly what let the arrival times line up.
 
 ## If It Fits in a Spreadsheet, Why Is There a Whole Field?
 
-A two-column table is exactly the sort of thing statistics and machine learning already handle. So why not load the edge table into the usual tools and be done?
+A two-column table is exactly the same species of data that statistics and machine learning have been dealing with all along. So why not just load the edge table into your regular tools and be done?
 
-Because nothing interesting about a network lives in a row. It lives in how the rows combine.
+Because nothing interesting about a network lives in a single row; it lives in how the rows combine.
 
-In 1739 Jacques de Vaucanson exhibited a mechanical duck in Paris. It flapped its wings, took grain from a visitor's hand, swallowed it, and some minutes later excreted pellets. It was the great advertisement for **reductionism**: understand each part, build each part, put the parts together, and the behaviour of the whole follows.
+In 1739, Jacques de Vaucanson displayed a mechanical duck in Paris. The duck could flap its wings, take grain from the hand of a visitor, swallow it, and then excrete pellets after a few minutes. It was a grand advertisement for **reductionism** — the idea that if you understand each part and build each part, and put the parts together, the behaviour of the whole will follow.
 
 It was also a fraud. The duck digested nothing. The swallowed grain went into one compartment, and the pellets it produced had been loaded into a second compartment before the show — the conjurer Jean-Eugène Robert-Houdin, who restored the machine a century later, reported the hidden mechanism. Keep that image, because it is the honest one: a machine assembled from duck-shaped parts produced duck-shaped output, and there was still no duck inside it. ([Digesting Duck](https://en.wikipedia.org/wiki/Digesting_Duck))
 
-Networks break the reductionist recipe in a specific and repeatable way: the properties that matter belong to the pattern of connections, not to any component. You can know every neuron in a brain and still not know how a memory is stored. You can profile every person in a movement and still not predict which slogan spreads. You can own every computer on the internet and still not explain a traffic jam that appears on it.
+Networks break the reductionist recipe in specific, repeatable ways. The properties that matter belong to how the components connect, not to the components themselves. Knowing every neuron in a brain does not tell you how a memory is stored. Profiling every person in a movement does not tell you which slogan will spread. Owning every computer on the internet does not explain a traffic jam that appears on it.
 
-Two things go wrong at once. Scale overwhelms intuition: you can hold the relationships among three people in your head, and you cannot do it for three million. And the effects of a change are wildly uneven. Go back to the five-node network above and take away a single edge.
+Two things go wrong at once. The scale of the network is beyond your intuition: you can keep track of the relationships among three people in your head, but it is impossible to do so for three million. And the impact of a change is highly uneven. Go back to the five-node network above and remove a single edge.
 
 <figure class="anim-stage">
 <div class="anim-grid-2">
@@ -226,19 +226,19 @@ Two things go wrong at once. Scale overwhelms intuition: you can hold the relati
 <div class="anim-caption">Cut 3&ndash;5: node 5 is gone.</div>
 </div>
 </div>
-<figcaption class="anim-caption">One edge removed, two different networks. The edge table gives no hint which removal is which.</figcaption>
+<figcaption class="anim-caption">Removing one edge results in two different networks, and the edge table gives no hint which removal corresponds to which network.</figcaption>
 </figure>
 
 <!-- TODO(anim): let the reader click any edge of a small network to delete it, and colour the pieces that fall off. -->
 
-Cut edge 2&ndash;3 and nothing is lost: 2 still reaches 3, by way of 1. Cut edge 3&ndash;5 instead and node 5 drops off the network entirely — nothing reaches it and it reaches nothing. Same network, same size of edit, opposite consequence. Both edges look identical in the edge table: one row of two numbers each. You cannot tell them apart by looking at a row; you have to look at the pattern the rows make together.
+If you cut edge 2&ndash;3, nothing is lost: 2 can still reach 3 by going through 1. If you instead cut edge 3&ndash;5, node 5 becomes isolated — it reaches nothing and nothing reaches it. Same network, same size of edit, opposite consequence. Both edges look identical in the edge table, a single row of two numbers. You cannot tell them apart just by looking at a row; you have to look at the pattern the rows make together.
 
 Now scale that question up. Of the hundred thousand transmission lines in a power grid, which ones are the 3&ndash;5? That question has no answer in ordinary statistics, and it is the reason this field exists.
 
 ## What You Can Now Do
 
-- Explain why distance measured through a network beats distance measured across a map when you want to predict when something arrives, and say what effective distance counts.
-- Take a system you care about and state what its nodes and edges are — while knowing that you decided that, and the data did not.
+- Explain why distance measured through a network beats distance measured across a map when predicting arrival times, and say what effective distance counts.
+- Choose a system you care about and define its nodes and edges. Recognise that the definitions of nodes and edges are your own decisions, not ones made by the data itself.
 - Write any network as an edge table, and say what the table keeps (which pairs are joined) and what it throws away (everything else).
 - Say why a table of pairs is where network science starts rather than where it stops.
 
