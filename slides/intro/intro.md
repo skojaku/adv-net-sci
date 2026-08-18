@@ -754,9 +754,9 @@ Twenty minutes, before the second week: <a href="https://skojaku.github.io/adv-n
 <hr>
 
 * Twenty-six topics, on the course site: <a href="https://skojaku.github.io/adv-net-sci/course/student-lecture.html">skojaku.github.io/adv-net-sci/course/student-lecture.html</a>
-* You claim one, and build a 15 to 20 minute lecture on it.
-* An interactive part is required: a worksheet, an exercise the room works through, live coding.
-* A talk with no activity does not count, however good the talk is.
+* Alone, or in a team of up to three. Claim a topic on Discord.
+* 15 to 20 minutes, with something the class has to do: a worksheet, an exercise, live coding.
+* A talk with no activity does not pass, however good the talk is.
 
 ---
 
