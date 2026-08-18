@@ -2,14 +2,22 @@
 title: "Exercises and Assignments"
 ---
 
+## Pen and Paper: Cross Every Bridge Once, or Prove Nobody Can
+
+A campus on both banks of a creek, two islands, and seven footbridges you have to tour without repeating one. You find the tour, then the development office builds an eighth bridge and the tour dies. Keeping a ledger of arrivals and departures at each landmass is what tells you which map is which — and it settles Königsberg, in under a minute, on the last page.
+
+- [Cross Every Bridge Once, or Prove Nobody Can](./pen-and-paper/exercise.pdf)
+
+Do this **before** the reading. The whole point is to reach Euler's argument with your own pencil, so that the lecture note only has to give it a name.
+
 ## Exercise: decide whether a network has an Eulerian trail
 
-Two problems, both ending in the same question Euler asked. Expect about an hour.
+You have two problems, both of which boil down to the same question Euler asked. It will take roughly an hour.
 
 1. **Binghamton, not Königsberg.** Turn the rivers and bridges of Binghamton, NY into a graph of landmasses and bridges, build its adjacency matrix, and decide whether you can cross every bridge exactly once.
 2. **A network you did not draw.** Pick any network under 5,000 nodes from [Netzschleuder](https://networks.skewed.de/), load its edge list with `pandas`, build the adjacency matrix from it, draw it, and run the same test.
 
-The second one is the point of the exercise: your Euler test has to work on data you have never looked at, which means it has to be written in terms of degrees rather than in terms of a picture.
+The second problem is the key to this exercise. Your Euler test must be able to work on data you have never looked at. That is to say, it must be written in terms of degrees, not in terms of a picture.
 
 **[Open the exercise notebook]({{< var molab.m01_exercises >}})** — it runs in your
 browser, with nothing to install and nothing to sign into.
@@ -20,6 +28,6 @@ Run it with `marimo edit notebooks/m01-euler-tour/03-exercises.py`.
 
 ## Assignments
 
-Neither graded assignment runs in this module. The [Pair Notebook](../course/pair-notebook.qmd) and the [Group Mini-Project](../course/mini-project.qmd) both start with Module 2. The exercise above is practice, not a submission.
+In this module, neither graded assignment runs. Both the [Pair Notebook](../course/pair-notebook.qmd) and the [Group Mini-Project](../course/mini-project.qmd) start from Module 2. The exercise above is for practice only and not for submission.
 
 Use the time to finish [setting up your machine](../course/setup.qmd) instead — the first Pair Notebook assumes it is already done.

@@ -2,16 +2,16 @@
 title: "Hands-on: Three Ways to Store a Network"
 ---
 
-Königsberg is small enough to solve by staring at it. The point of this notebook is to solve it the way you would solve a network with a million nodes.
+Königsberg is so small that it can be solved just by looking at it. The goal of this notebook is to solve it the way you would solve a network with a million nodes.
 
 ::: {.callout-note title="Where the code lives"}
-This course keeps its lecture note free of runnable code. Everything you
-execute lives in a marimo notebook, so it stays interactive and reactive
-instead of being a wall of output frozen into a web page.
+This course will not include any runnable code in the lecture note. Everything
+you run will be done inside a marimo notebook. The notebook is interactive and
+reactive, not a wall of fixed output frozen into a web page.
 
 **[Run this notebook]({{< var molab.m01 >}})** — it runs in your browser, with
-nothing to install and nothing to sign into. The first load takes a few seconds
-while Python itself is downloaded.
+nothing to install and nothing to sign into. The first time you load it, Python
+itself takes a few seconds to download.
 
 Prefer to work locally? The notebook is in the repository at
 [`notebooks/m01-euler-tour/coding.py`](https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py).
@@ -21,12 +21,12 @@ Run it with `marimo edit notebooks/m01-euler-tour/coding.py`.
 ## What you will build
 
 1. Store the same network three ways — edge list, adjacency list, adjacency matrix, all three defined on the [vocabulary page](01b-vocabulary.qmd) — and convert between them.
-2. Compute degree from each representation and confirm the three agree.
+2. Compute the degree from each representation and confirm the three agree.
 3. Write checks that decide whether a given sequence is a walk, a trail, or a path.
-4. Find connected components with depth-first search.
+4. Find the connected components using depth-first search.
 5. Put it together into a function that answers Euler's question for any network.
 
 ## What to watch for
 
-- The three representations are not interchangeable in cost. For each operation, ask which representation makes it cheap — that instinct is what the rest of the course runs on.
+- These three representations are not cost-equivalent. Which operation does one representation make cheap while another makes it expensive? This intuition is at the heart of the rest of the course.
 - Your component finder is the same algorithm you will use in Module 3 to measure how much of a network survives an attack.

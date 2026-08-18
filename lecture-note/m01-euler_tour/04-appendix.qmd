@@ -2,31 +2,31 @@
 title: "Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit"
 ---
 
-Three things the main text used without justifying: that Euler's conditions are not merely necessary but sufficient, that a matrix product counts walks, and that an adjacency matrix can be stored in a fraction of $N^2$ numbers. Here they are.
+There are three things that the main text used without justification: (i) Euler's conditions are not only necessary but also sufficient; (ii) a product of matrices counts the number of walks; and (iii) an adjacency matrix can be stored in a fraction of $N^2$ numbers. Here they are.
 
 ## Why Euler's conditions are enough
 
-The [concepts page](01-concepts.qmd) proved one half of Euler's theorem: *if* a route crosses every edge exactly once, *then* at most two nodes have odd degree. That is what kills Königsberg. The other half — that a connected graph with zero or two odd-degree nodes always *has* such a route — needs a construction, and the construction is short.
+The [concepts page](01-concepts.qmd) proved the first half of Euler's theorem: *if* a route crosses every edge exactly once, *then* there are at most two nodes with an odd degree. This is why the Königsberg problem is impossible. The second half — if a connected graph has zero or two odd-degree nodes, then such a route always exists — requires a construction, and the construction is short.
 
-Take a connected graph in which **every** node has even degree, and start walking anywhere, never re-using an edge. Keep going until you are stuck. You can only get stuck at the node you started from: any other node you entered has been entered and left in pairs, so having just arrived, you have used an odd number of its edges, and its degree being even leaves at least one edge to depart by. So the walk closes into a circuit.
+Suppose that in a connected graph **every** node has even degree. Start walking anywhere, never re-using an edge, until you are stuck. The only node you can get stuck at is the one you started from, because every other node was entered and left in pairs, so having just arrived, you have used an odd number of its edges, and since its degree is even, there is always at least one unused edge to depart by. Thus your walk eventually closes on itself and becomes a circuit.
 
-That circuit may miss some edges. If it does, connectivity guarantees that some node *on* the circuit still has an unused edge. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.
+If that circuit misses some edges, then connectivity guarantees an unused edge at one of the nodes *on* the circuit. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.
 
-For the two-odd-node case, add a temporary extra edge joining the two odd nodes. Now every degree is even, so the construction above gives a circuit; delete the temporary edge from it and what remains is an Eulerian trail running from one odd node to the other. This is Hierholzer's algorithm, and it is also how you would code it.
+In the case of two odd-degree nodes, add a temporary extra edge joining the two odd nodes. Because every degree is now even, the construction above gives a circuit. After deleting the temporary edge from that circuit, an Eulerian trail remains, running from one odd node to the other. This is Hierholzer's algorithm, and it is also how you would code it.
 
 ## Why matrix powers count walks
 
-Write ${\bf A}$ for the adjacency matrix, so $A_{ij}$ is the number of edges between $i$ and $j$.
+Let us write ${\bf A}$ for the adjacency matrix of the graph, where $A_{ij}$ is the number of edges between node $i$ and node $j$.
 
-A walk of length 2 from $i$ to $j$ consists of a choice of intermediate node $\ell$, an edge from $i$ to $\ell$, and an edge from $\ell$ to $j$. There are $A_{i\ell}$ ways to make the first choice and $A_{\ell j}$ ways to make the second, so $A_{i\ell}A_{\ell j}$ walks pass through that particular $\ell$. The intermediate node can be anything, and the possibilities do not overlap, so add them up:
+A walk of length 2 from $i$ to $j$ is composed of a choice of intermediate node $\ell$, an edge from $i$ to $\ell$, and an edge from $\ell$ to $j$. There are $A_{i\ell}$ choices for the first selection and $A_{\ell j}$ choices for the second, resulting in $A_{i\ell}A_{\ell j}$ walks passing through that particular $\ell$. The intermediate node can be anything, and the possibilities do not overlap, so add them up:
 
 $$
 \#\{\text{walks of length } 2 \text{ from } i \text{ to } j\} = \sum_{\ell} A_{i\ell} A_{\ell j} = \left({\bf A}^2\right)_{ij}.
 $$
 
-That sum — run along row $i$ and down column $j$, multiply entry by entry, add — is the definition of the matrix product, which is why the answer is $\left({\bf A}^2\right)_{ij}$ and not merely something resembling it.
+You run along row $i$, down column $j$, multiply entry by entry, and add. That is the definition of the matrix product. So the answer is $\left({\bf A}^2\right)_{ij}$, not merely something resembling it.
 
-Now induct on the length. A walk of length $k+1$ from $i$ to $j$ is a walk of length $k$ from $i$ to some node $\ell$, followed by a single edge from $\ell$ to $j$. Assuming the claim for $k$, the number of such walks is
+We now proceed by induction on the length. A walk of length $k+1$ from $i$ to $j$ is a walk of length $k$ from $i$ to some node $\ell$, followed by a single edge from $\ell$ to $j$. Assuming the claim holds for $k$, the number of such walks is
 
 $$
 \sum_{\ell} \left({\bf A}^{k}\right)_{i\ell} A_{\ell j} = \left({\bf A}^{k}{\bf A}\right)_{ij} = \left({\bf A}^{k+1}\right)_{ij},
@@ -34,13 +34,13 @@ $$
 
 which is the claim for $k+1$. The base case $k=1$ is the definition of ${\bf A}$ itself.
 
-Two footnotes. The argument never asks whether a node or an edge is reused, which is precisely why it counts walks and not paths. And it never uses symmetry, so it holds verbatim for directed networks, with $A_{ij}$ counting edges pointing from $i$ to $j$.
+There are two footnotes. This argument never asks whether a node or an edge is reused, which is exactly why it counts walks and not paths. It never uses symmetry either, so it holds verbatim for directed networks, where $A_{ij}$ counts the edges pointing from $i$ to $j$.
 
 ## Storing a matrix that does not fit
 
-A dense adjacency matrix for Earth's 8 billion people would have $(8\times 10^{9})^2 = 6.4\times 10^{19}$ entries; at 8 bytes each, that is 512 exabytes. Real networks are sparse, and this notebook is about exploiting that.
+A dense adjacency matrix for Earth's 8 billion people would have $(8\times 10^{9})^2 = 6.4\times 10^{19}$ entries. If each entry takes 8 bytes, that is a total of 512 exabytes. Real networks are sparse, and this notebook focuses on exploiting that sparsity.
 
-Storing an adjacency matrix as a full table wastes almost all of it: a real network has a handful of edges per node, so nearly every entry is zero. The fix is to write down only the entries that are not zero.
+If you store an adjacency matrix as a full table, almost all of the space is wasted. In a real network, each node has only a handful of edges, and therefore nearly every entry is zero. The fix is to write down only the entries that are not zero.
 
 Start from an **adjacency list** — for each row of the matrix, the column IDs that carry a value, and the values themselves:
 
@@ -58,12 +58,12 @@ $$
 
 `indptr` is the only one that needs a moment's thought. It is the running total of how many entries each row contributed, beginning at 0 — so `indptr[i]` is the position in `indices` where row $i$ begins, and `indptr[i+1]` is where it ends. Row 0 occupies positions `0 … indptr[1]-1`, row 1 picks up at `indptr[1]`, and so on.
 
-Once you see that, two network operations become one-liners that need no library at all:
+Once you see that, these two network operations become library-free one-liners:
 
 - **Degree of node $i$**: `indptr[i+1] - indptr[i]` — the number of non-zero entries in row $i$.
 - **Neighbours of node $i$**: `indices[indptr[i]:indptr[i+1]]` — the column IDs in row $i$, which are exactly the nodes $i$ connects to. The matching edge weights are `data[indptr[i]:indptr[i+1]]`.
 
-This is why CSR is the format every network library reaches for: the operation you perform most often — "give me this node's neighbours" — is a contiguous slice.
+CSR is the format every network library reaches for, because it makes the operation you perform most often — "give me this node's neighbours" — a contiguous slice.
 
 Now go and build it.
 
@@ -85,9 +85,9 @@ Run it with `marimo edit notebooks/m01-euler-tour/sparse-matrices.py`.
 
 ### What to watch for
 
-- Plot memory against network size for both formats. The curves diverge faster than intuition suggests: dense storage grows with the square of the number of nodes, while CSR grows in proportion to nodes plus edges.
-- CSR is fast for row-based operations and matrix-vector products, and slow at repeatedly reading single entries. Time both and you will remember which is which.
-- Compare CSR against COO and CSC on the same operations. The right format depends entirely on what you are about to do with the matrix.
+- Plot the memory usage against the size of the network for both formats. The curves diverge faster than intuition would suggest, because dense storage grows with the square of the number of nodes, while CSR grows in proportion to nodes plus edges.
+- CSR is fast at row-based operations and matrix-vector products, and slow at repeated reads of a single entry. Time both and you'll remember which is which.
+- Compare CSR against COO and CSC on the same operations. Choose the format based on what you are about to do with the matrix.
 
 ::: {.column-margin}
 [A good visual introduction to sparse formats](https://matteding.github.io/2019/04/25/sparse-matrices/) by Matt Eding.
