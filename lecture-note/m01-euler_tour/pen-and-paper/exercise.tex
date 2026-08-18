@@ -1,27 +1,26 @@
-% Pen-and-paper worksheet, compact setting.
+% Pen-and-paper worksheet for Module 1.
 % Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
 %
-% This sheet departs from the 14pt hand-lettered body of the older sheets: at
-% fourteen questions it ran to fourteen pages, which is a lot of paper for one
-% class. The body is set in Charter, which was drawn to stay legible small, and
-% the hand face is kept for the title so the sheet still looks like the others.
+% Set in Charter 12pt rather than the 14pt hand face of the older sheets:
+% Charter was drawn to stay legible small, and the sheet has to fit five parts
+% without becoming a stack of paper. The hand face is kept for the title.
 \documentclass[a4paper, 12pt]{extarticle}
-\usepackage[top=0.85in, bottom=0.8in, left=0.9in, right=0.9in]{geometry}
+\usepackage[top=0.8in, bottom=0.75in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{array}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tcolorbox}
 \usepackage{enumitem}
-\usepackage{multicol}
 \usepackage{etoolbox}
 \usepackage{tikz}
 \usepackage{fontspec}
-\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
+\usetikzlibrary{calc,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
 
-% Body: a readable, economical text face. Guarded, in the usual order of
-% preference, so the file still compiles on a machine that has none of them.
+% Body: a readable, economical text face, guarded so the file still compiles
+% on a machine that has none of them.
 \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
   \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
     \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}
@@ -33,26 +32,37 @@
     \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{}}}
 
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.45em}
+\setlength{\parskip}{0.4em}
 \raggedbottom
 
-% A full-width ruled answer line.
 \newcommand{\ansline}{\underline{\hspace{0.98\textwidth}}}
+\newcommand{\cb}{$\square$~}          % tick box for multiple choice
+\newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
+
+% The molab link printed on the hand-off page. Students type this by hand, so
+% it has to stay short: change it here and nowhere else.
+\newcommand{\molaburl}{\texttt{go.skojaku.com/m01lab}}
+
+% A part heading.
+\newcommand{\parthead}[2]{%
+  \vspace{0.6em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.2em}}
+
+% Centred fill-in cell.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 % ---------------------------------------------------------------------------
-% The campus map. Seven footbridges over the creek; the argument #1 lets Map B
-% add an eighth without redrawing anything else.
+% The campus map: seven footbridges over a creek.
 % ---------------------------------------------------------------------------
-\newcommand{\campusmap}[1]{%
+\newcommand{\campusmap}{%
 \begin{tikzpicture}[x=0.85cm, y=0.85cm, bridge/.style={line width=4pt, black!75}]
-    % water, then the two banks laid over it
     \fill[pltblue!14] (0,0) rectangle (13,6.4);
     \fill[white] (0,4.9) rectangle (13,6.4);
     \fill[white] (0,0)   rectangle (13,1.6);
-    % islands
     \fill[white] (4.3,3.25) ellipse (1.8 and 0.85);
     \fill[white] (9.0,3.25) ellipse (1.8 and 0.85);
-    % footbridges
     \draw[bridge] (3.4,4.02) -- (3.4,4.94);
     \draw[bridge] (5.2,4.02) -- (5.2,4.94);
     \draw[bridge] (9.0,4.06) -- (9.0,4.94);
@@ -60,19 +70,15 @@
     \draw[bridge] (8.3,2.51) -- (8.3,1.56);
     \draw[bridge] (9.7,2.51) -- (9.7,1.56);
     \draw[bridge] (6.14,3.25) -- (7.18,3.25);
-    #1
-    % shorelines, drawn last so every bridge stops at the water's edge
     \draw[thick] (0,4.9) -- (13,4.9);
     \draw[thick] (0,1.6) -- (13,1.6);
     \draw[thick] (4.3,3.25) ellipse (1.8 and 0.85);
     \draw[thick] (9.0,3.25) ellipse (1.8 and 0.85);
     \draw[thick] (0,0) rectangle (13,6.4);
-    % names
     \node[font=\bfseries] at (1.3,5.6)  {N};
     \node[font=\bfseries] at (1.3,0.75) {S};
     \node[font=\bfseries] at (4.3,3.25) {W};
     \node[font=\bfseries] at (9.0,3.25) {E};
-    % bridge letters
     \node[pltblue] at (2.9,4.5)   {\emph{a}};
     \node[pltblue] at (5.7,4.5)   {\emph{b}};
     \node[pltblue] at (8.5,4.5)   {\emph{c}};
@@ -82,298 +88,156 @@
     \node[pltblue] at (6.66,3.62) {\emph{g}};
 \end{tikzpicture}}
 
-% The eighth bridge, and its label.
-\newcommand{\eighthbridge}{%
-    \draw[bridge] (5.65,2.69) to[bend right=30] (7.65,2.69);
-    \node[pltblue] at (6.66,1.85) {\emph{h}};
-}
-
 \begin{document}
 
 \begin{center}
-{\ppfont\LARGE Cross Every Bridge Once, or Prove Nobody Can}
+{\ppfont\LARGE Cross Every Bridge Once, Then Teach a Computer to Do It}
 \end{center}
 
-\vspace{0.3em}
+\vspace{0.2em}
 
-You have a summer job as a campus tour guide. The campus sits on both banks of
-a creek, with two small islands in the middle, all stitched together by
-footbridges. Every footbridge carries a donor's name on a brass plaque, and the
-development office wants a walking tour that crosses \textbf{every footbridge
-exactly once}, so that no donor is left out.
+{\small Work through this \textbf{before} the lecture. You are not supposed to
+know the technical words yet. Every word you need is defined on the sheet
+itself, and always \emph{after} you have already built the thing it names. Use
+a pencil.}
 
-Start anywhere, finish anywhere, set foot on the same landmass as often as you
-like. Do not cross the same footbridge twice, and do not swim.
+\parthead{1}{Seven bridges}
+
+A university campus sits on both banks of a creek. There are two islands in the
+middle. Seven footbridges, \emph{a} to \emph{g}, join the four pieces of land:
+the north bank \textbf{N}, the south bank \textbf{S}, the west island
+\textbf{W}, and the east island \textbf{E}.
+
+You are a campus tour guide. Every footbridge has a donor's name on it, so your
+tour must cross \textbf{every bridge exactly once}.
 
 \begin{center}
-\campusmap{}
+\campusmap
 \end{center}
 
-{\footnotesize N = north bank, \quad S = south bank, \quad W = west island,
-\quad E = east island. \quad The seven footbridges are \emph{a} through
-\emph{g}.}
+{\bf Question 1(a)}: Find a route that crosses all seven bridges, each one
+exactly once. You may start on any piece of land and finish on any piece of
+land. You may step on the same piece of land more than once.
 
-{\bf Question 1}: Find a tour. Write it as the sequence of bridge letters you
-cross. Cross your failed attempts out rather than erasing them --- you will
-want to look at them again.
-
-\vspace{0.3em}
-
-Start at \underline{\hspace{2cm}} \quad then cross
-\underline{\hspace{9.5cm}}
-
-\vspace{0.6em}
-
-Room to try, and to cross out:
-
-\vspace{5cm}
-
-\clearpage
-
-\begin{minipage}{\textwidth}
-{\bf Question 2}: The development office finds one more donor and builds an
-eighth footbridge, \emph{h}, between the two islands.
-
-\begin{center}
-\campusmap{\eighthbridge}
-\end{center}
-\end{minipage}
-
-Before you touch it: does an extra bridge make the tour \textbf{easier} or
-\textbf{harder} to find? Circle one and say why in one sentence. Keep this page
---- you will be asked about your answer again at the end.
+Write your route like this: land, bridge, land, bridge, \dots\ The first two
+steps are done for you. Start on N, cross bridge \emph{a} to reach W, then
+cross bridge \emph{b} back to N.
 
 \vspace{0.4em}
 
-easier \qquad harder \qquad no difference \qquad because
-\underline{\hspace{5.5cm}}
+N \; \emph{a} \; W \; \emph{b} \; N \; \blank[1cm] \; \blank[1cm] \;
+\blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \;
+\blank[1cm]
 
-\vspace{1em}
+\vspace{1.6cm}
 
-Now try it. Give yourself three honest attempts. Each time, write down which
-bridge you were left holding and where you were standing when you ran out.
+{\bf Question 1(b)}: Draw an \textbf{eighth} bridge on the map above. Call it
+\emph{h}, and draw it between W and E, just below bridge \emph{g}. The map now
+has eight bridges. Call it \textbf{Map B}.
+
+Try again on Map B: cross all eight bridges, each one exactly once. Write your
+best attempt, and write which bridge was left over at the end.
 
 \vspace{3cm}
 
-{\bf Question 3}: {\bf Throw the map away.} Redraw the seven-bridge campus (Map
-A, no bridge \emph{h}) using only four dots and seven lines. Then draw it a
-\emph{second} time with the four dots in completely different positions --- put
-W above N if you like.
-
-\vspace{4.8cm}
-
-Is the tour question the same for both drawings? What did you throw away when
-you replaced the map with dots and lines, and how do you know that throwing it
-away was safe?
-
-\vspace{3.2cm}
-
 \clearpage
 
-\begin{minipage}{\textwidth}
-{\bf Question 4}: {\bf Keep the books.} Take the tour you found in Question 1.
-Walk it again slowly, and at each landmass count two things separately: how
-many times you \textbf{arrived} there by crossing a bridge, and how many times
-you \textbf{left} it by crossing a bridge. Then count how many bridges touch
-that landmass in the first place.
+{\bf Question 2}: Fill in the table below for the \textbf{seven-bridge} map,
+using the route you found in Question 1(a).
+
+For each piece of land, count three things:
+
+\begin{itemize}[leftmargin=1.4em, itemsep=0pt, topsep=2pt]
+\item \textbf{arrivals} --- how many times you walked \emph{onto} it,
+\item \textbf{departures} --- how many times you walked \emph{off} it,
+\item \textbf{bridges} --- how many bridges touch it on the map.
+\end{itemize}
+
+\textbf{Worked example.} Take the route
+N \emph{a} W \emph{b} N \emph{c} E \emph{g} W \emph{d} S \emph{e} E \emph{f} S.
+At N you leave by \emph{a}, come back by \emph{b}, and leave again by \emph{c}.
+So N has 1 arrival and 2 departures, and 3 bridges touch it. That row is filled
+in for you. (If you could not find a route in Question 1(a), use this one.)
 
 \begin{center}
 {\setlength{\tabcolsep}{6pt}
-\begin{tabular}{|p{2.1cm}|p{1.9cm}|p{1.7cm}|p{2.9cm}|p{2.6cm}|}
+\begin{tabular}{|C{1.9cm}|C{2.1cm}|C{2.4cm}|C{3.2cm}|C{2.6cm}|}
 \hline
-\textbf{Landmass} & \textbf{arrived} & \textbf{left} &
-\mbox{\textbf{arrived + left}} & \textbf{bridges here} \\
+\textbf{land} & \textbf{arrivals} & \textbf{departures} &
+\textbf{arrivals + departures} & \textbf{bridges} \\
 \hline
-N & & & & \\[0.55cm] \hline
-W & & & & \\[0.55cm] \hline
-S & & & & \\[0.55cm] \hline
-E & & & & \\[0.55cm] \hline
+N & 1 & 2 & 3 & 3 \\[0.25cm] \hline
+W & & & & \\[0.5cm] \hline
+S & & & & \\[0.5cm] \hline
+E & & & & \\[0.5cm] \hline
 \end{tabular}}
 \end{center}
-\end{minipage}
 
-Two of these columns came out identical. Which two, and why did they have to?
+Are the last two columns equal on every row? \quad \cb yes \quad \cb no
 
-\vspace{2.8cm}
+\vspace{0.6em}
 
-{\bf Question 5}: Look down the table. At exactly two landmasses, ``arrived''
-and ``left'' disagree. Name them, and say what those two landmasses were doing
-in your tour.
-
-\vspace{2.6cm}
-
-Now finish these two sentences, using the last column of the table.
-
-\vspace{0.4em}
-
-A landmass you only ever \emph{pass through} must have an
-\underline{\hspace{2.5cm}} number of bridges, because
-
-\ansline
-
-\vspace{1em}
-
-A landmass with an \emph{odd} number of bridges can only be
-
-\ansline
-
-\clearpage
-
-\begin{minipage}{\textwidth}
-{\bf Question 6}: Go back to Map B, the eight-bridge campus. \textbf{Without
-walking a single route}, write down how many bridges touch each landmass on
-each map, and decide the case.
-
-\begin{center}
-{\setlength{\tabcolsep}{10pt}
-\begin{tabular}{|p{2.2cm}|p{1.7cm}|p{1.7cm}|p{1.7cm}|p{1.7cm}|}
-\hline
- & N & W & S & E \\
-\hline
-Map A & & & & \\[0.6cm] \hline
-Map B & & & & \\[0.6cm] \hline
-\end{tabular}}
-\end{center}
-\end{minipage}
-
-A tour has one beginning and one end. So at most \underline{\hspace{1.5cm}}
-landmasses may have an odd number of bridges. Map A has
-\underline{\hspace{1.5cm}}, and Map B has \underline{\hspace{1.5cm}}.
-
-Write the verdict on Map B as a sentence starting ``No tour can exist,
-because\dots'' --- not ``I could not find one''.
-
-\vspace{3cm}
-
-{\bf Question 7}: The number of bridges touching a landmass is its
-\textbf{degree}, and a tour crossing every bridge exactly once is an
-\textbf{Eulerian trail}. You have just derived the test for one. State it.
-
-\vspace{0.4em}
-
-A campus has an Eulerian trail when
-
-\ansline
-
-\vspace{1em}
-
-\ansline
-
-\vspace{1em}
-
-Now the development office adds a condition: the tour must \textbf{end back at
-the food truck it started from}. What changes in the sentence you just wrote,
-and why? Answer with the ``arrived / left'' bookkeeping, not by trying routes.
-
-\vspace{3.6cm}
-
-\clearpage
-
-{\bf Question 8}: Look at your Map A tour once more and answer two small
-questions about it.
+{\bf Question 3}: Read your table and tick one box in each line.
 
 \vspace{0.3em}
 
-Did you cross any bridge twice? \underline{\hspace{3cm}}
+(a) Two pieces of land have arrivals $\neq$ departures. They are
+\blank[1.6cm] and \blank[1.6cm].
 
-Did you set foot on any landmass twice? \underline{\hspace{3cm}}
+(b) In your route, those two pieces of land are \\
+\hspace*{1em}\cb the first one and the last one \quad
+\cb two in the middle \quad \cb nothing special
 
-\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
-Three names for three levels of strictness. A \textbf{walk} is any sequence of
-landmasses joined by bridges --- repeat whatever you like. A \textbf{trail}
-never repeats a \emph{bridge}. A \textbf{path} never repeats a
-\emph{landmass}. Close any of them up so that it ends where it began and you
-get a \textbf{circuit} (a closed trail) or a \textbf{cycle} (a closed path).
-\end{tcolorbox}
+(c) A piece of land that you only pass \emph{through} has an \\
+\hspace*{1em}\cb even \quad \cb odd \quad number of bridges.
 
-Which of the three is your Map A tour? \underline{\hspace{4cm}}
+(d) A route has one start and one finish. So a route crossing every bridge
+exactly once can exist only if the number of pieces of land with an
+\textbf{odd} number of bridges is \\
+\hspace*{1em}\cb 0 or 2 \quad \cb exactly 1 \quad \cb exactly 3 \quad
+\cb any number
 
-\vspace{0.6em}
+(e) Count again on Map B, the eight-bridge map. It has \blank[1.2cm] pieces of
+land with an odd number of bridges. Finish this sentence:
 
-Could a route crossing all seven of Map A's bridges ever be a \emph{path}?
-Answer with a count, not with an attempt.
-
-\vspace{3cm}
-
-{\bf Question 9}: Add up the degrees of all four landmasses of Map A:
-\underline{\hspace{2.5cm}} Compare that total with the number of bridges, and
-explain the relationship in one sentence, in terms of what every bridge has two
-of.
-
-\vspace{2.6cm}
-
-Now use it. Design a campus with \textbf{exactly three} landmasses of odd
-degree. Try hard, then report what happened and why.
-
-\vspace{4.5cm}
-
-\clearpage
-
-\begin{minipage}{\textwidth}
-{\bf Question 10}: {\bf Break your own rule.} Below are eight blank landmasses.
-Draw bridges so that \emph{every} landmass has an even degree, and yet no tour
-crossing every bridge exactly once exists.
-
-\begin{center}
-\begin{tikzpicture}[x=0.85cm, y=0.85cm, thick,
-                    every node/.style={draw, circle, minimum size=0.95cm,
-                                       inner sep=1pt, fill=white}]
-    \node at (0,1.5)    {};  \node at (2.4,1.5)   {};
-    \node at (4.8,1.5)  {};  \node at (7.2,1.5)   {};
-    \node at (0,-1.5)   {};  \node at (2.4,-1.5)  {};
-    \node at (4.8,-1.5) {};  \node at (7.2,-1.5)  {};
-\end{tikzpicture}
-\end{center}
-\end{minipage}
-
-Your answer to Question 7 promised such a tour \emph{would} exist. Go back and
-add the clause you were missing. Write it here too.
-
-\vspace{2.6cm}
-
-{\bf Question 11}: {\bf Repair the campus.} Map B has no tour. You have two ways
-to fix it: build new footbridges, or close existing ones.
-
-\vspace{0.4em}
-
-Fewest new bridges to build: \underline{\hspace{1.6cm}} \quad between which
-landmasses? \underline{\hspace{3.8cm}}
-
-\vspace{0.6em}
-
-Fewest existing bridges to close: \underline{\hspace{1.6cm}} \quad which ones?
-\underline{\hspace{4.6cm}}
+No route can exist on Map B because \underline{\hspace{7.4cm}}
 
 \vspace{0.8em}
 
-Both answers came out the same size. Say what a single bridge does to the count
-of odd-degree landmasses, and why that explains it.
+\begin{minipage}{0.53\textwidth}
+{\bf Question 4}: Königsberg, 1736. A real city with four pieces of land
+A, B, C, D and seven bridges \emph{a} to \emph{g}. Two pairs of bridges join
+the same two pieces of land; both bridges of a pair must be crossed.
 
-\vspace{2.8cm}
+\vspace{0.5em}
 
-A campus is all one piece and has $2k$ landmasses of odd degree. What is the
-fewest new bridges needed to make a tour possible? Give the number in terms of
-$k$, and justify it.
+Count the bridges at each one:
 
-\vspace{3.4cm}
+\vspace{0.3em}
 
-\clearpage
+A \blank[1cm] \; B \blank[1cm] \; C \blank[1cm] \; D \blank[1cm]
 
-\begin{minipage}{\textwidth}
-{\bf Question 12}: {\bf Königsberg, 1736.} Here is a real city, already
-stripped to dots and lines: four landmasses, seven bridges. Two pairs of
-bridges run between the same landmasses, and each bridge in a pair counts
-separately, because each one has to be crossed.
+\vspace{0.5em}
 
+Use your rule from 3(d). Can the walk be done?
+\quad \cb yes \quad \cb no
+
+\vspace{0.5em}
+
+In 1944 two bridges were destroyed and the walk became possible. Destroying
+just \textbf{one} bridge is already enough. List every single bridge that
+would work: \blank[3cm]
+\end{minipage}
+\hfill
+\begin{minipage}{0.42\textwidth}
 \begin{center}
-\begin{tikzpicture}[x=0.8cm, y=0.8cm, thick,
-                    every node/.style={draw, circle, minimum size=0.9cm,
+\begin{tikzpicture}[x=0.72cm, y=0.72cm, thick,
+                    every node/.style={draw, circle, minimum size=0.85cm,
                                        inner sep=1pt, fill=white}]
     \node (C) at (0,2.5)   {C};
     \node (A) at (0,0)     {A};
     \node (B) at (0,-2.5)  {B};
-    \node (D) at (3.6,0)   {D};
-
+    \node (D) at (3.4,0)   {D};
     \draw (A) to[bend left=32]  (B);
     \draw (A) to[bend right=32] (B);
     \draw (A) to[bend left=32]  (C);
@@ -381,78 +245,202 @@ separately, because each one has to be crossed.
     \draw (A) -- (D);
     \draw (B) -- (D);
     \draw (C) -- (D);
-
-    \node[draw=none, fill=none, pltblue] at (-1.2,-1.25) {\emph{a}};
-    \node[draw=none, fill=none, pltblue] at ( 1.2,-1.25) {\emph{b}};
-    \node[draw=none, fill=none, pltblue] at (-1.2, 1.25) {\emph{c}};
-    \node[draw=none, fill=none, pltblue] at ( 1.2, 1.25) {\emph{d}};
-    \node[draw=none, fill=none, pltblue] at ( 1.85, 0.42) {\emph{e}};
-    \node[draw=none, fill=none, pltblue] at ( 2.35,-1.55) {\emph{f}};
-    \node[draw=none, fill=none, pltblue] at ( 2.35, 1.55) {\emph{g}};
+    \node[draw=none, fill=none, pltblue] at (-1.15,-1.25) {\emph{a}};
+    \node[draw=none, fill=none, pltblue] at ( 1.15,-1.25) {\emph{b}};
+    \node[draw=none, fill=none, pltblue] at (-1.15, 1.25) {\emph{c}};
+    \node[draw=none, fill=none, pltblue] at ( 1.15, 1.25) {\emph{d}};
+    \node[draw=none, fill=none, pltblue] at ( 1.75, 0.45) {\emph{e}};
+    \node[draw=none, fill=none, pltblue] at ( 2.25,-1.5)  {\emph{f}};
+    \node[draw=none, fill=none, pltblue] at ( 2.25, 1.5)  {\emph{g}};
 \end{tikzpicture}
 \end{center}
 \end{minipage}
 
-The citizens of Königsberg spent decades hunting for a Sunday walk crossing all
-seven exactly once. Settle it with your rule instead, in under a minute.
+\clearpage
 
-\vspace{0.4em}
+\parthead{2}{Three kinds of route}
 
-Degrees: \; A \underline{\hspace{1.2cm}} \; B \underline{\hspace{1.2cm}} \;
-C \underline{\hspace{1.2cm}} \; D \underline{\hspace{1.2cm}} \qquad
-Verdict: \underline{\hspace{4.5cm}}
+Forget bridges. Here is a different network: five bus stops, and the lines are
+direct bus services between them.
 
-\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=1cm, thick,
+                    every node/.style={draw, circle, minimum size=0.9cm,
+                                       inner sep=1pt, fill=white}]
+    \node (A) at (0,1.6)   {A};
+    \node (B) at (2.4,1.6) {B};
+    \node (C) at (2.4,-1)  {C};
+    \node (D) at (0,-1)    {D};
+    \node (E) at (-2.2,-1) {E};
+    \draw (A) -- (B);
+    \draw (B) -- (C);
+    \draw (C) -- (D);
+    \draw (D) -- (A);
+    \draw (B) -- (D);
+    \draw (D) -- (E);
+\end{tikzpicture}
+\end{center}
 
-In 1944 the city was bombed, two of these bridges were destroyed, and the walk
-became possible. Which \emph{single} bridge, destroyed on its own, would
-already have been enough? List every bridge that works.
+{\bf Question 5(a)}: For each route below, look at what it repeats. The first
+row is filled in for you.
 
-\vspace{2.6cm}
+\begin{center}
+{\setlength{\tabcolsep}{7pt}
+\begin{tabular}{|C{3.4cm}|C{3.6cm}|C{3.4cm}|C{2.6cm}|}
+\hline
+\textbf{route} & \textbf{repeats a line?} & \textbf{repeats a stop?} &
+\textbf{name} \\
+\hline
+A B D B C & yes (B--D twice) & yes (B) & \\[0.35cm] \hline
+A B D C B & & & \\[0.5cm] \hline
+A B C D E & & & \\[0.5cm] \hline
+\end{tabular}}
+\end{center}
 
-Your list should be suspiciously long. What does that tell you about this
-particular city that the verdict alone did not?
+{\bf Question 5(b)}: Here are the names. Write the right one in the last column
+of the table above.
 
-\vspace{3cm}
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
+A route that repeats \textbf{nothing} is a \textbf{path}. \\
+A route that may repeat stops but \textbf{never repeats a line} is a
+\textbf{trail}. \\
+A route that repeats \textbf{both} is just a \textbf{walk}.
+\end{tcolorbox}
 
-\begin{minipage}{\textwidth}
-{\bf Question 13}: Back in Question 2 you guessed whether an eighth bridge makes
-the tour easier or harder. Were you right? Say in one sentence what building a
-bridge actually does --- not to the number of possible routes, but to the thing
-your rule looks at.
+{\bf Question 5(c)}: Write a route from A to E that repeats a stop but never
+repeats a line. (That is: a trail which is not a path.)
 
-\vspace{2.8cm}
-\end{minipage}
+\vspace{0.3em}
 
-\begin{minipage}{\textwidth}
-Now write the recipe you would hand to a computer so that it can decide, for a
-city with a million landmasses and three million bridges, whether the tour
-exists. No calculation --- just say what it has to count, and what it has to
-check that is \emph{not} a count.
-
-\vspace{4.5cm}
-\end{minipage}
-
-{\bf Question 14}: Change one word in the assignment. The tour must now visit
-every \textbf{landmass} exactly once, instead of crossing every
-\textbf{bridge} exactly once.
-
-\vspace{0.4em}
-
-Find such a route on Map A. \underline{\hspace{9cm}}
+A \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] E
 
 \vspace{0.8em}
 
-Does the degree rule you built in Question 7 predict whether one exists? Try to
-state a rule of the same kind --- ``count the bridges at each landmass,
-then\dots'' --- that decides this new question.
+{\bf Question 5(d)}: Go back to your seven-bridge route in Question 1(a). Using
+these three names, it is a \quad \cb walk \quad \cb trail \quad \cb path.
 
-\vspace{4cm}
+\vspace{0.5em}
 
-If you cannot, say precisely where the bookkeeping of Question 4 stops working.
-That failure is not yours: nobody has such a rule, and the two questions differ
-by a single word.
+{\bf Question 5(e)}: That route can never be a path. Finish the count that
+proves it: a path with 7 lines visits \blank[1.5cm] different pieces of land,
+but the campus map only has \blank[1.5cm].
 
-\vspace{3cm}
+\vspace{1.6cm}
+
+\clearpage
+
+\parthead{3}{Take these predictions to the laptop}
+
+A computer cannot look at a picture. Fill this page in \textbf{first}, on
+paper, then open the lab with your partner and find out if you were right.
+Here is a new network, with four nodes.
+
+\begin{center}
+\begin{tikzpicture}[x=0.8cm, y=0.8cm, thick,
+                    every node/.style={draw, circle, minimum size=0.8cm,
+                                       inner sep=1pt, fill=white}]
+    \node (1) at (-2.4,0)  {1};
+    \node (2) at (0,0)     {2};
+    \node (3) at (1.7,1.3) {3};
+    \node (4) at (1.7,-1.3){4};
+    \draw (1) -- (2);
+    \draw (2) -- (3);
+    \draw (2) -- (4);
+    \draw (3) -- (4);
+\end{tikzpicture}
+\end{center}
+
+\begin{minipage}[t]{0.46\textwidth}
+{\bf Question 6(a)}: Fill in the grid. Write \textbf{1} in row $i$, column $j$
+if a line joins node $i$ and node $j$. Write \textbf{0} if it does not. Row 1
+is done: node 1 is joined to node 2 only.
+
+\vspace{0.4em}
+
+\begin{center}
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{r|C{0.85cm}|C{0.85cm}|C{0.85cm}|C{0.85cm}|}
+\multicolumn{1}{c}{$A=$} & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} &
+\multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} \\
+\cline{2-5}
+1 & 0 & 1 & 0 & 0 \\[0.15cm] \cline{2-5}
+2 & & & & \\[0.35cm] \cline{2-5}
+3 & & & & \\[0.35cm] \cline{2-5}
+4 & & & & \\[0.35cm] \cline{2-5}
+\end{tabular}}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\textwidth}
+{\bf Question 6(b)}: Add up each row of your grid, and compare each total with
+the number of lines meeting that node in the picture.
+
+\vspace{0.4em}
+
+row totals: \blank[1cm] \blank[1cm] \blank[1cm] \blank[1cm]
+
+\vspace{0.4em}
+
+What do you find?
+
+\ansline
+
+\vspace{1em}
+
+\ansline
+\end{minipage}
+
+\vspace{0.5em}
+
+{\bf Question 6(c)}: A \textbf{2-step route} from node $i$ to node $j$ means:
+one line from $i$ to somewhere, then one line from there to $j$. Count them on
+the picture, by hand.
+
+\vspace{0.4em}
+
+2-step routes from node 1 to node 3: \; how many? \blank[1.2cm] \;
+list them: $1 \rightarrow$ \blank[1cm] $\rightarrow 3$ \hspace*{2cm}
+
+\vspace{0.5em}
+
+2-step routes from node 1 to node 2: \; how many? \blank[1.2cm] \;
+why? \underline{\hspace{5cm}}
+
+\vspace{0.5em}
+
+2-step routes from node 2 back to node 2: \; how many? \blank[1.2cm]
+
+\vspace{0.4em}
+
+{\bf Question 6(d)}: In the lab you will multiply your grid by itself, giving a
+new grid called $A^2$. Write down, now, what you expect to find in it.
+
+\vspace{0.4em}
+
+I expect row 1, column 3 of $A^2$ to be \blank[1.5cm] \qquad
+row 1, column 2 to be \blank[1.5cm]
+
+\vspace{0.5em}
+
+and the diagonal (row 1 col 1, row 2 col 2, \dots) to be
+\underline{\hspace{6.5cm}}
+
+\vspace{0.7em}
+
+\begin{tcolorbox}[colback=white, boxsep=2pt, top=5pt, bottom=5pt]
+\textbf{Now open the lab, in pairs.} One laptop between two people. The person
+who is \emph{not} typing reads the question out loud and says what they expect
+before the other one runs the cell.
+
+\vspace{0.4em}
+
+\begin{center}
+\large \molaburl
+\end{center}
+
+\vspace{0.2em}
+
+Bring this sheet with you. The lab asks for the numbers you just wrote down.
+\end{tcolorbox}
 
 \end{document}
