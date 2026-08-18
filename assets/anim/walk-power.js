@@ -175,7 +175,7 @@
         mapBox.textContent = "";
         const svg = ctx.svgRoot("0 0 420 300");
         const g = () => svg.appendChild(ctx.svgEl("g"));
-        const gEdge = g(), gLeg = g(), gNode = g(), gText = g();
+        const gEdge = g(), gLeg = g(), gNode = g(), gRing = g(), gText = g();
 
         EDGES.forEach(function (e) {
           gEdge.appendChild(ctx.svgEl("line", {
@@ -196,7 +196,22 @@
 
         S.svg = svg;
         S.gLeg = gLeg;
+        S.gRing = gRing;
         mapBox.appendChild(svg);
+      }
+
+      /* Ring the two corners the watched entry is about. Only the knob scene
+         needs it, and it is the only thing keeping the graph honest there:
+         past k = 3 there are eleven walks and none of them get drawn, so
+         without this the biggest half of the stage sits idle while the matrix
+         does all the work. Amber, to match the one amber cell in the grid. */
+      function ends() {
+        if (!S.gRing) return;
+        S.gRing.textContent = "";
+        CELL.forEach(function (i) {
+          S.gRing.appendChild(ctx.svgEl("circle",
+            { cx: POS[i][0], cy: POS[i][1], r: R + 7, "class": "wp-end" }));
+        });
       }
 
       /* One hop of a route, bowed clear of the edge it rides on. One fixed bow
@@ -323,6 +338,7 @@
 
       /* -------------------------------------------------------------- the knob */
       function knob() {
+        ends();
         const wrap = ctx.el("div", "anim-range");
         const track = ctx.el("div", "anim-track");
         const kn = ctx.el("div", "anim-knob");
