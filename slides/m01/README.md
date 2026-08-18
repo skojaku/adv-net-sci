@@ -34,9 +34,9 @@ Math is KaTeX (`math: katex` in the front matter), so `$...$` and `$$...$$` work
 
 ## `--html` is not optional, and it is not a front-matter directive
 
-Two slides carry live HTML: the CSR widget on "Store only the nonzeros"
-(`<input type="range">` plus a script) and the Königsberg tracer on "Your turn"
-(`<button>`s plus two `<script src>`s). Without `--html`, Marp escapes all of it
+Seven slides carry live HTML: the CSR widget on "Store only the nonzeros"
+(`<input type="range">` plus a script) and six animation stages (`<button>`s
+plus two `<script src>`s each). Without `--html`, Marp escapes all of it
 to literal text and prints the source code on the slide, in **every** export,
 images and PDF included.
 
@@ -50,11 +50,21 @@ finishes when it is not attached to a terminal.
 
 ## Animation
 
-The tracer is not written here. It is a scene array in
-`lecture-note/assets/anim/kb-tracer.js`, mounted against the shared kit in
-`lecture-note/assets/anim.{css,js}`, and the lecture note's own
-`m01-euler_tour/01-concepts.qmd` mounts the same file. The deck carries only the
-markup and two `<script src>` tags pointing back at it.
+No stage is written here. Each is a scene array under
+`lecture-note/assets/anim/`, mounted against the shared kit in
+`lecture-note/assets/anim.{css,js}`. The deck carries only the markup and two
+`<script src>` tags pointing back at it. Six stages, in slide order:
+
+    kb-tracer       05  cross the seven bridges yourself, then see why you cannot
+    euler-builder   25  two odd corners: the trail built, and the same graph strand
+    route-namer     35  click a route, get it named walk / trail / path / cycle
+    comp-sweep      41  breadth-first sweeps finding the three components
+    dir-reach       50  flip an arrow; watch strong die and weak survive
+    walk-power      67  the two routes behind (A^2) at (1,4), then k on a knob
+
+`kb-tracer` is also mounted by the lecture note
+(`m01-euler_tour/01-concepts.qmd`); the other five are the deck's alone so far,
+but they live in the same place so the note can pick them up with three lines.
 
 The slide-sized port of the kit's stylesheet lives in `network-science.css`
 under "animation stage" and "per-stage rules"; only sizes differ from the note's
@@ -65,6 +75,11 @@ the repo (`python3 -m http.server`), point headless Chrome at a page holding the
 stage, and drive it with `--virtual-time-budget` plus a small script that
 dispatches the clicks. Checking that the `<script>` survived the export is not
 the same as checking that it runs.
+
+Two things that page should report, because a screenshot cannot: whether the
+section overflowed its own 720px frame, and whether anything threw. Both of the
+layout bugs found while adding the five new stages were invisible in the picture
+and obvious in that one line of text.
 
 ## Design tokens
 

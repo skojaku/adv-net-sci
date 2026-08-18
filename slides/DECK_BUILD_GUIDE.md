@@ -248,13 +248,45 @@ pause, a per-scene note, and — this is the part a GIF cannot do — a drawing 
 click and drag. Do not copy a stage into a deck. Put the scene array in
 `lecture-note/assets/anim/<stage>.js` and have both the note page and the deck load that
 one file with a `<script src>`; the slide-sized port of the kit's stylesheet already lives
-in `network-science.css`, so a deck adds markup and two script tags and nothing else. The
-Königsberg tracer (m01) and the H1N1 ruler (intro) are the two worked examples.
+in `network-science.css`, so a deck adds markup and two script tags and nothing else.
+There are seven worked examples: the H1N1 ruler (intro) and m01's six — `kb-tracer`,
+`euler-builder`, `route-namer`, `comp-sweep`, `dir-reach`, `walk-power`.
+
+Where a stage earns its keep: a concept that is a **process unfolding in time**, or one
+whose rule the room can only feel by breaking it. m01's five new stages went to breadth-first
+search finding components, the two routes behind one entry of `A²`, strong-versus-weak
+reachability, naming your own route walk/trail/path, and building an Eulerian trail and then
+stranding it. What they replaced was nothing — the static slides stayed, because the lecturer
+wanted the deck long and only wanted it to stop being monotonous.
 
 What a stage costs: `--html` on every render (above), and a browser to verify it. A render
 proves the markup survived, not that the thing works. Serve the repo, point headless Chrome
 at the stage with `--virtual-time-budget`, and dispatch the clicks from a small script in
 the page.
+
+Have that page write two things into the DOM before the screenshot: `scrollHeight -
+clientHeight` on the `<section>`, and anything caught by `error`/`unhandledrejection`.
+A stage that overruns the 720px frame looks perfectly fine in a 780px-tall screenshot,
+and both of the layout bugs in m01's five new stages were found by that one line of text
+rather than by looking at the picture.
+
+Three traps that cost a round each while adding those five, all of them silent:
+
+- **`ctx.pause()` stalls whatever awaits `ctx.sleep` next.** The kit's grab-on-first-click
+  idiom pauses the sequencer so the drawing stays the room's. If the click handler then
+  `await`s a kit sleep — a breadth-first sweep laying down one ring at a time, say — that
+  sleep is paused too and the animation stops dead halfway through, on the lecturer's
+  screen, with no error. Either keep the handler synchronous, as `kb-tracer.cross()` is,
+  or give the click-driven path a plain `setTimeout` that the sequencer does not reach.
+- **A base rule written with `>` outspecifies every flat state class.**
+  `section #stage .grid > i` is one element more specific than `section #stage .cell-on`,
+  so the state's `color` lands and its `background` does not. The highlighted matrix cell
+  in `walk-power` shipped as white-on-white through a full render and a screenshot before
+  anyone read the pixels. Match the combinator: `.grid > i.cell-on`.
+- **The kit's knob wrapper collapses inside a flex column.** `.anim-range` carries
+  `margin: 8px auto 4px`, written for a block container. As a flex item those auto side
+  margins beat `stretch`, the track resolves to its content width — zero — and all that
+  renders is a knob floating in the middle of the card. Zero out the side margins.
 
 Two things that make an animation teach rather than decorate:
 
