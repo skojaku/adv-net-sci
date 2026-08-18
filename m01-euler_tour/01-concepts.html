@@ -727,16 +727,16 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p><strong>The big question of this module.</strong> Can you walk a city crossing each bridge exactly once — and how would you ever <em>prove</em> that you cannot?</p>
+<p><strong>The big question of this module.</strong> Can you walk a city crossing each bridge exactly once? And how do you <em>prove</em> that it is impossible?</p>
 </blockquote>
 <section id="königsberg-1736-seven-bridges-and-a-sunday-walk" class="level2">
 <h2 class="anchored" data-anchor-id="königsberg-1736-seven-bridges-and-a-sunday-walk">Königsberg, 1736: seven bridges and a Sunday walk</h2>
-<p>Our story begins not in a lab, but on the streets of an 18th-century Prussian city called Königsberg. It was a city of thinkers—most famously the philosopher Immanuel Kant—but the puzzle that would change mathematics belonged to everyone.</p>
-<p>The city was built around two islands in the Pregel River, connected to the mainland and each other by seven distinct bridges. During their Sunday strolls, the citizens amused themselves with a challenge:</p>
+<p>The story does not start in a laboratory but on the streets of Königsberg, a city in 18th-century Prussia. It was a city of thinkers, most famously Immanuel Kant, but the puzzle that would change mathematics belonged to everyone.</p>
+<p>The city was built around two islands in the Pregel River, which were connected to the mainland and each other by seven different bridges. During their Sunday strolls, the citizens enjoyed a challenge:</p>
 <blockquote class="blockquote">
-<p>Is it possible to design a walk through the city that crosses each of the seven bridges <strong>exactly once</strong> and returns to the starting point?</p>
+<p>Is it possible to design a walking route that crosses each of the seven bridges in the city <strong>exactly once</strong> and returns to the starting point?</p>
 </blockquote>
-<p>Try it yourself on the city below. Click a landmass to put your pencil down, then click bridges to cross them — the tracer will not let you cross the same bridge twice. You will hit exactly the wall the citizens hit: you get stranded somewhere with a bridge still unused. Then keep going through the last two steps, which stop reporting <em>that</em> you failed and start showing you <em>why</em> you always would.</p>
+<p>Try it yourself in the city below. Click a landmass to place your pencil, then click a bridge to cross it. The tracer will never let you cross the same bridge twice. You’ll hit the exact same wall the citizens did—you’ll get stuck somewhere with a bridge still unused. Then the last two steps stop reporting <em>that</em> you failed and start showing you <em>why</em> you always would.</p>
 <style>
 /* --------------------------------------------------------------------------
    Königsberg tracer — only the rules this one stage needs. The paper, the
@@ -830,8 +830,8 @@ window.Quarto = {
 </figure>
 
 <script src="../assets/anim/kb-tracer.js" defer=""></script>
-<p>What you have just watched is the reason, drawn rather than argued. Nobody in Königsberg had it. They had only the first half — no one could find a route, and, far worse, no one could <em>prove</em> that none existed. The problem eventually reached the mathematician Leonhard Euler, whose goal was not to have the answer but to have the reason in a form that works for any city, with any number of islands and any number of bridges.</p>
-<p><strong>Before you read Euler’s solution, be a mathematician for ten minutes.</strong> This is how discovery happens, and we <strong>strongly recommend</strong> working through this <a href="http://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">pen-and-paper worksheet</a> before going on. As you work, ask yourself:</p>
+<p>What you just saw is the reason, drawn rather than argued. No one in Königsberg had that reason. They only had the first half—no one could find a route, and even worse, no one could <em>prove</em> that one didn’t exist. The problem eventually reached the mathematician Leonhard Euler. His goal was not to have the answer, but to have the reason in a form that would work for any city, any number of islands, and any number of bridges.</p>
+<p><strong>Read Euler’s solution, but before you do so, think like a mathematician for an hour.</strong> This is how discovery happens, and I strongly recommend that you work through the <a href="pen-and-paper/exercise.pdf">pen-and-paper worksheet</a> before you go further. It hands you a campus, not a city: seven footbridges you can tour, an eighth that ruins it, and a ledger to keep until you can tell the two apart without walking either. As you work through it, ask yourself:</p>
 <ul>
 <li>What information is essential? The length of a bridge? The size of an island?</li>
 <li>What are the fundamental constraints of the problem?</li>
@@ -840,24 +840,24 @@ window.Quarto = {
 </section>
 <section id="euler-throws-away-the-map" class="level2">
 <h2 class="anchored" data-anchor-id="euler-throws-away-the-map">Euler throws away the map</h2>
-<p>Euler’s genius was to realize that most of the information on the map was a distraction. He performed a radical act of simplification, an approach we now call <strong>abstraction</strong>.</p>
-<p>He stripped the problem down to its skeleton:</p>
+<p>Euler’s genius was the realization that most of the information on the map was a distraction. He performed a radical act of simplification, a process we now call <strong>abstraction</strong>.</p>
+<p>He stripped the problem down to its bare bones:</p>
 <ol type="1">
 <li>He turned each of the four landmasses into a simple <strong>dot</strong> (a <strong>node</strong>).</li>
-<li>He turned each of the seven bridges into a simple <strong>line</strong> connecting the dots (an <strong>edge</strong>).</li>
+<li>He turned each of the seven bridges into a simple <strong>line</strong> (an <strong>edge</strong>) connecting the dots.</li>
 </ol>
 <!-- TODO(anim): the map dissolves into the graph — the landmasses shrink to dots, the bridges straighten into lines, and the river fades away. -->
-<div id="fig-euler-graph" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four labelled nodes A, B, C, D joined by seven labelled edges, with the degree of each node written beside it." data-fig-align="center">
+<div id="fig-euler-graph" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Four labelled nodes A, B, C, D joined by seven labelled edges, with the degree of each node written beside it.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-euler-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="figs/konigsberg-graph.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%" alt="Four labelled nodes A, B, C, D joined by seven labelled edges, with the degree of each node written beside it.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-euler-graph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: The same city as a graph. Every landmass has become a node and every bridge an edge; the river, the distances and the shapes are gone. The labels are the ones on the map above, so you can check each edge against the city.
+Figure&nbsp;1: We represent the same city as a graph, where all the landmasses become nodes and all the bridges become edges. The river, the distances and the shapes disappear from the graph. The labels match the ones on the map above, and every edge can be matched with an actual bridge in the city.
 </figcaption>
 </figure>
 </div>
-<p>This wasn’t just a sketch; it was a new mathematical object. Euler had invented the <strong>graph</strong> (or <strong>network</strong>). He had created a language for talking not about numbers or shapes, but about pure <strong>relationships and connectivity</strong>.</p>
+<p>This was no mere sketch; it was a new mathematical object. Euler invented the <strong>graph</strong> (or <strong>network</strong>). He created a language to speak about <strong>relationships and connectivity</strong>, rather than numbers or shapes.</p>
 </section>
 <section id="what-a-graph-is-formally" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="what-a-graph-is-formally">What a graph is, formally</h2>
@@ -875,22 +875,22 @@ Figure&nbsp;1: The same city as a graph. Every landmass has become a node and ev
 <p><span class="math display">
 G = (V, E)
 </span></p>
-<p>where <span class="math inline">V</span> is the set of <strong>nodes</strong> (also called vertices) and <span class="math inline">E</span> is the set of <strong>edges</strong>, each edge being a pair of nodes. For Königsberg, <span class="math inline">V</span> has four elements — the two banks and the two islands — and <span class="math inline">E</span> has seven.</p>
-<p>Everything else in this course is built on those two sets. Notice what the definition does <em>not</em> contain: no coordinates, no distances, no shapes.</p>
+<p>where <span class="math inline">V</span> is a set of <strong>nodes</strong> (also called vertices), and <span class="math inline">E</span> is a set of <strong>edges</strong>, each of which is a pair of nodes. In the case of Königsberg, <span class="math inline">V</span> has four elements (the two banks and the two islands), and <span class="math inline">E</span> has seven elements.</p>
+<p>Everything else in this course is built on these two sets. Notice what the definition does <em>not</em> contain: no coordinates, no distances, no shapes.</p>
 </div>
 </div>
-<p>Two features of Königsberg are worth naming now, because the definition above quietly permits both.</p>
-<p><strong>Parallel edges.</strong> Königsberg has <em>two</em> pairs of bridges that connect the same two landmasses: <em>a</em> and <em>b</em> both run from the island A to the south bank B, and <em>c</em> and <em>d</em> both run from A to the north bank C. Each copy counts separately, so <span class="math inline">E</span> contains the pair <span class="math inline">(A,B)</span> twice and the pair <span class="math inline">(A,C)</span> twice. A graph that allows repeated edges like this is a <strong>multigraph</strong>. Collapse each pair into a single edge and you are solving a different puzzle with a different answer — which is precisely why the multiplicity matters.</p>
-<p><strong>Self-loops.</strong> An edge may also join a node to itself; such an edge is a <strong>self-loop</strong>. Königsberg has none, but they appear all the time in real data (a paper citing itself, a bank lending to itself). A self-loop contributes <strong>2</strong> to the count of edges at its node, since both of its endpoints attach there. That convention is what keeps the even/odd argument in the next section working: a self-loop is one arrival and one departure, so it never flips a node between odd and even.</p>
+<p>It is useful to mention two features of Königsberg at this point, because the definition above implicitly allows both of them.</p>
+<p><strong>Parallel edges.</strong> In Königsberg, there are <em>two</em> pairs of bridges connecting the same two landmasses. Bridges <em>a</em> and <em>b</em> both go from island A to the south bank B, while bridges <em>c</em> and <em>d</em> both go from A to the north bank C. Because we count each bridge separately, the set <span class="math inline">E</span> contains the pair <span class="math inline">(A,B)</span> two times and the pair <span class="math inline">(A,C)</span> two times. Graphs that allow such parallel edges are called <strong>multigraphs</strong>. If we were to combine each pair into a single edge, we would be solving a different puzzle with a different answer. This is why the multiplicity matters.</p>
+<p><strong>Self-loops.</strong> An edge can also connect a node to itself, which is called a <strong>self-loop</strong>. While self-loops are not present in the Königsberg problem, they are frequent in real networks (a paper citing itself, or a bank lending money to itself). Self-loops add <strong>2</strong> to the number of edges at the node, because both ends of the edge connect to it. This convention keeps the even/odd discussion in the next section working: a self-loop represents one incoming and one outgoing edge, which does not flip the odd-even state of a node.</p>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p><strong>Leonhard Euler (1707-1783)</strong> — one of history’s most prolific mathematicians. Despite losing his sight, he produced nearly half of his life’s work while completely blind.</p>
+<p><strong>Leonhard Euler (1707–1783)</strong> is one of the most prolific mathematicians in history. Despite losing his eyesight, he produced nearly half of his lifelong work completely blind.</p>
 </div></div></section>
 <section id="from-a-walk-to-a-proof-the-idea-of-degree" class="level2">
 <h2 class="anchored" data-anchor-id="from-a-walk-to-a-proof-the-idea-of-degree">From a walk to a proof: the idea of degree</h2>
-<p>With this simplified representation, Euler could stop thinking about walking and start thinking about rules. He focused on the nodes and asked a crucial question: how does a journey <em>through</em> a node work?</p>
-<p>Imagine you are on a walk. Every time you arrive at a landmass, you cross one bridge. Every time you leave, you cross another. This means that for any landmass that is <strong>not</strong> the start or the end of your journey, you must use bridges in pairs: one “in” and one “out.”</p>
-<p>This leads to the key insight. Let’s count the number of bridges attached to each landmass. We’ll call this the <strong>degree</strong> of the node.</p>
+<p>This simplified representation allowed Euler to stop thinking about walking and start thinking about rules. He focused on the nodes and asked a key question: how does a journey <em>through</em> a node work?</p>
+<p>Suppose you are on a walk and cross a bridge every time you reach a landmass. Every time you leave a landmass, you cross another. Therefore, at any landmass other than the start or the end of your journey, you must use bridges in pairs: one “in” and one “out.”</p>
+<p>Count the number of bridges attached to each landmass. This number is called the <strong>degree</strong> of the node.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key concept: node degree">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -901,14 +901,14 @@ G = (V, E)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <strong>degree</strong> of a node is the number of edges attached to it. It is the most fundamental property of a node in a network.</p>
+<p>The <strong>degree</strong> of a node is the number of edges connected to it. Degree is one of the most basic properties of a node in a network.</p>
 </div>
 </div>
 <ul>
-<li>If a node has an <strong>even degree</strong> (2, 4, 6, …), you can always pass through it. For every “in” bridge, there is an “out” bridge.</li>
-<li>If a node has an <strong>odd degree</strong> (1, 3, 5, …), it must be special. The “in” and “out” bridges cannot all be paired up; one bridge is left over. That leftover bridge means an odd-degree node <strong>must be the start or the end</strong> of your walk.</li>
+<li>If a node has an <strong>even degree</strong> (2, 4, 6, …), you can always pass through it. Every “in” bridge has an “out” bridge.</li>
+<li>If a node has an <strong>odd degree</strong> (1, 3, 5, …), it must be special: the “in” and “out” bridges cannot all be paired up, one bridge is left over, and that leftover bridge means an odd-degree node <strong>must be the start or the end</strong> of your walk.</li>
 </ul>
-<p>A journey has only one start and one end. Therefore, if you can cross every bridge exactly once, then <strong>at most two nodes have an odd degree</strong>.</p>
+<p>A journey has only one start and one end point. Therefore, if you can cross all bridges exactly once, there can be <strong>at most two nodes with an odd degree</strong>.</p>
 <section id="the-verdict-all-four-landmasses-are-odd" class="level3">
 <h3 class="anchored" data-anchor-id="the-verdict-all-four-landmasses-are-odd">The verdict: all four landmasses are odd</h3>
 <p>Count the bridges at each node in <a href="#fig-euler-graph" class="quarto-xref">Figure&nbsp;1</a>:</p>
@@ -918,8 +918,8 @@ G = (V, E)
 <li><strong>A, the Kneiphof island:</strong> bridges <em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>e</em> — degree 5 (odd)</li>
 <li><strong>D, the east island:</strong> bridges <em>e</em>, <em>f</em>, <em>g</em> — degree 3 (odd)</li>
 </ul>
-<p>All four landmasses have an odd degree. Since such a journey allows at most two odd-degree nodes — one to start at, one to end at — the walk the citizens wanted is <strong>mathematically impossible</strong>. Euler did not merely fail to find a route; he proved, with logical certainty, that no such route can ever exist.</p>
-<p>A route that crosses every edge exactly once is called an <strong>Eulerian trail</strong>. <em>Trail</em> is the technical word for a route that never repeats an <em>edge</em>, although it may pass through the same node more than once — which in Königsberg you are forced to do. The full vocabulary is on the <a href="../m01-euler_tour/01b-vocabulary.html">next page</a>.</p>
+<p>All four landmasses have an odd degree, and such a journey allows at most two odd-degree nodes as start and end points. The walk the citizens asked for is <strong>mathematically impossible</strong>. Euler not only failed to find the walk but also proved, with logical certainty, that no such walk could exist.</p>
+<p>A route that crosses every edge exactly once is called an <strong>Eulerian trail</strong>. A <em>trail</em> is a route with no repeated <em>edges</em>. A trail may pass through the same node more than once, and in Königsberg you are forced to do so. The full vocabulary is on the <a href="../m01-euler_tour/01b-vocabulary.html">next page</a>.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key concept: Euler's condition">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -930,42 +930,42 @@ G = (V, E)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A graph has an <strong>Eulerian trail</strong> — a route crossing every edge exactly once — if and only if:</p>
+<p>A graph has an <strong>Eulerian trail</strong> (a route crossing every edge exactly once) if and only if two things hold:</p>
 <ol type="1">
-<li>The graph is <strong>connected</strong> (you can get from any node to any other), and</li>
+<li>The graph is <strong>connected</strong>, meaning that any node can reach any other node, and</li>
 <li><strong>one</strong> of these holds:
 <ul>
-<li><strong>No node has an odd degree.</strong> Then the route can start and end at the same node: it is a closed loop, an <strong>Eulerian circuit</strong>.</li>
-<li><strong>Exactly two nodes have an odd degree.</strong> Then the route must start at one of them and end at the other.</li>
+<li><strong>None of the nodes have an odd degree.</strong> In this case, the route can start and end at the same node, creating a closed loop called an <strong>Eulerian circuit</strong>.</li>
+<li><strong>Exactly two nodes have odd degree.</strong> In this case, the route must start at one of them and end at the other.</li>
 </ul></li>
 </ol>
 </div>
 </div>
-<p>The argument above proves one direction: <em>if</em> such a route exists, <em>then</em> at most two nodes are odd. That direction is all Königsberg needs, since its four odd nodes already kill the possibility. The other direction — that these conditions are also <em>enough</em>, so that whenever they hold a route can actually be built — needs a short separate argument, sketched in the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</p>
+<p>The discussion above proves one direction: if such a route exists, there are at most two odd nodes. This direction is all the Königsberg problem needs, because its four odd nodes already rule out the possibility. The reverse direction — that these conditions are also <em>sufficient</em>, so that a route can actually be built whenever they are met — requires a short separate argument, sketched in the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</p>
 </section>
 <section id="the-bombs-that-changed-the-answer" class="level3">
 <h3 class="anchored" data-anchor-id="the-bombs-that-changed-the-answer">The bombs that changed the answer</h3>
-<p>The story of the seven bridges has an ironic epilogue. During World War II, Königsberg was heavily bombed, and two of the seven bridges — <em>b</em> and <em>d</em>, one from each of the island’s two parallel pairs — did not survive.</p>
-<div id="fig-bombed-bridges" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Historical map of the Königsberg bridges with two of the seven marked as destroyed and a route drawn over the rest." data-fig-align="center">
+<p>There is an ironic ending to the story of the seven bridges. During World War II, Königsberg was subjected to a fierce bombing in which two of the seven bridges, <em>b</em> and <em>d</em> — one from each of the island’s two parallel pairs — were destroyed.</p>
+<div id="fig-bombed-bridges" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Historical map of the Königsberg bridges with two of the seven marked as destroyed and a route drawn over the rest.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bombed-bridges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/seven-bridge-bombared.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Historical map of the Königsberg bridges with two of the seven marked as destroyed and a route drawn over the rest.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bombed-bridges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: The starbursts mark the two bridges lost in the war: <em>b</em>, from the island to the south bank, and <em>d</em>, from the island to the north bank. The red line traces a route across the five that survived.
+Figure&nbsp;2: The starbursts mark the two bridges lost in the war: <em>b</em> (from the island to the south bank) and <em>d</em> (from the island to the north bank). The red line shows a route across the five surviving bridges.
 </figcaption>
 </figure>
 </div>
-<p>Recount the degrees with <em>b</em> and <em>d</em> gone. A keeps <em>a</em>, <em>c</em>, <em>e</em> — degree 3. B keeps <em>a</em>, <em>f</em> — degree 2. C keeps <em>c</em>, <em>g</em> — degree 2. D still has <em>e</em>, <em>f</em>, <em>g</em> — degree 3. Exactly two odd nodes remain, so a route crossing all five surviving bridges now exists, and it must start on one island and end on the other.</p>
-<p>Note what that does <em>not</em> say. The citizens asked for a walk that <strong>returns to where it started</strong>, and that still requires zero odd nodes. The bombs made the trail possible; the circuit is as impossible as it ever was. Two words that sound interchangeable in English — trail and circuit — have different answers in the same city.</p>
-<p>Euler’s solution was far more than fun trivia. It was the beginning of a new field of science. The idea of abstracting a system into nodes and edges is how we now understand our modern world. Every time you rely on a connected system, you are benefiting from the intellectual leap made by Euler over a puzzle about a Sunday stroll.</p>
+<p>Now let’s recount the degree of each node, excluding <em>b</em> and <em>d</em>. A keeps <em>a</em>, <em>c</em>, <em>e</em> (degree 3), B keeps <em>a</em>, <em>f</em> (degree 2), C keeps <em>c</em>, <em>g</em> (degree 2), and D still has <em>e</em>, <em>f</em>, <em>g</em> (degree 3). Exactly two odd nodes remain. Therefore, there is a route that crosses all five surviving bridges, and it must start on one island and end on the other.</p>
+<p>Note what that does <em>not</em> say. What the citizens asked for was a walk that <strong>returns to its starting point</strong>, and this requires that there are still no odd-degree nodes. The bombs made it possible to have a trail but not a circuit; the circuit is as impossible as it ever was. Two words that sound synonymous in English, trail and circuit, have different answers in the same city.</p>
+<p>Euler’s solution was far more than fun trivia. It was the beginning of a new branch of science. The idea of abstracting systems into nodes and edges is how we understand our modern world, and every time you depend on a connected system, you benefit from Euler’s intellectual leap over a puzzle about a Sunday stroll.</p>
 </section>
 </section>
 <section id="what-you-can-now-do" class="level2">
 <h2 class="anchored" data-anchor-id="what-you-can-now-do">What you can now do</h2>
 <ul>
 <li>Turn a physical layout into nodes and edges, and defend what you threw away.</li>
-<li>Count degrees and decide whether an Eulerian trail or an Eulerian circuit exists.</li>
+<li>Count the degree of each node and decide whether an Eulerian trail or circuit exists.</li>
 <li>Explain why “I could not find one” and “one cannot exist” are entirely different claims.</li>
 </ul>
 <p>Next: <a href="../m01-euler_tour/01b-vocabulary.html">Five Words You Will Use All Semester</a> — walk, trail, path, circuit, cycle — plus the two objects the rest of the course leans on hardest, the adjacency matrix and the connected component. Then write the code on the <a href="../m01-euler_tour/02-coding.html">hands-on page</a>, and hand in the <a href="../m01-euler_tour/03-exercises.html">exercises</a>.</p>

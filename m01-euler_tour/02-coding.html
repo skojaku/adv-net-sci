@@ -676,7 +676,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Königsberg is small enough to solve by staring at it. The point of this notebook is to solve it the way you would solve a network with a million nodes.</p>
+<p>Königsberg is so small that it can be solved just by looking at it. The goal of this notebook is to solve it the way you would solve a network with a million nodes.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -687,8 +687,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This course keeps its lecture note free of runnable code. Everything you execute lives in a marimo notebook, so it stays interactive and reactive instead of being a wall of output frozen into a web page.</p>
-<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first load takes a few seconds while Python itself is downloaded.</p>
+<p>This course will not include any runnable code in the lecture note. Everything you run will be done inside a marimo notebook. The notebook is interactive and reactive, not a wall of fixed output frozen into a web page.</p>
+<p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py">Run this notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into. The first time you load it, Python itself takes a few seconds to download.</p>
 <p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py"><code>notebooks/m01-euler-tour/coding.py</code></a>. Run it with <code>marimo edit notebooks/m01-euler-tour/coding.py</code>.</p>
 </div>
 </div>
@@ -696,16 +696,16 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="what-you-will-build">What you will build</h2>
 <ol type="1">
 <li>Store the same network three ways — edge list, adjacency list, adjacency matrix, all three defined on the <a href="../m01-euler_tour/01b-vocabulary.html">vocabulary page</a> — and convert between them.</li>
-<li>Compute degree from each representation and confirm the three agree.</li>
+<li>Compute the degree from each representation and confirm the three agree.</li>
 <li>Write checks that decide whether a given sequence is a walk, a trail, or a path.</li>
-<li>Find connected components with depth-first search.</li>
+<li>Find the connected components using depth-first search.</li>
 <li>Put it together into a function that answers Euler’s question for any network.</li>
 </ol>
 </section>
 <section id="what-to-watch-for" class="level2">
 <h2 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h2>
 <ul>
-<li>The three representations are not interchangeable in cost. For each operation, ask which representation makes it cheap — that instinct is what the rest of the course runs on.</li>
+<li>These three representations are not cost-equivalent. Which operation does one representation make cheap while another makes it expensive? This intuition is at the heart of the rest of the course.</li>
 <li>Your component finder is the same algorithm you will use in Module 3 to measure how much of a network survives an attack.</li>
 </ul>
 

@@ -637,7 +637,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#exercise-decide-whether-a-network-has-an-eulerian-trail" id="toc-exercise-decide-whether-a-network-has-an-eulerian-trail" class="nav-link active" data-scroll-target="#exercise-decide-whether-a-network-has-an-eulerian-trail">Exercise: decide whether a network has an Eulerian trail</a></li>
+  <li><a href="#pen-and-paper-cross-every-bridge-once-or-prove-nobody-can" id="toc-pen-and-paper-cross-every-bridge-once-or-prove-nobody-can" class="nav-link active" data-scroll-target="#pen-and-paper-cross-every-bridge-once-or-prove-nobody-can">Pen and Paper: Cross Every Bridge Once, or Prove Nobody Can</a></li>
+  <li><a href="#exercise-decide-whether-a-network-has-an-eulerian-trail" id="toc-exercise-decide-whether-a-network-has-an-eulerian-trail" class="nav-link" data-scroll-target="#exercise-decide-whether-a-network-has-an-eulerian-trail">Exercise: decide whether a network has an Eulerian trail</a></li>
   <li><a href="#assignments" id="toc-assignments" class="nav-link" data-scroll-target="#assignments">Assignments</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m01-euler_tour/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -676,20 +677,28 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="pen-and-paper-cross-every-bridge-once-or-prove-nobody-can" class="level2">
+<h2 class="anchored" data-anchor-id="pen-and-paper-cross-every-bridge-once-or-prove-nobody-can">Pen and Paper: Cross Every Bridge Once, or Prove Nobody Can</h2>
+<p>A campus on both banks of a creek, two islands, and seven footbridges you have to tour without repeating one. You find the tour, then the development office builds an eighth bridge and the tour dies. Keeping a ledger of arrivals and departures at each landmass is what tells you which map is which — and it settles Königsberg, in under a minute, on the last page.</p>
+<ul>
+<li><a href="./pen-and-paper/exercise.pdf">Cross Every Bridge Once, or Prove Nobody Can</a></li>
+</ul>
+<p>Do this <strong>before</strong> the reading. The whole point is to reach Euler’s argument with your own pencil, so that the lecture note only has to give it a name.</p>
+</section>
 <section id="exercise-decide-whether-a-network-has-an-eulerian-trail" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-decide-whether-a-network-has-an-eulerian-trail">Exercise: decide whether a network has an Eulerian trail</h2>
-<p>Two problems, both ending in the same question Euler asked. Expect about an hour.</p>
+<p>You have two problems, both of which boil down to the same question Euler asked. It will take roughly an hour.</p>
 <ol type="1">
 <li><strong>Binghamton, not Königsberg.</strong> Turn the rivers and bridges of Binghamton, NY into a graph of landmasses and bridges, build its adjacency matrix, and decide whether you can cross every bridge exactly once.</li>
 <li><strong>A network you did not draw.</strong> Pick any network under 5,000 nodes from <a href="https://networks.skewed.de/">Netzschleuder</a>, load its edge list with <code>pandas</code>, build the adjacency matrix from it, draw it, and run the same test.</li>
 </ol>
-<p>The second one is the point of the exercise: your Euler test has to work on data you have never looked at, which means it has to be written in terms of degrees rather than in terms of a picture.</p>
+<p>The second problem is the key to this exercise. Your Euler test must be able to work on data you have never looked at. That is to say, it must be written in terms of degrees, not in terms of a picture.</p>
 <p><strong><a href="https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/03-exercises.py">Open the exercise notebook</a></strong> — it runs in your browser, with nothing to install and nothing to sign into.</p>
 <p>Prefer to work locally? The notebook is in the repository at <a href="https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/03-exercises.py"><code>notebooks/m01-euler-tour/03-exercises.py</code></a>. Run it with <code>marimo edit notebooks/m01-euler-tour/03-exercises.py</code>.</p>
 </section>
 <section id="assignments" class="level2">
 <h2 class="anchored" data-anchor-id="assignments">Assignments</h2>
-<p>Neither graded assignment runs in this module. The <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">Group Mini-Project</a> both start with Module 2. The exercise above is practice, not a submission.</p>
+<p>In this module, neither graded assignment runs. Both the <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">Group Mini-Project</a> start from Module 2. The exercise above is for practice only and not for submission.</p>
 <p>Use the time to finish <a href="../course/setup.html">setting up your machine</a> instead — the first Pair Notebook assumes it is already done.</p>
 
 

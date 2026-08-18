@@ -728,7 +728,7 @@ window.Quarto = {
 </header>
 
 
-<p>Euler’s proof needed exactly one technical word: <em>degree</em>. Everything after this module needs five more — <strong>walk</strong>, <strong>trail</strong>, <strong>path</strong>, <strong>circuit</strong>, <strong>cycle</strong> — and two objects, the <strong>adjacency matrix</strong> and the <strong>connected component</strong>. They look like housekeeping. They are not: every later module is phrased in them, and this is the page you will come back to.</p>
+<p>Euler’s proof needed exactly one technical term: <em>degree</em>. Everything after this module needs five more: <strong>walk</strong>, <strong>trail</strong>, <strong>path</strong>, <strong>circuit</strong>, and <strong>cycle</strong>. It also needs two objects: the <strong>adjacency matrix</strong> and the <strong>connected component</strong>. These sound like housekeeping, but they are not. Every later module is phrased in them, and this is the page you will come back to.</p>
 <section id="walk-trail-path" class="level2">
 <h2 class="anchored" data-anchor-id="walk-trail-path">Walk, trail, path</h2>
 <table class="caption-top table">
@@ -745,20 +745,20 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Walk</strong></td>
-<td style="text-align: left;">A sequence of steps along edges. Both edges and nodes may repeat.</td>
+<td style="text-align: left;">A sequence of steps along edges, where both edges and nodes may be repeated.</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Trail</strong></td>
-<td style="text-align: left;">A walk that never repeats an <strong>edge</strong>. Nodes may repeat.</td>
+<td style="text-align: left;">A walk that does not repeat any <strong>edge</strong>. Nodes may repeat.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Path</strong></td>
-<td style="text-align: left;">A walk that never repeats a <strong>node</strong> — and therefore never repeats an edge either.</td>
+<td style="text-align: left;">A walk that never repeats a <strong>node</strong>, and therefore never repeats an edge either.</td>
 </tr>
 </tbody>
 </table>
-<p>The road-trip version: a walk is a casual drive that may go down the same street twice; a trail is a mail route, which never covers the same street twice but may pass the same intersection again; a path is a tour of cities in which every city is new.</p>
-<p>The three are nested. Every path is a trail, and every trail is a walk; the restrictions only ever get tighter.</p>
+<p>The road-trip version: a walk is a casual drive that may pass the same street twice. A trail is a mail route that never passes the same street twice but may pass the same intersection again. A path is a tour of cities in which every city is new.</p>
+<p>The three are nested: every path is a trail and every trail is a walk, and the restrictions only ever get tighter.</p>
 </section>
 <section id="circuit-and-cycle" class="level2">
 <h2 class="anchored" data-anchor-id="circuit-and-cycle">Circuit and cycle</h2>
@@ -781,21 +781,21 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Cycle</strong></td>
-<td style="text-align: left;">A <strong>path</strong> that starts and ends at the same node — the start node being the one permitted repeat.</td>
+<td style="text-align: left;">A <strong>path</strong> that starts and ends at the same node, the start node being the one permitted repeat.</td>
 </tr>
 </tbody>
 </table>
-<p>With this vocabulary, Königsberg becomes precise:</p>
+<p>With this vocabulary, the Königsberg problem becomes precise:</p>
 <ul>
-<li>An <strong>Eulerian trail</strong> uses every edge of the graph exactly once. It is very often called an <em>Euler path</em>, including in the title of this module, but it is a trail rather than a path: it may return to a node, as the Kneiphof island forces you to.</li>
-<li>An <strong>Eulerian circuit</strong> is an Eulerian trail that comes back to its starting node.</li>
+<li>An <strong>Eulerian trail</strong> uses every edge of the graph exactly once. It is very often called an <em>Euler path</em>, and the title of this module reflects that convention, but it is actually a trail rather than a path, because it can return to a node. Kneiphof island forces such a return.</li>
+<li>An <strong>Eulerian circuit</strong> is an Eulerian trail that returns to its starting node.</li>
 </ul>
-<p>The citizens of Königsberg wanted an Eulerian circuit, which requires <em>every</em> node to have even degree. Their city had four odd nodes, so they wanted the impossible — and after the war it had two odd nodes, which is enough for a trail but still not for a circuit.</p>
+<p>The citizens of Königsberg wanted an Eulerian circuit, but for that <em>every</em> node must have even degree. There were four odd-degree nodes in their city, so what they wanted was impossible. After the war, two odd-degree nodes were left, which is enough for a trail but still not enough for a circuit.</p>
 </section>
 <section id="three-ways-to-write-a-network-down" class="level2">
 <h2 class="anchored" data-anchor-id="three-ways-to-write-a-network-down">Three ways to write a network down</h2>
-<p>A graph is a mathematical object; a computer needs a data structure. There are three standard ones, and the <a href="../m01-euler_tour/02-coding.html">hands-on notebook</a> builds all three. Take the Königsberg graph and number its nodes A = 0, B = 1, C = 2, D = 3.</p>
-<p><strong>Edge list.</strong> One pair per edge, and nothing else:</p>
+<p>Graphs are mathematical objects, and a computer needs data structures to represent them. There are three standard data structures for graphs, and the <a href="../m01-euler_tour/02-coding.html">hands-on notebook</a> builds all three. Let’s take the Königsberg graph and number its nodes A = 0, B = 1, C = 2, D = 3.</p>
+<p><strong>Edge list.</strong> One pair per edge, and no other information:</p>
 <pre><code>(0,1) (0,1) (0,2) (0,2) (0,3) (1,3) (2,3)</code></pre>
 <p>Seven pairs for seven bridges. The two parallel pairs are simply listed twice — an edge list handles a multigraph without any extra machinery.</p>
 <p><strong>Adjacency list.</strong> For each node, the list of its neighbours:</p>
@@ -804,7 +804,7 @@ window.Quarto = {
 2: 0, 0, 3
 3: 0, 1, 2</code></pre>
 <p>The degree of a node is now the length of its row: 5, 3, 3, 3 — the four numbers Euler’s proof turned on.</p>
-<p><strong>Adjacency matrix.</strong> An <span class="math inline">N \times N</span> table <span class="math inline">{\bf A}</span> where <span class="math inline">A_{ij}</span> is the number of edges between nodes <span class="math inline">i</span> and <span class="math inline">j</span> (so <span class="math inline">0</span> or <span class="math inline">1</span> in a graph without parallel edges):</p>
+<p><strong>Adjacency matrix.</strong> The <span class="math inline">N \times N</span> table <span class="math inline">{\bf A}</span> below. The entry at row <span class="math inline">i</span> and column <span class="math inline">j</span> is the number of edges between node <span class="math inline">i</span> and node <span class="math inline">j</span>; in a graph without parallel edges it is either <span class="math inline">0</span> or <span class="math inline">1</span>.</p>
 <p><span class="math display">
 {\bf A} =
 \begin{pmatrix}
@@ -814,23 +814,23 @@ window.Quarto = {
 1 &amp; 1 &amp; 1 &amp; 0
 \end{pmatrix}
 </span></p>
-<p>Read the first row: node 0 (the island A) has two edges to node 1 (the south bank B), two to node 2 (the north bank C), one to node 3 (the east island D). Sum a row and you get that node’s degree again: 5, 3, 3, 3.</p>
+<p>Reading the first row of the matrix, you see that node 0 (island A) has two edges to node 1 (south bank B), two edges to node 2 (north bank C), and one edge to node 3 (east island D). Summing a row gives you the degree of that node again: 5, 3, 3, 3.</p>
 <p>The three are not interchangeable in cost, and choosing between them is a real decision:</p>
 <ul>
-<li><em>“Is there an edge between node 47 and node 912?”</em> — one lookup in the matrix, a scan in the other two.</li>
-<li><em>“Who are node 47’s neighbours?”</em> — one row of the adjacency list, versus a scan of the entire edge list.</li>
-<li>The matrix stores every <strong>non</strong>-edge explicitly. A network of a million nodes needs <span class="math inline">10^{12}</span> entries, almost all of them zero, which is why real code stores it in a compressed form — see the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</li>
+<li>Asking <em>“is there an edge between node 47 and node 912?”</em> requires a single lookup in the matrix, whereas the other two require a scan.</li>
+<li>Asking <em>“who are node 47’s neighbours?”</em> takes one row of the adjacency list, versus a scan of the entire edge list.</li>
+<li>The matrix explicitly stores every <strong>non</strong>-edge. For a network of a million nodes this requires <span class="math inline">10^{12}</span> entries, most of which are zeros, which is why real code stores it in a compressed form — see the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</li>
 </ul>
 </section>
 <section id="the-adjacency-matrix-and-what-its-powers-count" class="level2">
 <h2 class="anchored" data-anchor-id="the-adjacency-matrix-and-what-its-powers-count">The adjacency matrix, and what its powers count</h2>
-<p>The adjacency matrix looks like nothing more than a table of small integers. Its power is that ordinary matrix multiplication, applied to it, counts journeys.</p>
-<p>Start with a question you can answer with the map in front of you. <strong>How many two-step walks run from the north bank C to the south bank B?</strong> Such a walk leaves C, lands somewhere, and goes on to B. From C you can only reach A (two ways: bridges <em>c</em> and <em>d</em>) or D (one way: <em>g</em>). From A there are two bridges on to B; from D there is one. So the answer is <span class="math inline">2 \times 2 + 1 \times 1 = 5</span>.</p>
-<p>Now get the same number from the matrix without thinking about bridges at all. Take row C, <span class="math inline">(2,0,0,1)</span>, and column B, <span class="math inline">(2,0,0,1)</span>, multiply them entry by entry and add:</p>
+<p>Adjacency matrices are just tables of small integers. Yet their power lies in the fact that ordinary matrix multiplication, applied to them, counts journeys.</p>
+<p>Start with a question you can answer with the map in front of you. <strong>How many two-step walks run from the north bank C to the south bank B?</strong> Such a walk leaves C, lands somewhere, and goes on to B. There are two ways to walk from C to A in one step (via bridges <em>c</em> and <em>d</em>) and two bridges from A on to B; there is one way to walk from C to D (via bridge <em>g</em>) and one bridge from D on to B. In total, there are <span class="math inline">2 \times 2 + 1 \times 1 = 5</span> ways.</p>
+<p>We get the same number from the matrix without thinking about the bridges. We take row C, <span class="math inline">(2,0,0,1)</span>, and column B, <span class="math inline">(2,0,0,1)</span>, multiply them element-wise and sum them up:</p>
 <p><span class="math display">
 2\cdot 2 + 0 \cdot 0 + 0 \cdot 0 + 1 \cdot 1 = 5 .
 </span></p>
-<p>Multiplying a row by a column and adding <em>is</em> matrix multiplication, so that number is the entry <span class="math inline">\left({\bf A}^2\right)_{CB}</span>. The same argument works for any number of steps.</p>
+<p>This multiplication and addition of a row and a column <em>is</em> matrix multiplication, and that number is the entry <span class="math inline">\left({\bf A}^2\right)_{CB}</span>. The same argument applies to any number of steps.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key concept: matrix powers count walks">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -847,58 +847,58 @@ window.Quarto = {
 </div>
 </div>
 <p>The two-line derivation is in the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</p>
-<p>Note what it counts: <strong>walks</strong>, not trails and not paths. Nodes and edges may repeat, which is exactly why the formula is so simple. Counting paths, where repetition is forbidden, is vastly harder, and no matrix product does it.</p>
-<p>Two consequences we will use later. First, the diagonal entry <span class="math inline">\left({\bf A}^2\right)_{ii}</span> counts out-and-back trips from node <span class="math inline">i</span>: in a graph with no parallel edges that is just the degree of <span class="math inline">i</span>, while in Königsberg <span class="math inline">\left({\bf A}^2\right)_{AA} = 2^2 + 2^2 + 1^2 = 9</span>, because you may leave the island by bridge <em>a</em> and come back by bridge <em>b</em>. Second, a <strong>triangle</strong> is a set of three nodes each joined to the other two — Königsberg has one in A, B, D (bridges <em>a</em>, <em>f</em>, <em>e</em>) and another in A, C, D (bridges <em>c</em>, <em>g</em>, <em>e</em>). In a graph with no parallel edges, <span class="math inline">\left({\bf A}^3\right)_{ii}</span> is <em>twice</em> the number of triangles containing <span class="math inline">i</span>, since each triangle can be walked in two directions. Module 2 turns that count into a measure of how cliquish a network is.</p>
+<p>Note what it counts: <strong>walks</strong>, not trails or paths. Nodes and edges can be repeated, which is exactly what makes the formula so simple. Counting paths, where repetition is forbidden, is much harder, and no matrix product does it.</p>
+<p>Two consequences we will use later. The diagonal element <span class="math inline">\left({\bf A}^2\right)_{ii}</span> counts out-and-back trips from node <span class="math inline">i</span> to itself. In a graph without parallel edges, this is the degree of <span class="math inline">i</span>. In Königsberg, you can leave the island by bridge <em>a</em> and return on bridge <em>b</em>, and the full count is <span class="math inline">\left({\bf A}^2\right)_{AA} = 2^2 + 2^2 + 1^2 = 9</span>. A <strong>triangle</strong> is a set of three nodes all connected to each other. Königsberg has two: A, B, D (bridges <em>a</em>, <em>f</em>, <em>e</em>) and A, C, D (bridges <em>c</em>, <em>g</em>, <em>e</em>). In graphs without parallel edges, <span class="math inline">\left({\bf A}^3\right)_{ii}</span> is <em>twice</em> the number of triangles containing <span class="math inline">i</span>, because each triangle can be walked in two directions. Module 2 converts this number into a measure of how cliquish a network is.</p>
 </section>
 <section id="when-a-network-falls-apart" class="level2">
 <h2 class="anchored" data-anchor-id="when-a-network-falls-apart">When a network falls apart</h2>
-<p>Euler’s condition begins with the word <em>connected</em>, and it has to: if you cannot get from one part of the network to another, no single walk can possibly cover all the edges.</p>
+<p>Euler’s condition begins with the word <em>connected</em>, and it has to. If some part of the network is unreachable from another, then no single walk can possibly cover all the edges.</p>
 <ul>
 <li>A graph is <strong>connected</strong> if there is a path between every pair of nodes.</li>
-<li>A <strong>disconnected</strong> graph breaks into separate islands of nodes, called <strong>connected components</strong>. More precisely, a connected component is a <em>maximal</em> set of mutually reachable nodes — maximal meaning you cannot add another node without breaking that property.</li>
+<li>A <strong>disconnected</strong> graph breaks into islands of nodes called <strong>connected components</strong>. A connected component is a <em>maximal</em> set of nodes that can reach each other, maximality meaning that you cannot add another node without breaking the property.</li>
 </ul>
-<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
+<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/connected-component.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Three connected components: the eight nodes 0–7 form one, nodes 8 and 9 form another, and node 10 sits alone as a component of size one.
+Figure&nbsp;1: There are eight nodes 0–7 forming one connected component, nodes 8 and 9 forming another connected component, and node 10 forming a connected component of size one.
 </figcaption>
 </figure>
 </div>
 <section id="the-giant-component" class="level3">
 <h3 class="anchored" data-anchor-id="the-giant-component">The giant component</h3>
-<p>Real networks are almost never neatly connected, but they are rarely evenly broken either. What you typically find is one enormous component holding most of the nodes, surrounded by a scatter of tiny fragments and isolated nodes. That dominant piece is called the <strong>giant component</strong>.</p>
-<p>“Giant” is a claim about <em>proportion</em>, not head count. A component is giant when it holds a fixed share of all the nodes — say 90% — and goes on holding roughly that share as the network grows. A component of 1,000 nodes is giant in a network of 1,200 and negligible in a network of 10 million.</p>
-<p>This matters practically, because the giant component is usually the object we analyze. Average path length is undefined across disconnected pieces; centrality computed on an isolated pair of nodes tells you nothing. In practice one extracts the giant component and works there — and asking <em>when a giant component exists at all</em>, and <em>what it takes to destroy it</em>, is the entire subject of Module 3.</p>
+<p>A real network is almost never neatly connected, but it is rarely evenly broken either. Typically, there is one large component containing most of the nodes, with a few small fragments and isolated nodes scattered around. This dominant component is called the <strong>giant component</strong>.</p>
+<p>“Giant” is a statement about <em>proportion</em>, not head count. A component is giant if it occupies some fixed fraction of all the nodes (say 90%) and keeps that fraction roughly constant as the network grows. A 1,000-node component is giant in a 1,200-node network but negligible in a 10 million-node network.</p>
+<p>In practice, the giant component is what we usually analyse. The average path length is not defined between disconnected pieces, and a centrality computed on an isolated pair of nodes tells you nothing. So we extract the giant component and work there — and <em>when a giant component exists at all</em>, and <em>what it takes to destroy it</em>, are the questions of all of Module 3.</p>
 </section>
 <section id="finding-components-by-flood-fill" class="level3">
 <h3 class="anchored" data-anchor-id="finding-components-by-flood-fill">Finding components by flood fill</h3>
-<p>Reading components off a picture is easy; doing it on a million nodes needs an algorithm. The idea is simple enough to run by hand:</p>
+<p>It is easy to read the components off a picture, but you need an algorithm to do it on a million nodes. The idea is simple enough to run by hand:</p>
 <ol type="1">
 <li>Pick any unvisited node and mark it as visited.</li>
 <li>Look at its neighbours. Any that are unvisited, visit them too.</li>
 <li>Repeat until nothing new can be reached. Everything you touched is one component.</li>
-<li>If unvisited nodes remain, pick one and start again — that is the next component.</li>
+<li>If unvisited nodes remain, pick one and start again — that is the next connected component.</li>
 </ol>
-<p>Whether you always extend the most recently discovered node (<strong>depth-first search</strong>, DFS) or sweep outward one layer at a time (<strong>breadth-first search</strong>, BFS) changes the order of visits but not the resulting component. BFS gives you something extra for free: because it explores layer by layer, the layer at which it first reaches a node is the <em>shortest path length</em> to that node, which is how Module 2 measures how small the world is.</p>
-<p>Either way, each node is visited once and each edge is looked at a constant number of times. The work therefore grows in proportion to the number of nodes plus the number of edges, not to the square of the number of nodes: double the size of the network and you roughly double the work. That is why splitting a network into components stays practical at any scale you are likely to meet.</p>
+<p>The order of visits changes depending on whether you always extend the most recently discovered node (<strong>depth-first search</strong>, DFS) or sweep outward one layer at a time (<strong>breadth-first search</strong>, BFS), but the resulting component is the same. Because BFS explores layer by layer, the layer at which it first reaches a node is the <em>shortest path length</em> to that node, which is how Module 2 measures how small the world is.</p>
+<p>Either way, each node is visited only once and each edge is checked only a constant number of times. The work therefore grows in proportion to the number of nodes plus the number of edges, not to the square of the number of nodes. If you double the size of the network, the amount of work roughly doubles. That is why partitioning a network into components stays practical at any scale you are likely to meet.</p>
 </section>
 <section id="connectivity-when-edges-have-direction" class="level3">
 <h3 class="anchored" data-anchor-id="connectivity-when-edges-have-direction">Connectivity when edges have direction</h3>
-<p>What if edges run one way, like one-way streets? We call these <strong>directed graphs</strong>, and they have two flavours of connectivity:</p>
+<p>What if edges run one way, like one-way streets? These are called <strong>directed graphs</strong>, and they have two flavours of connectivity:</p>
 <ul>
-<li><strong>Weakly connected</strong>: the graph would be connected if you ignored the arrows. You can get from A to B, but perhaps not from B to A.</li>
-<li><strong>Strongly connected</strong>: there is a directed path from every node to every other node. Wherever you start, you can reach anywhere else by following the arrows.</li>
+<li><strong>Weakly connected</strong>: the graph would be connected if we ignored the arrows, meaning there is a path from A to B but perhaps not from B to A.</li>
+<li><strong>Strongly connected</strong>: there is a directed path from any node to every other node. No matter where you start, you can follow the arrows to get anywhere else.</li>
 </ul>
-<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A directed graph with three nodes shaded to mark a strongly connected component.">
+<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A directed graph with three nodes shaded to mark a strongly connected component." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/connected-component-directed.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A directed graph with three nodes shaded to mark a strongly connected component.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Nodes 1, 2 and 3 form a strongly connected component: following the arrows, each can reach the other two. Node 0 reaches them but nothing comes back to it, so node 0 belongs to the same weakly connected component and not to the strong one.
+Figure&nbsp;2: Nodes 1, 2, and 3 form a strongly connected component, because each node can reach the other two by following the arrows. Node 0 can reach them but nothing comes back to it, so node 0 is in the same weakly connected component but not in the strongly connected one.
 </figcaption>
 </figure>
 </div>

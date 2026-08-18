@@ -724,33 +724,33 @@ window.Quarto = {
 </header>
 
 
-<p>Three things the main text used without justifying: that Euler’s conditions are not merely necessary but sufficient, that a matrix product counts walks, and that an adjacency matrix can be stored in a fraction of <span class="math inline">N^2</span> numbers. Here they are.</p>
+<p>There are three things that the main text used without justification: (i) Euler’s conditions are not only necessary but also sufficient; (ii) a product of matrices counts the number of walks; and (iii) an adjacency matrix can be stored in a fraction of <span class="math inline">N^2</span> numbers. Here they are.</p>
 <section id="why-eulers-conditions-are-enough" class="level2">
 <h2 class="anchored" data-anchor-id="why-eulers-conditions-are-enough">Why Euler’s conditions are enough</h2>
-<p>The <a href="../m01-euler_tour/01-concepts.html">concepts page</a> proved one half of Euler’s theorem: <em>if</em> a route crosses every edge exactly once, <em>then</em> at most two nodes have odd degree. That is what kills Königsberg. The other half — that a connected graph with zero or two odd-degree nodes always <em>has</em> such a route — needs a construction, and the construction is short.</p>
-<p>Take a connected graph in which <strong>every</strong> node has even degree, and start walking anywhere, never re-using an edge. Keep going until you are stuck. You can only get stuck at the node you started from: any other node you entered has been entered and left in pairs, so having just arrived, you have used an odd number of its edges, and its degree being even leaves at least one edge to depart by. So the walk closes into a circuit.</p>
-<p>That circuit may miss some edges. If it does, connectivity guarantees that some node <em>on</em> the circuit still has an unused edge. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.</p>
-<p>For the two-odd-node case, add a temporary extra edge joining the two odd nodes. Now every degree is even, so the construction above gives a circuit; delete the temporary edge from it and what remains is an Eulerian trail running from one odd node to the other. This is Hierholzer’s algorithm, and it is also how you would code it.</p>
+<p>The <a href="../m01-euler_tour/01-concepts.html">concepts page</a> proved the first half of Euler’s theorem: <em>if</em> a route crosses every edge exactly once, <em>then</em> there are at most two nodes with an odd degree. This is why the Königsberg problem is impossible. The second half — if a connected graph has zero or two odd-degree nodes, then such a route always exists — requires a construction, and the construction is short.</p>
+<p>Suppose that in a connected graph <strong>every</strong> node has even degree. Start walking anywhere, never re-using an edge, until you are stuck. The only node you can get stuck at is the one you started from, because every other node was entered and left in pairs, so having just arrived, you have used an odd number of its edges, and since its degree is even, there is always at least one unused edge to depart by. Thus your walk eventually closes on itself and becomes a circuit.</p>
+<p>If that circuit misses some edges, then connectivity guarantees an unused edge at one of the nodes <em>on</em> the circuit. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.</p>
+<p>In the case of two odd-degree nodes, add a temporary extra edge joining the two odd nodes. Because every degree is now even, the construction above gives a circuit. After deleting the temporary edge from that circuit, an Eulerian trail remains, running from one odd node to the other. This is Hierholzer’s algorithm, and it is also how you would code it.</p>
 </section>
 <section id="why-matrix-powers-count-walks" class="level2">
 <h2 class="anchored" data-anchor-id="why-matrix-powers-count-walks">Why matrix powers count walks</h2>
-<p>Write <span class="math inline">{\bf A}</span> for the adjacency matrix, so <span class="math inline">A_{ij}</span> is the number of edges between <span class="math inline">i</span> and <span class="math inline">j</span>.</p>
-<p>A walk of length 2 from <span class="math inline">i</span> to <span class="math inline">j</span> consists of a choice of intermediate node <span class="math inline">\ell</span>, an edge from <span class="math inline">i</span> to <span class="math inline">\ell</span>, and an edge from <span class="math inline">\ell</span> to <span class="math inline">j</span>. There are <span class="math inline">A_{i\ell}</span> ways to make the first choice and <span class="math inline">A_{\ell j}</span> ways to make the second, so <span class="math inline">A_{i\ell}A_{\ell j}</span> walks pass through that particular <span class="math inline">\ell</span>. The intermediate node can be anything, and the possibilities do not overlap, so add them up:</p>
+<p>Let us write <span class="math inline">{\bf A}</span> for the adjacency matrix of the graph, where <span class="math inline">A_{ij}</span> is the number of edges between node <span class="math inline">i</span> and node <span class="math inline">j</span>.</p>
+<p>A walk of length 2 from <span class="math inline">i</span> to <span class="math inline">j</span> is composed of a choice of intermediate node <span class="math inline">\ell</span>, an edge from <span class="math inline">i</span> to <span class="math inline">\ell</span>, and an edge from <span class="math inline">\ell</span> to <span class="math inline">j</span>. There are <span class="math inline">A_{i\ell}</span> choices for the first selection and <span class="math inline">A_{\ell j}</span> choices for the second, resulting in <span class="math inline">A_{i\ell}A_{\ell j}</span> walks passing through that particular <span class="math inline">\ell</span>. The intermediate node can be anything, and the possibilities do not overlap, so add them up:</p>
 <p><span class="math display">
 \#\{\text{walks of length } 2 \text{ from } i \text{ to } j\} = \sum_{\ell} A_{i\ell} A_{\ell j} = \left({\bf A}^2\right)_{ij}.
 </span></p>
-<p>That sum — run along row <span class="math inline">i</span> and down column <span class="math inline">j</span>, multiply entry by entry, add — is the definition of the matrix product, which is why the answer is <span class="math inline">\left({\bf A}^2\right)_{ij}</span> and not merely something resembling it.</p>
-<p>Now induct on the length. A walk of length <span class="math inline">k+1</span> from <span class="math inline">i</span> to <span class="math inline">j</span> is a walk of length <span class="math inline">k</span> from <span class="math inline">i</span> to some node <span class="math inline">\ell</span>, followed by a single edge from <span class="math inline">\ell</span> to <span class="math inline">j</span>. Assuming the claim for <span class="math inline">k</span>, the number of such walks is</p>
+<p>You run along row <span class="math inline">i</span>, down column <span class="math inline">j</span>, multiply entry by entry, and add. That is the definition of the matrix product. So the answer is <span class="math inline">\left({\bf A}^2\right)_{ij}</span>, not merely something resembling it.</p>
+<p>We now proceed by induction on the length. A walk of length <span class="math inline">k+1</span> from <span class="math inline">i</span> to <span class="math inline">j</span> is a walk of length <span class="math inline">k</span> from <span class="math inline">i</span> to some node <span class="math inline">\ell</span>, followed by a single edge from <span class="math inline">\ell</span> to <span class="math inline">j</span>. Assuming the claim holds for <span class="math inline">k</span>, the number of such walks is</p>
 <p><span class="math display">
 \sum_{\ell} \left({\bf A}^{k}\right)_{i\ell} A_{\ell j} = \left({\bf A}^{k}{\bf A}\right)_{ij} = \left({\bf A}^{k+1}\right)_{ij},
 </span></p>
 <p>which is the claim for <span class="math inline">k+1</span>. The base case <span class="math inline">k=1</span> is the definition of <span class="math inline">{\bf A}</span> itself.</p>
-<p>Two footnotes. The argument never asks whether a node or an edge is reused, which is precisely why it counts walks and not paths. And it never uses symmetry, so it holds verbatim for directed networks, with <span class="math inline">A_{ij}</span> counting edges pointing from <span class="math inline">i</span> to <span class="math inline">j</span>.</p>
+<p>There are two footnotes. This argument never asks whether a node or an edge is reused, which is exactly why it counts walks and not paths. It never uses symmetry either, so it holds verbatim for directed networks, where <span class="math inline">A_{ij}</span> counts the edges pointing from <span class="math inline">i</span> to <span class="math inline">j</span>.</p>
 </section>
 <section id="storing-a-matrix-that-does-not-fit" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="storing-a-matrix-that-does-not-fit">Storing a matrix that does not fit</h2>
-<p>A dense adjacency matrix for Earth’s 8 billion people would have <span class="math inline">(8\times 10^{9})^2 = 6.4\times 10^{19}</span> entries; at 8 bytes each, that is 512 exabytes. Real networks are sparse, and this notebook is about exploiting that.</p>
-<p>Storing an adjacency matrix as a full table wastes almost all of it: a real network has a handful of edges per node, so nearly every entry is zero. The fix is to write down only the entries that are not zero.</p>
+<p>A dense adjacency matrix for Earth’s 8 billion people would have <span class="math inline">(8\times 10^{9})^2 = 6.4\times 10^{19}</span> entries. If each entry takes 8 bytes, that is a total of 512 exabytes. Real networks are sparse, and this notebook focuses on exploiting that sparsity.</p>
+<p>If you store an adjacency matrix as a full table, almost all of the space is wasted. In a real network, each node has only a handful of edges, and therefore nearly every entry is zero. The fix is to write down only the entries that are not zero.</p>
 <p>Start from an <strong>adjacency list</strong> — for each row of the matrix, the column IDs that carry a value, and the values themselves:</p>
 <p><span class="math display">
 \{\text{Row ID}: (\text{Column ID}, \text{Value})\}
@@ -779,12 +779,12 @@ window.Quarto = {
 </tbody>
 </table>
 <p><code>indptr</code> is the only one that needs a moment’s thought. It is the running total of how many entries each row contributed, beginning at 0 — so <code>indptr[i]</code> is the position in <code>indices</code> where row <span class="math inline">i</span> begins, and <code>indptr[i+1]</code> is where it ends. Row 0 occupies positions <code>0 … indptr[1]-1</code>, row 1 picks up at <code>indptr[1]</code>, and so on.</p>
-<p>Once you see that, two network operations become one-liners that need no library at all:</p>
+<p>Once you see that, these two network operations become library-free one-liners:</p>
 <ul>
 <li><strong>Degree of node <span class="math inline">i</span></strong>: <code>indptr[i+1] - indptr[i]</code> — the number of non-zero entries in row <span class="math inline">i</span>.</li>
 <li><strong>Neighbours of node <span class="math inline">i</span></strong>: <code>indices[indptr[i]:indptr[i+1]]</code> — the column IDs in row <span class="math inline">i</span>, which are exactly the nodes <span class="math inline">i</span> connects to. The matching edge weights are <code>data[indptr[i]:indptr[i+1]]</code>.</li>
 </ul>
-<p>This is why CSR is the format every network library reaches for: the operation you perform most often — “give me this node’s neighbours” — is a contiguous slice.</p>
+<p>CSR is the format every network library reaches for, because it makes the operation you perform most often — “give me this node’s neighbours” — a contiguous slice.</p>
 <p>Now go and build it.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
 <div class="callout-header d-flex align-content-center">
@@ -813,9 +813,9 @@ window.Quarto = {
 <section id="what-to-watch-for" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="what-to-watch-for">What to watch for</h3>
 <ul>
-<li>Plot memory against network size for both formats. The curves diverge faster than intuition suggests: dense storage grows with the square of the number of nodes, while CSR grows in proportion to nodes plus edges.</li>
-<li>CSR is fast for row-based operations and matrix-vector products, and slow at repeatedly reading single entries. Time both and you will remember which is which.</li>
-<li>Compare CSR against COO and CSC on the same operations. The right format depends entirely on what you are about to do with the matrix.</li>
+<li>Plot the memory usage against the size of the network for both formats. The curves diverge faster than intuition would suggest, because dense storage grows with the square of the number of nodes, while CSR grows in proportion to nodes plus edges.</li>
+<li>CSR is fast at row-based operations and matrix-vector products, and slow at repeated reads of a single entry. Time both and you’ll remember which is which.</li>
+<li>Compare CSR against COO and CSC on the same operations. Choose the format based on what you are about to do with the matrix.</li>
 </ul>
 
 
