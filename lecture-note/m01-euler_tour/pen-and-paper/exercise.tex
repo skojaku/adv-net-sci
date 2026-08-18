@@ -88,6 +88,22 @@
     \node[pltblue] at (6.66,3.62) {\emph{g}};
 \end{tikzpicture}}
 
+% ---------------------------------------------------------------------------
+% One piece of land on its own, with #1 bridge-ends radiating out. #2 takes
+% extra TikZ so the k=2 figure can ship with its pairing already drawn.
+% ---------------------------------------------------------------------------
+\newcommand{\landdeg}[2]{%
+\begin{tikzpicture}[x=1cm, y=1cm]
+    \path (-1.55,-1.55) rectangle (1.55,1.55);
+    \foreach \i in {1,...,#1} {
+        \pgfmathsetmacro\ang{90 - (\i-1)*360/#1}
+        \draw[line width=2.6pt, black!72] (\ang:0.38) -- (\ang:1.18);
+        \draw[thick, fill=white] (\ang:1.28) circle (0.1);
+    }
+    \draw[thick, fill=white] (0,0) circle (0.38);
+    #2
+\end{tikzpicture}}
+
 \begin{document}
 
 \begin{center}
@@ -142,65 +158,90 @@ best attempt, and write which bridge was left over at the end.
 
 \clearpage
 
-{\bf Question 2}: Fill in the table below for the \textbf{seven-bridge} map,
-using the route you found in Question 1(a).
+{\bf Question 2}: Forget the whole map for a moment and look at
+\textbf{one} piece of land, with only the bridge-ends that touch it.
 
-For each piece of land, count three things:
+You are in the middle of your tour. Every time you \emph{arrive} you use up one
+bridge, and every time you \emph{leave} you use up another. So the bridges at
+this piece of land get used in \textbf{pairs}: one to come in, one to go out.
 
-\begin{itemize}[leftmargin=1.4em, itemsep=0pt, topsep=2pt]
-\item \textbf{arrivals} --- how many times you walked \emph{onto} it,
-\item \textbf{departures} --- how many times you walked \emph{off} it,
-\item \textbf{bridges} --- how many bridges touch it on the map.
-\end{itemize}
+Below are four pieces of land, with 2, 3, 4 and 5 bridges. On each one, join
+two bridge-ends with a curved line, like this \tikz[baseline=-0.5ex]{\draw[pltblue, dashed, line width=1pt] (0,0) to[bend left=55] (0.7,0);}, to mean
+``in here, out there''. Keep making pairs until no more can be made. The first
+one is done for you.
 
-\textbf{Worked example.} Take the route
-N \emph{a} W \emph{b} N \emph{c} E \emph{g} W \emph{d} S \emph{e} E \emph{f} S.
-At N you leave by \emph{a}, come back by \emph{b}, and leave again by \emph{c}.
-So N has 1 arrival and 2 departures, and 3 bridges touch it. That row is filled
-in for you. (If you could not find a route in Question 1(a), use this one.)
+\vspace{0.4em}
 
 \begin{center}
-{\setlength{\tabcolsep}{6pt}
-\begin{tabular}{|C{1.9cm}|C{2.1cm}|C{2.4cm}|C{3.2cm}|C{2.6cm}|}
-\hline
-\textbf{land} & \textbf{arrivals} & \textbf{departures} &
-\textbf{arrivals + departures} & \textbf{bridges} \\
-\hline
-N & 1 & 2 & 3 & 3 \\[0.25cm] \hline
-W & & & & \\[0.5cm] \hline
-S & & & & \\[0.5cm] \hline
-E & & & & \\[0.5cm] \hline
+{\setlength{\tabcolsep}{2pt}
+\begin{tabular}{cccc}
+\landdeg{2}{\draw[pltblue, dashed, line width=1.1pt] (90:1.28) to[out=0, in=0, looseness=2.6] (270:1.28);} &
+\landdeg{3}{} &
+\landdeg{4}{} &
+\landdeg{5}{} \\
+2 bridges & 3 bridges & 4 bridges & 5 bridges \\
 \end{tabular}}
 \end{center}
 
-Are the last two columns equal on every row? \quad \cb yes \quad \cb no
+\vspace{0.3em}
+
+\begin{center}
+{\setlength{\tabcolsep}{9pt}
+\begin{tabular}{|C{3.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|}
+\hline
+ & \textbf{2 bridges} & \textbf{3 bridges} & \textbf{4 bridges} &
+\textbf{5 bridges} \\
+\hline
+pairs you drew & 1 & & & \\[0.45cm] \hline
+bridges left over & 0 & & & \\[0.45cm] \hline
+\end{tabular}}
+\end{center}
 
 \vspace{0.6em}
 
-{\bf Question 3}: Read your table and tick one box in each line.
+(a) On which of the four can you walk straight \emph{through}, without ever
+starting or finishing there? \blank[4.5cm]
+
+(b) What do those numbers of bridges have in common? \blank[5.5cm]
+
+(c) A left-over bridge has no partner, so you can only use it once. That means
+this piece of land must be \\
+\hspace*{1em}\cb the start of the tour \quad \cb the finish \quad
+\cb the start or the finish
+
+\vspace{0.7em}
+
+{\bf Question 3}: Back to the map. Count the bridges at each piece of land, and
+write how many of the four have a \textbf{left-over} bridge. Map A, N is filled
+in: three bridges touch N, which is odd, so N has a left-over.
+
+\begin{center}
+{\setlength{\tabcolsep}{7pt}
+\begin{tabular}{|C{3.4cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{3.4cm}|}
+\hline
+ & \textbf{N} & \textbf{W} & \textbf{S} & \textbf{E} &
+\textbf{how many have a left-over?} \\
+\hline
+Map A (7 bridges) & 3 & & & & \\[0.55cm] \hline
+Map B (8 bridges) & & & & & \\[0.55cm] \hline
+\end{tabular}}
+\end{center}
+
+\begin{minipage}{\textwidth}
+A tour has one start and one finish. So at most \blank[1.2cm] pieces of land
+are allowed to have a left-over bridge.
 
 \vspace{0.3em}
 
-(a) Two pieces of land have arrivals $\neq$ departures. They are
-\blank[1.6cm] and \blank[1.6cm].
+Map A: \cb a tour exists \; \cb no tour \hfill
+Map B: \cb a tour exists \; \cb no tour \hspace*{1cm}
 
-(b) In your route, those two pieces of land are \\
-\hspace*{1em}\cb the first one and the last one \quad
-\cb two in the middle \quad \cb nothing special
+\vspace{0.4em}
 
-(c) A piece of land that you only pass \emph{through} has an \\
-\hspace*{1em}\cb even \quad \cb odd \quad number of bridges.
+Finish the sentence, using the words \emph{left-over} and \emph{start}:
 
-(d) A route has one start and one finish. So a route crossing every bridge
-exactly once can exist only if the number of pieces of land with an
-\textbf{odd} number of bridges is \\
-\hspace*{1em}\cb 0 or 2 \quad \cb exactly 1 \quad \cb exactly 3 \quad
-\cb any number
-
-(e) Count again on Map B, the eight-bridge map. It has \blank[1.2cm] pieces of
-land with an odd number of bridges. Finish this sentence:
-
-No route can exist on Map B because \underline{\hspace{7.4cm}}
+No route can exist on Map B because \underline{\hspace{7.2cm}}
+\end{minipage}
 
 \vspace{0.8em}
 
@@ -219,7 +260,7 @@ A \blank[1cm] \; B \blank[1cm] \; C \blank[1cm] \; D \blank[1cm]
 
 \vspace{0.5em}
 
-Use your rule from 3(d). Can the walk be done?
+Use your rule from Question 3. Can the walk be done?
 \quad \cb yes \quad \cb no
 
 \vspace{0.5em}
@@ -256,7 +297,7 @@ would work: \blank[3cm]
 \end{center}
 \end{minipage}
 
-\clearpage
+\vspace{1em}
 
 \parthead{2}{Three kinds of route}
 
@@ -325,9 +366,7 @@ these three names, it is a \quad \cb walk \quad \cb trail \quad \cb path.
 proves it: a path with 7 lines visits \blank[1.5cm] different pieces of land,
 but the campus map only has \blank[1.5cm].
 
-\vspace{1.6cm}
-
-\clearpage
+\vspace{0.9cm}
 
 \parthead{3}{Take these predictions to the laptop}
 
@@ -336,8 +375,8 @@ paper, then open the lab with your partner and find out if you were right.
 Here is a new network, with four nodes.
 
 \begin{center}
-\begin{tikzpicture}[x=0.8cm, y=0.8cm, thick,
-                    every node/.style={draw, circle, minimum size=0.8cm,
+\begin{tikzpicture}[x=0.7cm, y=0.7cm, thick,
+                    every node/.style={draw, circle, minimum size=0.75cm,
                                        inner sep=1pt, fill=white}]
     \node (1) at (-2.4,0)  {1};
     \node (2) at (0,0)     {2};
@@ -363,10 +402,10 @@ is done: node 1 is joined to node 2 only.
 \multicolumn{1}{c}{$A=$} & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} &
 \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} \\
 \cline{2-5}
-1 & 0 & 1 & 0 & 0 \\[0.15cm] \cline{2-5}
-2 & & & & \\[0.35cm] \cline{2-5}
-3 & & & & \\[0.35cm] \cline{2-5}
-4 & & & & \\[0.35cm] \cline{2-5}
+1 & 0 & 1 & 0 & 0 \\[0.1cm] \cline{2-5}
+2 & & & & \\[0.28cm] \cline{2-5}
+3 & & & & \\[0.28cm] \cline{2-5}
+4 & & & & \\[0.28cm] \cline{2-5}
 \end{tabular}}
 \end{center}
 \end{minipage}
@@ -385,12 +424,12 @@ What do you find?
 
 \ansline
 
-\vspace{1em}
+\vspace{0.8em}
 
 \ansline
 \end{minipage}
 
-\vspace{0.5em}
+\clearpage
 
 {\bf Question 6(c)}: A \textbf{2-step route} from node $i$ to node $j$ means:
 one line from $i$ to somewhere, then one line from there to $j$. Count them on
@@ -401,16 +440,16 @@ the picture, by hand.
 2-step routes from node 1 to node 3: \; how many? \blank[1.2cm] \;
 list them: $1 \rightarrow$ \blank[1cm] $\rightarrow 3$ \hspace*{2cm}
 
-\vspace{0.5em}
+\vspace{1.2em}
 
 2-step routes from node 1 to node 2: \; how many? \blank[1.2cm] \;
-why? \underline{\hspace{5cm}}
+why? \underline{\hspace{4.6cm}}
 
-\vspace{0.5em}
+\vspace{1.2em}
 
 2-step routes from node 2 back to node 2: \; how many? \blank[1.2cm]
 
-\vspace{0.4em}
+\vspace{1.4em}
 
 {\bf Question 6(d)}: In the lab you will multiply your grid by itself, giving a
 new grid called $A^2$. Write down, now, what you expect to find in it.
@@ -420,27 +459,25 @@ new grid called $A^2$. Write down, now, what you expect to find in it.
 I expect row 1, column 3 of $A^2$ to be \blank[1.5cm] \qquad
 row 1, column 2 to be \blank[1.5cm]
 
-\vspace{0.5em}
+\vspace{1.2em}
 
 and the diagonal (row 1 col 1, row 2 col 2, \dots) to be
 \underline{\hspace{6.5cm}}
 
-\vspace{0.7em}
+\vspace{1.2em}
 
-\begin{tcolorbox}[colback=white, boxsep=2pt, top=5pt, bottom=5pt]
-\textbf{Now open the lab, in pairs.} One laptop between two people. The person
-who is \emph{not} typing reads the question out loud and says what they expect
-before the other one runs the cell.
+\vspace{0.3em}
 
-\vspace{0.4em}
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
+\textbf{Now open the lab, in pairs}, and bring this sheet --- it asks for the
+numbers you just wrote down. One laptop between two people: the person who is
+\emph{not} typing says what they expect before the other one runs the cell.
+
+\vspace{0.3em}
 
 \begin{center}
 \large \molaburl
 \end{center}
-
-\vspace{0.2em}
-
-Bring this sheet with you. The lab asks for the numbers you just wrote down.
 \end{tcolorbox}
 
 \end{document}

@@ -1,0 +1,532 @@
+/* Lecture Hall — marimo custom CSS, drawn by hand
+   Usage: put this next to your notebook and add to the notebook's config:
+     [display] css_file = "lecture-hall.css"
+   or in marimo.toml under [display].
+
+   The notebook is a lecture note the student and the tutor fill in together,
+   so it is dressed as one: dot-grid paper, wobbly ink borders, and section
+   rules drawn with a pen.
+
+   THE HAND IS IN THE LINES, NOT IN THE LETTERS. A handwriting face for the
+   prose was tiring to read over ninety minutes and made the page look like a
+   greeting card rather than a lecture note. So the type is exactly the course
+   lecture note's (adv-net-sci/lecture-note/scss/minimal.scss): a system sans
+   for the body, a system serif for the headings, 18px/1.65 — the same
+   reading experience on both halves of the course. What stays hand-drawn is
+   everything that is not read as a word: the wavy section rules, the wobbly
+   borders and pen shadows, the sketched matplotlib strokes, and netviz's
+   turbulent edges.
+
+   No webfont, no network request: a student on a plane gets the same page,
+   and there is no first-paint flash of a fallback face.
+
+   The accents are the LECTURE SLIDES' accents, verbatim — the module is one
+   course, so the colour that means "the thing we are looking at" has to mean
+   it in both halves. Change one of them here and you must change it in
+   adv-net-sci/slides/m02/figures/make_figures.py too, and in every cells/*.py
+   that hardcodes it (they all do, for their nodes and edges). */
+
+:root {
+  /* palette — the three accents come from the slide deck
+     (make_figures.py: ACCENT / ACCENT2 / ACCENT3), and the premade cells
+     hardcode the same hexes for their nodes and edges, so a repaint here
+     desyncs both. What is NOT the slides' is the paper: white became warm,
+     and the pencil rule (--lh-rule) is a new token rather than a repaint of
+     --lh-line, which is a node fill in cp2 and cp5. */
+  --lh-paper:   #FFFDF7;
+  --lh-card:    #FFFFFF;
+  --lh-surface: #F6F2E9;
+  --lh-line:    #E4E6EA;
+  --lh-rule:    #D9D2C2;
+  --lh-ink:     #1D1E21;
+  --lh-ink-2:   #35373C;
+  --lh-muted:   #6A6D75;
+  --lh-blue:    #22336B;
+  --lh-blue-2:  #3959A6;
+  --lh-rust:    #B14434;
+
+  /* type — the lecture note's three stacks, verbatim. All from the system:
+     nothing here is fetched. */
+  --lh-serif:   "Iowan Old Style", "Palatino Linotype", Palatino,
+                "Book Antiqua", "Hoefler Text", Georgia,
+                "Times New Roman", serif;
+  --lh-sans:    system-ui, -apple-system, "Segoe UI", Roboto,
+                "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial,
+                sans-serif;
+  --lh-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                "Liberation Mono", monospace;
+  /* The one hand-written face on the page, and it writes exactly one thing:
+     the student's own answers, inside the fold. Printed note, handwritten
+     margin — the difference between the two is the point. System faces only,
+     like everything else here: macOS ships the first two, Windows the next
+     two, `cursive` catches the rest. */
+  --lh-hand:    "Chalkboard SE", "Bradley Hand", "Segoe Print",
+                "Comic Sans MS", cursive;
+
+  /* the hand-drawn kit: two rounding sets, alternated so no two boxes on the
+     page have the same corners, and one ink shadow that fakes a second pass
+     of the pen. */
+  --lh-wobble:   14px 6px 16px 8px / 8px 16px 6px 14px;
+  --lh-wobble-2: 6px 16px 8px 14px / 16px 6px 14px 8px;
+  --lh-pen:      3px 4px 0 -1px rgba(35, 34, 43, 0.16);
+  --lh-pen-soft: 2px 3px 0 -1px rgba(35, 34, 43, 0.12);
+
+  /* a wavy stroke, used for underlines and table rules */
+  --lh-stroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='7' viewBox='0 0 120 7'%3E%3Cpath d='M1 4.4C20 1.9 40 6.2 60 3.7 80 1.4 100 5.6 119 3.2' fill='none' stroke='%23B14434' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --lh-stroke-faint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='7' viewBox='0 0 120 7'%3E%3Cpath d='M1 4.4C20 1.9 40 6.2 60 3.7 80 1.4 100 5.6 119 3.2' fill='none' stroke='%23D9D2C2' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+
+  /* marimo tokens */
+  --background: var(--lh-paper);
+  --foreground: var(--lh-ink);
+  --card: var(--lh-card);
+  --card-foreground: var(--lh-ink);
+  --popover: var(--lh-card);
+  --popover-foreground: var(--lh-ink);
+  --muted: var(--lh-surface);
+  --muted-foreground: var(--lh-muted);
+  --border: var(--lh-line);
+  --input: var(--lh-line);
+  --ring: var(--lh-blue);
+  --primary: var(--lh-blue);
+  --primary-foreground: var(--lh-paper);
+  --secondary: var(--lh-surface);
+  --secondary-foreground: var(--lh-ink);
+  --accent: var(--lh-surface);
+  --accent-foreground: var(--lh-blue);
+  --destructive: var(--lh-rust);
+  --destructive-foreground: var(--lh-paper);
+  --radius: 3px;
+
+  --text-font: var(--lh-sans);
+  --heading-font: var(--lh-serif);
+  --code-font: var(--lh-mono);
+}
+
+/* ---------- page ---------- */
+
+/* Dot-grid, not ruled lines: the same "this is a sketchbook" signal, but it
+   does not fight a line of prose for the same horizontal band. */
+body,
+#App {
+  background-color: var(--lh-paper);
+  background-image: radial-gradient(rgba(31, 58, 95, 0.085) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--lh-ink-2);
+  font-family: var(--lh-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- prose ---------- */
+
+.markdown,
+.prose {
+  font-family: var(--lh-sans);
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--lh-ink-2);
+  text-wrap: pretty;
+  max-width: 68ch;
+}
+
+/* The lecture note's serif and its scale — h1 2.05 / h2 1.55 / h3 1.22 /
+   h4 1.02 against its 18px root. Written out in px because marimo's root
+   stays the browser's 16px, so a rem here would be a different size than
+   the same rem on the note. */
+.markdown h1, .markdown h2, .markdown h3, .markdown h4,
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--lh-serif);
+  font-weight: 600;
+  color: var(--lh-ink);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.markdown h1, .prose h1 {
+  font-size: 37px;
+  margin: 0 0 22px;
+  letter-spacing: -0.01em;
+}
+
+/* A chapter break — one of the two places the pen still writes. */
+.markdown h2, .prose h2 {
+  font-size: 28px;
+  margin: 50px 0 16px;
+  padding-bottom: 0.18em;
+  background-image: var(--lh-stroke);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 120px 7px;
+}
+
+/* A note cell's own title (`### 📏 Distance and average path length`). It is
+   set larger than the prose beneath it so the finished notebook reads as a
+   run of sections, not one long column. */
+.markdown h3, .prose h3 { font-size: 22px; margin: 36px 0 13px; }
+
+/* Quieter than h3: size and weight only, never a rule. */
+.markdown h4, .prose h4 { font-size: 18px; margin: 27px 0 9px; }
+
+.markdown a, .prose a { color: var(--lh-blue); text-decoration-color: var(--lh-line); }
+.markdown a:hover, .prose a:hover { color: var(--lh-rust); text-decoration-color: currentColor; }
+
+.markdown strong, .prose strong { color: var(--lh-ink); font-weight: 700; }
+
+/* A quote carries NO chrome at all: no fill, no border, not even a rule in
+   the margin — grey ink is the whole treatment.
+
+   It has been walked down one step at a time and each step was right. It
+   started as a scrap of paper pinned to the page (filled, navy-bordered,
+   shadowed, tilted a quarter degree), which said LOOK AT THIS about a line
+   the reader had already clicked to open. Then a margin rule, which still
+   drew a vertical line down a page that has plenty. What is left is what
+   the quote actually is: the student's own words, in the page's quiet grey,
+   under a heading that already names them. #6A6D75 on white is 5.2:1 —
+   quiet is not the same as unreadable, and this line is the graded one. */
+.markdown blockquote,
+.prose blockquote {
+  margin: 1.4em 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--lh-muted);
+  font-style: normal;
+}
+
+/* ---------- the student's own answer, folded ---------- */
+
+/* Every note cell ends with what the student said, quoted verbatim. Left
+   open it was the loudest thing on the page — a bordered, shadowed slab
+   under every single note, competing with the figure above it and with the
+   explanation the note exists to give. So it is folded: the note reads as
+   the lecture note it is, and the answer is one click away.
+   `mo.md` renders `/// details | My answer` + `type: lh-answer` into this.
+
+   Closed, it is a dashed tab in the margin colour — present, quiet, clearly
+   pressable. Open, it is their words behind a margin rule, and nothing else:
+   a reader who clicked to see the answer does not also need it boxed. */
+/* marimo dresses EVERY `.markdown details` as an admonition, and there is no
+   opting out by naming an unknown type: a card-coloured background, a 6px
+   left rule, a chevron built out of two rotated borders on `summary::before`,
+   and a 1rem pad on every child that is not the summary. On paper-coloured
+   pages that card reads as a grey slab parked behind the answer. All four are
+   undone here — this fold is drawn from scratch, not themed. */
+.markdown details.lh-answer,
+.prose details.lh-answer {
+  margin: 1.2em 0;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+/* The 1rem pad marimo puts on the quote. The quote has its own. */
+.markdown details.lh-answer > *:not(summary),
+.prose details.lh-answer > *:not(summary) { padding: 0; }
+
+.markdown details.lh-answer > summary,
+.prose details.lh-answer > summary {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  width: fit-content;
+  cursor: pointer;
+  padding: 2px 12px 4px;
+  font-family: var(--lh-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--lh-muted);
+  background: transparent;
+  border: 1.5px dashed var(--lh-rule);
+  border-radius: var(--lh-wobble-2);
+  /* Both spellings: Safari still ships the pseudo-element, everyone else
+     honours list-style. Left in, the default triangle sits outside the tab. */
+  list-style: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.markdown details.lh-answer > summary::-webkit-details-marker,
+.prose details.lh-answer > summary::-webkit-details-marker { display: none; }
+
+/* Ours. marimo's chevron is two rotated borders with padding and a margin,
+   so every one of those properties has to be named to be switched off —
+   left in, its 45deg box lands on top of this arrow. */
+.markdown details.lh-answer > summary::before,
+.prose details.lh-answer > summary::before {
+  content: "▸";
+  border: 0;
+  padding: 0;
+  margin: 0;
+  transform: none;
+  transition: none;
+  vertical-align: baseline;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--lh-blue-2);
+}
+.markdown details.lh-answer[open] > summary::before,
+.prose details.lh-answer[open] > summary::before {
+  content: "▾";
+  transform: none;
+}
+
+.markdown details.lh-answer > summary:hover,
+.prose details.lh-answer > summary:hover {
+  color: var(--lh-ink);
+  border-color: var(--lh-blue-2);
+}
+.markdown details.lh-answer > summary:focus-visible,
+.prose details.lh-answer > summary:focus-visible {
+  outline: 2px solid var(--lh-blue);
+  outline-offset: 2px;
+}
+
+/* Open: the tab hands over to the quote, so it stops drawing a border. */
+.markdown details.lh-answer[open] > summary,
+.prose details.lh-answer[open] > summary {
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Inside the fold, and ONLY inside it, the quote is handwriting. That is
+   what tells a reader at a glance which words are the note's and which are
+   theirs — the grey alone left the two looking like one voice.
+   Scoped to the fold on purpose: cp7 quotes an AI's analysis in a
+   blockquote too, and that one is emphatically not written by hand. */
+.markdown details.lh-answer > blockquote,
+.prose details.lh-answer > blockquote {
+  margin-top: 0.3em;
+  font-family: var(--lh-hand);
+  /* These faces run small for their point size — Segoe Print especially. */
+  font-size: 1.06em;
+  line-height: 1.5;
+}
+
+.markdown hr, .prose hr {
+  border: 0;
+  height: 7px;
+  margin: 2em 0;
+  background-image: var(--lh-stroke-faint);
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: 120px 7px;
+}
+
+.markdown code:not(pre code),
+.prose code:not(pre code) {
+  font-family: var(--lh-mono);
+  font-size: 0.86em;
+  background: var(--lh-surface);
+  color: var(--lh-ink);
+  padding: 0.1em 0.4em;
+  border-radius: 6px 3px 7px 4px / 4px 7px 3px 6px;
+}
+
+/* ---------- tables ---------- */
+
+.markdown table, .prose table { border-collapse: collapse; font-size: 16px; }
+.markdown th, .prose th {
+  font-family: var(--lh-sans);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--lh-ink);
+  text-align: left;
+  border-bottom: 0;
+  padding: 6px 14px 8px 0;
+  background-image: var(--lh-stroke);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 120px 7px;
+}
+.markdown td, .prose td {
+  padding: 8px 14px 8px 0;
+  border-bottom: 1px solid var(--lh-rule);
+  /* Numbers stay mechanical: a column that does not line up is a column that
+     cannot be compared, which is the whole reason the table is there. */
+  font-family: var(--lh-mono);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- cells ---------- */
+
+.cell,
+[data-testid="cell"] {
+  border-radius: var(--lh-wobble);
+}
+.cell:nth-of-type(even),
+[data-testid="cell"]:nth-of-type(even) { border-radius: var(--lh-wobble-2); }
+
+.cell:focus-within,
+[data-testid="cell"]:focus-within {
+  box-shadow: 0 0 0 2px var(--lh-rule), var(--lh-pen-soft);
+}
+
+.cell-editor,
+.cm-editor {
+  font-family: var(--lh-mono);
+  font-size: 13.5px;
+  line-height: 1.55;
+  background: var(--lh-surface);
+  border: 2px solid var(--lh-rule);
+  border-radius: var(--lh-wobble);
+  box-shadow: var(--lh-pen-soft);
+}
+
+.cm-editor .cm-gutters {
+  background: var(--lh-surface);
+  color: var(--lh-muted);
+  border-right: 1px solid var(--lh-rule);
+}
+
+.cm-editor.cm-focused { outline: 2px solid var(--lh-blue); }
+.cm-editor .cm-cursor { border-left-color: var(--lh-rust); }
+.cm-editor .cm-selectionBackground,
+.cm-editor.cm-focused .cm-selectionBackground { background: #DCE3ED !important; }
+.cm-editor .cm-activeLine { background: rgba(31, 58, 95, 0.045); }
+
+/* syntax */
+.cm-editor .tok-keyword,
+.cm-editor .cm-keyword { color: var(--lh-blue); font-weight: 500; }
+.cm-editor .tok-number,
+.cm-editor .cm-number { color: var(--lh-rust); }
+.cm-editor .tok-string,
+.cm-editor .cm-string { color: #4B6A3A; }
+.cm-editor .tok-comment,
+.cm-editor .cm-comment { color: var(--lh-muted); font-style: italic; }
+.cm-editor .tok-variableName,
+.cm-editor .tok-propertyName { color: var(--lh-ink); }
+.cm-editor .tok-operator { color: var(--lh-ink-2); }
+
+/* ---------- output ---------- */
+
+.output-area,
+.marimo-output {
+  font-family: var(--lh-sans);
+  color: var(--lh-ink-2);
+}
+
+.output-area pre,
+pre.output {
+  font-family: var(--lh-mono);
+  font-size: 13px;
+  background: var(--lh-surface);
+  border: 2px solid var(--lh-rule);
+  border-radius: var(--lh-wobble);
+  box-shadow: var(--lh-pen-soft);
+  padding: 10px 12px;
+  color: var(--lh-ink);
+}
+
+/* A figure is a drawing taped onto the page. */
+.output-area img,
+.marimo-output img,
+.output-area svg,
+.marimo-output svg {
+  border-radius: 6px 3px 7px 4px / 4px 7px 3px 6px;
+}
+
+/* ---------- ui chrome ---------- */
+
+button,
+.marimo-button {
+  font-family: var(--lh-sans);
+  font-weight: 700;
+  border-radius: var(--lh-wobble);
+}
+
+/* Anything the student actually presses — ▶ Run, 📨 Send to my tutor, the
+   referee's appeal — is drawn, and moves under the press. */
+.marimo-run-button,
+.marimo-button,
+button[data-variant="primary"],
+button[data-variant="secondary"],
+button[data-variant="outline"] {
+  border: 2px solid var(--lh-ink);
+  box-shadow: var(--lh-pen);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.marimo-run-button:active,
+.marimo-button:active,
+button[data-variant="primary"]:active,
+button[data-variant="secondary"]:active,
+button[data-variant="outline"]:active {
+  transform: translate(2px, 2.5px);
+  box-shadow: none;
+}
+
+.marimo-run-button,
+button[data-variant="primary"] {
+  background: var(--lh-blue);
+  color: var(--lh-paper);
+  border-color: var(--lh-ink);
+}
+.marimo-run-button:hover,
+button[data-variant="primary"]:hover { background: var(--lh-blue-2); }
+
+/* Sliders: a pencil line with a bead on it. Selectors cover marimo's own
+   widget and a plain range input, whichever the build renders. */
+input[type="range"] {
+  accent-color: var(--lh-blue);
+  height: 22px;
+}
+[role="slider"],
+[data-orientation="horizontal"] [role="slider"] {
+  border: 2px solid var(--lh-ink);
+  border-radius: 58% 42% 50% 50% / 50% 50% 42% 58%;
+  background: var(--lh-blue);
+  box-shadow: var(--lh-pen-soft);
+}
+
+/* Text the student types into: a ruled box, not a chrome field. */
+input[type="text"],
+input[type="number"],
+textarea,
+.marimo-text-input {
+  font-family: var(--lh-sans);
+  background: var(--lh-card);
+  border: 2px solid var(--lh-ink);
+  border-radius: var(--lh-wobble-2);
+  box-shadow: var(--lh-pen-soft);
+}
+
+/* The photo drop box — the one place on the page that asks for paper. */
+[data-testid="file-upload"],
+.marimo-file-upload,
+.dropzone {
+  border: 2.5px dashed var(--lh-ink) !important;
+  border-radius: var(--lh-wobble);
+  background: var(--lh-card);
+  font-family: var(--lh-sans);
+}
+
+/* stale / error states */
+.cell.stale,
+[data-stale="true"] { box-shadow: inset 3px 0 0 var(--lh-rust); }
+
+.marimo-error,
+.output-area .error {
+  font-family: var(--lh-mono);
+  font-size: 13px;
+  background: #FBEDE7;
+  border: 2px solid var(--lh-rust);
+  color: #6E2F14;
+  border-radius: var(--lh-wobble);
+  padding: 10px 12px;
+}
+
+/* slides / app view */
+.slides,
+[data-mode="present"] .markdown { font-size: 18px; }
+
+/* A student who has asked for less motion gets the drawing without the
+   button that moves under the press. */
+@media (prefers-reduced-motion: reduce) {
+  .marimo-run-button,
+  .marimo-button,
+  button[data-variant="primary"],
+  button[data-variant="secondary"],
+  button[data-variant="outline"] { transition: none; }
+}
