@@ -38,6 +38,22 @@ figures are authored at 4320 px wide and no projector resolves that, so
 the ordinary render. Works on any deck in `slides/` — it finds `theme.css` or
 `network-science.css` beside the deck.
 
+## PDF, and the two flags that wreck it
+
+```sh
+python3 ../bundle_deck.py intro.md --pdf      # -> intro.pdf, 59 pages, 960x540
+```
+
+It is routed through the same script only to pin the flags. Drop
+`--allow-local-files` and marp still writes a PDF and exits 0, with every figure
+gone. Drop `--html` and slide 12 prints its own `<button>` and `<script src>`
+source as body text. Both failures are silent at the console, so when a PDF comes
+out wrecked, that is the first thing to check.
+
+One thing no static export can fix: slide 12 is a running animation, so the PDF
+freezes it mid-draw at scene 1 of 4 and the readout panel is two lines short. The
+PNG gate captures the same half-finished frame. Show that slide from the HTML.
+
 ## Layout
 
 - `intro.md` — the deck

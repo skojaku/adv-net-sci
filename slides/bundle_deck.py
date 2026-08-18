@@ -10,11 +10,18 @@ to it.
 
     python3 ../bundle_deck.py intro.md                  -> intro.standalone.html
     python3 ../bundle_deck.py intro.md --max-width 1600 -> the same, downscaled
+    python3 ../bundle_deck.py intro.md --pdf            -> intro.pdf
 
 Figures are authored at 4 px per bp (4320 px full width), which no projector
 resolves. `--max-width` resizes anything wider before encoding; 1600 is ample for
 a 1280x720 slide and cuts the file several times over. Without it nothing is
 touched and the bundle is pixel-identical to the ordinary render.
+
+`--pdf` skips the bundling and hands the deck to marp with the flags the export
+needs, which is the point of routing it through here: drop `--allow-local-files`
+and every figure silently vanishes from the PDF, drop `--html` and the animation
+slide prints its own `<button>` and `<script>` source as body text. Both failures
+produce a PDF that looks fine at the console and is wrecked on page 10 and 12.
 
 Give it an already-rendered `.html` instead of the `.md` to skip the marp call.
 """
@@ -49,13 +56,14 @@ def find_theme(deck: Path) -> Path:
     sys.exit(f"no theme stylesheet beside {deck.name}: looked for {', '.join(THEME_NAMES)}")
 
 
-def render(deck: Path, theme: Path, out: Path) -> None:
-    """Run marp. --html is not optional: the deck carries a live <script> stage."""
+def render(deck: Path, theme: Path, out: Path, extra: list[str] = []) -> None:
+    """Run marp. Neither flag is optional: --allow-local-files or the figures do
+    not load, --html or the animation slide prints its own source as text."""
     if shutil.which("marp") is None:
         sys.exit("marp not on PATH -- install @marp-team/marp-cli, or pass a rendered .html")
     subprocess.run(
         ["marp", deck.name, "--theme", theme.name, "--allow-local-files", "--html",
-         "--no-stdin", "-o", str(out.resolve())],
+         "--no-stdin", *extra, "-o", str(out.resolve())],
         cwd=deck.parent,
         check=True,
     )
@@ -169,11 +177,23 @@ def main() -> int:
     ap.add_argument("--theme", type=Path, help="override the theme .css beside the deck")
     ap.add_argument("--max-width", type=int, metavar="PX",
                     help="downscale images wider than PX before encoding")
+    ap.add_argument("--pdf", action="store_true",
+                    help="export a PDF with the flags the export needs, and stop")
     args = ap.parse_args()
 
     deck = args.deck.resolve()
     if not deck.is_file():
         sys.exit(f"no such deck: {deck}")
+
+    if args.pdf:
+        if deck.suffix != ".md":
+            sys.exit("--pdf needs the deck .md, not a rendered .html")
+        out = (args.out or deck.with_suffix(".pdf")).resolve()
+        theme = args.theme.resolve() if args.theme else find_theme(deck)
+        render(deck, theme, out, ["--pdf"])
+        print(f"{out.name} ({out.stat().st_size / 1024 / 1024:.1f} MB)")
+        return 0
+
     out = (args.out or deck.with_suffix("").with_suffix(".standalone.html")).resolve()
 
     tmp = None
