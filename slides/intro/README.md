@@ -20,6 +20,24 @@ Or the whole pipeline in one command, from `slides/`:
 python3 -m gatelib review intro
 ```
 
+## One file to carry
+
+`marp -o intro.html` writes HTML that still points at `figures/` and at the
+animation kit two directories up, so the file alone is blank on any other
+machine. The bundler inlines every local reference — images as base64 `data:`
+URIs, the two animation scripts as literal text:
+
+```sh
+python3 ../bundle_deck.py intro.md            # -> intro.standalone.html, 12 MB
+python3 ../bundle_deck.py intro.md --max-width 1600   # -> 8 MB, resized first
+```
+
+It exits non-zero if anything in the output still points outside the file. The
+figures are authored at 4320 px wide and no projector resolves that, so
+`--max-width` costs nothing visible; without it the bundle is pixel-identical to
+the ordinary render. Works on any deck in `slides/` — it finds `theme.css` or
+`network-science.css` beside the deck.
+
 ## Layout
 
 - `intro.md` — the deck
