@@ -642,14 +642,14 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#your-date" id="toc-your-date" class="nav-link" data-scroll-target="#your-date">Your date</a></li>
   <li><a href="#topic-pools" id="toc-topic-pools" class="nav-link" data-scroll-target="#topic-pools">Topic pools</a>
   <ul class="collapse">
-  <li><a href="#a.-other-kinds-of-network" id="toc-a.-other-kinds-of-network" class="nav-link" data-scroll-target="#a.-other-kinds-of-network">A. Other kinds of network</a></li>
-  <li><a href="#b.-things-that-spread" id="toc-b.-things-that-spread" class="nav-link" data-scroll-target="#b.-things-that-spread">B. Things that spread</a></li>
-  <li><a href="#c.-networks-that-change" id="toc-c.-networks-that-change" class="nav-link" data-scroll-target="#c.-networks-that-change">C. Networks that change</a></li>
-  <li><a href="#d.-steering-a-network" id="toc-d.-steering-a-network" class="nav-link" data-scroll-target="#d.-steering-a-network">D. Steering a network</a></li>
-  <li><a href="#e.-structure-beyond-groups" id="toc-e.-structure-beyond-groups" class="nav-link" data-scroll-target="#e.-structure-beyond-groups">E. Structure beyond groups</a></li>
-  <li><a href="#f.-learning-on-networks" id="toc-f.-learning-on-networks" class="nav-link" data-scroll-target="#f.-learning-on-networks">F. Learning on networks</a></li>
-  <li><a href="#g.-drawing-a-network" id="toc-g.-drawing-a-network" class="nav-link" data-scroll-target="#g.-drawing-a-network">G. Drawing a network</a></li>
-  <li><a href="#h.-networks-and-people" id="toc-h.-networks-and-people" class="nav-link" data-scroll-target="#h.-networks-and-people">H. Networks and people</a></li>
+  <li><a href="#kinds-of-network" id="toc-kinds-of-network" class="nav-link" data-scroll-target="#kinds-of-network">Kinds of network</a></li>
+  <li><a href="#dynamics-on-networks" id="toc-dynamics-on-networks" class="nav-link" data-scroll-target="#dynamics-on-networks">Dynamics on networks</a></li>
+  <li><a href="#dynamics-of-networks" id="toc-dynamics-of-networks" class="nav-link" data-scroll-target="#dynamics-of-networks">Dynamics of networks</a></li>
+  <li><a href="#control-and-navigation" id="toc-control-and-navigation" class="nav-link" data-scroll-target="#control-and-navigation">Control and navigation</a></li>
+  <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
+  <li><a href="#machine-learning-on-networks" id="toc-machine-learning-on-networks" class="nav-link" data-scroll-target="#machine-learning-on-networks">Machine learning on networks</a></li>
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a></li>
+  <li><a href="#networks-and-society" id="toc-networks-and-society" class="nav-link" data-scroll-target="#networks-and-society">Networks and society</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/course/student-lecture.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -817,67 +817,74 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="topic-pools" class="level2">
 <h2 class="anchored" data-anchor-id="topic-pools">Topic pools</h2>
-<p>Thirty-five topics. None of them appear anywhere else in the course.</p>
-<section id="a.-other-kinds-of-network" class="level3">
-<h3 class="anchored" data-anchor-id="a.-other-kinds-of-network">A. Other kinds of network</h3>
-<p><strong>SL-01 Two kinds of dot in one picture</strong><br> Actors and films make a table. Turn it into a network of actors alone. What did you lose?<br> <em>In class:</em> build the actor network by hand from a small table, and find the triangles that came from nowhere. <em>Read:</em> Newman, <em>Networks</em>.</p>
-<p><strong>SL-02 Friend links and enemy links</strong><br> Is “the enemy of my enemy is my friend” true?<br> <em>In class:</em> mark every link of a small network friend or enemy, find the triangles that feel wrong, and repair them with the fewest changes. <em>Read:</em> Cartwright and Harary 1956. Leskovec et al., CHI 2010.</p>
-<p><strong>SL-03 Groups of three, not three pairs</strong><br> Three people in one room had one meeting. Draw three separate links and something is gone. What?<br> <em>In class:</em> write a list of three author papers both ways, and find a question only one way can answer. <em>Read:</em> Battiston et al., Physics Reports 2020.</p>
-<p><strong>SL-04 The same people on five platforms</strong><br> The same people email, chat, and have coffee. What happens if you squash all three into one network?<br> <em>In class:</em> rank six people by number of links in each network, then in the squashed one, and find the person who disappears. <em>Read:</em> Kivela et al., Journal of Complex Networks 2014.</p>
-<p><strong>SL-05 Two networks that need each other</strong><br> The power grid needs the internet, and the internet needs power. One failure hits both.<br> <em>In class:</em> draw two small networks with links between them, remove one dot, and follow the damage back and forth until it stops. <em>Read:</em> Buldyrev et al., Nature 2010.</p>
+<p>Twenty-six areas, none of them covered elsewhere in the course. Each one is wider than a single lecture, so you choose the angle. The reference is one place to start reading.</p>
+<section id="kinds-of-network" class="level3">
+<h3 class="anchored" data-anchor-id="kinds-of-network">Kinds of network</h3>
+<ul>
+<li><strong>SL-01 Bipartite networks.</strong> Two types of node, and what projection onto one type does. <em>Start:</em> Newman, <em>Networks</em>.</li>
+<li><strong>SL-02 Signed networks.</strong> Links that mean friend or enemy, and structural balance. <em>Start:</em> Cartwright and Harary, Psychological Review 1956.</li>
+<li><strong>SL-03 Higher-order networks.</strong> Hypergraphs and simplicial complexes, where one interaction joins more than two nodes. <em>Start:</em> Battiston et al., Physics Reports 2020.</li>
+<li><strong>SL-04 Multilayer and interdependent networks.</strong> Several networks over the same nodes, and networks that depend on each other. <em>Start:</em> Kivela et al., Journal of Complex Networks 2014. Buldyrev et al., Nature 2010.</li>
+</ul>
 </section>
-<section id="b.-things-that-spread" class="level3">
-<h3 class="anchored" data-anchor-id="b.-things-that-spread">B. Things that spread</h3>
-<p>The network holds still and something moves across it.</p>
-<p><strong>SL-06 When does an outbreak take off</strong><br> How catching does a disease have to be before it reaches everybody? A few very popular people change the answer.<br> <em>In class:</em> roll dice to spread an infection on a ten dot network, once on a plain ring, then again after adding one popular dot. <em>Read:</em> Pastor-Satorras and Vespignani, PRL 2001.</p>
-<p><strong>SL-07 Some things need more than one friend</strong><br> A rumour spreads from one friend. Quitting smoking takes several. What changes?<br> <em>In class:</em> run both rules on the same ring of people, and watch the long distance links stop helping. <em>Read:</em> Centola and Macy, AJS 2007.</p>
-<p><strong>SL-08 One small shock brings the house down</strong><br> Two identical small shocks. One does nothing. The other takes out everything.<br> <em>In class:</em> everyone holds a card with a number on it, and the class runs the collapse twice from two different starting people. <em>Read:</em> Watts, PNAS 2002.</p>
-<p><strong>SL-09 Copy whoever is next to you</strong><br> Everyone copies a random neighbour, forever. Where does the network end up?<br> <em>In class:</em> coloured cards, five rounds of copy a neighbour, timed on a line and on a group where everyone knows everyone. <em>Read:</em> Castellano, Fortunato and Loreto, Reviews of Modern Physics 2009.</p>
-<p><strong>SL-10 Clapping in time</strong><br> Fireflies, power grids and audiences all fall into step. Which shapes make that easy?<br> <em>In class:</em> the class claps, first listening to everyone, then listening to two neighbours only. Time both. <em>Read:</em> Arenas et al., Physics Reports 2008.</p>
-<p><strong>SL-11 Why being nice survives</strong><br> In a simple game, cheating always wins. Put the players on a network and it stops winning.<br> <em>In class:</em> play three rounds on a five by five paper grid, copying whichever neighbour did best. <em>Read:</em> Nowak and May, Nature 1992.</p>
+<section id="dynamics-on-networks" class="level3">
+<h3 class="anchored" data-anchor-id="dynamics-on-networks">Dynamics on networks</h3>
+<p>The structure stays fixed.</p>
+<ul>
+<li><strong>SL-05 Epidemic models.</strong> SIR and SIS on a network, and the epidemic threshold. <em>Start:</em> Pastor-Satorras and Vespignani, PRL 2001.</li>
+<li><strong>SL-06 Contagion and cascades.</strong> Threshold models, complex contagion, global cascades. <em>Start:</em> Watts, PNAS 2002. Centola and Macy, AJS 2007.</li>
+<li><strong>SL-07 Opinion dynamics.</strong> The voter model and its relatives. <em>Start:</em> Castellano, Fortunato and Loreto, Reviews of Modern Physics 2009.</li>
+<li><strong>SL-08 Synchronization.</strong> Coupled oscillators, and which structures synchronize easily. <em>Start:</em> Arenas et al., Physics Reports 2008.</li>
+<li><strong>SL-09 Evolutionary games.</strong> Cooperation and defection among players arranged on a network. <em>Start:</em> Nowak and May, Nature 1992.</li>
+</ul>
 </section>
-<section id="c.-networks-that-change" class="level3">
-<h3 class="anchored" data-anchor-id="c.-networks-that-change">C. Networks that change</h3>
-<p>Now the links themselves move.</p>
-<p><strong>SL-12 Timing decides who can reach whom</strong><br> The route exists on the map. The meetings happened in the wrong order. Can anything travel?<br> <em>In class:</em> a list of meetings with times, and the class works out who could have passed a message to whom. <em>Read:</em> Holme and Saramaki, Physics Reports 2012.</p>
-<p><strong>SL-13 Growing networks get denser</strong><br> Everybody assumes a growing network keeps the same number of links per person. Measurements disagree.<br> <em>In class:</em> three snapshots of a growing network, plot links against people, read the slope off the paper. <em>Read:</em> Leskovec, Kleinberg and Faloutsos, KDD 2005.</p>
-<p><strong>SL-14 First one in does not always win</strong><br> The oldest page should collect the most links. Google arrived late and won anyway.<br> <em>In class:</em> grow two networks side by side on the board, six steps each, and see who ends up biggest. <em>Read:</em> Bianconi and Barabasi, EPL 2001.</p>
-<p><strong>SL-15 Dropping the people you disagree with</strong><br> People copy their neighbours, and they also walk away from them. What does walking away change?<br> <em>In class:</em> run the copying game again, and let anyone who disagrees cut the link and join somewhere else. <em>Read:</em> Holme and Newman, PRE 2006.</p>
+<section id="dynamics-of-networks" class="level3">
+<h3 class="anchored" data-anchor-id="dynamics-of-networks">Dynamics of networks</h3>
+<p>The structure itself changes.</p>
+<ul>
+<li><strong>SL-10 Temporal networks.</strong> Links that appear and disappear, and paths that respect time. <em>Start:</em> Holme and Saramaki, Physics Reports 2012.</li>
+<li><strong>SL-11 Network growth.</strong> How real networks change as they get bigger. <em>Start:</em> Leskovec, Kleinberg and Faloutsos, KDD 2005. Bianconi and Barabasi, EPL 2001.</li>
+<li><strong>SL-12 Adaptive networks.</strong> Structure and node states that change each other. <em>Start:</em> Gross and Blasius, Journal of the Royal Society Interface 2008.</li>
+</ul>
 </section>
-<section id="d.-steering-a-network" class="level3">
-<h3 class="anchored" data-anchor-id="d.-steering-a-network">D. Steering a network</h3>
-<p><strong>SL-16 Which dots do you have to grab</strong><br> You can push on a few dots. How few, and which ones, before you can move the whole system?<br> <em>In class:</em> pair up the arrows of a small network by hand. The leftover dots are the ones you grab. <em>Read:</em> Liu, Slotine and Barabasi, Nature 2011.</p>
-<p><strong>SL-17 Where do the sensors go</strong><br> You cannot measure everything. Which few dots tell you the state of all the others?<br> <em>In class:</em> place two sensors on a drawn network, shade every dot you can then work out, and try to beat it. <em>Read:</em> Liu, Slotine and Barabasi, PNAS 2013.</p>
+<section id="control-and-navigation" class="level3">
+<h3 class="anchored" data-anchor-id="control-and-navigation">Control and navigation</h3>
+<ul>
+<li><strong>SL-13 Controllability and observability.</strong> Which nodes to drive, and where to place sensors. <em>Start:</em> Liu, Slotine and Barabasi, Nature 2011 and PNAS 2013.</li>
+<li><strong>SL-14 Navigability.</strong> Finding short paths using only local information. <em>Start:</em> Kleinberg, Nature 2000.</li>
+</ul>
 </section>
-<section id="e.-structure-beyond-groups" class="level3">
-<h3 class="anchored" data-anchor-id="e.-structure-beyond-groups">E. Structure beyond groups</h3>
-<p><strong>SL-18 Small shapes that keep repeating</strong><br> Some three dot patterns show up far more often than chance allows. What does that tell you?<br> <em>In class:</em> count every three dot pattern in a small network by hand, then in a shuffled copy of it. <em>Read:</em> Milo et al., Science 2002.</p>
-<p><strong>SL-19 Fitting a model when you have one network</strong><br> Statistics usually wants many samples. You have one network. How do you fit a model anyway?<br> <em>In class:</em> the class proposes features of a small friendship network, then argues about which set would be enough to rebuild it. <em>Read:</em> Robins et al., Social Networks 2007.</p>
-<p><strong>SL-20 A crowded middle and a thin rim</strong><br> Some networks have no groups at all. They have a busy centre and a loose edge.<br> <em>In class:</em> reorder the rows of a shuffled grid by hand until the centre appears. <em>Read:</em> Borgatti and Everett, Social Networks 2000.</p>
-<p><strong>SL-21 Same number of friends, different job</strong><br> Two people have the same number of friends inside the same group. Are they doing the same job?<br> <em>In class:</em> work out two numbers for six people, and place each one on a map of roles. <em>Read:</em> Guimera and Amaral, Nature 2005.</p>
-<p><strong>SL-22 When groups cannot be found at all</strong><br> Below a certain contrast, every method fails. Not a hard puzzle. Impossible.<br> <em>In class:</em> split two networks on paper, one above the line and one below, and find out which was which. <em>Read:</em> Decelle et al., PRL 2011.</p>
-<p><strong>SL-23 Finding a short path with no map</strong><br> Short paths exist. Milgram’s letters had to find them without seeing the network. How?<br> <em>In class:</em> pass a message across a printed grid, always to whoever looks closest, and count the steps. <em>Read:</em> Kleinberg, Nature 2000.</p>
+<section id="structure" class="level3">
+<h3 class="anchored" data-anchor-id="structure">Structure</h3>
+<ul>
+<li><strong>SL-15 Network motifs.</strong> Small subgraphs that appear more often than chance allows. <em>Start:</em> Milo et al., Science 2002.</li>
+<li><strong>SL-16 Statistical models of networks.</strong> Exponential random graph models. <em>Start:</em> Robins et al., Social Networks 2007.</li>
+<li><strong>SL-17 Core-periphery structure and node roles.</strong> Ways of describing position beyond group membership. <em>Start:</em> Borgatti and Everett, Social Networks 2000. Guimera and Amaral, Nature 2005.</li>
+<li><strong>SL-18 Limits of community detection.</strong> Detectability, and choosing the number of groups. <em>Start:</em> Decelle et al., PRL 2011.</li>
+</ul>
 </section>
-<section id="f.-learning-on-networks" class="level3">
-<h3 class="anchored" data-anchor-id="f.-learning-on-networks">F. Learning on networks</h3>
-<p><strong>SL-24 Guessing the missing links</strong><br> Two people share four friends. Will they meet? How do you check your guess honestly?<br> <em>In class:</em> hide three links, rank the candidates by shared friends, and see what the hiding hid. <em>Read:</em> Liben-Nowell and Kleinberg, JASIST 2007.</p>
-<p><strong>SL-25 Links that carry a meaning</strong><br> “Paris is in France” and “Paris is bigger than Lyon” are two different links. What changes?<br> <em>In class:</em> do the arithmetic for three facts by hand, and predict a fourth. <em>Read:</em> Bordes et al., NeurIPS 2013.</p>
-<p><strong>SL-26 Squeezing a network through one link</strong><br> Deep models on networks fail for a reason nobody mentions. Information gets crushed at narrow points.<br> <em>In class:</em> count how many dots get squeezed through one bridge at two, three, and four steps out. <em>Read:</em> Alon and Yahav, ICLR 2021.</p>
-<p><strong>SL-27 Why did the model say that</strong><br> A model flags an account as fraud. Which links made it say so?<br> <em>In class:</em> guess the small piece of network responsible, then delete links and redo the sums by hand. <em>Read:</em> Ying et al., NeurIPS 2019.</p>
+<section id="machine-learning-on-networks" class="level3">
+<h3 class="anchored" data-anchor-id="machine-learning-on-networks">Machine learning on networks</h3>
+<ul>
+<li><strong>SL-19 Link prediction.</strong> Predicting links that are missing or yet to form, and evaluating the prediction. <em>Start:</em> Liben-Nowell and Kleinberg, JASIST 2007.</li>
+<li><strong>SL-20 Knowledge graphs.</strong> Networks whose links have types, and how they are embedded. <em>Start:</em> Bordes et al., NeurIPS 2013.</li>
+<li><strong>SL-21 Limits of graph neural networks.</strong> Over-squashing, expressive power, and explaining a prediction. <em>Start:</em> Alon and Yahav, ICLR 2021. Ying et al., NeurIPS 2019.</li>
+</ul>
 </section>
-<section id="g.-drawing-a-network" class="level3">
-<h3 class="anchored" data-anchor-id="g.-drawing-a-network">G. Drawing a network</h3>
-<p><strong>SL-28 What a spring layout is really doing</strong><br> Pretend every link is a spring and let go. What does a short line in the finished picture mean?<br> <em>In class:</em> everyone draws the same twelve links by hand in sixty seconds, then compare a dozen drawings of one network. <em>Read:</em> Fruchterman and Reingold, 1991.</p>
-<p><strong>SL-29 When the picture becomes a hairball</strong><br> A few thousand links, and the drawing answers nothing. What do you draw instead?<br> <em>In class:</em> the same network drawn two ways, one question each, and report which one you could answer. <em>Read:</em> Holten, IEEE TVCG 2006.</p>
-<p><strong>SL-30 Dots and lines, or a grid of squares</strong><br> Some questions are easy on a grid and hard on dots and lines. Which are which?<br> <em>In class:</em> time the class on “are these two connected” and on “find the busiest group”, using both pictures. <em>Read:</em> Ghoniem, Fekete and Castagliola, InfoVis 2004.</p>
+<section id="visualization" class="level3">
+<h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
+<ul>
+<li><strong>SL-22 Network layout.</strong> Force-directed placement and the alternatives. <em>Start:</em> Fruchterman and Reingold, Software: Practice and Experience 1991.</li>
+<li><strong>SL-23 Large networks on a page.</strong> Aggregation, bundling, matrix views. <em>Start:</em> Ghoniem, Fekete and Castagliola, InfoVis 2004. Holten, IEEE TVCG 2006.</li>
+</ul>
 </section>
-<section id="h.-networks-and-people" class="level3">
-<h3 class="anchored" data-anchor-id="h.-networks-and-people">H. Networks and people</h3>
-<p><strong>SL-31 Networks built from numbers that move together</strong><br> Brain data has no links in it. People make links by seeing which signals rise and fall together. What does that invent?<br> <em>In class:</em> compare four short strings of numbers by hand, draw the links two different ways, and watch the shape change. <em>Read:</em> Zalesky, Fornito and Bullmore, NeuroImage 2012.</p>
-<p><strong>SL-32 Which links are real</strong><br> Every pair of airports has some traffic. How do you drop the noise and keep the small airports?<br> <em>In class:</em> cut one network two ways, and compare what survives at a quiet airport. <em>Read:</em> Serrano, Boguna and Vespignani, PNAS 2009.</p>
-<p><strong>SL-33 Names removed is still not anonymous</strong><br> Take the names off a social network. Why can people still be found?<br> <em>In class:</em> an unnamed network plus one named piece, and the class puts the names back using link patterns alone. <em>Read:</em> Narayanan and Shmatikov, IEEE S&amp;P 2009.</p>
-<p><strong>SL-34 Who gets recommended</strong><br> “People you may know” suggests the popular. What does that do to a small group over years?<br> <em>In class:</em> run three rounds of suggest the most connected on a small mixed network, and watch the gap open. <em>Read:</em> Karimi et al., Scientific Reports 2018.</p>
-<p><strong>SL-35 Why lies travel faster</strong><br> True and false stories move through the same network at different speeds. Why?<br> <em>In class:</em> look at six spreading patterns, guess which ones came from true stories, then see the answer. <em>Read:</em> Vosoughi, Roy and Aral, Science 2018.</p>
+<section id="networks-and-society" class="level3">
+<h3 class="anchored" data-anchor-id="networks-and-society">Networks and society</h3>
+<ul>
+<li><strong>SL-24 Inferring networks from data.</strong> Correlation networks and backbone extraction. <em>Start:</em> Zalesky, Fornito and Bullmore, NeuroImage 2012. Serrano, Boguna and Vespignani, PNAS 2009.</li>
+<li><strong>SL-25 Privacy in network data.</strong> De-anonymization from structure alone. <em>Start:</em> Narayanan and Shmatikov, IEEE Symposium on Security and Privacy 2009.</li>
+<li><strong>SL-26 Recommendation, ranking and misinformation.</strong> What link algorithms do to groups, and how false information spreads. <em>Start:</em> Karimi et al., Scientific Reports 2018. Vosoughi, Roy and Aral, Science 2018.</li>
+</ul>
 
 
 </section>
