@@ -649,6 +649,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
   <li><a href="#machine-learning-on-networks" id="toc-machine-learning-on-networks" class="nav-link" data-scroll-target="#machine-learning-on-networks">Machine learning on networks</a></li>
   <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a></li>
+  <li><a href="#where-the-network-comes-from" id="toc-where-the-network-comes-from" class="nav-link" data-scroll-target="#where-the-network-comes-from">Where the network comes from</a></li>
   <li><a href="#networks-and-society" id="toc-networks-and-society" class="nav-link" data-scroll-target="#networks-and-society">Networks and society</a></li>
   </ul></li>
   </ul>
@@ -692,10 +693,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="rules" class="level2">
 <h2 class="anchored" data-anchor-id="rules">Rules</h2>
 <ul>
-<li>15 to 20 minutes, one time, on your own.</li>
-<li>10 points of your final grade.</li>
+<li>15 to 20 minutes, one time.</li>
+<li>Alone, or in a team of up to three.</li>
+<li>10 points of your final grade. Everyone in a team gets the same score.</li>
 <li>The class has to <strong>do</strong> something while you are up there. A talk alone does not pass.</li>
-<li>Pick one topic from the pools below. One student per topic.</li>
+<li>Pick one topic from the pools below. One team per topic.</li>
 <li>Say which one you want on Discord in <code>#network-science</code>. First to ask gets it.</li>
 <li>Your date is set when you pick your topic.</li>
 <li>Show me a one page plan at office hours, one week before your date.</li>
@@ -723,7 +725,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="your-date" class="level2">
 <h2 class="anchored" data-anchor-id="your-date">Your date</h2>
-<p>Thirteen slots, thirteen of you. Your 20 minutes come at the start of a normal class. Plans are due at the Friday office hour in the last column.</p>
+<p>Thirteen slots, one team each. Your 20 minutes come at the start of a normal class. Plans are due at the Friday office hour in the last column. If people team up, some slots stay empty.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -843,7 +845,7 @@ ul.task-list li input[type="checkbox"] {
 <p>The structure itself changes.</p>
 <ul>
 <li><strong>SL-10 Temporal networks.</strong> Links that appear and disappear, and paths that respect time. <em>Start:</em> Holme and Saramaki, Physics Reports 2012.</li>
-<li><strong>SL-11 Network growth.</strong> How real networks change as they get bigger. <em>Start:</em> Leskovec, Kleinberg and Faloutsos, KDD 2005. Bianconi and Barabasi, EPL 2001.</li>
+<li><strong>SL-11 Network growth.</strong> How real networks change as they get bigger, and what decides where a new link goes. <em>Start:</em> Papadopoulos, Kitsak, Serrano, Boguna and Krioukov, Nature 2012. Leskovec, Kleinberg and Faloutsos, KDD 2005. Bianconi and Barabasi, EPL 2001.</li>
 <li><strong>SL-12 Adaptive networks.</strong> Structure and node states that change each other. <em>Start:</em> Gross and Blasius, Journal of the Royal Society Interface 2008.</li>
 </ul>
 </section>
@@ -866,9 +868,9 @@ ul.task-list li input[type="checkbox"] {
 <section id="machine-learning-on-networks" class="level3">
 <h3 class="anchored" data-anchor-id="machine-learning-on-networks">Machine learning on networks</h3>
 <ul>
-<li><strong>SL-19 Link prediction.</strong> Predicting links that are missing or yet to form, and evaluating the prediction. <em>Start:</em> Liben-Nowell and Kleinberg, JASIST 2007.</li>
+<li><strong>SL-19 Link prediction.</strong> Predicting links that are missing or yet to form, and evaluating the prediction. <em>Start:</em> Liben-Nowell and Kleinberg, JASIST 2007. Zhang and Chen, NeurIPS 2018 (SEAL).</li>
 <li><strong>SL-20 Knowledge graphs.</strong> Networks whose links have types, and how they are embedded. <em>Start:</em> Bordes et al., NeurIPS 2013.</li>
-<li><strong>SL-21 Limits of graph neural networks.</strong> Over-squashing, expressive power, and explaining a prediction. <em>Start:</em> Alon and Yahav, ICLR 2021. Ying et al., NeurIPS 2019.</li>
+<li><strong>SL-21 Limits of graph neural networks.</strong> Over-squashing, expressive power, what a per-node embedding cannot say about a pair, and explaining a prediction. <em>Start:</em> Alon and Yahav, ICLR 2021. Zhang and Chen, NeurIPS 2018 (SEAL). Ying et al., NeurIPS 2019.</li>
 </ul>
 </section>
 <section id="visualization" class="level3">
@@ -878,11 +880,16 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>SL-23 Large networks on a page.</strong> Aggregation, bundling, matrix views. <em>Start:</em> Ghoniem, Fekete and Castagliola, InfoVis 2004. Holten, IEEE TVCG 2006.</li>
 </ul>
 </section>
+<section id="where-the-network-comes-from" class="level3">
+<h3 class="anchored" data-anchor-id="where-the-network-comes-from">Where the network comes from</h3>
+<ul>
+<li><strong>SL-24 Inferring networks from data.</strong> Correlation networks and backbone extraction. <em>Start:</em> Zalesky, Fornito and Bullmore, NeuroImage 2012. Serrano, Boguna and Vespignani, PNAS 2009.</li>
+<li><strong>SL-25 Network reconstruction.</strong> Estimating the links when only totals per node are observed, as with banks and their balance sheets. <em>Start:</em> Squartini, Caldarelli, Cimini, Gabrielli and Garlaschelli, Physics Reports 2018. Cimini et al., Nature Reviews Physics 2019.</li>
+</ul>
+</section>
 <section id="networks-and-society" class="level3">
 <h3 class="anchored" data-anchor-id="networks-and-society">Networks and society</h3>
 <ul>
-<li><strong>SL-24 Inferring networks from data.</strong> Correlation networks and backbone extraction. <em>Start:</em> Zalesky, Fornito and Bullmore, NeuroImage 2012. Serrano, Boguna and Vespignani, PNAS 2009.</li>
-<li><strong>SL-25 Privacy in network data.</strong> De-anonymization from structure alone. <em>Start:</em> Narayanan and Shmatikov, IEEE Symposium on Security and Privacy 2009.</li>
 <li><strong>SL-26 Recommendation, ranking and misinformation.</strong> What link algorithms do to groups, and how false information spreads. <em>Start:</em> Karimi et al., Scientific Reports 2018. Vosoughi, Roy and Aral, Science 2018.</li>
 </ul>
 
