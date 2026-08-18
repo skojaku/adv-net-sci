@@ -677,7 +677,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#get-your-assignment-folder" id="toc-get-your-assignment-folder" class="nav-link" data-scroll-target="#get-your-assignment-folder">1. Get your assignment folder</a></li>
   <li><a href="#run-the-setup-script" id="toc-run-the-setup-script" class="nav-link" data-scroll-target="#run-the-setup-script">2. Run the setup script</a></li>
-  <li><a href="#the-tutors-toolkit-installs-itself" id="toc-the-tutors-toolkit-installs-itself" class="nav-link" data-scroll-target="#the-tutors-toolkit-installs-itself">3. The tutor’s toolkit installs itself</a></li>
   </ul></li>
   <li><a href="#starting-a-session" id="toc-starting-a-session" class="nav-link" data-scroll-target="#starting-a-session">Starting a session</a></li>
   <li><a href="#the-two-windows" id="toc-the-two-windows" class="nav-link" data-scroll-target="#the-two-windows">The two windows</a></li>
@@ -758,7 +757,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td>What you need</td>
-<td>A terminal, git, Node.js, uv, and your course API key — see <a href="../course/setup.html">Set up your machine</a>.</td>
+<td>A terminal, git, Node.js, uv, <code>pi</code>, and your course API key — see <a href="../course/setup.html">Set up your machine</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -1186,12 +1185,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="before-your-first-session" class="level2">
 <h2 class="anchored" data-anchor-id="before-your-first-session">Before your first session</h2>
-<p>Everything on this page assumes you have already done the one-time <strong><a href="../course/setup.html">machine setup</a></strong>: a terminal, git, GitHub CLI, Node.js 24+, uv, and <code>NETSCI_API_KEY</code> in your shell profile. That page also says where the key comes from and what to do if yours has not arrived.</p>
+<p>Everything on this page assumes you have already done the one-time <strong><a href="../course/setup.html">machine setup</a></strong>: a terminal, git, GitHub CLI, Node.js 24+, uv, <a href="../course/setup.html#install-pi-your-ai-agent"><code>pi</code></a>, and <code>NETSCI_API_KEY</code> in your shell profile. That page also says where the key comes from and what to do if yours has not arrived.</p>
 <p>Ten seconds to check you are ready. In a terminal:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">--version</span>          <span class="co"># v24 or newer</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> <span class="at">--version</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">--version</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$NETSCI_API_KEY</span>    <span class="co"># your key, starting sk-nsci-</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> <span class="at">--version</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$NETSCI_API_KEY</span>    <span class="co"># your key, starting sk-nsci-</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled" title="Windows: which terminal?">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1205,7 +1205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Both <strong>Git Bash</strong> and <strong>Windows Terminal / PowerShell</strong> work. The commands on this page are written for Git Bash; in PowerShell the last check above is <code>echo $env:NETSCI_API_KEY</code>. If you have no preference, use Git Bash.</p>
 </div>
 </div>
-<p>Four of those five printed something, but not the key? Go back to <a href="../course/setup.html#set-your-course-api-key">step 4 of the setup page</a> — a missing key is the one thing that stops a session dead in the middle.</p>
+<p>Everything printed but the key? Go back to <a href="../course/setup.html#set-your-course-api-key">step 4 of the setup page</a> — a missing key is the one thing that stops a session dead in the middle.</p>
 <p>To see how much of this week’s allowance you have left:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-H</span> <span class="st">"Authorization: Bearer </span><span class="va">$NETSCI_API_KEY</span><span class="st">"</span> https://llm.skojaku.com/v1/usage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>(Opening that address in a browser will not work — it needs your key.)</p>
@@ -1217,60 +1217,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="run-the-setup-script" class="level3">
 <h3 class="anchored" data-anchor-id="run-the-setup-script">2. Run the setup script</h3>
-<p>Inside that folder:</p>
+<p>Inside that folder, once per machine:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> setup-pi.mjs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>It is the same command on Windows and macOS. It installs <code>pi</code> (the agent your tutor runs on), registers the course models in <code>~/.pi/agent/models.json</code>, tells <code>pi</code> that this folder is yours, downloads the notebook’s Python packages so your first session starts fast, and makes <strong>one real request</strong> so you find out here — not mid-lesson — whether your key works. It is safe to re-run, it backs up any <code>models.json</code> you already had, and it leaves your other providers alone.</p>
-<div class="callout callout-style-default callout-important callout-titled" title="It will look like it has hung. It has not.">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>It will look like it has hung. It has not.
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The package download is <strong>a few hundred megabytes</strong> and takes a couple of minutes on a slow connection. That is the slowest part of the whole setup, and it happens exactly once. Leave it alone until it finishes.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled" title="If `pi` ever asks &quot;Trust project folder?&quot;">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>If <code>pi</code> ever asks “Trust project folder?”
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Answer <strong>Trust</strong>, the first option. It is asking whether this folder may set up your tutor, and this folder is your own assignment. The setup script normally answers it for you, so you will only see the question if you skipped the script or moved the folder. If you answered “Do not trust” by mistake, your tutor will start but have no notebook and no tools; run <code>pi --approve</code> once to undo it.</p>
-</div>
-</div>
-<p>When it prints <code>You are set</code>, you are done.</p>
-</section>
-<section id="the-tutors-toolkit-installs-itself" class="level3">
-<h3 class="anchored" data-anchor-id="the-tutors-toolkit-installs-itself">3. The tutor’s toolkit installs itself</h3>
-<p>You do not install it by hand. The folder’s <code>.pi/settings.json</code> pins the two packages your tutor needs, and <code>pi</code> fetches them the first time you run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode json no-fold code-with-copy"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="st">"packages"</span><span class="er">:</span> <span class="ot">[</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"git:github.com/sk-classroom/pi-pair-notebook@v0.3.0"</span><span class="ot">,</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"npm:@juicesharp/rpiv-ask-user-question@2.4.0"</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>That first start therefore takes a few seconds longer than every one after it.</p>
-<details>
-<summary>
-If the fetch fails and you want to install them by hand
-</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install npm:@juicesharp/rpiv-ask-user-question@2.4.0</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> list     <span class="co"># both should be listed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Use the <strong>same version tags</strong> as the folder — a module and its toolkit are tested together.</p>
-</details>
+<p>It hands <code>pi</code> the course models and gets the notebook’s Python packages down before you need them, and it prints <code>You are set</code> when it is done. What it does line by line, why it looks like it has hung, and what to answer if you are asked to trust the folder: <a href="../course/setup.html#point-it-at-the-course-models">Point it at the course models</a> on the setup page.</p>
+<p>Your tutor’s own toolkit is not something you install — see <a href="../course/setup.html#the-tutors-toolkit-installs-itself">The tutor’s toolkit installs itself</a> for what it fetches and what to do if the fetch fails.</p>
 </section>
 </section>
 <section id="starting-a-session" class="level2">
 <h2 class="anchored" data-anchor-id="starting-a-session">Starting a session</h2>
 <p>Inside your assignment folder, type:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>That is the whole command. <strong>There is no slash command to start</strong> — say hello in plain words and your tutor takes it from there. It starts the notebook itself, opens it in your browser, and shuts it down again when you are done.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Have pen and paper ready">
 <div class="callout-header d-flex align-content-center">
@@ -1361,7 +1317,7 @@ If the fetch fails and you want to install them by hand
 <summary>
 Doing it yourself instead
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Pair Notebook 02"</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Pair Notebook 02"</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </section>
 <section id="if-something-goes-wrong" class="level2">
@@ -1369,11 +1325,6 @@ Doing it yourself instead
 <p><strong>Nothing you have already done is ever lost.</strong> Your answers are written to <code>session_artifacts/</code> as they happen, and the notebook is saved as it is built. Whatever the problem, closing the terminal and running <code>pi</code> again picks up where you stopped — it asks whether to continue or start fresh.</p>
 <p>Find the line you actually saw on screen:</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>What you see</th>
@@ -1385,7 +1336,7 @@ Doing it yourself instead
 <tr class="odd">
 <td><code>pi: command not found</code></td>
 <td>the install put <code>pi</code> on your <code>PATH</code>, and this terminal started before that</td>
-<td>open a new terminal; if it persists, re-run <code>node setup-pi.mjs</code></td>
+<td>open a new terminal; if it persists, <a href="../course/setup.html#install-pi-your-ai-agent">install <code>pi</code> again</a></td>
 </tr>
 <tr class="even">
 <td><code>⚠ Your tutor cannot reach the course server</code></td>
@@ -1435,7 +1386,7 @@ Doing it yourself instead
 </tbody>
 </table>
 <p>To check your allowance directly:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-H</span> <span class="st">"Authorization: Bearer </span><span class="va">$NETSCI_API_KEY</span><span class="st">"</span> https://llm.skojaku.com/v1/usage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-H</span> <span class="st">"Authorization: Bearer </span><span class="va">$NETSCI_API_KEY</span><span class="st">"</span> https://llm.skojaku.com/v1/usage</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>(Again: that address does not work in a browser — it needs your key.)</p>
 <p><strong>Anything else</strong> — ask on <a href="../course/discord.html">Discord</a>, with the line you saw copied out. Getting stuck on setup is not part of the assignment.</p>
 

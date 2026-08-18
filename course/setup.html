@@ -677,6 +677,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sign-in-to-github" id="toc-sign-in-to-github" class="nav-link" data-scroll-target="#sign-in-to-github">3. Sign in to GitHub</a></li>
   <li><a href="#set-your-course-api-key" id="toc-set-your-course-api-key" class="nav-link" data-scroll-target="#set-your-course-api-key">4. Set your course API key</a></li>
   <li><a href="#how-your-work-is-collected" id="toc-how-your-work-is-collected" class="nav-link" data-scroll-target="#how-your-work-is-collected">5. How your work is collected</a></li>
+  <li><a href="#install-pi-your-ai-agent" id="toc-install-pi-your-ai-agent" class="nav-link" data-scroll-target="#install-pi-your-ai-agent">6. Install <code>pi</code>, your AI agent</a>
+  <ul class="collapse">
+  <li><a href="#point-it-at-the-course-models" id="toc-point-it-at-the-course-models" class="nav-link" data-scroll-target="#point-it-at-the-course-models">Point it at the course models</a></li>
+  <li><a href="#packages-worth-having" id="toc-packages-worth-having" class="nav-link" data-scroll-target="#packages-worth-having">Packages worth having</a></li>
+  <li><a href="#the-tutors-toolkit-installs-itself" id="toc-the-tutors-toolkit-installs-itself" class="nav-link" data-scroll-target="#the-tutors-toolkit-installs-itself">The tutor’s toolkit installs itself</a></li>
+  </ul></li>
   <li><a href="#you-are-set.-what-now" id="toc-you-are-set.-what-now" class="nav-link" data-scroll-target="#you-are-set.-what-now">You are set. What now?</a></li>
   <li><a href="#optional-run-a-module-notebook-on-your-own-machine" id="toc-optional-run-a-module-notebook-on-your-own-machine" class="nav-link" data-scroll-target="#optional-run-a-module-notebook-on-your-own-machine">Optional: run a module notebook on your own machine</a></li>
   <li><a href="#optional-github-copilot" id="toc-optional-github-copilot" class="nav-link" data-scroll-target="#optional-github-copilot">Optional: GitHub Copilot</a></li>
@@ -719,7 +725,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Reading these notes needs nothing, and neither does the code in them: every hands-on page carries a <strong>Run this notebook</strong> link that opens in your browser and fetches Python for you.</p>
-<p>This page is for the work you <strong>hand in</strong>. The <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">group mini-project</a> both live in a GitHub repository on your own computer, and both need the same things: a terminal, git, a GitHub login, two small runtimes, and one environment variable.</p>
+<p>This page is for the work you <strong>hand in</strong>. The <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">group mini-project</a> both live in a GitHub repository on your own computer, and both need the same things: a terminal, git, a GitHub login, two small runtimes, one environment variable, and <code>pi</code> — the AI agent your tutor runs on.</p>
 <p>About twenty minutes, once per machine. Do it before the second week. Getting stuck here is not part of any assignment — ask in <code>#network-science</code> on <a href="../course/discord.html">Discord</a>.</p>
 <section id="open-a-terminal" class="level2">
 <h2 class="anchored" data-anchor-id="open-a-terminal">1. Open a terminal</h2>
@@ -905,19 +911,133 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <!-- TODO(anim): commit vs push — a file changes on the laptop, a commit stacks one snapshot on a local pile, a push copies the pile to GitHub; nothing leaves the laptop until the third step. -->
 </section>
+<section id="install-pi-your-ai-agent" class="level2">
+<h2 class="anchored" data-anchor-id="install-pi-your-ai-agent">6. Install <code>pi</code>, your AI agent</h2>
+<p><code>pi</code> is an AI agent that runs <strong>in your terminal</strong>. You type what you want in plain words; it reads the files in the folder you started it in, edits them, runs commands, and tells you what it did. There is no web page and no chat window, and nothing is copied back and forth: it is already inside the folder your work is in.</p>
+<p>Your Pair Notebook tutor <em>is</em> <code>pi</code>, with the course’s teaching toolkit loaded. The same <code>pi</code>, started in any other folder, is an ordinary coding assistant — use it on the mini-project, the final project, or anything else you write.</p>
+<p>Install it once, from any folder:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> @earendil-works/pi-coding-agent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Same command on Windows and macOS — this is what the Node.js in step 2 was for. Then <strong>open a new terminal</strong> and check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="point-it-at-the-course-models" class="level3">
+<h3 class="anchored" data-anchor-id="point-it-at-the-course-models">Point it at the course models</h3>
+<p>A fresh <code>pi</code> knows how to talk to language models but has an account with none of them. One script hands it the course’s. It ships inside every Pair Notebook repository, so clone your first one (step 5) and run this <strong>inside that folder</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> setup-pi.mjs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>It is the same command on Windows and macOS. It registers the course models in <code>~/.pi/agent/models.json</code> — a file in your <strong>home</strong> folder, so this is once per machine and not once per assignment — tells <code>pi</code> that this folder is yours, downloads the notebook’s Python packages so your first session starts fast, and makes <strong>one real request</strong> so you find out here, not mid-lesson, whether your key works. It is safe to re-run, it backs up any <code>models.json</code> you already had, and it leaves your other providers alone.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="It will look like it has hung. It has not.">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>It will look like it has hung. It has not.
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The package download is <strong>a few hundred megabytes</strong> and takes a couple of minutes on a slow connection. That is the slowest part of the whole setup, and it happens exactly once. Leave it alone until it finishes.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="If `pi` ever asks &quot;Trust project folder?&quot;">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>If <code>pi</code> ever asks “Trust project folder?”
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Answer <strong>Trust</strong>, the first option. It is asking whether this folder may set up your tutor, and this folder is your own assignment. The setup script normally answers it for you, so you will only see the question if you skipped the script or moved the folder. If you answered “Do not trust” by mistake, your tutor will start but have no notebook and no tools; run <code>pi --approve</code> once to undo it.</p>
+</div>
+</div>
+<p>When it prints <code>You are set</code>, you are done. From then on, in any folder, the whole command is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="packages-worth-having" class="level3">
+<h3 class="anchored" data-anchor-id="packages-worth-having">Packages worth having</h3>
+<p>On its own <code>pi</code> can read, write and run things, and little else. <strong>Packages</strong> add to it, one command each:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install npm:pi-web-access</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Five that earn their keep. None of them is required for any assignment in this course:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>What it adds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pi-web-access</code></td>
+<td>web search, fetching a page, reading a PDF or a YouTube video — no key of its own needed</td>
+</tr>
+<tr class="even">
+<td><code>context-mode</code></td>
+<td>keeps long sessions coherent: what it reads is filed away and searched back, instead of being carried around</td>
+</tr>
+<tr class="odd">
+<td><code>@ayulab/pi-rewind</code></td>
+<td><code>/rewind</code> — jump back to an earlier point in the session, your files with it</td>
+</tr>
+<tr class="even">
+<td><code>@juicesharp/rpiv-ask-user-question</code></td>
+<td>lets the agent put a multiple-choice question to you instead of guessing</td>
+</tr>
+<tr class="odd">
+<td><code>@juicesharp/rpiv-btw</code></td>
+<td><code>/btw</code> — a one-off side question that leaves the main conversation untouched</td>
+</tr>
+</tbody>
+</table>
+<p>All five in one command:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">macOS / Git Bash</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">PowerShell</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> pi-web-access context-mode @ayulab/pi-rewind @juicesharp/rpiv-ask-user-question @juicesharp/rpiv-btw<span class="kw">;</span> <span class="cf">do</span> <span class="ex">pi</span> install <span class="st">"npm:</span><span class="va">$p</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode powershell no-fold code-with-copy"><code class="sourceCode powershell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span> <span class="op">(</span><span class="va">$p</span> <span class="kw">in</span> <span class="st">"pi-web-access"</span><span class="op">,</span><span class="st">"context-mode"</span><span class="op">,</span><span class="st">"@ayulab/pi-rewind"</span><span class="op">,</span><span class="st">"@juicesharp/rpiv-ask-user-question"</span><span class="op">,</span><span class="st">"@juicesharp/rpiv-btw"</span><span class="op">)</span> <span class="op">{</span> pi install <span class="st">"npm:</span><span class="va">$p</span><span class="st">"</span> <span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p><code>pi list</code> prints what you have, <code>pi update</code> brings them all up to date, and <code>pi remove npm:&lt;name&gt;</code> takes one back out. They live in your home folder, so they follow you into every project — if one ever makes a session behave oddly, <code>pi config</code> turns packages on and off.</p>
+</section>
+<section id="the-tutors-toolkit-installs-itself" class="level3">
+<h3 class="anchored" data-anchor-id="the-tutors-toolkit-installs-itself">The tutor’s toolkit installs itself</h3>
+<p>The Pair Notebook’s own two packages are not on that list, and you never install them by hand. The assignment folder’s <code>.pi/settings.json</code> pins them, and <code>pi</code> fetches them the first time you run it there:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode json no-fold code-with-copy"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="st">"packages"</span><span class="er">:</span> <span class="ot">[</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"git:github.com/sk-classroom/pi-pair-notebook@v0.3.0"</span><span class="ot">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"npm:@juicesharp/rpiv-ask-user-question@2.4.0"</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>That first start therefore takes a few seconds longer than every one after it.</p>
+<details>
+<summary>
+If the fetch fails and you want to install them by hand
+</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install npm:@juicesharp/rpiv-ask-user-question@2.4.0</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> list     <span class="co"># both should be listed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Use the <strong>same version tags</strong> as the folder — a module and its toolkit are tested together.</p>
+</details>
+</section>
+</section>
 <section id="you-are-set.-what-now" class="level2">
 <h2 class="anchored" data-anchor-id="you-are-set.-what-now">You are set. What now?</h2>
 <ul>
-<li><strong><a href="../course/pair-notebook.html">Pair Notebook</a></strong> — your first assignment. One more command (<code>node setup-pi.mjs</code>) inside the folder you clone, and then a single word starts every session.</li>
+<li><strong><a href="../course/pair-notebook.html">Pair Notebook</a></strong> — your first assignment. Once step 6 is done, a single word starts every session.</li>
 <li><strong><a href="../course/mini-project.html">Group Mini-Project</a></strong> — the in-class team assignment, and the one rule about accepting it that decides whether your team is a team.</li>
 </ul>
 </section>
 <section id="optional-run-a-module-notebook-on-your-own-machine" class="level2">
 <h2 class="anchored" data-anchor-id="optional-run-a-module-notebook-on-your-own-machine">Optional: run a module notebook on your own machine</h2>
 <p>The <strong>Run this notebook</strong> link on each hands-on page needs nothing installed. If you would rather run one locally, uv does the rest — it fetches Python and the packages listed inside the notebook itself:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/skojaku/adv-net-sci.git</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> adv-net-sci</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> notebooks/m02-small-world/coding.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/skojaku/adv-net-sci.git</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> adv-net-sci</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> notebooks/m02-small-world/coding.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>uvx</code> runs a tool without installing it permanently, and <code>--sandbox</code> builds a throwaway environment from the dependency list at the top of the notebook, so nothing is added to your system Python. The first run takes a minute while Python and the packages arrive; later runs are instant.</p>
 <p><a href="https://marimo.io">marimo</a> is a reactive notebook: change one cell and every cell that depends on it recomputes, so what you see on screen is always what the code says. It is also a plain <code>.py</code> file, which is why git can track it.</p>
 </section>
@@ -942,26 +1062,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>close it, open a new one</td>
 </tr>
 <tr class="even">
+<td><code>pi: command not found</code>, in a new terminal too</td>
+<td>the global npm install did not finish</td>
+<td>run it again and read what it prints: <code>npm install -g @earendil-works/pi-coding-agent</code></td>
+</tr>
+<tr class="odd">
 <td><code>brew: command not found</code> (macOS)</td>
 <td>Homebrew is not installed</td>
 <td>the box in step 2</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>git asks for a username and password when you push</td>
 <td>git is not signed in to GitHub</td>
 <td><code>gh auth login</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>repository not found</code> when cloning</td>
 <td>you are signed in as the wrong account, or you never accepted the assignment</td>
 <td><code>gh auth status</code>, then accept the assignment again</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>echo $NETSCI_API_KEY</code> prints nothing</td>
 <td>the variable is not set in <em>this</em> window</td>
 <td>reread step 4, then open a new terminal</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>winget</code> is not recognized (Windows 10)</td>
 <td><code>winget</code> ships with Windows 11</td>
 <td>install <a href="https://apps.microsoft.com/detail/9nblggh4nns1">App Installer</a> from the Microsoft Store, or use each tool’s own installer</td>
