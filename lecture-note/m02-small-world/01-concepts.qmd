@@ -426,6 +426,21 @@ Which is exactly why a model matters here: building a network that has the small
 - Give every node degree $k$ (choose $k$ even) by connecting it to its $k$ nearest neighbors around the ring — $k/2$ on each side.
 - This is maximally parochial: clustering is high, and the average path length is roughly $N/(2k)$, which grows *linearly* with $N$.
 
+Every neighborhood on the ring is a copy of every other, so counting around a
+single node settles the whole network. Doing that count gives a closed form for
+the clustering:
+
+$$
+C_{\text{lattice}}(k) = \frac{3(k-2)}{4(k-1)}
+$$
+
+Note what is *not* in it: $N$. A ring of twelve and a ring of a million have the
+same clustering as long as each person has the same $k$ friends. That is the
+asymmetry the model turns on — clustering is capped by $k$ and blind to size,
+while $N/(2k)$ grows without bound. For $k = 2$ the formula gives 0 (your two
+neighbors are two steps apart and never adjacent), $k = 4$ gives $0.5$, and
+$k = 10$ gives $0.667$ — the "about 0.67" quoted in the next paragraph.
+
 **Step 2: Rewire each edge with probability $p$.**
 
 - Visit every edge in turn. With probability $p$, detach one endpoint and reconnect it to a node chosen uniformly at random; with probability $1-p$, leave it alone.
