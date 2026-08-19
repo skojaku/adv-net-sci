@@ -44,21 +44,34 @@ with app.setup(hide_code=True):
     WOBBLE = "7px 4px 8px 5px / 5px 8px 4px 7px"
 
     # The sheet's map. Cities are numbered the way the edge list needs them,
-    # 0 to 3, and the roads are in the order the animation walks them.
+    # 0 to 3. Nothing in the notebook ever prints this list: reading it off the
+    # picture is the first thing the student is asked to do.
     NY_NAMES = ["Ithaca", "Syracuse", "Binghamton", "Albany"]
     NY_EDGES = [(0, 1), (0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (2, 3)]
     NY_ROADS = ["NY-13", "NY-34", "NY-79", "I-81", "I-90", "I-88", "NY-7"]
-    NY_NOTES = [
-        "Ithaca -- Syracuse, round by Cortland",
-        "Ithaca -- Syracuse again, round by Auburn",
-        "Ithaca -- Binghamton",
-        "Syracuse -- Binghamton",
-        "Syracuse -- Albany, the Thruway",
-        "Binghamton -- Albany",
-        "Binghamton -- Albany again",
-    ]
     # Question 1(b): US-11 runs beside I-81, so it joins the same two cities.
     US11_EDGE = (1, 2)
+
+    # The worked example, and deliberately not the map they have to write down:
+    # a village on a river, three places, four bridges, one pair of them
+    # doubled so that the two-bridges-one-pair rule is met here rather than
+    # discovered halfway through their own list.
+    DEMO_NAMES = ["North bank", "South bank", "Mill Island"]
+    DEMO_EDGES = [(0, 2), (0, 2), (1, 2), (0, 1)]
+    DEMO_NOTES = [
+        "north bank -- island",
+        "north bank -- island, the second bridge",
+        "south bank -- island",
+        "north bank -- south bank, round the downstream bend",
+    ]
+    _DM_POS = {0: (110, 44), 1: (110, 180), 2: (110, 112)}
+    _DM_LABEL_POS = {0: (110, 22), 1: (110, 208), 2: (88, 116)}
+    _DM_PATHS = [
+        "M110,44 Q56,78 110,112",
+        "M110,44 Q164,78 110,112",
+        "M110,180 Q56,146 110,112",
+        "M110,44 Q268,112 110,180",
+    ]
 
     # The four-node network from Part 3 of the sheet. On paper it is numbered
     # 1 to 4; here it is 0 to 3, which is the first thing to go wrong.
@@ -168,11 +181,59 @@ with app.setup(hide_code=True):
         out.append("</svg>")
         return "".join(out)
 
-    def ny_edgelist_html(upto, live=None):
-        """The edge list filling up. Always seven lines tall, so it never jumps."""
+    def demo_svg(done=(), live=None, lit_nodes=()):
+        """The village. `done` are bridges behind you, `live` is the one now."""
+        out = [
+            '<svg viewBox="0 0 320 224" width="100%" style="max-width:320px;'
+            'display:block" xmlns="http://www.w3.org/2000/svg">',
+            _PEN,
+            '<g filter="url(#lh-pen)">',
+        ]
+        for y in (66, 128):
+            out.append(
+                f'<rect x="0" y="{y}" width="320" height="30" fill="{BLUE}" '
+                'opacity="0.08"/>'
+            )
+        for k, d in enumerate(_DM_PATHS):
+            if k == live:
+                color, width, opacity = RUST, 5.5, 1
+            elif k in done:
+                color, width, opacity = BLUE, 3.5, 1
+            else:
+                color, width, opacity = INK, 2.5, 0.2
+            out.append(
+                f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}" '
+                f'opacity="{opacity}" stroke-linecap="round"/>'
+            )
+        for i, (x, y) in _DM_POS.items():
+            out.append(
+                f'<circle cx="{x}" cy="{y}" r="13" '
+                f'fill="{RUST if i in lit_nodes else PAPER}" '
+                f'stroke="{INK}" stroke-width="2.5"/>'
+            )
+        out.append("</g>")
+        for i, (x, y) in _DM_POS.items():
+            out.append(
+                f'<text x="{x}" y="{y + 4}" text-anchor="middle" font-size="12" '
+                f'font-family="{SANS}" font-weight="700" '
+                f'fill="{PAPER if i in lit_nodes else INK}">{i}</text>'
+            )
+        for i, (x, y) in _DM_LABEL_POS.items():
+            anchor = {2: "end"}.get(i, "middle")
+            out.append(
+                f'<text x="{x}" y="{y}" text-anchor="{anchor}" '
+                f'font-size="11" font-family="{SANS}" fill="{INK}" opacity="0.7">'
+                f"{DEMO_NAMES[i]}</text>"
+            )
+        out.append("</svg>")
+        return "".join(out)
+
+    def demo_edgelist_html(upto, live=None):
+        """The village's edge list filling up. Always four lines tall, so it
+        never jumps."""
         rows = []
-        for k in range(len(NY_EDGES)):
-            i, j = NY_EDGES[k]
+        for k in range(len(DEMO_EDGES)):
+            i, j = DEMO_EDGES[k]
             if k == live:
                 style = f"color:{RUST};font-weight:700"
             elif k < upto:
@@ -180,13 +241,13 @@ with app.setup(hide_code=True):
             else:
                 style = "opacity:0.15"
             text = f"({i}, {j})," if (k < upto or k == live) else "&nbsp;"
-            hint = f"  # {NY_ROADS[k]}, {NY_NOTES[k]}" if k == live else ""
+            hint = f"  # {DEMO_NOTES[k]}" if k == live else ""
             rows.append(
                 f'<div style="{style};line-height:1.7;white-space:pre">    {text}{hint}</div>'
             )
         return (
             f'<div style="font-family:{MONO};font-size:13px;line-height:1.7;'
-            f'color:{INK}">ROADS = [' + "".join(rows) + "]</div>"
+            f'color:{INK}">bridges = [' + "".join(rows) + "]</div>"
         )
 
     def matrix_html(A, lit=(), lit_row=None, show_sums=False, names=None):
@@ -354,10 +415,9 @@ with app.setup(hide_code=True):
 
     def degrees_ready(fn):
         try:
-            return list(np.asarray(fn(plain_adjacency(NY_EDGES, 4))).ravel()) == [
+            return list(np.asarray(fn(plain_adjacency(DEMO_EDGES, 3))).ravel()) == [
                 3,
-                4,
-                4,
+                2,
                 3,
             ]
         except Exception:
@@ -391,17 +451,19 @@ def _():
     mo.md(r"""
     ---
 
-    # 1 · Write the map down
+    # 1 · Write a map down
 
-    A map becomes a **list of pairs** — one line per road. The four cities are
-    numbered `0`–`3`. Drag the slider and watch the list fill up:
+    A map becomes a **list of pairs** — one line per bridge, one line per road.
+
+    Here is somewhere else first: a village on a river. Three places, numbered
+    `0`–`2`, and four bridges. Drag the slider and watch the list fill up:
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    anim1 = step_slider(6, "road")
+    anim1 = step_slider(3, "bridge")
     anim1
     return (anim1,)
 
@@ -409,9 +471,9 @@ def _():
 @app.cell(hide_code=True)
 def _(anim1):
     two_col(
-        ny_svg(done=set(range(anim1.value)), live=anim1.value),
-        ny_edgelist_html(upto=anim1.value, live=anim1.value),
-        left_basis=400,
+        demo_svg(done=set(range(anim1.value)), live=anim1.value),
+        demo_edgelist_html(upto=anim1.value, live=anim1.value),
+        left_basis=320,
     )
     return
 
@@ -419,9 +481,11 @@ def _(anim1):
 @app.cell(hide_code=True)
 def _():
     note(
-        "NY-34 writes <code>(0, 1)</code> a <b>second time</b>. Not a typo — "
-        "two different roads run from Ithaca to Syracuse, and the sheet made you "
-        "drive both.",
+        "Bridge 1 writes <code>(0, 2)</code> a <b>second time</b>. Not a typo — "
+        "there really are two bridges there, and a list that mentions them once "
+        "is a list of a different village."
+        "<br><b>Wherever two places are joined twice, the pair goes in twice.</b>"
+        " Your map has a pair like that on it. Find it before you start typing.",
         RUST,
     )
     return
@@ -430,10 +494,28 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
+    ## Now your own map
+
+    The four cities and seven highways off the sheet. Nothing below prints its
+    edge list: **you read it off the picture.** The number inside a circle is
+    the number you write down.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.Html(ny_svg(done=set(range(7))))
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
     ### ✍️ The seven roads
 
-    Two are written for you. Add the other five, one line per road. The order
-    does not matter; the pairs do.
+    One is written for you. Add the other six, one line per road. The order does
+    not matter; the pairs do.
     """)
     return
 
@@ -442,7 +524,7 @@ def _():
 def _():
     ROADS = [
         (0, 1),  # NY-13, Ithaca -- Syracuse
-        (0, 1),  # NY-34, Ithaca -- Syracuse again
+        ...,  # TASK
         ...,  # TASK
         ...,  # TASK
         ...,  # TASK
@@ -519,25 +601,26 @@ def _():
     # 3 · Matrix, then degree
 
     A grid where row `i`, column `j` holds **how many roads join i and j**. It
-    is the grid you filled in for Question 6(a), on a bigger map.
+    is the grid you filled in for Question 6(a). Back to the village, where it
+    fits on one screen:
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    anim2 = step_slider(6, "road")
+    anim2 = step_slider(3, "bridge")
     anim2
     return (anim2,)
 
 
 @app.cell(hide_code=True)
 def _(anim2):
-    _i, _j = NY_EDGES[anim2.value]
+    _i, _j = DEMO_EDGES[anim2.value]
     two_col(
-        ny_edgelist_html(upto=anim2.value, live=anim2.value),
+        demo_edgelist_html(upto=anim2.value, live=anim2.value),
         matrix_html(
-            plain_adjacency(NY_EDGES[: anim2.value + 1], 4), lit={(_i, _j), (_j, _i)}
+            plain_adjacency(DEMO_EDGES[: anim2.value + 1], 3), lit={(_i, _j), (_j, _i)}
         ),
         left_basis=250,
     )
@@ -547,10 +630,9 @@ def _(anim2):
 @app.cell(hide_code=True)
 def _():
     note(
-        "A pair is a <b>coordinate</b>. <code>(0, 1)</code> is row 0, column 1."
+        "A pair is a <b>coordinate</b>. <code>(0, 2)</code> is row 0, column 2."
         "<br>It lights <b>two</b> cells — the grid is a mirror."
-        "<br>The second Ithaca--Syracuse road made it <b>2, not 1</b> — add, do "
-        "not set.",
+        "<br>The second bridge made it <b>2, not 1</b> — add, do not set.",
         RUST,
     )
     return
@@ -576,15 +658,18 @@ def to_adjacency(edges, n):
 
 @app.cell(hide_code=True)
 def _():
-    _A = to_adjacency(NY_EDGES, 4)
+    # Checked on the village, not on their map: a four-by-four grid of the
+    # right answer sitting here would be the edge list they were asked to read
+    # off the picture, written out in another notation.
+    _A = to_adjacency(DEMO_EDGES, 3)
     _ok = isinstance(_A, np.ndarray) and np.array_equal(
-        _A, plain_adjacency(NY_EDGES, 4)
+        _A, plain_adjacency(DEMO_EDGES, 3)
     )
     two_col(
-        matrix_html(_A if isinstance(_A, np.ndarray) else np.zeros((4, 4), int)),
+        matrix_html(_A if isinstance(_A, np.ndarray) else np.zeros((3, 3), int)),
         f'<div style="font-family:{SANS};font-size:16px;color:{INK}">'
         + (
-            f'<b style="color:{BLUE}">The map, as a grid.</b>'
+            f'<b style="color:{BLUE}">The village, as a grid.</b>'
             if _ok
             else f'<b style="color:{RUST}">Not yet.</b>'
             '<div style="font-size:14px;opacity:0.75;margin-top:6px">A '
@@ -601,15 +686,15 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    **Degree** — how many roads touch a city — is now a row, added up. That is
-    Question 6(b), and it is also the count you made in Question 3.
+    **Degree** — how many roads touch a place — is now a row, added up. That is
+    Question 6(b), and it is also the counting you did in Question 3.
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    anim3 = step_slider(3, "city")
+    anim3 = step_slider(2, "place")
     anim3
     return (anim3,)
 
@@ -617,17 +702,28 @@ def _():
 @app.cell(hide_code=True)
 def _(anim3):
     two_col(
-        ny_svg(
-            done={k for k, e in enumerate(NY_EDGES) if anim3.value in e},
+        demo_svg(
+            done={k for k, e in enumerate(DEMO_EDGES) if anim3.value in e},
             lit_nodes={anim3.value},
         ),
         matrix_html(
-            plain_adjacency(NY_EDGES, 4),
+            plain_adjacency(DEMO_EDGES, 3),
             lit_row=anim3.value,
             show_sums=True,
-            names=NY_NAMES,
+            names=DEMO_NAMES,
         ),
-        left_basis=400,
+        left_basis=320,
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    note(
+        "The island is touched by three bridges and the row adds up to three. "
+        "Two of the village's three places are odd, which is the shape of an "
+        "answer you have already met on paper.",
+        BLUE,
     )
     return
 
@@ -773,16 +869,16 @@ def euler_status(A):
 @app.cell(hide_code=True)
 def _():
     _cases = [
-        (NY_EDGES, 4, "path"),
+        (DEMO_EDGES, 3, "path"),
         ([(0, 1), (1, 2), (2, 0)], 3, "circuit"),
         ([(0, 1), (2, 3)], 4, "impossible"),  # two pieces: degrees alone lie
     ]
     _ok = all(euler_status(plain_adjacency(_e, _n)) == _w for _e, _n, _w in _cases)
     note(
-        "Correct, on Upstate New York and on a map in two pieces."
+        "Correct, on the village and on a map in two pieces."
         if _ok
-        else "Not yet. The seven roads should say path, a triangle circuit — and "
-        "two roads in different worlds impossible, however even the degrees are.",
+        else "Not yet. The village should say path, a triangle circuit — and two "
+        "roads in different worlds impossible, however even the degrees are.",
         BLUE if _ok else RUST,
     )
     return
@@ -861,23 +957,109 @@ def _():
     mo.md(r"""
     ---
 
-    ## Finished early?
+    ## Finished early? Break your own rule
 
-    Your rule never looked at a picture, so it runs on any network. The karate
-    club will say `impossible` — every real network does. The question is **how
-    far**: `k/2` new edges for `k` odd nodes.
+    Every place even was supposed to promise a **circuit**: leave home, drive
+    every road once, come home. Below is a triangle, which keeps that promise.
+
+    ### ✍️ Break it
+
+    Change the list into a map where **every place still has an even number of
+    roads** and there is still **no tour at all**. Nothing here is a trick; the
+    counterexample is small.
     """)
     return
 
 
 @app.cell
 def _():
-    if adjacency_ready(to_adjacency) and euler_ready(euler_status):
-        _g = igraph.Graph.Famous("Zachary")
-        _A = np.array(_g.get_adjacency().data)
-        _odd = int(np.sum(np.asarray(degrees(_A)) % 2 == 1))
-        print(f"karate club: {_g.vcount()} nodes, {_g.ecount()} edges")
-        print(f"  {euler_status(_A)}, {_odd} odd nodes, {_odd // 2} edges to add")
+    CHALLENGE = [
+        (0, 1),
+        (1, 2),
+        (2, 0),
+    ]
+    return (CHALLENGE,)
+
+
+@app.cell(hide_code=True)
+def _(CHALLENGE):
+    _edges = [
+        tuple(e) for e in CHALLENGE if isinstance(e, (tuple, list)) and len(e) == 2
+    ]
+    if not _edges or not euler_ready(euler_status):
+        _out = WAITING
+    else:
+        _n = 1 + max(max(e) for e in _edges)
+        _A = plain_adjacency(_edges, _n)
+        _deg = _A.sum(axis=1)
+        _even = bool(np.all(_deg % 2 == 0))
+        _one_piece = is_connected(_A)
+        _says = euler_status(_A)
+        if not _even:
+            _odds = [str(i) for i in range(_n) if _deg[i] % 2]
+            _reading = (
+                f"Not yet — place {_odds[0]} has an odd number of roads."
+                if len(_odds) == 1
+                else f"Not yet — places {', '.join(_odds)} have an odd number "
+                "of roads."
+            )
+            _tone = RUST
+        elif _one_piece:
+            _reading = (
+                "All even and all in one piece, so the promise holds and there "
+                "is a circuit. The counterexample is not about parity: ask what "
+                "else a tour needs."
+            )
+            _tone = RUST
+        elif _says == "impossible":
+            _reading = (
+                "Found it. Every degree even, and still no tour, because no "
+                "drive gets from one piece to the other — <b>and your rule knew"
+                "</b>. That is what <code>is_connected(A)</code> is doing in it."
+            )
+            _tone = BLUE
+        else:
+            _reading = (
+                f"Found it — and your rule missed it. It says <b>{_says}</b>, "
+                "because it counted parities and never asked whether the map is "
+                "in one piece. Go back and fix <code>euler_status</code>."
+            )
+            _tone = RUST
+        _facts = "".join(
+            f'<div style="margin:7px 0"><span style="opacity:0.55">{_k}</span>'
+            f'&nbsp; <b style="font-family:{MONO};color:{RUST}">{_v}</b></div>'
+            for _k, _v in [
+                ("every degree even", "yes" if _even else "no"),
+                ("in one piece", "yes" if _one_piece else "no"),
+                ("your euler_status says", _says),
+            ]
+        )
+        _out = mo.vstack(
+            [
+                mo.hstack(
+                    [
+                        draw(_edges, _n),
+                        mo.Html(
+                            f'<div style="font-family:{SANS};font-size:15px;'
+                            f'color:{INK}">{_facts}</div>'
+                        ),
+                    ],
+                    widths=[3, 2],
+                    align="center",
+                ),
+                note(_reading, _tone),
+            ]
+        )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Then put it back together: add **one** road joining the two halves, and
+    watch the same three lines turn into a circuit.
+    """)
     return
 
 
