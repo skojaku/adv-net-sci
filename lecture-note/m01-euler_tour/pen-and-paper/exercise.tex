@@ -181,28 +181,7 @@ Destroying one bridge is enough. Which ones work? \blank[3cm]
 \hfill
 \begin{minipage}{0.42\textwidth}
 \begin{center}
-\begin{tikzpicture}[x=0.72cm, y=0.72cm, thick,
-                    every node/.style={draw, circle, minimum size=0.85cm,
-                                       inner sep=1pt, fill=white}]
-    \node (C) at (0,2.5)   {C};
-    \node (A) at (0,0)     {A};
-    \node (B) at (0,-2.5)  {B};
-    \node (D) at (3.4,0)   {D};
-    \draw (A) to[bend left=32]  (B);
-    \draw (A) to[bend right=32] (B);
-    \draw (A) to[bend left=32]  (C);
-    \draw (A) to[bend right=32] (C);
-    \draw (A) -- (D);
-    \draw (B) -- (D);
-    \draw (C) -- (D);
-    \node[draw=none, fill=none, pltblue] at (-1.15,-1.25) {\emph{a}};
-    \node[draw=none, fill=none, pltblue] at ( 1.15,-1.25) {\emph{b}};
-    \node[draw=none, fill=none, pltblue] at (-1.15, 1.25) {\emph{c}};
-    \node[draw=none, fill=none, pltblue] at ( 1.15, 1.25) {\emph{d}};
-    \node[draw=none, fill=none, pltblue] at ( 1.75, 0.45) {\emph{e}};
-    \node[draw=none, fill=none, pltblue] at ( 2.25,-1.5)  {\emph{f}};
-    \node[draw=none, fill=none, pltblue] at ( 2.25, 1.5)  {\emph{g}};
-\end{tikzpicture}
+\konigsberggraph
 \end{center}
 \end{minipage}
 
@@ -213,21 +192,7 @@ Destroying one bridge is enough. Which ones work? \blank[3cm]
 A different network: five bus stops.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm, y=1cm, thick,
-                    every node/.style={draw, circle, minimum size=0.9cm,
-                                       inner sep=1pt, fill=white}]
-    \node (A) at (0,1.6)   {A};
-    \node (B) at (2.4,1.6) {B};
-    \node (C) at (2.4,-1)  {C};
-    \node (D) at (0,-1)    {D};
-    \node (E) at (-2.2,-1) {E};
-    \draw (A) -- (B);
-    \draw (B) -- (C);
-    \draw (C) -- (D);
-    \draw (D) -- (A);
-    \draw (B) -- (D);
-    \draw (D) -- (E);
-\end{tikzpicture}
+\busstopgraph
 \end{center}
 
 {\bf Question 5(a)}: Fill in the table. The last column takes one of these
@@ -277,18 +242,7 @@ Part 4 sends you to a notebook that will run this network for you. Work the
 answers out on paper first; the notebook will check them.
 
 \begin{center}
-\begin{tikzpicture}[x=0.7cm, y=0.7cm, thick,
-                    every node/.style={draw, circle, minimum size=0.75cm,
-                                       inner sep=1pt, fill=white}]
-    \node (1) at (-2.4,0)  {1};
-    \node (2) at (0,0)     {2};
-    \node (3) at (1.7,1.3) {3};
-    \node (4) at (1.7,-1.3){4};
-    \draw (1) -- (2);
-    \draw (2) -- (3);
-    \draw (2) -- (4);
-    \draw (3) -- (4);
-\end{tikzpicture}
+\fournodegraph
 \end{center}
 
 \begin{minipage}[t]{0.46\textwidth}

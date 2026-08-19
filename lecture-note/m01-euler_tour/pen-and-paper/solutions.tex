@@ -1,10 +1,10 @@
 % Answer key for the Module 1 pen-and-paper sheet.
 % Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
 %
-% It draws the same maps as the sheet, out of mapkit.tex, with the circles
-% filled in -- an answer to a question about a map should be a map, and the
-% route the student was asked to draw is the one thing a list of numbers
-% cannot show them.
+% It carries the questions as well as the answers, so it can be read on its
+% own, and it draws the same figures as the sheet out of mapkit.tex -- an
+% answer to a question about a map should be a map, and the route the student
+% was asked to draw is the one thing a list of numbers cannot show them.
 \documentclass[a4paper, 11pt]{extarticle}
 \usepackage[top=0.7in, bottom=0.7in, left=0.8in, right=0.8in]{geometry}
 \usepackage{amsmath}
@@ -32,8 +32,6 @@
 \setlength{\parskip}{0.4em}
 \raggedbottom
 
-\newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
-
 \newcommand{\parthead}[2]{%
   \vspace{0.5em}
   {\large\bfseries Part #1 --- #2}\par
@@ -42,11 +40,14 @@
 
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
-% An answer, set apart from the reasoning that follows it. Wrapped rather than
+% An answer, set apart from the question it belongs to. Wrapped rather than
 % switched: a bare \color inside a p-column cell costs the cell its first line.
 \newcommand{\ans}[1]{\textbf{\textcolor{pltblue!75!black}{#1}}}
 
-% The maps and the single-city figures, shared with exercise.tex.
+% The line that turns from question to answer.
+\newcommand{\arrow}{\textcolor{pltblue!75!black}{$\Rightarrow$}\;}
+
+% The maps and the figures, shared with exercise.tex.
 \input{mapkit}
 
 % The drive of 1(a), written into the circles of whichever map is drawn.
@@ -59,39 +60,67 @@
   \node[ordnum] at (o88) {6};
   \node[ordnum] at (o7)  {7};}
 
+% One "in here, out there" pairing on a single-city figure. The loop leaves and
+% arrives along the bisector of the two road-ends, which is the one direction
+% that always takes it clear of the city rather than across it.
+\newcommand{\pairarc}[3][1.35]{%
+  \pgfmathsetmacro{\pairmid}{(#2 + #3) / 2}%
+  \draw[pltblue, dashed, line width=1.1pt]
+    (#2:1.28) to[out=\pairmid, in=\pairmid, looseness=#1] (#3:1.28);}
+
 \begin{document}
 
 \begin{center}
 {\ppfont\LARGE Answers}
 \end{center}
 
-{\small Every question, with the reasoning worth saying out loud. Question 1(a)
-has many right answers; the rest have one.}
+{\small The sheet with its answers, \ans{in blue}. Question 1(a) has many right
+answers and one of them is drawn; every other question has one.}
 
 \parthead{1}{Seven highways}
 
-{\bf 1(a)}: One drive out of many. It has to start at \ans{Ithaca} and finish
-at \ans{Albany}, whichever roads it takes in between --- those are the two
-cities with an odd number of roads, and an odd city is where a drive begins or
-ends.
+Seven highways join four Upstate New York cities: Ithaca, Syracuse,
+Binghamton, Albany.
+
+{\bf Question 1(a)}: Drive every highway exactly once, without lifting your
+pencil. Start and finish anywhere; cities may repeat, highways may not. Write
+in each circle when you drive that road --- 1 first, then 2, on to 7.
+
+\arrow One drive out of many. Whichever roads it takes in between, it has to
+start at \ans{Ithaca} and finish at \ans{Albany}: those are the two cities with
+an odd number of roads, and an odd city is where a drive begins or ends.
 
 \begin{center}
 \nymap{}{\tourfill}
 \end{center}
 
-{\bf 1(b)}: \ans{No.} Seven of the eight can be driven --- the numbers above
-still work --- and \ans{US-11 is left over}, or I-81 if you would rather leave
-that one. US-11 pushes Syracuse to five roads and Binghamton to five, so
-\ans{four} cities now have a left-over road, and a drive has one start and one
-finish.
+{\bf Question 1(b)}: The same four cities, and an eighth highway: US-11, which
+really does run alongside I-81. Number your route again. Can you drive every
+highway without lifting your pencil?
+
+\arrow \ans{No.} Seven of the eight can be driven --- the numbers above still
+work --- and \ans{US-11 is left over}, or I-81 if you would rather leave that
+one. US-11 pushes Syracuse to five roads and Binghamton to five, so \ans{four}
+cities now have a left-over road, and a drive has one start and one finish.
 
 \begin{center}
 \nymap{\usroad}{\tourfill \node[ordnum, pltblue] at (o11) {$\times$};}
 \end{center}
 
-\vspace{0.3em}
+{\bf Question 2}: One city, on its own. Arriving uses up one highway, leaving
+uses up another --- so highways get used in \textbf{pairs}. Join two road-ends
+with a curved line to mean ``in here, out there''. Pair up as far as you can.
 
-{\bf 2}:
+\begin{center}
+{\setlength{\tabcolsep}{2pt}
+\begin{tabular}{cccc}
+\landdeg{2}{\draw[pltblue, dashed, line width=1.1pt] (90:1.28) to[out=0, in=0, looseness=2.6] (270:1.28);} &
+\landdeg{3}{\pairarc{90}{-30}} &
+\landdeg{4}{\pairarc{90}{0}\pairarc{180}{270}} &
+\landdeg{5}{\pairarc{90}{18}\pairarc{-54}{-126}} \\
+2 roads & 3 roads & 4 roads & 5 roads \\
+\end{tabular}}
+\end{center}
 
 \begin{center}
 {\setlength{\tabcolsep}{9pt}
@@ -100,18 +129,17 @@ finish.
  & \textbf{2 roads} & \textbf{3 roads} & \textbf{4 roads} &
 \textbf{5 roads} \\
 \hline
-pairs you drew & 1 & 1 & 2 & 2 \\ \hline
-roads left over & 0 & 1 & 0 & 1 \\ \hline
+pairs you drew & 1 & \ans{1} & \ans{2} & \ans{2} \\ \hline
+roads left over & 0 & \ans{1} & \ans{0} & \ans{1} \\ \hline
 \end{tabular}}
 \end{center}
 
-(a) \ans{2 and 4} --- the ones with nothing left over. \quad
-(b) \ans{They are even.} \quad
-(c) \ans{start or finish.}
+(a) Which ones can you drive straight \emph{through}? \arrow \ans{2 and 4}, the
+ones with nothing left over. \quad (b) What do those numbers share? \arrow
+\ans{They are even.} \quad (c) A left-over road has no partner, so this city
+must be the tour's \arrow \ans{start or finish.}
 
-\vspace{0.4em}
-
-{\bf 3}:
+{\bf Question 3}: Count the highways at each city.
 
 \begin{center}
 {\setlength{\tabcolsep}{7pt}
@@ -120,32 +148,55 @@ roads left over & 0 & 1 & 0 & 1 \\ \hline
  & \textbf{I} & \textbf{S} & \textbf{B} & \textbf{A} &
 \textbf{how many have a left-over?} \\
 \hline
-seven roads & 3 & 4 & 4 & 3 & 2 \\ \hline
-with US-11 too & 3 & 5 & 5 & 3 & 4 \\ \hline
+seven roads & 3 & \ans{4} & \ans{4} & \ans{3} & \ans{2} \\ \hline
+with US-11 too & \ans{3} & \ans{5} & \ans{5} & \ans{3} & \ans{4} \\ \hline
 \end{tabular}}
 \end{center}
 
-At most \ans{2} cities may have a left-over road. Seven roads:
-\ans{a drive exists} (Ithaca to Albany). Eight roads: \ans{none exists}.
-No route with eight because \ans{four cities have a left-over road, and a drive
-has only one start and one finish.}
+One start, one finish. So at most \ans{2} cities may have a left-over road.
+Seven roads: \ans{a drive exists} (Ithaca to Albany). Eight roads: \ans{none
+exists}. No route with eight because \ans{four cities have a left-over road,
+and a drive has only one start and one finish.}
 
-\vspace{0.4em}
+\begin{minipage}[t]{0.55\textwidth}
+\vspace{0pt}
+{\bf Question 4}: The same puzzle, 1736. Königsberg: four pieces of land, seven
+bridges. Two pairs join the same land; both of a pair must be crossed.
 
-{\bf 4}: Königsberg. Bridges: \ans{A 5, \; B 3, \; C 3, \; D 3} --- fourteen
-ends for seven bridges, as always. The walk is \ans{not possible}: all four
-pieces of land are odd.
+\arrow Bridges: \ans{A 5, \; B 3, \; C 3, \; D 3} --- fourteen ends for seven
+bridges, as always.
 
-Destroying one bridge: \ans{any of the seven works.} Every bridge joins two odd
-lands, so knocking one out makes both of them even and leaves exactly two odd
-lands --- and the map stays in one piece whichever you choose. (Königsberg's
-own answer was to build one, not to destroy one.)
+\arrow Is the walk possible? \ans{No}: all four pieces of land are odd.
 
-\vspace{0.6em}
+\arrow Destroying one bridge is enough. Which ones work? \ans{Any of the
+seven.} Every bridge joins two odd lands, so knocking one out makes both of
+them even and leaves exactly two odd lands --- and the map stays in one piece
+whichever you choose. (Königsberg's own answer was to build one, not to destroy
+one.)
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+\vspace{0pt}
+\begin{center}
+\konigsberggraph
+\end{center}
+\end{minipage}
 
 \parthead{2}{Three kinds of route}
 
-{\bf 5(a)}:
+A different network: five bus stops.
+
+\begin{center}
+\busstopgraph
+\end{center}
+
+{\bf Question 5(a)}: Fill in the table. The last column takes one of these
+three names.
+
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
+Repeats nothing: \textbf{path}. \quad Never repeats a line: \textbf{trail}.
+\quad Repeats both: \textbf{walk}.
+\end{tcolorbox}
 
 \begin{center}
 {\setlength{\tabcolsep}{7pt}
@@ -155,51 +206,73 @@ own answer was to build one, not to destroy one.)
 \textbf{name} \\
 \hline
 A B D B C & yes (B--D twice) & yes (B) & \ans{walk} \\ \hline
-A B D C B & no & yes (B) & \ans{trail} \\ \hline
-A B C D E & no & no & \ans{path} \\ \hline
+A B D C B & \ans{no} & \ans{yes (B)} & \ans{trail} \\ \hline
+A B C D E & \ans{no} & \ans{no} & \ans{path} \\ \hline
 \end{tabular}}
 \end{center}
 
-{\bf 5(b)}: \ans{A \; D \; B \; C \; D \; E.} The lines A--D, D--B, B--C, C--D,
-D--E are five different lines; D is the stop that comes round twice.
+{\bf Question 5(b)}: A route from A to E that repeats a stop but no line.
 
-{\bf 5(c)}: \ans{a trail.} No road twice makes it a trail; coming back to a
-city it had already visited is what stops it being a path.
+\arrow \ans{A \; D \; B \; C \; D \; E.} The lines A--D, D--B, B--C, C--D, D--E
+are five different lines; D is the stop that comes round twice.
 
-{\bf 5(d)}: A path of 7 roads would touch \ans{8} different cities --- one more
-city than roads, because it never comes back --- and the highway map has only
-\ans{4}.
+{\bf Question 5(c)}: Your drive in 1(a) used no road twice, but it did come
+back to a city it had already visited. It is a \ldots
 
-\vspace{0.6em}
+\arrow \ans{trail.} No road twice makes it a trail; coming back to a city it
+had already visited is what stops it being a path.
+
+{\bf Question 5(d)}: It could not have been a path. A path of 7 roads would
+have to touch \ldots\ different cities, and the highway map has only \ldots
+
+\arrow \ans{8} cities --- one more city than roads, because a path never comes
+back --- and the map has only \ans{4}.
 
 \parthead{3}{Predictions for the notebook}
 
-{\bf 6(a)} and {\bf 6(b)}:
+\begin{minipage}[t]{0.52\textwidth}
+\vspace{0pt}
+{\bf Question 6(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
+$i$ and $j$, else \textbf{0}. \quad {\bf 6(b)}: Add up each row.
 
 \begin{center}
 {\setlength{\tabcolsep}{4pt}
-\begin{tabular}{r|C{0.85cm}|C{0.85cm}|C{0.85cm}|C{0.85cm}|l}
+\begin{tabular}{r|C{0.8cm}|C{0.8cm}|C{0.8cm}|C{0.8cm}|l}
 \multicolumn{1}{c}{$A=$} & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} &
 \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} &
-\multicolumn{1}{l}{\hspace{0.6cm}row total} \\
+\multicolumn{1}{l}{\hspace{0.4cm}\small row total} \\
 \cline{2-5}
-1 & 0 & 1 & 0 & 0 & \hspace{0.6cm}\ans{1} \\ \cline{2-5}
-2 & 1 & 0 & 1 & 1 & \hspace{0.6cm}\ans{3} \\ \cline{2-5}
-3 & 0 & 1 & 0 & 1 & \hspace{0.6cm}\ans{2} \\ \cline{2-5}
-4 & 0 & 1 & 1 & 0 & \hspace{0.6cm}\ans{2} \\ \cline{2-5}
+1 & 0 & 1 & 0 & 0 & \hspace{0.4cm}\ans{1} \\ \cline{2-5}
+2 & \ans{1} & \ans{0} & \ans{1} & \ans{1} & \hspace{0.4cm}\ans{3} \\ \cline{2-5}
+3 & \ans{0} & \ans{1} & \ans{0} & \ans{1} & \hspace{0.4cm}\ans{2} \\ \cline{2-5}
+4 & \ans{0} & \ans{1} & \ans{1} & \ans{0} & \hspace{0.4cm}\ans{2} \\ \cline{2-5}
 \end{tabular}}
 \end{center}
 
 Each row total is the \ans{degree} of that node.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.42\textwidth}
+\vspace{0pt}
+\begin{center}
+\fournodegraph
+\end{center}
+\end{minipage}
 
-{\bf 6(c)}: from 1 to 3: \ans{1} of them, 1 $\rightarrow$ \ans{2} $\rightarrow$ 3.
-\quad From 1 to 2: \ans{0} --- \ans{the first step has to go to 2, and the
-second step has to leave it again.} \quad From node 2 back to node 2:
-\ans{3} --- out and back along each of its three lines.
+{\bf Question 6(c)}: A \textbf{2-step route} goes along one line, then along
+one more. Count them on the picture.
 
-{\bf 6(d)}: row 1, column 3: \ans{1}. \quad row 1, column 2: \ans{0}. \quad
-The diagonal is \ans{the degrees} --- 1, 3, 2, 2 --- because a 2-step route
-that comes back is one line out and the same line home.
+\arrow From 1 to 3: \ans{1} of them, 1 $\rightarrow$ \ans{2} $\rightarrow$ 3.
+\quad From 1 to 2: \ans{0}, because \ans{the first step has to go to 2, and the
+second step has to leave it again}. \quad From node 2 back to node 2: \ans{3},
+out and back along each of its three lines.
+
+{\bf Question 6(d)}: The notebook will square your grid. Say what you expect to
+find in $A^2$.
+
+\arrow Row 1, column 3: \ans{1}. \quad Row 1, column 2: \ans{0}. \quad The
+diagonal is \ans{the degrees} --- 1, 3, 2, 2 --- because a 2-step route that
+comes back is one line out and the same line home.
 
 \[
 A^2 =
@@ -211,11 +284,9 @@ A^2 =
 \end{pmatrix}
 \]
 
-\vspace{0.4em}
-
 \parthead{4}{The lab}
 
-The seven roads, read off the map --- order does not matter, but both
+The seven roads, read off the map --- the order does not matter, but both
 Ithaca--Syracuse roads must be there and both Binghamton--Albany roads must be
 there:
 
@@ -246,7 +317,7 @@ def euler_status(A):
 \end{verbatim}
 
 The verdicts: seven roads \ans{path}, with US-11 \ans{impossible} --- 1(a) and
-1(b) again, from a rule that never looked at the picture.
+1(b) again, out of a rule that never looked at the picture.
 
 \textbf{Finished early.} Every degree even and still no tour means the map is
 \ans{in more than one piece}: two triangles, say,
@@ -261,5 +332,11 @@ what \texttt{is\_connected(A)} is for. One road joining the two triangles makes
 its two ends odd and the answer \texttt{path}; a second road \emph{beside the
 first}, between the same two places, makes everything even again and the answer
 \texttt{circuit}.
+
+\vspace{0.4em}
+
+{\small The whole notebook with every blank filled in is
+\texttt{lab-solutions.py}, built from \texttt{lab.py} by\\
+\texttt{tools/build\_m01\_lab\_solution.py}.}
 
 \end{document}
