@@ -672,6 +672,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#the-lab-notebook-a-sheet-hands-off-to" id="toc-the-lab-notebook-a-sheet-hands-off-to" class="nav-link active" data-scroll-target="#the-lab-notebook-a-sheet-hands-off-to">The lab notebook a sheet hands off to</a>
   <ul class="collapse">
+  <li><a href="#getting-a-room-full-of-people-into-it" id="toc-getting-a-room-full-of-people-into-it" class="nav-link" data-scroll-target="#getting-a-room-full-of-people-into-it">Getting a room full of people into it</a></li>
   <li><a href="#molab-constraints-and-how-each-one-is-handled" id="toc-molab-constraints-and-how-each-one-is-handled" class="nav-link" data-scroll-target="#molab-constraints-and-how-each-one-is-handled">molab constraints, and how each one is handled</a></li>
   <li><a href="#the-shape-of-the-notebook" id="toc-the-shape-of-the-notebook" class="nav-link" data-scroll-target="#the-shape-of-the-notebook">The shape of the notebook</a></li>
   <li><a href="#the-teaching-figure-is-not-the-students-task" id="toc-the-teaching-figure-is-not-the-students-task" class="nav-link" data-scroll-target="#the-teaching-figure-is-not-the-students-task">The teaching figure is not the student’s task</a></li>
@@ -725,8 +726,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py</code> — generated</li>
 <li><code>tools/build_m01_lab_notebooks.py</code> — generates it, and welds the CSS in</li>
 </ul>
-<p>The sheet reaches it by a short printed URL (<code>\molaburl</code> in the <code>.tex</code>), typed by hand from paper, pointing at the notebook uploaded to <a href="https://molab.marimo.io">molab</a>. <strong>molab is the deployment target, and it is what constrains the file.</strong></p>
+<p>The notebook is uploaded to <a href="https://molab.marimo.io">molab</a>. <strong>molab is the deployment target, and it is what constrains the file.</strong></p>
+<section id="getting-a-room-full-of-people-into-it" class="level2">
+<h2 class="anchored" data-anchor-id="getting-a-room-full-of-people-into-it">Getting a room full of people into it</h2>
+<p>A molab address is <code>https://molab.marimo.io/notebooks/nb_dX9MS8mFRejiTrhQH28DAd</code>. Nobody types that. Two things go on the sheet instead, both pointing at the course’s own short link and never at molab directly:</p>
+<ul>
+<li><p><strong>A QR code</strong>, 3 cm, in the hand-off box. Regenerate it whenever the link changes:</p>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> <span class="at">--from</span> segno segno <span class="at">--output</span><span class="op">=</span>m01lab-qr.png <span class="at">--scale</span><span class="op">=</span>20 <span class="at">--border</span><span class="op">=</span>1 <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--error</span><span class="op">=</span>m <span class="st">"https://go.skojaku.com/m01lab"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>PNG, not PDF: segno’s PDF is too spare for <code>xdvipdfmx</code> to include. Check what you actually printed, rather than that a file exists:</p>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> <span class="at">--with</span> opencv-python-headless <span class="at">--with</span> numpy python <span class="at">-c</span> <span class="st">"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">import cv2; print(cv2.QRCodeDetector().detectAndDecode(cv2.imread('m01lab-qr.png'))[0])"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details></li>
+<li><p><strong><code>go.skojaku.com/mNNlab</code> in text</strong>, for a camera that will not focus. Load <code>hyperref</code> with <code>[hidelinks]</code> so the printed sheet has no coloured box round it.</p></li>
+</ul>
+<p>The short link is served by Caddy on the course droplet (<code>ssh digitalocean</code>, <code>/etc/caddy/Caddyfile</code>, the <code>go.skojaku.com</code> block), as a <strong>302</strong> to the current molab notebook:</p>
+<pre><code>go.skojaku.com {
+    handle /m01lab* {
+        redir https://molab.marimo.io/notebooks/nb_... 302
+    }
+    handle {
+        respond "Not a course link." 404
+    }
+}</code></pre>
+<p>Paper outlives any one upload, so re-uploading a lab is one line on the server, not a reprint. After editing: <code>caddy validate --config /etc/caddy/Caddyfile</code>, then <code>systemctl reload caddy</code>, then check <code>https://llm.skojaku.com/v1/models</code> still answers 401 — the gateway shares that config file. A new per-site <code>log</code> block needs its file created first (<code>chown caddy:caddy</code>), or the reload fails and Caddy silently keeps serving the old config.</p>
 <hr>
+</section>
 <section id="molab-constraints-and-how-each-one-is-handled" class="level2">
 <h2 class="anchored" data-anchor-id="molab-constraints-and-how-each-one-is-handled">molab constraints, and how each one is handled</h2>
 <p><strong>One file arrives, and nothing is fetched at run time.</strong> A student opens the URL in a lecture hall on bad wifi. Anything the notebook needs must be inside the notebook: no sibling data files, no CDN, no <code>open("something.csv")</code>. <code>__file__</code> is also missing in some hosted runtimes, so never build a path from it without a fallback.</p>
@@ -734,25 +764,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The workaround marimo’s maintainer gives in that issue is a <code>&lt;style&gt;</code> tag in the first cell — stylesheets are global, so one tag dresses the whole notebook, in the editor, in <code>marimo run</code>, and in molab. So the CSS travels inside the file:</p>
 <details class="qfold">
 <summary>Show the Python</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> marimo.App(width<span class="op">=</span><span class="st">"medium"</span>)          <span class="co"># no css_file</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> app.setup(hide_code<span class="op">=</span><span class="va">True</span>):</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> base64</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS_B64 <span class="op">=</span> <span class="st">""</span>  <span class="co"># BUILT     &lt;- one long line, written by the tool</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS <span class="op">=</span> base64.b64decode(LECTURE_HALL_CSS_B64).decode(<span class="st">"utf-8"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">@app.cell</span>(hide_code<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _():</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    mo.Html(<span class="ss">f"&lt;style&gt;</span><span class="sc">{</span>LECTURE_HALL_CSS<span class="sc">}</span><span class="ss">&lt;/style&gt;"</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> marimo.App(width<span class="op">=</span><span class="st">"medium"</span>)          <span class="co"># no css_file</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> app.setup(hide_code<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> base64</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS_B64 <span class="op">=</span> <span class="st">""</span>  <span class="co"># BUILT     &lt;- one long line, written by the tool</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS <span class="op">=</span> base64.b64decode(LECTURE_HALL_CSS_B64).decode(<span class="st">"utf-8"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">@app.cell</span>(hide_code<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _():</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    mo.Html(<span class="ss">f"&lt;style&gt;</span><span class="sc">{</span>LECTURE_HALL_CSS<span class="sc">}</span><span class="ss">&lt;/style&gt;"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <p>Base64, not a triple-quoted string: no quote or backslash in the CSS can then break the Python. <code>tools/build_m01_lab_notebooks.py</code> rewrites the <code># BUILT</code> line from the <code>.css</code> file, so the stylesheet stays editable as CSS and the notebook stays self-contained. Run it after touching either.</p>
 <p>Verify it actually landed, rather than trusting the local render:</p>
 <details class="qfold">
 <summary>Show the commands</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/lab.html</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print('</span><span class="dt">\"</span><span class="st">text/html</span><span class="dt">\"</span><span class="st">: </span><span class="dt">\"</span><span class="st">&lt;style&gt;' in open('/tmp/lab.html').read())"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/lab.html</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print('</span><span class="dt">\"</span><span class="st">text/html</span><span class="dt">\"</span><span class="st">: </span><span class="dt">\"</span><span class="st">&lt;style&gt;' in open('/tmp/lab.html').read())"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <p>The output must be stored as <strong><code>text/html</code></strong>, not <code>text/plain</code> — that is the difference between a live <code>&lt;style&gt;</code> element and the CSS printed on the page as text.</p>
 <hr>
@@ -781,8 +811,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="checking-a-notebook-before-calling-it-done">Checking a notebook before calling it done</h2>
 <details class="qfold">
 <summary>Show the commands</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export script lab.py <span class="op">&gt;</span> /dev/null          <span class="co"># syntax and the reactive DAG</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/a.html   <span class="co"># actually runs every cell</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export script lab.py <span class="op">&gt;</span> /dev/null          <span class="co"># syntax and the reactive DAG</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/a.html   <span class="co"># actually runs every cell</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <p>Then, on <code>/tmp/a.html</code>:</p>
 <ul>
