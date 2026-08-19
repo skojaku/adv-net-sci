@@ -10,7 +10,7 @@
 \usepackage{amssymb}
 \usepackage{array}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{tcolorbox}
 \usepackage{enumitem}
 \usepackage{etoolbox}
@@ -38,9 +38,21 @@
 \newcommand{\ansline}{\underline{\hspace{0.98\textwidth}}}
 \newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
 
-% The molab link printed on the hand-off page. Students type this by hand, so
-% it has to stay short: change it here and nowhere else.
-\newcommand{\molaburl}{\texttt{go.skojaku.com/m01lab}}
+% The lab the sheet hands off to. Both the QR code and the printed address are
+% the course's own short link, not the notebook's: paper outlives any one
+% upload, so the sheet points at go.skojaku.com and Caddy on the course droplet
+% points that at the current molab notebook (/etc/caddy/Caddyfile, block
+% go.skojaku.com). Re-uploading a lab is a line on the server, not a reprint.
+%
+% Change the link and rebuild the square with
+%
+%   uvx --from segno segno --output=m01lab-qr.png --scale=20 --border=1 \
+%       --error=m "<the url>"
+%
+% PNG rather than PDF: segno's PDF is too spare for xdvipdfmx to include, and a
+% QR is squares, so 700px across a 3cm box is already sharper than the printer.
+\newcommand{\molablink}{https://go.skojaku.com/m01lab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/m01lab}}}
 
 % A part heading.
 \newcommand{\parthead}[2]{%
@@ -303,7 +315,7 @@ from node 2 back to node 2: how many? \blank[1.2cm]
 
 \vspace{1.2cm}
 
-{\bf Question 6(d)}: The notebook at \molaburl{} will square your grid for you.
+{\bf Question 6(d)}: The notebook in Part 4 will square your grid for you.
 Before it does, say what you expect to find in $A^2$.
 
 \vspace{0.5em}
@@ -318,16 +330,23 @@ the diagonal: \underline{\hspace{8cm}}
 
 \parthead{4}{The lab, on your own}
 
-\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=6pt, bottom=6pt]
+\begin{minipage}[c]{0.26\textwidth}
+\begin{center}
+\includegraphics[width=3cm]{m01lab-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.70\textwidth}
 \textbf{Do this one by yourself}, with this sheet beside you. The notebook
 takes the same four cities and seven highways you have been drawing on, and
 asks you to write them down in a form a computer can read.
 
-\vspace{0.3em}
+\vspace{0.4em}
 
-\begin{center}
-\large \molaburl
-\end{center}
+\textbf{Point a camera at the square.} If that fails, type
+\molaburl
+\end{minipage}
 \end{tcolorbox}
 
 \end{document}

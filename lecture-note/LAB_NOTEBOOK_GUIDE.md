@@ -15,10 +15,56 @@ Module 1:
 - `lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py` — generated
 - `tools/build_m01_lab_notebooks.py` — generates it, and welds the CSS in
 
-The sheet reaches it by a short printed URL (`\molaburl` in the `.tex`), typed
-by hand from paper, pointing at the notebook uploaded to
-[molab](https://molab.marimo.io). **molab is the deployment target, and it is
-what constrains the file.**
+The notebook is uploaded to [molab](https://molab.marimo.io). **molab is the
+deployment target, and it is what constrains the file.**
+
+## Getting a room full of people into it
+
+A molab address is `https://molab.marimo.io/notebooks/nb_dX9MS8mFRejiTrhQH28DAd`.
+Nobody types that. Two things go on the sheet instead, both pointing at the
+course's own short link and never at molab directly:
+
+- **A QR code**, 3 cm, in the hand-off box. Regenerate it whenever the link
+  changes:
+
+  ```sh
+  uvx --from segno segno --output=m01lab-qr.png --scale=20 --border=1 \
+      --error=m "https://go.skojaku.com/m01lab"
+  ```
+
+  PNG, not PDF: segno's PDF is too spare for `xdvipdfmx` to include. Check what
+  you actually printed, rather than that a file exists:
+
+  ```sh
+  uvx --with opencv-python-headless --with numpy python -c "
+  import cv2; print(cv2.QRCodeDetector().detectAndDecode(cv2.imread('m01lab-qr.png'))[0])"
+  ```
+
+- **`go.skojaku.com/mNNlab` in text**, for a camera that will not focus. Load
+  `hyperref` with `[hidelinks]` so the printed sheet has no coloured box round
+  it.
+
+The short link is served by Caddy on the course droplet (`ssh digitalocean`,
+`/etc/caddy/Caddyfile`, the `go.skojaku.com` block), as a **302** to the
+current molab notebook:
+
+```
+go.skojaku.com {
+	handle /m01lab* {
+		redir https://molab.marimo.io/notebooks/nb_... 302
+	}
+	handle {
+		respond "Not a course link." 404
+	}
+}
+```
+
+Paper outlives any one upload, so re-uploading a lab is one line on the server,
+not a reprint. After editing: `caddy validate --config /etc/caddy/Caddyfile`,
+then `systemctl reload caddy`, then check `https://llm.skojaku.com/v1/models`
+still answers 401 — the gateway shares that config file. A new per-site `log`
+block needs its file created first (`chown caddy:caddy`), or the reload fails
+and Caddy silently keeps serving the old config.
 
 ---
 
