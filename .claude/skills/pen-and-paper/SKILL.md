@@ -78,6 +78,49 @@ sheet.
   student sees their own intuition confirmed or broken.
 - **Discussion is part of the sheet.** "Discuss how your estimates compare to
   the actual ratios. Did you notice that it became harder ...?"
+- **Name what a question refers to, inside that question.** "Your route in 1(a)
+  is a \_\_\_\_", "the map has \_\_\_\_", "how many?" and "check it in the lab"
+  all shipped in an m01 draft and all had to be rewritten: the student cannot
+  see what you meant. Write "the drive you numbered in 1(a)", "the highway map",
+  "how many 2-step routes", "the notebook in Part 4".
+- **Ask a question whose phrasing does not answer it.** "Which highway is left
+  over?" tells the student that one will be. "Can you drive every highway
+  without lifting your pencil?" does not.
+- **Never ask them to draw something they have no way of knowing.** The eighth
+  road was once "draw US-11 yourself" — nobody knows where US-11 runs. Print it
+  on a second copy of the map and let the drawing be given.
+- **One symbol, one meaning, per sheet.** Rows labelled Map A / Map B beside a
+  city called A is a table nobody can read. Rename one of them.
+- **Merge questions that are a single act.** "Fill in the table" and "now write
+  the right name in the last column" is one question with the name box printed
+  above the table.
+
+## Where the answer goes
+
+If the question is about a drawing, the answer belongs **on the drawing**, and
+the sheet has to carry the affordance. Module 1 first asked for the route as a
+row of blanks — `I \_ S \_ I \_ \_ \_ ...` — which is a transcription exercise
+wearing the costume of the real one. It became a small circle beside every road
+on the map, with the first two filled in, and the student writes 1 to 7 into
+them. The constraint the sheet is teaching (each road exactly once) is then
+visible as one number per circle.
+
+If blanks really are the answer, count them against the answer: a 7-edge trail
+is 8 places and 7 roads, so 15 tokens, and the first draft printed 13.
+
+## Prefer material that exists
+
+The m01 map was an invented campus creek with seven footbridges until it became
+Ithaca, Syracuse, Binghamton and Albany joined by NY-13, NY-34, NY-79, I-81,
+I-90, I-88 and NY-7 — roads the students drive, whose degrees happen to be
+3, 4, 4, 3, and where the eighth road that breaks it (US-11) really does run
+beside I-81. Real material can be checked, argued with, and remembered, and it
+picks itself: use the region the students live in.
+
+Work the other way round when you do this. Fix the structure the argument needs
+first (here: exactly two odd nodes, and one more edge that makes four), then go
+looking for real objects with that structure, and verify the degrees by hand
+before writing a word of the story.
 
 ## Voice
 
@@ -112,6 +155,44 @@ preamble used across all existing sheets, plus a font guard.
   room inside cells.
 - Boxed background information the student genuinely cannot derive goes in a
   `tcolorbox` (see m04's CDF/CCDF box) — use sparingly, once per sheet at most.
+- **A bare `\color` at the start of a `p`-column cell costs that cell its first
+  line**, so the entry sits a line below every other cell in its row. Wrap
+  instead: `\textbf{\textcolor{...}{...}}`.
+- **Labels on a TikZ path go in a second pass.** A `postaction` re-draws the
+  path *over* the nodes placed on it, so a road drawn that way is drawn through
+  its own label. Draw all the edges with `\draw`, then place the labels with
+  `\path (a) to[same bend] node[...] (b);` — same bend spec, so keep them next
+  to each other or they drift.
+- **A fill-in box attached to a label** is a `label` on that node:
+  `node[shield, label={[ord, name=o13]180:{}}] {NY-13}` gives a named empty
+  circle touching the shield, on whichever side is free of other lines, and
+  something else can write into `(o13)` later.
+- `to[out=m, in=m, looseness=1.35]` where `m` is the bisector of two directions
+  draws a loop that goes *round* a node rather than across it. `bend left/right`
+  between two points on a circle will cut through the middle.
+- **Figures shared by the sheet and its answer key live in one file**
+  (`mapkit.tex`), `\input` by both. Two copies of a 100-line TikZ picture drift
+  within a day.
+- Long URLs on a printed sheet are a QR code plus a short link, never the raw
+  address — see `lecture-note/LAB_NOTEBOOK_GUIDE.md`. Load `hyperref` with
+  `[hidelinks]` or the print carries coloured boxes.
+
+## The answer key
+
+`solutions.tex` beside the sheet, sharing its figures through the same
+`\input`. Two things make it usable:
+
+- **It carries the questions as well as the answers.** A key that reads "8 and
+  4" next to a question number can only be read with the sheet in the other
+  hand.
+- **A map question is answered with a map.** m01's key draws the same map with
+  the circles filled 1 to 7, and the eight-road copy with a cross on the road
+  that goes undriven. Answers in running text are `\textbf{\textcolor{...}{}}`
+  blue so the eye can skip between them.
+
+Answers to the lab go in the key too, and the notebook's own worked copy is
+generated, never hand-edited. Sadamori's call on m01 was that the key ships in
+the public repo; ask before assuming that for another sheet.
 
 ## The lab notebook, if the sheet has one
 
@@ -145,6 +226,14 @@ Proofread by rendering: `pdftoppm -r 60 -png exercise.pdf out` and read the
 images. Tables and their question text drift apart across page breaks — wrap
 each question plus its table in `\begin{minipage}{\textwidth} ... \end{minipage}`.
 
+**Look at the pictures, do not reason about the source.** Nearly every fix in
+the m01 rebuild came from rendering the page and seeing it: a city name running
+off the drawing, two route shields overlapping, a pairing arc drawn straight
+through the node it was pairing, a label sitting one line below its row. None
+of those are visible in the `.tex`. Render at 150 dpi or crop and magnify
+(`pdftoppm -r 300` + `magick -crop`) when a figure is dense, and re-render after
+every geometry change rather than at the end.
+
 ## After writing
 
 1. Compile and read the PDF page by page. Check that every question has room to
@@ -164,6 +253,14 @@ each question plus its table in `\begin{minipage}{\textwidth} ... \end{minipage}
 - [ ] Does the sheet break or stress the idea, not just apply it?
 - [ ] Is the last question about the general procedure, not a number?
 - [ ] Does the PDF compile, and is there white space to write in?
+- [ ] Have you *looked* at every page as an image, at the size it prints?
+- [ ] Does every question name what it is asking about, without the sheet in the
+      other hand?
+- [ ] Does any question's wording give away its own answer?
+- [ ] Where the answer is a drawing, does the sheet give somewhere on the
+      drawing to put it?
 - [ ] If there is a lab notebook: does it run clean with the blanks blank, does
       it carry its own stylesheet, and does it print nothing the student is
       being asked to work out?
+- [ ] If there is an answer key: does it restate the questions, and does it
+      answer the drawings by drawing?
