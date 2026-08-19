@@ -113,6 +113,23 @@ preamble used across all existing sheets, plus a font guard.
 - Boxed background information the student genuinely cannot derive goes in a
   `tcolorbox` (see m04's CDF/CCDF box) — use sparingly, once per sheet at most.
 
+## The lab notebook, if the sheet has one
+
+A sheet may end by handing the student to a marimo notebook that does by
+machine what they have just done in pencil — Module 1's Part 4 is the worked
+example, and it is done **alone**, not in pairs. Read
+`lecture-note/LAB_NOTEBOOK_GUIDE.md` before writing or editing one. The two
+things that will otherwise cost an afternoon:
+
+- **molab ignores a notebook's `css_file`**
+  ([marimo-team/marimo#8467](https://github.com/marimo-team/marimo/issues/8467)),
+  so the stylesheet has to travel inside the file and go up as a `<style>` tag
+  from the first cell. It styles correctly on your machine either way, which is
+  how this gets shipped broken.
+- **The animation must not walk the map the student is being asked to write
+  down.** Teach on a different, smaller network; leave their own as a picture
+  with nothing printed from it.
+
 ## Where files go
 
 New sheets: `lecture-note/mNN/<slug>/exercise.tex`, where `<slug>` is a
@@ -147,3 +164,6 @@ each question plus its table in `\begin{minipage}{\textwidth} ... \end{minipage}
 - [ ] Does the sheet break or stress the idea, not just apply it?
 - [ ] Is the last question about the general procedure, not a number?
 - [ ] Does the PDF compile, and is there white space to write in?
+- [ ] If there is a lab notebook: does it run clean with the blanks blank, does
+      it carry its own stylesheet, and does it print nothing the student is
+      being asked to work out?
