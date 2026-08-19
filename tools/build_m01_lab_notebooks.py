@@ -1,29 +1,44 @@
 #!/usr/bin/env python3
-"""Fill in the m01 lab notebook and write the worked copy beside it.
+"""Weld the stylesheet into the m01 lab notebook, then write the worked copy.
 
-    python tools/build_m01_lab_solution.py
+    python tools/build_m01_lab_notebooks.py
 
-The student notebook is the source of truth. Everything the answer copy knows
-is one of the substitutions below, each anchored to text that must appear in
-lab.py exactly once -- so a blank that moves, or a hint that gets reworded,
-stops this script rather than quietly leaving the answer copy a version behind.
+Two jobs, both of which keep a generated thing next to the thing it is
+generated from:
 
-Run it after any edit to lab.py, and commit the two files together.
+  * lecture-hall.css goes into lab.py as base64. The notebook is uploaded to
+    molab on its own, and molab ignores a notebook's css_file setting
+    (marimo-team/marimo#8467), so the only stylesheet that survives the trip
+    is one the file carries itself.
+
+  * lab-solutions.py is lab.py with every blank filled in. Each answer is
+    anchored to text that must appear in lab.py exactly once, so a blank that
+    moves, or a hint that gets reworded, stops this script rather than quietly
+    leaving the answer copy a version behind.
+
+Run it after editing either lab.py or lecture-hall.css, and commit what it
+touches together.
 """
 
 from __future__ import annotations
 
+import base64
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-LAB = ROOT / "lecture-note/m01-euler_tour/pen-and-paper/lab.py"
-OUT = ROOT / "lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py"
+PAPER = ROOT / "lecture-note/m01-euler_tour/pen-and-paper"
+LAB = PAPER / "lab.py"
+CSS = PAPER / "lecture-hall.css"
+OUT = PAPER / "lab-solutions.py"
+
+CSS_LINE = re.compile(r'^(\s*LECTURE_HALL_CSS_B64 = )".*"(  # BUILT)$', re.MULTILINE)
 
 BANNER = """#
 # GENERATED FILE -- do not edit. Run
 #
-#     python tools/build_m01_lab_solution.py
+#     python tools/build_m01_lab_notebooks.py
 #
 # which fills in every blank of lab.py and writes this. The student's copy is
 # lab.py; edit that one.
@@ -124,7 +139,26 @@ SUBSTITUTIONS = [
 ]
 
 
+def embed_css() -> bool:
+    """Put the current lecture-hall.css into lab.py. True if the file changed."""
+    before = LAB.read_text(encoding="utf-8")
+    blob = base64.b64encode(CSS.read_bytes()).decode("ascii")
+    after, n = CSS_LINE.subn(lambda m: f'{m.group(1)}"{blob}"{m.group(2)}', before)
+    if n != 1:
+        print(
+            f"lab.py has {n} lines ending in '# BUILT' for the stylesheet, "
+            "expected 1",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    if after != before:
+        LAB.write_text(after, encoding="utf-8")
+        print(f"embedded {CSS.name} ({len(blob)} chars) into {LAB.name}")
+    return after != before
+
+
 def main() -> int:
+    embed_css()
     text = LAB.read_text(encoding="utf-8")
     for old, new in SUBSTITUTIONS:
         found = text.count(old)
