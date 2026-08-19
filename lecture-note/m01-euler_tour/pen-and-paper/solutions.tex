@@ -1,0 +1,265 @@
+% Answer key for the Module 1 pen-and-paper sheet.
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+%
+% It draws the same maps as the sheet, out of mapkit.tex, with the circles
+% filled in -- an answer to a question about a map should be a map, and the
+% route the student was asked to draw is the one thing a list of numbers
+% cannot show them.
+\documentclass[a4paper, 11pt]{extarticle}
+\usepackage[top=0.7in, bottom=0.7in, left=0.8in, right=0.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+
+\IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+  \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+    \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}
+
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\raggedbottom
+
+\newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
+
+\newcommand{\parthead}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.2em}}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% An answer, set apart from the reasoning that follows it. Wrapped rather than
+% switched: a bare \color inside a p-column cell costs the cell its first line.
+\newcommand{\ans}[1]{\textbf{\textcolor{pltblue!75!black}{#1}}}
+
+% The maps and the single-city figures, shared with exercise.tex.
+\input{mapkit}
+
+% The drive of 1(a), written into the circles of whichever map is drawn.
+\newcommand{\tourfill}{%
+  \node[ordnum] at (o13) {1};
+  \node[ordnum] at (o34) {2};
+  \node[ordnum] at (o79) {3};
+  \node[ordnum] at (o81) {4};
+  \node[ordnum] at (o90) {5};
+  \node[ordnum] at (o88) {6};
+  \node[ordnum] at (o7)  {7};}
+
+\begin{document}
+
+\begin{center}
+{\ppfont\LARGE Answers}
+\end{center}
+
+{\small Every question, with the reasoning worth saying out loud. Question 1(a)
+has many right answers; the rest have one.}
+
+\parthead{1}{Seven highways}
+
+{\bf 1(a)}: One drive out of many. It has to start at \ans{Ithaca} and finish
+at \ans{Albany}, whichever roads it takes in between --- those are the two
+cities with an odd number of roads, and an odd city is where a drive begins or
+ends.
+
+\begin{center}
+\nymap{}{\tourfill}
+\end{center}
+
+{\bf 1(b)}: \ans{No.} Seven of the eight can be driven --- the numbers above
+still work --- and \ans{US-11 is left over}, or I-81 if you would rather leave
+that one. US-11 pushes Syracuse to five roads and Binghamton to five, so
+\ans{four} cities now have a left-over road, and a drive has one start and one
+finish.
+
+\begin{center}
+\nymap{\usroad}{\tourfill \node[ordnum, pltblue] at (o11) {$\times$};}
+\end{center}
+
+\vspace{0.3em}
+
+{\bf 2}:
+
+\begin{center}
+{\setlength{\tabcolsep}{9pt}
+\begin{tabular}{|C{3.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|}
+\hline
+ & \textbf{2 roads} & \textbf{3 roads} & \textbf{4 roads} &
+\textbf{5 roads} \\
+\hline
+pairs you drew & 1 & 1 & 2 & 2 \\ \hline
+roads left over & 0 & 1 & 0 & 1 \\ \hline
+\end{tabular}}
+\end{center}
+
+(a) \ans{2 and 4} --- the ones with nothing left over. \quad
+(b) \ans{They are even.} \quad
+(c) \ans{start or finish.}
+
+\vspace{0.4em}
+
+{\bf 3}:
+
+\begin{center}
+{\setlength{\tabcolsep}{7pt}
+\begin{tabular}{|C{3.4cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{3.4cm}|}
+\hline
+ & \textbf{I} & \textbf{S} & \textbf{B} & \textbf{A} &
+\textbf{how many have a left-over?} \\
+\hline
+seven roads & 3 & 4 & 4 & 3 & 2 \\ \hline
+with US-11 too & 3 & 5 & 5 & 3 & 4 \\ \hline
+\end{tabular}}
+\end{center}
+
+At most \ans{2} cities may have a left-over road. Seven roads:
+\ans{a drive exists} (Ithaca to Albany). Eight roads: \ans{none exists}.
+No route with eight because \ans{four cities have a left-over road, and a drive
+has only one start and one finish.}
+
+\vspace{0.4em}
+
+{\bf 4}: Königsberg. Bridges: \ans{A 5, \; B 3, \; C 3, \; D 3} --- fourteen
+ends for seven bridges, as always. The walk is \ans{not possible}: all four
+pieces of land are odd.
+
+Destroying one bridge: \ans{any of the seven works.} Every bridge joins two odd
+lands, so knocking one out makes both of them even and leaves exactly two odd
+lands --- and the map stays in one piece whichever you choose. (Königsberg's
+own answer was to build one, not to destroy one.)
+
+\vspace{0.6em}
+
+\parthead{2}{Three kinds of route}
+
+{\bf 5(a)}:
+
+\begin{center}
+{\setlength{\tabcolsep}{7pt}
+\begin{tabular}{|C{3.4cm}|C{3.6cm}|C{3.4cm}|C{2.6cm}|}
+\hline
+\textbf{route} & \textbf{repeats a line?} & \textbf{repeats a stop?} &
+\textbf{name} \\
+\hline
+A B D B C & yes (B--D twice) & yes (B) & \ans{walk} \\ \hline
+A B D C B & no & yes (B) & \ans{trail} \\ \hline
+A B C D E & no & no & \ans{path} \\ \hline
+\end{tabular}}
+\end{center}
+
+{\bf 5(b)}: \ans{A \; D \; B \; C \; D \; E.} The lines A--D, D--B, B--C, C--D,
+D--E are five different lines; D is the stop that comes round twice.
+
+{\bf 5(c)}: \ans{a trail.} No road twice makes it a trail; coming back to a
+city it had already visited is what stops it being a path.
+
+{\bf 5(d)}: A path of 7 roads would touch \ans{8} different cities --- one more
+city than roads, because it never comes back --- and the highway map has only
+\ans{4}.
+
+\vspace{0.6em}
+
+\parthead{3}{Predictions for the notebook}
+
+{\bf 6(a)} and {\bf 6(b)}:
+
+\begin{center}
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{r|C{0.85cm}|C{0.85cm}|C{0.85cm}|C{0.85cm}|l}
+\multicolumn{1}{c}{$A=$} & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} &
+\multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} &
+\multicolumn{1}{l}{\hspace{0.6cm}row total} \\
+\cline{2-5}
+1 & 0 & 1 & 0 & 0 & \hspace{0.6cm}\ans{1} \\ \cline{2-5}
+2 & 1 & 0 & 1 & 1 & \hspace{0.6cm}\ans{3} \\ \cline{2-5}
+3 & 0 & 1 & 0 & 1 & \hspace{0.6cm}\ans{2} \\ \cline{2-5}
+4 & 0 & 1 & 1 & 0 & \hspace{0.6cm}\ans{2} \\ \cline{2-5}
+\end{tabular}}
+\end{center}
+
+Each row total is the \ans{degree} of that node.
+
+{\bf 6(c)}: from 1 to 3: \ans{1} of them, 1 $\rightarrow$ \ans{2} $\rightarrow$ 3.
+\quad From 1 to 2: \ans{0} --- \ans{the first step has to go to 2, and the
+second step has to leave it again.} \quad From node 2 back to node 2:
+\ans{3} --- out and back along each of its three lines.
+
+{\bf 6(d)}: row 1, column 3: \ans{1}. \quad row 1, column 2: \ans{0}. \quad
+The diagonal is \ans{the degrees} --- 1, 3, 2, 2 --- because a 2-step route
+that comes back is one line out and the same line home.
+
+\[
+A^2 =
+\begin{pmatrix}
+1 & 0 & 1 & 1\\
+0 & 3 & 1 & 1\\
+1 & 1 & 2 & 1\\
+1 & 1 & 1 & 2
+\end{pmatrix}
+\]
+
+\vspace{0.4em}
+
+\parthead{4}{The lab}
+
+The seven roads, read off the map --- order does not matter, but both
+Ithaca--Syracuse roads must be there and both Binghamton--Albany roads must be
+there:
+
+\begin{verbatim}
+ROADS = [(0, 1), (0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (2, 3)]
+\end{verbatim}
+
+\begin{verbatim}
+def to_adjacency(edges, n):
+    A = np.zeros((n, n), dtype=int)
+    for i, j in edges:
+        A[i, j] += 1
+        A[j, i] += 1
+    return A
+
+def degrees(A):
+    return A.sum(axis=1)
+
+def euler_status(A):
+    if not is_connected(A):
+        return "impossible"
+    odd = int(np.sum(degrees(A) % 2 == 1))
+    if odd == 0:
+        return "circuit"
+    if odd == 2:
+        return "path"
+    return "impossible"
+\end{verbatim}
+
+The verdicts: seven roads \ans{path}, with US-11 \ans{impossible} --- 1(a) and
+1(b) again, from a rule that never looked at the picture.
+
+\textbf{Finished early.} Every degree even and still no tour means the map is
+\ans{in more than one piece}: two triangles, say,
+
+\begin{verbatim}
+CHALLENGE = [(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3)]
+\end{verbatim}
+
+Every place has two roads, and no drive gets from one triangle to the other. A
+rule that only counted parity says \texttt{circuit} here and is wrong; that is
+what \texttt{is\_connected(A)} is for. One road joining the two triangles makes
+its two ends odd and the answer \texttt{path}; a second road \emph{beside the
+first}, between the same two places, makes everything even again and the answer
+\texttt{circuit}.
+
+\end{document}
