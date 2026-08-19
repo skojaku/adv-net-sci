@@ -53,43 +53,72 @@
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 % ---------------------------------------------------------------------------
-% The campus map: seven footbridges over a creek.
+% The map: seven Upstate New York highways over four cities. The cities sit
+% where they really sit --- Ithaca west, Syracuse north, Binghamton south,
+% Albany far east --- and every road on it is a road you can drive, so the
+% figure reads as a road map rather than as an abstract graph. The degrees are
+% Ithaca 3, Syracuse 4, Binghamton 4, Albany 3; US-11, added in 1(b), takes
+% Syracuse and Binghamton to 5.
 % ---------------------------------------------------------------------------
-\newcommand{\campusmap}{%
-\begin{tikzpicture}[x=0.85cm, y=0.85cm, bridge/.style={line width=4pt, black!75}]
-    \fill[pltblue!14] (0,0) rectangle (13,6.4);
-    \fill[white] (0,4.9) rectangle (13,6.4);
-    \fill[white] (0,0)   rectangle (13,1.6);
-    \fill[white] (4.3,3.25) ellipse (1.8 and 0.85);
-    \fill[white] (9.0,3.25) ellipse (1.8 and 0.85);
-    \draw[bridge] (3.4,4.02) -- (3.4,4.94);
-    \draw[bridge] (5.2,4.02) -- (5.2,4.94);
-    \draw[bridge] (9.0,4.06) -- (9.0,4.94);
-    \draw[bridge] (4.3,2.44) -- (4.3,1.56);
-    \draw[bridge] (8.3,2.51) -- (8.3,1.56);
-    \draw[bridge] (9.7,2.51) -- (9.7,1.56);
-    \draw[bridge] (6.14,3.25) -- (7.18,3.25);
-    \draw[thick] (0,4.9) -- (13,4.9);
-    \draw[thick] (0,1.6) -- (13,1.6);
-    \draw[thick] (4.3,3.25) ellipse (1.8 and 0.85);
-    \draw[thick] (9.0,3.25) ellipse (1.8 and 0.85);
-    \draw[thick] (0,0) rectangle (13,6.4);
-    \node[font=\bfseries] at (1.3,5.6)  {N};
-    \node[font=\bfseries] at (1.3,0.75) {S};
-    \node[font=\bfseries] at (4.3,3.25) {W};
-    \node[font=\bfseries] at (9.0,3.25) {E};
-    \node[pltblue] at (2.9,4.5)   {\emph{a}};
-    \node[pltblue] at (5.7,4.5)   {\emph{b}};
-    \node[pltblue] at (8.5,4.5)   {\emph{c}};
-    \node[pltblue] at (3.8,1.98)  {\emph{d}};
-    \node[pltblue] at (7.8,2.05)  {\emph{e}};
-    \node[pltblue] at (10.2,2.05) {\emph{f}};
-    \node[pltblue] at (6.66,3.62) {\emph{g}};
+\tikzset{
+  % Every road is drawn the same, so no line weight or colour suggests a
+  % distinction that isn't there. Only the shields differ, as on a real map.
+  road/.style     = {line width=3.6pt, black!62, line cap=round},
+  ishield/.style  = {draw=pltblue!60!black, fill=pltblue, text=white,
+                     font=\bfseries\scriptsize, rounded corners=1.6pt,
+                     inner sep=2pt},
+  nshield/.style  = {draw=black!65, fill=white, text=black,
+                     font=\bfseries\scriptsize, rounded corners=1.6pt,
+                     inner sep=2pt},
+  city/.style     = {circle, fill=black, inner sep=0pt, minimum size=6.5pt},
+  cityname/.style = {font=\bfseries, inner sep=3pt},
+}
+\newcommand{\nymap}{%
+\begin{tikzpicture}[x=0.85cm, y=0.85cm]
+    \begin{scope}
+        \clip (0,0) rectangle (13,6.4);
+        \fill[black!3] (0,0) rectangle (13,6.4);
+        \fill[pltblue!22] (0,4.6) .. controls (1.8,5.6) and (2.6,6.0) ..
+                          (5.0,6.4) -- (0,6.4) -- cycle;
+    \end{scope}
+    \node[font=\itshape\scriptsize, black!45, rotate=20] at (1.5,5.6)
+        {Lake Ontario};
+
+    \coordinate (I) at (2.0,2.4);
+    \coordinate (S) at (4.9,5.0);
+    \coordinate (B) at (4.2,0.9);
+    \coordinate (A) at (11.5,3.2);
+
+    \draw[road] (I) to[bend left=28]  (S);
+    \draw[road] (I) to[bend right=26] (S);
+    \draw[road] (I) to[bend right=8]  (B);
+    \draw[road] (S) to[bend left=12]  (B);
+    \draw[road] (S) to[bend left=8]   (A);
+    \draw[road] (B) to[bend left=11]  (A);
+    \draw[road] (B) to[bend right=11] (A);
+
+    % Shields go on a second pass so no road is drawn across a number.
+    \path (I) to[bend left=28]  node[nshield, pos=0.46] {NY-34} (S);
+    \path (I) to[bend right=26] node[nshield, pos=0.40] {NY-13} (S);
+    \path (I) to[bend right=8]  node[nshield, pos=0.52] {NY-79} (B);
+    \path (S) to[bend left=12]  node[ishield, pos=0.62] {I-81}  (B);
+    \path (S) to[bend left=8]   node[ishield, pos=0.46] {I-90}  (A);
+    \path (B) to[bend left=11]  node[ishield, pos=0.50] {I-88}  (A);
+    \path (B) to[bend right=11] node[nshield, pos=0.50] {NY-7}  (A);
+
+    \node[city] at (I) {};  \node[cityname, below left] at (I) {Ithaca};
+    \node[city] at (S) {};  \node[cityname, above] at (S) {Syracuse};
+    \node[city] at (B) {};  \node[cityname, below] at (B) {Binghamton};
+    \node[city] at (A) {};  \node[cityname, above] at (A) {Albany};
+
+    \draw[->, black!50, line width=1pt] (12.4,5.1) -- (12.4,5.85);
+    \node[font=\bfseries\footnotesize, black!50] at (12.4,6.15) {N};
+    \draw[black!35] (0,0) rectangle (13,6.4);
 \end{tikzpicture}}
 
 % ---------------------------------------------------------------------------
-% One piece of land on its own, with #1 bridge-ends radiating out. #2 takes
-% extra TikZ so the k=2 figure can ship with its pairing already drawn.
+% One city on its own, with #1 road-ends radiating out. #2 takes extra TikZ so
+% the k=2 figure can ship with its pairing already drawn.
 % ---------------------------------------------------------------------------
 \newcommand{\landdeg}[2]{%
 \begin{tikzpicture}[x=1cm, y=1cm]
@@ -106,44 +135,45 @@
 \begin{document}
 
 \begin{center}
-{\ppfont\LARGE Cross Every Bridge Once, Then Teach a Computer to Do It}
+{\ppfont\LARGE Drive Every Highway Once, Then Teach a Computer to Do It}
 \end{center}
 
 {\small Do this before the lecture, in pencil. Nothing here needs a word you
 have not been given on the sheet.}
 
-\parthead{1}{Seven bridges}
+\parthead{1}{Seven highways}
 
-Seven footbridges, \emph{a} to \emph{g}, join four pieces of land: the north
-bank \textbf{N}, the south bank \textbf{S}, and two islands \textbf{W} and
-\textbf{E}. Cross every bridge exactly once.
+Seven highways join four Upstate New York cities: \textbf{I}thaca,
+\textbf{S}yracuse, \textbf{B}inghamton, \textbf{A}lbany. Drive every highway
+exactly once.
 
 \begin{center}
-\campusmap
+\nymap
 \end{center}
 
-{\bf Question 1(a)}: Find such a route. Start and finish anywhere. Land may
-repeat; bridges may not. Two steps are done for you.
+{\bf Question 1(a)}: Find such a route. Start and finish anywhere. Cities may
+repeat; highways may not. Write a city as its first letter and a highway as its
+number. Two steps are done for you.
 
 \vspace{0.4em}
 
-N \; \emph{a} \; W \; \emph{b} \; N \; \blank[1cm] \; \blank[1cm] \;
-\blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \; \blank[1cm] \;
-\blank[1cm]
+I \; 13 \; S \; 34 \; I \; \blank[0.92cm] \; \blank[0.92cm] \; \blank[0.92cm]
+\; \blank[0.92cm] \; \blank[0.92cm] \; \blank[0.92cm] \; \blank[0.92cm] \;
+\blank[0.92cm] \; \blank[0.92cm] \; \blank[0.92cm]
 
 \vspace{1.8cm}
 
-{\bf Question 1(b)}: Draw an eighth bridge \emph{h} on the map, between W and
-E, below \emph{g}. Try again. Which bridge is left over?
+{\bf Question 1(b)}: Draw an eighth highway on the map: \textbf{US-11},
+Binghamton to Syracuse, alongside I-81. Try again. Which highway is left over?
 
 \vspace{3.4cm}
 
 \clearpage
 
-{\bf Question 2}: One piece of land, on its own. Arriving uses up one bridge,
-leaving uses up another --- so bridges get used in \textbf{pairs}.
+{\bf Question 2}: One city, on its own. Arriving uses up one highway, leaving
+uses up another --- so highways get used in \textbf{pairs}.
 
-Join two bridge-ends with a curved line to mean ``in here, out there''. Pair up
+Join two road-ends with a curved line to mean ``in here, out there''. Pair up
 as far as you can. The first is done.
 
 \vspace{0.4em}
@@ -155,7 +185,7 @@ as far as you can. The first is done.
 \landdeg{3}{} &
 \landdeg{4}{} &
 \landdeg{5}{} \\
-2 bridges & 3 bridges & 4 bridges & 5 bridges \\
+2 roads & 3 roads & 4 roads & 5 roads \\
 \end{tabular}}
 \end{center}
 
@@ -165,57 +195,57 @@ as far as you can. The first is done.
 {\setlength{\tabcolsep}{9pt}
 \begin{tabular}{|C{3.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|}
 \hline
- & \textbf{2 bridges} & \textbf{3 bridges} & \textbf{4 bridges} &
-\textbf{5 bridges} \\
+ & \textbf{2 roads} & \textbf{3 roads} & \textbf{4 roads} &
+\textbf{5 roads} \\
 \hline
 pairs you drew & 1 & & & \\[0.45cm] \hline
-bridges left over & 0 & & & \\[0.45cm] \hline
+roads left over & 0 & & & \\[0.45cm] \hline
 \end{tabular}}
 \end{center}
 
 \vspace{0.5em}
 
-(a) Which ones can you walk straight \emph{through}? \blank[5cm]
+(a) Which ones can you drive straight \emph{through}? \blank[5cm]
 
 (b) What do those numbers share? \blank[6cm]
 
-(c) A left-over bridge has no partner, so this land must be the tour's
+(c) A left-over road has no partner, so this city must be the tour's
 \blank[4.5cm]
 
 \vspace{0.8em}
 
-{\bf Question 3}: Count the bridges on the map. Map A, N is done.
+{\bf Question 3}: Count the highways at each city. Ithaca is done.
 
 \begin{center}
 {\setlength{\tabcolsep}{7pt}
 \begin{tabular}{|C{3.4cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{3.4cm}|}
 \hline
- & \textbf{N} & \textbf{W} & \textbf{S} & \textbf{E} &
+ & \textbf{I} & \textbf{S} & \textbf{B} & \textbf{A} &
 \textbf{how many have a left-over?} \\
 \hline
-Map A (7 bridges) & 3 & & & & \\[0.55cm] \hline
-Map B (8 bridges) & & & & & \\[0.55cm] \hline
+seven roads & 3 & & & & \\[0.55cm] \hline
+with US-11 too & & & & & \\[0.55cm] \hline
 \end{tabular}}
 \end{center}
 
 \begin{minipage}{\textwidth}
-One start, one finish. So at most \blank[1.2cm] pieces of land may have a
-left-over bridge.
+One start, one finish. So at most \blank[1.2cm] cities may have a left-over
+road.
 
 \vspace{0.4em}
 
-Map A: \blank[4cm] \hfill Map B: \blank[4cm] \hspace*{0.5cm}
+Seven roads: \blank[3.6cm] \hfill Eight roads: \blank[3.6cm] \hspace*{0.5cm}
 
 \vspace{0.4em}
 
-No route on Map B because \underline{\hspace{8.5cm}}
+No route with eight because \underline{\hspace{8.5cm}}
 \end{minipage}
 
 \vspace{0.9em}
 
 \begin{minipage}{0.53\textwidth}
-{\bf Question 4}: Königsberg, 1736. Four pieces of land, seven bridges. Two
-pairs join the same land; both of a pair must be crossed.
+{\bf Question 4}: The same puzzle, 1736. Königsberg: four pieces of land, seven
+bridges. Two pairs join the same land; both of a pair must be crossed.
 
 \vspace{0.6em}
 
@@ -316,7 +346,7 @@ A \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] E
 \vspace{0.6em}
 
 {\bf Question 5(e)}: It cannot be a path: 7 lines need \blank[1.5cm] different
-pieces of land, and the map has \blank[1.5cm].
+cities, and the map has \blank[1.5cm].
 
 \vspace{0.9cm}
 
