@@ -9,7 +9,7 @@
 <meta name="author" content="Sadamori Kojaku">
 <meta name="dcterms.date" content="2026-08-19">
 
-<title>Appendix: The Algebra Behind Modularity and the Block Model – Advanced Topics in Network Science</title>
+<title>Advanced Topics in Network Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -28,28 +28,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../m06-centrality/01-concepts.html" rel="next">
-<link href="../m05-clustering/03-exercises.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-a7952132dd87ce33f437addd0578540c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5f3aad7069e16ac676e1ab6e76358ea1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,51 +108,8 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script defer="" src="../assets/katex/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet" href="../assets/katex/katex.min.css">
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../assets/anim.css">
+<link rel="stylesheet" href="assets/anim.css">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-light">
@@ -129,11 +119,11 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../assets/logo.png" alt="" class="navbar-logo light-content">
-    <img src="../assets/logo.png" alt="" class="navbar-logo dark-content">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./assets/logo.png" alt="" class="navbar-logo light-content">
+    <img src="./assets/logo.png" alt="" class="navbar-logo dark-content">
     </a>
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Advanced Topics in Network Science</span>
     </a>
   </div>
@@ -144,7 +134,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="../index.html" aria-current="page"> 
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -153,35 +143,35 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-course">    
         <li>
-    <a class="dropdown-item" href="../course/welcome.html">
+    <a class="dropdown-item" href="./course/welcome.html">
  <span class="dropdown-text">Welcome to SSIE 641</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/about.html">
+    <a class="dropdown-item" href="./course/about.html">
  <span class="dropdown-text">About us</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/activities.html">
+    <a class="dropdown-item" href="./course/activities.html">
  <span class="dropdown-text">How this course works</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/setup.html">
+    <a class="dropdown-item" href="./course/setup.html">
  <span class="dropdown-text">Set up your machine</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/pair-notebook.html">
+    <a class="dropdown-item" href="./course/pair-notebook.html">
  <span class="dropdown-text">Pair Notebook</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/mini-project.html">
+    <a class="dropdown-item" href="./course/mini-project.html">
  <span class="dropdown-text">Group Mini-Project</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/student-lecture.html">
+    <a class="dropdown-item" href="./course/student-lecture.html">
  <span class="dropdown-text">Student Lecture</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../course/discord.html">
+    <a class="dropdown-item" href="./course/discord.html">
  <span class="dropdown-text">Discord</span></a>
   </li>  
     </ul>
@@ -192,43 +182,43 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-modules">    
         <li>
-    <a class="dropdown-item" href="../intro/why-networks.html">
+    <a class="dropdown-item" href="./intro/why-networks.html">
  <span class="dropdown-text">The Pandemic That Ignored the Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m01-euler_tour/01-concepts.html">
+    <a class="dropdown-item" href="./m01-euler_tour/01-concepts.html">
  <span class="dropdown-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m02-small-world/01-concepts.html">
+    <a class="dropdown-item" href="./m02-small-world/01-concepts.html">
  <span class="dropdown-text">Six Handshakes to a Stranger</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m03-robustness/01-concepts.html">
+    <a class="dropdown-item" href="./m03-robustness/01-concepts.html">
  <span class="dropdown-text">Build It Cheap, Then Watch It Break</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m04-node-degree/01-concepts.html">
+    <a class="dropdown-item" href="./m04-node-degree/01-concepts.html">
  <span class="dropdown-text">Why Your Friends Have More Friends Than You Do</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m05-clustering/01-concepts.html">
+    <a class="dropdown-item" href="./m05-clustering/01-concepts.html">
  <span class="dropdown-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m06-centrality/01-concepts.html">
+    <a class="dropdown-item" href="./m06-centrality/01-concepts.html">
  <span class="dropdown-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m07-random-walks/01-concepts.html">
+    <a class="dropdown-item" href="./m07-random-walks/01-concepts.html">
  <span class="dropdown-text">The Drunkard Who Maps the City</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m08-embedding/01-concepts.html">
+    <a class="dropdown-item" href="./m08-embedding/01-concepts.html">
  <span class="dropdown-text">From Wiring Diagram to Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../m09-graph-neural-networks/01-concepts.html">
+    <a class="dropdown-item" href="./m09-graph-neural-networks/01-concepts.html">
  <span class="dropdown-text">Every Node Asks Its Neighbors</span></a>
   </li>  
     </ul>
@@ -249,7 +239,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/01-concepts.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/04-appendix.html">Appendix: The Algebra Behind Modularity and the Block Model</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Advanced Topics in Network Science</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -263,7 +253,7 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SSIE 641 — Advanced Topics in Network Science</span></a>
   </div>
 </li>
@@ -278,49 +268,49 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/welcome.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/welcome.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome to SSIE 641</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/about.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/about.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">About us</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/activities.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/activities.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How this course works</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/discord.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/discord.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Discord</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/setup.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Set up your machine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/pair-notebook.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/pair-notebook.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pair Notebook</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/mini-project.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/mini-project.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Group Mini-Project</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../course/student-lecture.html" class="sidebar-item-text sidebar-link">
+  <a href="./course/student-lecture.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Student Lecture</span></a>
   </div>
 </li>
@@ -337,7 +327,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../intro/why-networks.html" class="sidebar-item-text sidebar-link">
+  <a href="./intro/why-networks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Pandemic That Ignored the Map</span></a>
   </div>
 </li>
@@ -354,31 +344,31 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m01-euler_tour/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">A Stroll, Seven Bridges, and a Mathematical Revolution</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
+  <a href="./m01-euler_tour/01b-vocabulary.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Five Words You Will Use All Semester</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m01-euler_tour/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Three Ways to Store a Network</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m01-euler_tour/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m01-euler_tour/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: The Proofs We Skipped, and the Matrix That Does Not Fit</span></a>
   </div>
 </li>
@@ -395,25 +385,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Six Handshakes to a Stranger</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m02-small-world/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Measuring How Small the World Is</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m02-small-world/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: Why a Random Network Is Already Small</span></a>
   </div>
 </li>
@@ -430,25 +420,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m03-robustness/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Build It Cheap, Then Watch It Break</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m03-robustness/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Breaking Networks on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m03-robustness/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m03-robustness/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: One Number Decides Whether a Network Holds Together</span></a>
   </div>
 </li>
@@ -465,25 +455,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m04-node-degree/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Why Your Friends Have More Friends Than You Do</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m04-node-degree/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Plotting a Degree Distribution Without Lying</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m04-node-degree/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m04-node-degree/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: Where the Gap, the CCDF Slope and r Come From</span></a>
   </div>
 </li>
@@ -491,34 +481,34 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
  <span class="menu-text">M05: Clustering</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m05-clustering/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Birds of a Feather — and the Flocks That Were Never There</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m05-clustering/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Finding Communities (and Doubting Them)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m05-clustering/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link active">
+  <a href="./m05-clustering/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: The Algebra Behind Modularity and the Block Model</span></a>
   </div>
 </li>
@@ -535,25 +525,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m06-centrality/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Who Is the Most Important Node? It Depends What You Ask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m06-centrality/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Who Is Important, and In What Sense</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m06-centrality/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m06-centrality/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: The Algebra Behind the Rankings</span></a>
   </div>
 </li>
@@ -570,25 +560,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Drunkard Who Maps the City</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m07-random-walks/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Walking Randomly, on Purpose</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m07-random-walks/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: Why the Second Eigenvalue Sets the Clock</span></a>
   </div>
 </li>
@@ -605,25 +595,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m08-embedding/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">From Wiring Diagram to Map</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m08-embedding/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Turning a Network into Coordinates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m08-embedding/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m08-embedding/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: Where the Eigenvectors Come From</span></a>
   </div>
 </li>
@@ -640,31 +630,31 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
+  <a href="./m09-graph-neural-networks/00-preparation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How a Camera Finds an Edge</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./m09-graph-neural-networks/01-concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Every Node Asks Its Neighbors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
+  <a href="./m09-graph-neural-networks/02-coding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Hands-on: Filter a Network, Then Let It Learn the Filter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
+  <a href="./m09-graph-neural-networks/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./m09-graph-neural-networks/04-appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix: The Algebra We Set Aside</span></a>
   </div>
 </li>
@@ -680,24 +670,23 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#why-the-two-forms-of-modularity-are-the-same" id="toc-why-the-two-forms-of-modularity-are-the-same" class="nav-link active" data-scroll-target="#why-the-two-forms-of-modularity-are-the-same">Why the two forms of modularity are the same</a></li>
-  <li><a href="#fitting-the-stochastic-block-model" id="toc-fitting-the-stochastic-block-model" class="nav-link" data-scroll-target="#fitting-the-stochastic-block-model">Fitting the stochastic block model</a>
+  <li><a href="#the-lab-notebook-a-sheet-hands-off-to" id="toc-the-lab-notebook-a-sheet-hands-off-to" class="nav-link active" data-scroll-target="#the-lab-notebook-a-sheet-hands-off-to">The lab notebook a sheet hands off to</a>
   <ul class="collapse">
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
-  <li><a href="#why-setting-the-derivative-to-zero-is-enough" id="toc-why-setting-the-derivative-to-zero-is-enough" class="nav-link" data-scroll-target="#why-setting-the-derivative-to-zero-is-enough">Why setting the derivative to zero is enough</a></li>
-  <li><a href="#taking-the-derivative" id="toc-taking-the-derivative" class="nav-link" data-scroll-target="#taking-the-derivative">Taking the derivative</a></li>
-  <li><a href="#counting-the-pairs" id="toc-counting-the-pairs" class="nav-link" data-scroll-target="#counting-the-pairs">Counting the pairs</a></li>
-  <li><a href="#what-this-does-not-give-you" id="toc-what-this-does-not-give-you" class="nav-link" data-scroll-target="#what-this-does-not-give-you">What this does not give you</a></li>
+  <li><a href="#molab-constraints-and-how-each-one-is-handled" id="toc-molab-constraints-and-how-each-one-is-handled" class="nav-link" data-scroll-target="#molab-constraints-and-how-each-one-is-handled">molab constraints, and how each one is handled</a></li>
+  <li><a href="#the-shape-of-the-notebook" id="toc-the-shape-of-the-notebook" class="nav-link" data-scroll-target="#the-shape-of-the-notebook">The shape of the notebook</a></li>
+  <li><a href="#the-teaching-figure-is-not-the-students-task" id="toc-the-teaching-figure-is-not-the-students-task" class="nav-link" data-scroll-target="#the-teaching-figure-is-not-the-students-task">The teaching figure is not the student’s task</a></li>
+  <li><a href="#the-answer-copy" id="toc-the-answer-copy" class="nav-link" data-scroll-target="#the-answer-copy">The answer copy</a></li>
+  <li><a href="#checking-a-notebook-before-calling-it-done" id="toc-checking-a-notebook-before-calling-it-done" class="nav-link" data-scroll-target="#checking-a-notebook-before-calling-it-done">Checking a notebook before calling it done</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m05-clustering/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/LAB_NOTEBOOK_GUIDE.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m05-clustering/01-concepts.html">M05: Clustering</a></li><li class="breadcrumb-item"><a href="../m05-clustering/04-appendix.html">Appendix: The Algebra Behind Modularity and the Block Model</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Appendix: The Algebra Behind Modularity and the Block Model</h1>
+<h1 class="title">Advanced Topics in Network Science</h1>
 </div>
 
 
@@ -726,116 +715,82 @@ window.Quarto = {
 </header>
 
 
-<p>Two derivations the main text quotes but does not carry out. Neither is needed to use the methods; both are worth seeing once.</p>
-<section id="why-the-two-forms-of-modularity-are-the-same" class="level2">
-<h2 class="anchored" data-anchor-id="why-the-two-forms-of-modularity-are-the-same">Why the two forms of modularity are the same</h2>
-<p>The main text builds modularity as “matches minus chance matches”:</p>
-<p><span class="math display">
-\begin{align}
-Q &amp;=\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \sum_{c=1}^C \left( \frac{1}{2m}\sum_{i=1}^n k_i \delta(c, c_i) \right)^2
-\end{align}
-</span></p>
-<p>and then states the standard expression without proof:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \right]\delta(c_i,c_j)
-</span></p>
-<p>Here is the path from one to the other.</p>
-<p>Start with the first form and factor <span class="math inline">\frac{1}{2m}</span> out of both terms:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n k_i \delta(c, c_i) \right)^2 \right]
-</span></p>
-<p>Now use <span class="math inline">(\sum_i a_i)^2 = (\sum_i a_i)( \sum_j a_j)</span> to expand the squared term. The second copy of the sum gets a fresh index <span class="math inline">j</span>:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n k_i \delta(c, c_i) \right) \left( \sum_{j=1}^n k_j \delta(c, c_j) \right)\right]
-</span></p>
-<p>Two independent sums multiplied together are one double sum, <span class="math inline">(\sum_i a_i)( \sum_j a_j) = \sum_i \sum_j a_ia_j</span>:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) - \frac{1}{2m}\sum_{c=1}^C \left( \sum_{i=1}^n \sum_{j=1}^n k_i k_j  \delta(c, c_i)  \delta(c, c_j) \right)\right]
-</span></p>
-<p>The last step is the one that does the work. Summing <span class="math inline">\delta(c,c_i)\delta(c,c_j)</span> over every color <span class="math inline">c</span> gives <span class="math inline">1</span> exactly when <span class="math inline">i</span> and <span class="math inline">j</span> have the same color and <span class="math inline">0</span> otherwise — which is what <span class="math inline">\delta(c_i,c_j)</span> means. So the outer sum over <span class="math inline">c</span> disappears:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \left[ \sum_{i=1}^n \sum_{j=1}^n A_{ij} \delta(c_i,c_j) -  \frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n k_i k_j  \delta(c_i,c_j) \right]
-</span></p>
-<p>Collect the common factors and the standard form falls out:</p>
-<p><span class="math display">
-Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \right]\delta(c_i,c_j)
-</span></p>
-<p>Read the bracket as the payoff of a single pair: the edge you observe, minus the <span class="math inline">k_ik_j/2m</span> edges the configuration model expects between two nodes of degree <span class="math inline">k_i</span> and <span class="math inline">k_j</span>. Modularity is that surplus, summed over every pair in the same community.</p>
+<section id="the-lab-notebook-a-sheet-hands-off-to" class="level1">
+<h1>The lab notebook a sheet hands off to</h1>
+<p>How the marimo notebook at the end of a pen-and-paper sheet is built, and the two things about molab that will otherwise cost an afternoon. The sheet itself is <code>.claude/skills/pen-and-paper/SKILL.md</code>; this file is the notebook half of the same deliverable.</p>
+<p>A sheet’s last part sends the student to a marimo notebook that runs, by machine, the thing they have just done in pencil. The working example is Module 1:</p>
+<ul>
+<li><code>lecture-note/m01-euler_tour/pen-and-paper/lab.py</code> — the student’s copy</li>
+<li><code>lecture-note/m01-euler_tour/pen-and-paper/lecture-hall.css</code> — the look, copied verbatim from the mini-project’s <code>assignment/lecture-hall.css</code></li>
+<li><code>lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py</code> — generated</li>
+<li><code>tools/build_m01_lab_notebooks.py</code> — generates it, and welds the CSS in</li>
+</ul>
+<p>The sheet reaches it by a short printed URL (<code>\molaburl</code> in the <code>.tex</code>), typed by hand from paper, pointing at the notebook uploaded to <a href="https://molab.marimo.io">molab</a>. <strong>molab is the deployment target, and it is what constrains the file.</strong></p>
+<hr>
+<section id="molab-constraints-and-how-each-one-is-handled" class="level2">
+<h2 class="anchored" data-anchor-id="molab-constraints-and-how-each-one-is-handled">molab constraints, and how each one is handled</h2>
+<p><strong>One file arrives, and nothing is fetched at run time.</strong> A student opens the URL in a lecture hall on bad wifi. Anything the notebook needs must be inside the notebook: no sibling data files, no CDN, no <code>open("something.csv")</code>. <code>__file__</code> is also missing in some hosted runtimes, so never build a path from it without a fallback.</p>
+<p><strong><code>css_file</code> is ignored</strong> — <a href="https://github.com/marimo-team/marimo/issues/8467">marimo-team/marimo#8467</a>. Setting <code>marimo.App(css_file="lecture-hall.css")</code> styles the notebook locally and silently does nothing on molab, which is the worst kind of bug: it looks fixed on the machine where you wrote it.</p>
+<p>The workaround marimo’s maintainer gives in that issue is a <code>&lt;style&gt;</code> tag in the first cell — stylesheets are global, so one tag dresses the whole notebook, in the editor, in <code>marimo run</code>, and in molab. So the CSS travels inside the file:</p>
+<details class="qfold">
+<summary>Show the Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> marimo.App(width<span class="op">=</span><span class="st">"medium"</span>)          <span class="co"># no css_file</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> app.setup(hide_code<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> base64</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS_B64 <span class="op">=</span> <span class="st">""</span>  <span class="co"># BUILT     &lt;- one long line, written by the tool</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    LECTURE_HALL_CSS <span class="op">=</span> base64.b64decode(LECTURE_HALL_CSS_B64).decode(<span class="st">"utf-8"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">@app.cell</span>(hide_code<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _():</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    mo.Html(<span class="ss">f"&lt;style&gt;</span><span class="sc">{</span>LECTURE_HALL_CSS<span class="sc">}</span><span class="ss">&lt;/style&gt;"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>Base64, not a triple-quoted string: no quote or backslash in the CSS can then break the Python. <code>tools/build_m01_lab_notebooks.py</code> rewrites the <code># BUILT</code> line from the <code>.css</code> file, so the stylesheet stays editable as CSS and the notebook stays self-contained. Run it after touching either.</p>
+<p>Verify it actually landed, rather than trusting the local render:</p>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/lab.html</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print('</span><span class="dt">\"</span><span class="st">text/html</span><span class="dt">\"</span><span class="st">: </span><span class="dt">\"</span><span class="st">&lt;style&gt;' in open('/tmp/lab.html').read())"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>The output must be stored as <strong><code>text/html</code></strong>, not <code>text/plain</code> — that is the difference between a live <code>&lt;style&gt;</code> element and the CSS printed on the page as text.</p>
+<hr>
 </section>
-<section id="fitting-the-stochastic-block-model" class="level2">
-<h2 class="anchored" data-anchor-id="fitting-the-stochastic-block-model">Fitting the stochastic block model</h2>
-<p>The main text states the answer — the estimated edge probability between two blocks is the number of edges you see divided by the number of pairs that could have carried one. Here is the maximum-likelihood argument behind it.</p>
-<section id="setup" class="level3">
-<h3 class="anchored" data-anchor-id="setup">Setup</h3>
-<p>Under the SBM, each pair of nodes gets an independent coin flip whose bias depends only on the two communities involved, <span class="math inline">P(A_{ij}=1 \mid c_i, c_j) = p_{c_ic_j}</span>. The probability of the whole observed network, given an assignment <span class="math inline">\{c_i\}</span>, is the product of those flips over the <span class="math inline">i&lt;j</span> pairs:</p>
-<p><span class="math display">
-P(\left\{A_{ij}\right\} \mid \left\{c_i\right\}) = \prod_{i&lt;j} p_{c_i c_j}^{\,A_{ij}} \left(1-p_{c_i c_j}\right)^{1-A_{ij}}
-</span></p>
-<p>Taking the logarithm turns the product into a sum, which is why nobody ever maximizes a likelihood directly:</p>
-<p><span class="math display">
-{\cal L} = \sum_{i&lt;j} \left[ A_{ij} \log p_{c_ic_j} + (1-A_{ij}) \log (1-p_{c_ic_j}) \right]
-</span></p>
+<section id="the-shape-of-the-notebook" class="level2">
+<h2 class="anchored" data-anchor-id="the-shape-of-the-notebook">The shape of the notebook</h2>
+<p>Modelled on the mini-project’s <code>assignment.py</code>; keep the two recognisably the same page.</p>
+<ul>
+<li><strong>A hidden <code>app.setup</code> kit</strong>: colours, the SVG drawing functions, <code>mo.md</code> helpers, <code>plain_adjacency</code>, <code>is_connected</code>, the <code>*_ready</code> predicates. Headed “Nothing here is yours to edit.”</li>
+<li><strong><code>✍️</code> on every cell the student touches</strong>, and nothing else. Three to six of them is the budget; the rest of the notebook runs itself.</li>
+<li><strong>An in-line check under every ✍️ cell</strong>, which names the mistake rather than saying “wrong”: <em>“Ithaca touches 2 of your roads, not 3 — the counts are Question 3 on the sheet.”</em></li>
+<li><strong>A waiting card, not an exception</strong>, for anything downstream of a blank: <code>if not ready: _out = WAITING</code>. A red traceback on an untouched notebook reads as “this is broken”, not “your turn”.</li>
+<li><strong>Animations run from the moment it opens.</strong> They build their own matrices from the kit, never from student code.</li>
+</ul>
 </section>
-<section id="why-setting-the-derivative-to-zero-is-enough" class="level3">
-<h3 class="anchored" data-anchor-id="why-setting-the-derivative-to-zero-is-enough">Why setting the derivative to zero is enough</h3>
-<p>Hold the community assignment fixed and treat <span class="math inline">{\cal L}</span> as a function of one block probability <span class="math inline">p_{cc'}</span>. Each term is either <span class="math inline">\log p</span> or <span class="math inline">\log(1-p)</span>, both of which are concave, and a sum of concave functions is concave. So <span class="math inline">{\cal L}</span> is a hill with a single peak in <span class="math inline">p_{cc'}</span>: find the one place where the slope is zero and you have found the maximum, with no risk of a false summit.</p>
-<div id="fig-likelihood-function" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A single-peaked concave curve with its maximum marked">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-likelihood-function-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../figs/likelihood-function.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%" alt="A single-peaked concave curve with its maximum marked">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-function-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: The log-likelihood as a function of a single block probability <span class="math inline">p_{cc'}</span>. One peak, so a zero gradient locates the maximum. This is true only for the continuous probabilities — as a function of the discrete community labels, the likelihood has no such guarantee.
-</figcaption>
-</figure>
-</div>
+<section id="the-teaching-figure-is-not-the-students-task" class="level2">
+<h2 class="anchored" data-anchor-id="the-teaching-figure-is-not-the-students-task">The teaching figure is not the student’s task</h2>
+<p>The mistake worth not repeating: the Module 1 animation first walked the sheet’s own map and printed its edge list, and the next cell then asked the student to type that list in. The answer was on the screen.</p>
+<p>So the worked example is a <strong>different, smaller network</strong> — a village on a river, three places, four bridges — and it carries the awkward case on purpose (two bridges between the same pair, so the write-the-pair-twice rule is met and named before it is needed). The student’s own map appears as a picture above the ✍️ cell, with its nodes numbered, and <strong>no cell anywhere prints its edge list</strong>. The same rule applies to the checks: <code>to_adjacency</code> is checked on the village, because a grid of the right answer is that edge list in another notation.</p>
 </section>
-<section id="taking-the-derivative" class="level3">
-<h3 class="anchored" data-anchor-id="taking-the-derivative">Taking the derivative</h3>
-<p>Differentiate <span class="math inline">{\cal L}</span> with respect to <span class="math inline">p_{cc'}</span> for <span class="math inline">c \neq c'</span>. Only the pairs with one endpoint in <span class="math inline">c</span> and the other in <span class="math inline">c'</span> survive, and the indicator <span class="math inline">\delta(c_i,c)\delta(c_j,c') + \delta(c_i,c')\delta(c_j,c)</span> picks them out in either order:</p>
-<p><span class="math display">
-\frac{\partial {\cal L}}{\partial p_{cc'}}
-= \sum_{i&lt;j} \left[ \frac{A_{ij}}{p_{cc'}} - \frac{1-A_{ij}}{1-p_{cc'}} \right]
-\left[ \delta(c_i,c)\delta(c_j,c') + \delta(c_i,c')\delta(c_j,c) \right]
-</span></p>
-<p>Write <span class="math inline">m_{cc'}</span> for the number of edges between the two blocks and <span class="math inline">N_{cc'}</span> for the number of pairs between them. The first sum collects the edges, the second collects the <em>non</em>-edges, of which there are <span class="math inline">N_{cc'} - m_{cc'}</span>:</p>
-<p><span class="math display">
-\frac{\partial {\cal L}}{\partial p_{cc'}}
-= \frac{m_{cc'}}{p_{cc'}} - \frac{N_{cc'} - m_{cc'}}{1-p_{cc'}}
-</span></p>
-<p>Note the numerator of the second term. It is the count of pairs that are <em>not</em> edges, not the count of pairs — a step that is easy to drop and that changes the answer. Setting the derivative to zero:</p>
-<p><span class="math display">
-m_{cc'}(1-p_{cc'}) = (N_{cc'} - m_{cc'})\, p_{cc'}
-\quad\Longrightarrow\quad
-\widehat{p}_{cc'} = \frac{m_{cc'}}{N_{cc'}}
-</span></p>
+<section id="the-answer-copy" class="level2">
+<h2 class="anchored" data-anchor-id="the-answer-copy">The answer copy</h2>
+<p><code>lab-solutions.py</code> is generated, never edited. Every answer in <code>tools/build_m01_lab_notebooks.py</code> is anchored to a string that must appear in <code>lab.py</code> <strong>exactly once</strong>; if a blank moves or a hint is reworded, the script stops rather than writing an answer copy that is a version behind. It also asserts no <code>TASK</code> survives, and stamps a do-not-edit banner into the output.</p>
 </section>
-<section id="counting-the-pairs" class="level3">
-<h3 class="anchored" data-anchor-id="counting-the-pairs">Counting the pairs</h3>
-<p>All that remains is <span class="math inline">N_{cc'}</span>, the number of node pairs with one endpoint in block <span class="math inline">c</span> and the other in block <span class="math inline">c'</span>:</p>
-<p><span class="math display">
-N_{cc'} = \sum_{i &lt; j} \delta(c_i,c)\delta(c_j,c') + \delta(c_i,c')\delta(c_j,c) =
-\begin{cases}
-n_cn_{c'} &amp; \text{if } c \neq c' \\[4pt]
-\dfrac{n_c (n_c - 1)}{2} &amp; \text{if } c = c'
-\end{cases}
-</span></p>
-<p>The two cases come from summing over <span class="math inline">i&lt;j</span> only, which is the upper triangle of the adjacency matrix.</p>
-<div id="fig-adjacency-matrix" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="An adjacency matrix with its upper triangle shaded, showing on-diagonal and off-diagonal blocks">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-adjacency-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../figs/adjacency-matrix.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%" alt="An adjacency matrix with its upper triangle shaded, showing on-diagonal and off-diagonal blocks">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-adjacency-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: The upper triangle of the adjacency matrix is the region the sum over <span class="math inline">i&lt;j</span> runs over. An off-diagonal block <span class="math inline">c \neq c'</span> appears once in that triangle in full, giving <span class="math inline">n_c n_{c'}</span> pairs. A diagonal block <span class="math inline">c = c'</span> appears cut in half along its own diagonal, giving <span class="math inline">n_c(n_c-1)/2</span> pairs.
-</figcaption>
-</figure>
-</div>
-<p>For an off-diagonal block the <span class="math inline">n_c \times n_{c'}</span> rectangle lies wholly inside the upper triangle, so every one of its <span class="math inline">n_c n_{c'}</span> pairs is counted once. For a diagonal block the <span class="math inline">n_c \times n_c</span> square straddles the diagonal, so only the half above it counts: <span class="math inline">n_c(n_c-1)/2</span> pairs.</p>
-</section>
-<section id="what-this-does-not-give-you" class="level3">
-<h3 class="anchored" data-anchor-id="what-this-does-not-give-you">What this does not give you</h3>
-<p>Everything above assumes the community assignment is already known. The estimate <span class="math inline">\widehat{p}_{cc'} = m_{cc'}/N_{cc'}</span> tells you the best block probabilities <em>for that assignment</em>, and substituting it back into <span class="math inline">{\cal L}</span> gives a score for the assignment itself. Maximizing that score over assignments is the actual problem, it is not concave, and it is intractable — the same wall modularity maximization runs into. See the main text for what practitioners do about it.</p>
+<section id="checking-a-notebook-before-calling-it-done" class="level2">
+<h2 class="anchored" data-anchor-id="checking-a-notebook-before-calling-it-done">Checking a notebook before calling it done</h2>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export script lab.py <span class="op">&gt;</span> /dev/null          <span class="co"># syntax and the reactive DAG</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/a.html   <span class="co"># actually runs every cell</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>Then, on <code>/tmp/a.html</code>:</p>
+<ul>
+<li><code>Traceback</code> count is 0.</li>
+<li>With the blanks blank: the waiting cards appear, the checks read “not yet”, and the animations have already drawn.</li>
+<li>With the blanks filled in a scratch copy: every check reads green, and the numbers agree with the answer key.</li>
+</ul>
+<p>The exported HTML embeds each cell’s output, so grepping it for the strings the checks emit is a real test, not a proxy.</p>
 
 
 </section>
@@ -845,7 +800,7 @@ Figure&nbsp;2: The upper triangle of the adjacency matrix is the region the sum 
 <!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
      at assets/anim.js directly would dump raw JavaScript into the body as text.
      The leading slash is the site root; Quarto rewrites it per page. -->
-<script src="../assets/anim.js" defer=""></script>
+<script src="./assets/anim.js" defer=""></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1246,18 +1201,6 @@ Figure&nbsp;2: The upper triangle of the adjacency matrix is the region the sum 
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../m05-clustering/03-exercises.html" class="pagination-link" aria-label="Exercises and Assignments">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Exercises and Assignments</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../m06-centrality/01-concepts.html" class="pagination-link" aria-label="Who Is the Most Important Node? It Depends What You Ask">
-        <span class="nav-page-text">Who Is the Most Important Node? It Depends What You Ask</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1266,7 +1209,7 @@ Figure&nbsp;2: The upper triangle of the adjacency matrix is the region the sum 
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m05-clustering/04-appendix.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/LAB_NOTEBOOK_GUIDE.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
