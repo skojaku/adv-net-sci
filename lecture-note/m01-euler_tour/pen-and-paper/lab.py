@@ -1057,8 +1057,10 @@ def _(CHALLENGE):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Then put it back together: add **one** road joining the two halves, and
-    watch the same three lines turn into a circuit.
+    Then put it back together and watch the same three lines move. One road
+    joining the two halves makes its own two ends odd, so the answer is
+    `path`. A second road beside it, between the same two places, makes
+    everything even again — and that one is the `circuit`.
     """)
     return
 
