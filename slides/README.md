@@ -14,6 +14,7 @@ slides/
                     These need a `advnetsci` Jupyter kernel to render.
   gatelib -> ~/.claude/skills/slide-build/gatelib
   DECK_BUILD_GUIDE.md  SLIDE_RUBRIC.md  FIGURE_GUIDE.md  REVIEW_PLAYBOOK.md
+  FILLER_PASS.md    the last stage: cut the padding out of a finished deck
 ```
 
 Nothing generated is committed: figures, GIFs, review screenshots, HTML and PDF

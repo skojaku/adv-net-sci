@@ -112,6 +112,11 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
 6. **Commit every gate pass, not just every round.** A commit is the checkpoint that
    survives a session-limit crash. Write `review/CHECKPOINT.md` after each round with
    the round number, gate status, and pending fixes.
+7. **Last, the filler pass** — `FILLER_PASS.md`. A separate top-to-bottom sweep whose
+   only job is deleting padding: restatements, emphasis that carries no fact, retellings
+   of what the students already did. It runs **after** the deck is complete and green,
+   never during drafting — while writing you cannot tell scaffolding from load-bearing
+   wall, and cutting early costs content. Re-render and re-gate when it is done.
 
 ## Marp and theme facts (verified in the render, not assumed)
 

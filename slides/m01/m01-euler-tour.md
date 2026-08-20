@@ -154,18 +154,18 @@ Does the puzzle depend on bridge length? Island area? River width? Which bank yo
 
 ---
 
-## Euler's move — the city
+## Euler's approach
 
 <hr>
 
 <div class="cols">
 <div>
 
-Euler asked the same question. His answer: keep only what connects to what — geography, distance, shape, all gone.
+Euler answered: keep only what connects to what.
 
 <div class="note">
 
-Notice the coastlines already fading in the figure — that's the erasure starting.
+Notice the coastlines already fading in the figure
 
 </div>
 
@@ -189,7 +189,7 @@ Notice the coastlines already fading in the figure — that's the erasure starti
 <div class="cols">
 <div>
 
-Four landmasses. Four dots. A landmass's size, its shape, its area — all gone. Only a bare label remains.
+Four landmasses and dots. Only a label remains.
 
 </div>
 <div class="fig">
@@ -211,7 +211,7 @@ Four landmasses. Four dots. A landmass's size, its shape, its area — all gone.
 <div class="cols">
 <div>
 
-Every bridge becomes a line joining two dots — a new object: a **graph**.
+Every bridge becomes a line joining two dots: a **graph**.
 
 <div class="note">
 
@@ -264,11 +264,8 @@ For Königsberg: four landmasses, seven bridges.
 
 <hr>
 
-Question 1 gave you two bridges between the same two cities, and the lab made you write that pair down **twice**. Both bridges count — merge them and you are solving a different puzzle with a different answer.
-
-* A pair that repeats is a **multi-edge**.
-* A graph that allows them is a **multigraph**.
-* Königsberg is one, twice over — which is why the doubling had to survive the abstraction.
+* **multi-edge**: multiple edges running between the same pair
+* **multigraph**: a graph with multi-edges
 
 ---
 
@@ -277,8 +274,6 @@ Question 1 gave you two bridges between the same two cities, and the lab made yo
 <div class="band"><span>Part Three</span><span class="count">03 / 08</span></div>
 
 ## Degree and Euler’s theorem
-
-Parity is the whole argument
 
 <div class="review">
 
@@ -299,7 +294,7 @@ Lecture note — *From a walk to a proof: the idea of degree*. The converse we s
 
 The **degree** $k_i$ is the number of edges attached to node $i$.
 
-Count every edge touching the node — nothing more, nothing less.
+Count every edge touching the node.
 
 </div>
 <div class="fig">
@@ -313,14 +308,14 @@ Count every edge touching the node — nothing more, nothing less.
 
 <!-- _class: mid -->
 
-## You drew this already — Question 2
+## Question 2: roads get spent two at a time
 
 <hr>
 
 <div class="cols">
 <div>
 
-Every dashed line you drew joined an arrival to a departure. Roads get spent two at a time.
+Every dashed line joined an arrival to a departure.
 
 * Even city — every road finds a partner.
 * Odd city — one road is left alone.
@@ -351,7 +346,7 @@ Every dashed line you drew joined an arrival to a departure. Roads get spent two
 
 **Euler's theorem** (half of it): if a walk crosses every edge exactly once, then
 
-$$ \#\{\text{odd nodes}\} \leq 2 $$
+$$ \#\{\text{odd nodes}\} = 0 \text{ or } 2 $$
 
 </div>
 
@@ -364,7 +359,7 @@ $$ \#\{\text{odd nodes}\} \leq 2 $$
 <div class="cols">
 <div>
 
-Your Question 3 table, on Euler's map instead of mine.
+Question 3's table, on Euler's map.
 
 * Degrees: 3, 5, 3, 3
 * All four odd
@@ -389,11 +384,11 @@ Your Question 3 table, on Euler's map instead of mine.
 <div class="cols">
 <div>
 
-An **Eulerian path** uses every edge once — exists exactly when 0 or 2 nodes are odd, on a graph you can get around.
+An **Eulerian path** uses every edge once — exists exactly when 0 or 2 nodes are odd, on a connected graph.
 
 <div class="note">
 
-Question 4(c): your own drive came back to a city, so it was a *trail*, not a path. “Eulerian path” is the traditional name; strictly it is an Eulerian **trail**.
+“Eulerian path” is the traditional name; strictly it is an Eulerian **trail** — Question 4(c)'s drive repeated a city.
 
 That the condition is also *enough* — such a walk always exists — we use without proving.
 
@@ -417,7 +412,7 @@ That the condition is also *enough* — such a walk always exists — we use wit
 <div class="cols">
 <div>
 
-Ending back where you began removes the ends — no start, no finish, one loop. No node is left to absorb a leftover edge.
+Ending where you began leaves no start and no finish — no node can absorb a leftover edge.
 
 * For an **Eulerian circuit**, every node must be even.
 * Königsberg fails either way — four odd nodes is neither 0 nor 2.
@@ -471,7 +466,7 @@ The deck proves only the easy half; this is the converse doing its work. Beats: 
 <div class="cols">
 <div>
 
-You want to make the walk possible. Which two bridges do you remove?
+You want to make the walk possible.
 
 *Turn to your neighbor — 30 seconds.*
 
@@ -534,11 +529,11 @@ Lecture note — *Five Words You Will Use All Semester*, with the route-namer yo
 <div class="cols">
 <div>
 
-A **walk** is any route through the graph. Nodes may repeat. Edges may repeat. Nothing is off-limits.
+A **walk** is any route through the graph. Nodes may repeat. Edges may repeat.
 
 <div class="note">
 
-You named three of these in Question 4. Same three tests, one slide each.
+You named three of these in Question 4.
 
 </div>
 
@@ -588,7 +583,7 @@ A **path** is a walk that never uses the same node twice — and so never the sa
 
 <div class="note">
 
-Every path is a trail. Not every trail is a path — which is why Euler's is a trail.
+Every path is a trail; not every trail is a path.
 
 </div>
 
@@ -640,7 +635,7 @@ A **cycle** is a closed path — back to the start, no node repeated.
 <div class="fig">
 
 ![w:520](figures/cycle.png)
-<figcaption>stricter than a walk or a trail — nothing repeats (red: the cycle traced)</figcaption>
+<figcaption>nothing repeats (red: the cycle traced)</figcaption>
 
 </div>
 </div>
@@ -667,9 +662,7 @@ Lecture note — *When a network falls apart*: components, the giant component, 
 
 <hr>
 
-The lab handed you `is_connected(A)` and never showed you inside. This is inside.
-
-* When the answer is no, the graph splits into **connected components** — maximal mutually-reachable sets.
+* A graph that is not connected splits into **connected components** — maximal mutually-reachable sets.
 * A single isolated node counts too — a component of one.
 
 <div class="fig">
@@ -717,8 +710,6 @@ Beats: 1 twelve nodes, and no way to see how many pieces. 2 rings out of L0, fro
 ## A component has 1,000 nodes. Is it giant?
 
 <hr>
-
-You find a component with 1,000 nodes.
 
 <div class="formula">
 
@@ -994,11 +985,11 @@ A_{ij} =
 \end{cases}
 $$
 
-The **adjacency matrix**: an $n \times n$ grid of 0s and 1s — the grid you filled in for Question 5(a). It opens the door to linear algebra, but costs $O(n^2)$ even when nearly all zero.
+The **adjacency matrix**: an $n \times n$ grid of 0s and 1s. It opens the door to linear algebra, but costs $O(n^2)$ even when nearly all zero.
 
 <div class="note">
 
-A pair is a coordinate, and it lights two cells — the grid is a mirror.
+A pair lights two cells — the matrix is symmetric.
 
 </div>
 
@@ -1013,11 +1004,11 @@ A pair is a coordinate, and it lights two cells — the grid is a mirror.
 
 ---
 
-## You have used all three. Here are their names
+## Three representations
 
 <hr>
 
-The lab had you write the map as pairs, turn the pairs into a grid, then read a degree off a row. Each step was a different **representation**, and each is good at something the others are not.
+Each is good at something the others are not.
 
 * **Edge list** — one pair per edge. Compact, and what a data file looks like; “who are $i$'s neighbours?” costs a scan of everything.
 * **Adjacency list** — each node's neighbours, kept together. Traversal is cheap, which is what the component sweep needed.
@@ -1040,7 +1031,7 @@ Compute entry $(1,4)$ by hand. What does it count?
 
 </div>
 
-*30 seconds — try it on the five-node graph whose matrix appeared on-screen.*
+*30 seconds — use the five-node graph from the last slide.*
 
 ---
 
@@ -1049,8 +1040,6 @@ Compute entry $(1,4)$ by hand. What does it count?
 ## Now predict $A^3$ and $A^4$
 
 <hr>
-
-You've just seen what one entry of $\mathbf{A}^2$ counts.
 
 <div class="formula">
 
@@ -1122,7 +1111,7 @@ $$ n = 8\times10^{9} \qquad n^2 \times 1\text{ byte} = 6.4\times10^{19}\text{ by
 
 </div>
 
-Eight billion nodes, one byte per pair — more storage than most data centers hold, just to record who is *not* connected.
+More storage than most data centers hold, just to record who is *not* connected.
 
 ---
 
@@ -1196,7 +1185,7 @@ Most pairs aren't linked — store only what's there. The **Compressed Sparse Ro
 
 <hr>
 
-Cover the picture and use only the two arrays. Everything you need is still there:
+Cover the picture and use only the two arrays:
 
 * Degree of node $i$ is $\texttt{indptr}[i{+}1] - \texttt{indptr}[i]$ — a subtraction, no search.
 * Its neighbours are $\texttt{indices}[\texttt{indptr}[i] : \texttt{indptr}[i{+}1]]$ — a slice, already contiguous.
@@ -1283,11 +1272,11 @@ This keeps the parity argument intact — a self-loop adds an even number, so it
 
 <hr>
 
-Picture a graph where every node has degree 2 — parity satisfied, in full.
+Picture a graph where every node has degree 2 — parity satisfied.
 
 <div class="note">
 
-The lab's last task, if you got that far. Hold up the map you built.
+The lab's last task — hold up the map you built.
 
 </div>
 
@@ -1322,7 +1311,7 @@ Parity alone isn't enough — Euler's theorem also requires **connectivity**. A 
 <div class="cols">
 <div>
 
-Run both conditions against the seven bridges, one last time:
+Run both conditions against the seven bridges:
 
 * **Connected?** Yes.
 * 0 or 2 odd-degree? No — all four are odd.
