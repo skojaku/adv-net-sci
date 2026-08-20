@@ -122,6 +122,13 @@ a.stop-title:focus {
 }
 /* A sheet title is the one thing in a tick column that wraps. */
 .course-map .sheet { white-space: normal; font-size: .85rem; }
+/* A footnote to a tick, on its own line. Not .stop-no: that one is
+   upper-cased, which turned "+ 3-min talk" into shouting. */
+.course-map .note {
+  display: block;
+  font-size: .78rem;
+  color: var(--anim-ink-soft);
+}
 /* "not in this module" should read as absence, not as a value. */
 .course-map .none { color: var(--anim-ink-faint); }
 .course-map + p { font-size: .85rem; color: var(--anim-ink-soft); }
@@ -744,7 +751,7 @@ a.stop-title:focus {
 <tr class="odd">
 <td style="text-align: left;"><span class="stop-no">M01</span><a href="./m01-euler_tour/01-concepts.html" class="stop-title">Euler Tour</a><br><span class="stop-q">Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?</span></td>
 <td style="text-align: left;"><a href="m01-euler_tour/pen-and-paper/exercise.pdf" class="sheet">Seven Highways</a></td>
-<td style="text-align: center;">✓ <span class="stop-no">+ talk</span></td>
+<td style="text-align: center;">✓ <span class="note">+ 3-min talk</span></td>
 <td style="text-align: center;"><span class="none">—</span></td>
 <td style="text-align: center;"><a href="https://go.skojaku.com/m01lab" class="sheet">m01lab</a></td>
 <td style="text-align: center;">✓</td>
