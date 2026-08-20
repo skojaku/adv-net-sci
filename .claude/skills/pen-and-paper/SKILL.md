@@ -234,10 +234,10 @@ the link on the site always matches the `.tex` that was pushed. Do not
 `git add -f` a PDF back in; a rewritten binary on every edit is what makes a
 repository heavy.
 
-`solutions.pdf` is built but deliberately **not published** — the workflow
-deletes it before Quarto renders, and it reaches the instructor through the run's
-`pen-and-paper-worksheets` artifact instead. A solutions file sitting beside the
-exercise on a public site is readable by anyone who guesses the URL.
+`solutions.pdf` is built and **published alongside the exercise**, and linked
+from the table on the lecture note's front page. Write it for a reader who has
+already tried the sheet — it is not hidden, so it should read as the worked
+answer rather than as a key.
 
 Proofread by rendering: `pdftoppm -r 60 -png exercise.pdf out` and read the
 images. Tables and their question text drift apart across page breaks — wrap

@@ -77,20 +77,16 @@ jobs:
       - name: Build worksheets
         run: bash tools/build_worksheets.sh
 
-      # Both halves of a sheet are built, but only the exercise is published.
-      # `solutions.pdf` sitting next to `exercise.pdf` on a public site is
-      # readable by anyone who guesses the filename, linked or not — it goes
-      # in the run's artifact instead, where it needs a GitHub login.
+      # Both halves of a sheet are published: `resources:` in _quarto.yml copies
+      # every PDF under a pen-and-paper directory, solutions included, and the
+      # front page links them. The artifact is for printing without waiting for
+      # a deploy.
       - name: Collect worksheets (exercises and solutions)
         uses: actions/upload-artifact@v4
         with:
           name: pen-and-paper-worksheets
           path: lecture-note/m0*/pen-and-paper/*.pdf
           retention-days: 90
-
-      - name: Withhold solutions from the published site
-        run: |
-          rm -fv lecture-note/m0*/pen-and-paper/*solutions*.pdf
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
