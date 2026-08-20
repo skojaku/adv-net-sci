@@ -163,7 +163,7 @@ def _(draw_graph, mo):
     ## B — The same network, written as numbers
 
     A computer cannot look at a picture. This is the four-node network from
-    **Question 6** on your sheet.
+    **Question 5** on your sheet.
 
     {mo.as_html(draw_graph([(-1.0, 0.0), (0.0, 0.0), (0.7, 0.55), (0.7, -0.55)],
                            [(0, 1), (1, 2), (1, 3), (2, 3)],
