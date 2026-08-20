@@ -57,6 +57,13 @@ format:
         }
         /* A sheet title is the one thing in a tick column that wraps. */
         .course-map .sheet { white-space: normal; font-size: .85rem; }
+        /* A footnote to a tick, on its own line. Not .stop-no: that one is
+           upper-cased, which turned "+ 3-min talk" into shouting. */
+        .course-map .note {
+          display: block;
+          font-size: .78rem;
+          color: var(--anim-ink-soft);
+        }
         /* "not in this module" should read as absence, not as a value. */
         .course-map .none { color: var(--anim-ink-faint); }
         .course-map + p { font-size: .85rem; color: var(--anim-ink-soft); }
@@ -100,7 +107,7 @@ not sure which thing you are supposed to be doing this week.
 
 | Module | Pen & paper | [Mini-project](course/mini-project.qmd) | [Pair Notebook](course/pair-notebook.qmd) | Lab notebook | [Quiz](course/activities.md) |
 |:---------------------------------|:------------|:---:|:---:|:---:|:---:|
-| [M01]{.stop-no}[Euler Tour](m01-euler_tour/01-concepts.qmd){.stop-title}<br>[Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?]{.stop-q} | [Seven Highways](m01-euler_tour/pen-and-paper/exercise.pdf){.sheet} | ✓ [+ talk]{.stop-no} | [—]{.none} | [m01lab](https://go.skojaku.com/m01lab){.sheet} | ✓ |
+| [M01]{.stop-no}[Euler Tour](m01-euler_tour/01-concepts.qmd){.stop-title}<br>[Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?]{.stop-q} | [Seven Highways](m01-euler_tour/pen-and-paper/exercise.pdf){.sheet} | ✓ [+ 3-min talk]{.note} | [—]{.none} | [m01lab](https://go.skojaku.com/m01lab){.sheet} | ✓ |
 | [M02]{.stop-no}[Small World](m02-small-world/01-concepts.qmd){.stop-title}<br>[Why is a stranger on the other side of the world only about six handshakes away?]{.stop-q} | [Six Handshakes](m02-small-world/pen-and-paper/six-handshakes.pdf){.sheet} · [Turning the Dial](m02-small-world/pen-and-paper/turning-the-dial.pdf){.sheet} · [Do Your Friends Know Each Other?](m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
 | [M03]{.stop-no}[Robustness](m03-robustness/01-concepts.qmd){.stop-title}<br>[How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?]{.stop-q} | [Build it, Break it, and Build it Back](m03-robustness/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
 | [M04]{.stop-no}[Friendship Paradox](m04-node-degree/01-concepts.qmd){.stop-title}<br>[Why do your friends have more friends than you do?]{.stop-q} | [Reading Heavy Tails](m04-node-degree/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
