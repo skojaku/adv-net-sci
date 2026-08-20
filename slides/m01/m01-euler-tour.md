@@ -35,7 +35,7 @@ Open with the story, not the definitions. Königsberg is the hook; abstraction i
 <div><div class="i">03</div><div>Degree and Euler — parity decides what is possible</div></div>
 <div><div class="i">04</div><div>Vocabulary — walk, trail, path, circuit, cycle</div></div>
 <div><div class="i">05</div><div>Connectivity — components and the giant component</div></div>
-<div><div class="i">06</div><div>Direction — in/out-degree, directed Euler condition, strong vs. weak</div></div>
+<div><div class="i">06</div><div>Direction — in/out-degree, strong vs. weak</div></div>
 <div><div class="i">07</div><div>Representation — the adjacency matrix, its powers, and sparsity</div></div>
 <div><div class="i">08</div><div>Edge cases — the graphs that break the rules</div></div>
 
@@ -96,7 +96,6 @@ Click a bridge to cross it. [Worksheet (Esteban Moro)](http://estebanmoro.org/pd
     <div class="anim-step" data-anim-step></div>
     <div class="anim-dots" data-anim-dots></div>
     <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
-    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
     <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
     <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
@@ -107,6 +106,9 @@ Click a bridge to cross it. [Worksheet (Esteban Moro)](http://estebanmoro.org/pd
   <figcaption class="anim-note" data-anim-note></figcaption>
 </figure>
 
+<!-- Deck-wide, and it must run before the first anim.js: every stage in this
+     deck steps by hand. Nothing advances itself while the room is talking. -->
+<script>window.animStepOnly = true;</script>
 <script src="../../lecture-note/assets/anim/kb-tracer.js"></script>
 <script src="../../lecture-note/assets/anim.js"></script>
 
@@ -439,7 +441,6 @@ Two odd corners, six edges. Step through it, then trace one yourself.
     <div class="anim-step" data-anim-step></div>
     <div class="anim-dots" data-anim-dots></div>
     <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
-    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
     <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
     <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
@@ -685,7 +686,6 @@ Click any unmarked node to sweep from it — the amber ring is the frontier.
     <div class="anim-step" data-anim-step></div>
     <div class="anim-dots" data-anim-dots></div>
     <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
-    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
     <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
     <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
@@ -750,7 +750,7 @@ It depends on $N$. The same 1,000 nodes are giant in a network of 1,200 — and 
 
 ## Direction
 
-Point every edge one way — degree, Euler, connectivity all split in two
+Point every edge one way — degree and connectivity both split in two
 
 <div class="review">
 
@@ -865,7 +865,6 @@ Click a street to turn it round. Six of the 64 orientations survive.
     <div class="anim-step" data-anim-step></div>
     <div class="anim-dots" data-anim-dots></div>
     <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
-    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
     <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
     <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
@@ -882,57 +881,6 @@ Click a street to turn it round. Six of the 64 orientations survive.
 <!--
 Strong and weak sat on two figures two slides apart, which makes them look like two graphs. They are one graph and two questions. The number beside a corner is how many of the other four it reaches, so five fours is the verdict and the drawing carries it. Beats: 1 the counts appear, all four. 2 flood from A and from C so the number means something. 3 turn the chord round and nothing moves — that street's direction is free, because it is not on the only cycle through all five corners. 4 turn A–B round as well: both of A's streets now point in, A drops to zero, and one beat with the arrowheads rubbed out shows weak surviving what strong did not. 5 hand it over. Ask for a guess first: six of the 64 work, and in every one of the six each corner sits on a directed cycle. Flipping the chord turns any of them into another, so the room finds them in pairs.
 -->
-
----
-
-## The directed Euler condition
-
-<hr>
-
-<div class="cols">
-<div>
-
-Total degree is the wrong thing to count: three in and one out is degree four, even, and still hopeless. Passing through spends one of *each* kind.
-
-So parity gives way to **balance** — plus connected once you ignore direction:
-
-* **Closed tour:** in-degree equals out-degree at every node.
-* **Trail:** exactly one node has out − in = 1 (start), one has in − out = 1 (end), every other node balances.
-
-</div>
-<div class="fig">
-
-![w:520](figures/directed-strong.png)
-<figcaption>A→B→C→A: in = out = 1 at every node — a closed tour</figcaption>
-
-</div>
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Your turn: does a closed tour survive?
-
-<hr>
-
-<div class="cols">
-<div>
-
-Add one arc to this triangle — anywhere to anywhere.
-
-Does the closed tour still exist? Does a trail?
-
-*Turn to your neighbor — 30 seconds.*
-
-</div>
-<div class="fig">
-
-![w:520](figures/directed-strong.png)
-<figcaption>A→B→C→A — add one arc and re-check</figcaption>
-
-</div>
-</div>
 
 ---
 
@@ -1341,15 +1289,9 @@ Run both conditions against the seven bridges:
 </div>
 <div>
 
-<div class="note">
-
-All of it written down in the lecture note, Module 01.
-
-</div>
-
 * Abstraction (1736): landmasses → nodes, bridges → edges
 * **Euler's theorem:** connected, 0 or 2 odd-degree nodes
-* **Direction:** balance in place of parity
+* **Direction:** in/out-degree, strong vs. weak
 * **Connectivity:** components, the giant component
 * Representation: the matrix, its powers, sparsity
 

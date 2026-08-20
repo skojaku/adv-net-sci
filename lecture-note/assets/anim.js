@@ -211,6 +211,13 @@
     var loop = o.loop !== false;
     var endPause = (o.endPause == null) ? 2400 : o.endPause;
 
+    /* Step mode: the stage never advances itself. It builds one step, stops,
+       and waits for a click. A slide deck sets window.animStepOnly, because a
+       lecturer drives the beats by hand; the lecture note leaves it off, where
+       a reader wants the thing to play. */
+    var stepOnly = (o.step == null) ? !!window.animStepOnly : !!o.step;
+    if (stepOnly) loop = false;
+
     /* Every lookup is scoped to root. Two stages on one page stay strangers. */
     function $(sel) { return root.querySelector(sel); }
     function $$(sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); }
@@ -222,6 +229,13 @@
     var btnPrev = $("[data-anim-prev]");
     var btnNext = $("[data-anim-next]");
     var btnReplay = $("[data-anim-replay]");
+
+    /* Nothing plays on its own in step mode, so the pause control would be a
+       dead button. Drop it rather than leave it there to be clicked. */
+    if (stepOnly && btnPlay) {
+      btnPlay.parentNode.removeChild(btnPlay);
+      btnPlay = null;
+    }
 
     /* ---- ARIA, once, for every animation that uses the kit ---- */
     if (dotsBox) {
@@ -370,7 +384,7 @@
       }
     }
 
-    function play(from) {
+    function play(from, stopAfter) {
       var g = ++gen;
       clear();
       return (async function () {
@@ -381,6 +395,13 @@
             current = i;
             if (!fast) mark(i);
             await scenes[i].run(ctx);
+            if (stopAfter != null && i >= stopAfter) {
+              fast = false;
+              userPaused = true;
+              syncPause();
+              setPlayUI();
+              return;
+            }
           }
           fast = false;
           if (!loop) return;
@@ -393,10 +414,12 @@
     }
 
     function go(i) {
+      var target = Math.max(0, Math.min(scenes.length - 1, i));
       userPaused = false;
       syncPause();
       setPlayUI();
-      play(Math.max(0, Math.min(scenes.length - 1, i)));
+      /* In step mode the target is also the terminus: build it, then stop. */
+      play(target, stepOnly ? target : null);
     }
 
     if (btnReplay) btnReplay.addEventListener("click", function () { go(0); });
@@ -428,6 +451,9 @@
         syncPause();
         setPlayUI();
       })();
+    } else if (stepOnly) {
+      /* Build the first beat so the slide is never a blank stage, then wait. */
+      go(0);
     } else if (o.autoplay === false) {
       mark(0);
       userPaused = true;

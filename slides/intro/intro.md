@@ -152,7 +152,6 @@ The same arrival times, with distance now counted along air routes.
     <div class="anim-step" data-anim-step></div>
     <div class="anim-dots" data-anim-dots></div>
     <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
-    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
     <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
     <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
@@ -163,6 +162,9 @@ The same arrival times, with distance now counted along air routes.
   <figcaption class="anim-note" data-anim-note></figcaption>
 </figure>
 
+<!-- Deck-wide, and it must run before the first anim.js: every stage in this
+     deck steps by hand. Nothing advances itself while the room is talking. -->
+<script>window.animStepOnly = true;</script>
 <script src="../../lecture-note/assets/anim/h1n1-ruler.js"></script>
 <script src="../../lecture-note/assets/anim.js"></script>
 
