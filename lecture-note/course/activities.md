@@ -7,11 +7,14 @@ them.
 
 ## Every week
 
-**Pen-and-paper exercise.** Before the lecture you work through a short
-worksheet with your own hands — cross the bridges, count the handshakes, break
-the network. We compare answers in class and build the concept out of what you
-found. It is not one of the six graded items, but the lecture starts from it and
-the quiz assumes you did it.
+**Pen-and-paper exercise.** In class, before anything has been defined, you work
+through a short worksheet with your own hands — cross the bridges, count the
+handshakes, break the network. We compare answers in the room and build the
+concept out of what you found. Many sheets end by handing you off to a **lab
+notebook**: a marimo notebook you open from a QR code on the sheet, which runs
+by machine the thing you have just done in pencil. Neither is one of the six
+graded items, and neither is submitted — but the lecture is built out of them,
+and the quiz assumes you were there.
 
 **Quiz.** Each class opens with a short written quiz on the previous week. You
 work it out on paper, then submit through the course quiz form: the

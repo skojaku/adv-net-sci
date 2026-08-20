@@ -25,9 +25,10 @@ Once you join you will find a handful of channels:
 | Channel | For |
 |---|---|
 | `#welcome` | say hello, and read the pinned messages |
-| `#network-science` | anything about the course: lectures, assignments, setup trouble |
-| `#artifacts` | figures, notebooks and results you want to show off |
-| `#random` | everything else |
+| `#general` | announcements, and anything about the course that is not a question |
+| `#qa` | questions: lectures, assignments, setup trouble |
+| `#ai-tutor` | the AI tutor — `pi`, your course API key, and anything it got wrong |
+| `#random` | everything else, including figures and results you want to show off |
 
 If you're new to Discord, it's a free platform available on web, desktop, and
 mobile. If you have any trouble joining, please contact the instructor.
