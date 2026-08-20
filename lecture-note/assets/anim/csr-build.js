@@ -5,17 +5,18 @@
    carries no sequencer and no copy of the kit's stylesheet. See the header of
    assets/anim.js for the contract, and the markup this expects.
 
-   Mounted by slides/m01/m01-euler-tour.md on "Store only the nonzeros". It
-   replaces a widget that showed the finished arrays beside the matrix and
-   asked the room to take them on trust. CSR is not a fact about matrices, it
-   is what you get when you lay an adjacency list end to end: the neighbours
-   survive as `indices`, and the only thing lost — where each row stopped —
-   is what `indptr` writes down. So the stage does that, in that order, with
-   one colour per row so a block in the strip can be traced back to the row
-   it came from.
+   Loaded by lecture-note/m01-euler_tour/04-appendix.qmd and
+   slides/m01/m01-euler-tour.md. Both used to carry a widget that showed the
+   finished arrays beside the matrix and asked for them to be taken on trust.
+   CSR is not a fact about matrices, it is what you get when you lay an
+   adjacency list end to end: the neighbours survive as `indices`, and the only
+   thing lost — where each row stopped — is what `indptr` writes down. So the
+   stage does that, in that order, with one colour per row so a block in the
+   strip can be traced back to the row it came from.
 
-   The lecture note's appendix keeps its own row-explorer widget; this is the
-   teaching version, and either page may mount it.
+   The stage's own layout CSS stays with each page: the note has a column to
+   fill and the slide has a 1280x720 frame, so the sizes differ even though
+   every class here is shared.
    ========================================================================== */
 
 (window.animReady = window.animReady || []).push(function () {

@@ -5,13 +5,15 @@
    carries no sequencer and no copy of the kit's stylesheet. See the header of
    assets/anim.js for the contract, and the markup this expects.
 
-   Mounted by slides/m01/m01-euler-tour.md, after the slide that names the
-   three. The names arrive first and the stage builds them, because the point
-   is not what they are called but that they are the same six edges filed
-   three ways — and that a degree falls out of each differently.
+   Loaded by lecture-note/m01-euler_tour/01b-vocabulary.qmd and
+   slides/m01/m01-euler-tour.md, in both cases after the three have been named.
+   The names arrive first and the stage builds them, because the point is not
+   what they are called but that they are the same six edges filed three ways —
+   and that a degree falls out of each differently.
 
-   The lecture note's "Three ways to write a network down" prints all three as
-   static blocks; nothing here contradicts it, and either page may mount this.
+   The stage's own layout CSS stays with each page: the note has a column to
+   fill and the slide has a 1280x720 frame, so the sizes differ even though
+   every colour, class and coordinate here is shared.
    ========================================================================== */
 
 (window.animReady = window.animReady || []).push(function () {
