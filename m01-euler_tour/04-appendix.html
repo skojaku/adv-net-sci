@@ -680,7 +680,10 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#why-eulers-conditions-are-enough" id="toc-why-eulers-conditions-are-enough" class="nav-link active" data-scroll-target="#why-eulers-conditions-are-enough">Why Euler’s conditions are enough</a></li>
+  <li><a href="#why-eulers-conditions-are-enough" id="toc-why-eulers-conditions-are-enough" class="nav-link active" data-scroll-target="#why-eulers-conditions-are-enough">Why Euler’s conditions are enough</a>
+  <ul class="collapse">
+  <li><a href="#the-same-rule-when-edges-have-direction" id="toc-the-same-rule-when-edges-have-direction" class="nav-link" data-scroll-target="#the-same-rule-when-edges-have-direction">The same rule when edges have direction</a></li>
+  </ul></li>
   <li><a href="#why-matrix-powers-count-walks" id="toc-why-matrix-powers-count-walks" class="nav-link" data-scroll-target="#why-matrix-powers-count-walks">Why matrix powers count walks</a></li>
   <li><a href="#storing-a-matrix-that-does-not-fit" id="toc-storing-a-matrix-that-does-not-fit" class="nav-link" data-scroll-target="#storing-a-matrix-that-does-not-fit">Storing a matrix that does not fit</a>
   <ul class="collapse">
@@ -731,6 +734,21 @@ window.Quarto = {
 <p>Suppose that in a connected graph <strong>every</strong> node has even degree. Start walking anywhere, never re-using an edge, until you are stuck. The only node you can get stuck at is the one you started from, because every other node was entered and left in pairs, so having just arrived, you have used an odd number of its edges, and since its degree is even, there is always at least one unused edge to depart by. Thus your walk eventually closes on itself and becomes a circuit.</p>
 <p>If that circuit misses some edges, then connectivity guarantees an unused edge at one of the nodes <em>on</em> the circuit. Start a second closed trail there, by exactly the same argument, and splice it into the first at that node — walk the original circuit until you reach the node, take the detour, then continue. Repeat until no edges are left. The result is an Eulerian circuit.</p>
 <p>In the case of two odd-degree nodes, add a temporary extra edge joining the two odd nodes. Because every degree is now even, the construction above gives a circuit. After deleting the temporary edge from that circuit, an Eulerian trail remains, running from one odd node to the other. This is Hierholzer’s algorithm, and it is also how you would code it.</p>
+<section id="the-same-rule-when-edges-have-direction" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-rule-when-edges-have-direction">The same rule when edges have direction</h3>
+<p>Nothing above used symmetry, so the argument survives one-way streets — but the quantity it is about has to change, because <a href="../m01-euler_tour/01b-vocabulary.html#when-edges-have-direction">degree splits in two</a> when edges have direction.</p>
+<p>Total degree is the wrong thing to look at. A node with three edges in and one out has degree four, an even number, and is still hopeless: a route passing <em>through</em> it consumes one arriving edge and one departing edge, one of each, never two of the same kind. So a node entered and left <span class="math inline">t</span> times spends <span class="math inline">t</span> of its in-edges and <span class="math inline">t</span> of its out-edges. What has to match is not parity but <strong>balance</strong>:</p>
+<p><span class="math display">
+k^{\text{in}}_i = k^{\text{out}}_i \quad \text{for every } i,
+</span></p>
+<p>and then, on a graph that is connected once you ignore the arrows, an Eulerian circuit exists. Evenness was never the real condition; it was what balance looks like when an edge has no direction and each visit spends two interchangeable edge-ends.</p>
+<p>The open case works the same way. A route that starts at <span class="math inline">s</span> leaves it once without having arrived, and one that ends at <span class="math inline">e</span> arrives without leaving again, so an Eulerian trail exists exactly when</p>
+<p><span class="math display">
+k^{\text{out}}_s - k^{\text{in}}_s = 1, \qquad k^{\text{in}}_e - k^{\text{out}}_e = 1,
+</span></p>
+<p>with every other node balanced — the directed reading of “exactly two odd nodes, and they are where you start and finish”. The construction is unchanged: add a temporary edge from <span class="math inline">e</span> to <span class="math inline">s</span>, which balances the whole graph, take the circuit, then delete that edge.</p>
+<p>It is worth noticing how little connectivity we had to assume. You might expect a closed tour along one-way streets to require <em>strong</em> connectivity — being able to get anywhere from anywhere, following the arrows. Weak connectivity is enough, because balance supplies the rest: if every node has as many ways out as in, then any node you can reach you can also come back from, and the graph is strongly connected whether you asked for it or not.</p>
+</section>
 </section>
 <section id="why-matrix-powers-count-walks" class="level2">
 <h2 class="anchored" data-anchor-id="why-matrix-powers-count-walks">Why matrix powers count walks</h2>
