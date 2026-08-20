@@ -1263,7 +1263,10 @@ section #rep-three .rt-compact .rt-m > i { height: 25px; font-size: 17px; }
    the right column the three arrays; one colour per node's row, carried into
    the glued strip, is what lets a block be traced back to the row it came
    from without a word of narration. */
-section #csr-build .anim-grid-2 { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.6fr); align-items: center; }
+/* The list is as wide as its widest row and no wider: an fr column left a
+   band of nothing between it and the arrays, which reads as a missing figure
+   rather than as a margin. */
+section #csr-build .anim-grid-2 { grid-template-columns: max-content minmax(0, 1fr); gap: 26px; align-items: center; }
 section #csr-build .cb-h { font-family: var(--_hand); font-size: 22px; color: var(--_ink-soft); margin-bottom: 6px; }
 section #csr-build .cb-row { display: flex; gap: 4px; align-items: center; margin-bottom: 4px; transition: opacity 0.25s ease; }
 section #csr-build .cb-row > b {
@@ -1307,9 +1310,21 @@ section #csr-build .cb-cell.cb-r4 { background: #0f6f86; border-color: #0f6f86; 
 section #csr-build .cb-cell.cb-total { background: var(--_ink-soft); border-color: var(--_ink-soft); color: var(--_white); font-weight: 700; }
 /* data is a row of ones on a plain graph: present, and deliberately quiet. */
 section #csr-build .cb-cell.cb-one { color: var(--_ink-faint); }
-/* Where a row began. The blocks are already colour-separated; this is what
-   makes indptr read as a position in the strip rather than five more numbers. */
-section #csr-build .cb-cell.cb-cut { border-left: 3px solid var(--_ink); }
+/* Where a row began — the partition, which is the one thing gluing destroyed
+   and indptr buys back, so it gets a fence post taller than the cells rather
+   than a border the row colours swallow. */
+section #csr-build .cb-cell.cb-cut { position: relative; margin-left: 11px; }
+section #csr-build .cb-cell.cb-cut:first-child { margin-left: 0; }
+section #csr-build .cb-cell.cb-cut::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: -6px;
+  bottom: -6px;
+  width: 3.5px;
+  background: var(--_ink);
+}
+section #csr-build .cb-cell.cb-cut:first-child::before { display: none; }
 /* The ring is ink, not the usual amber: one of the five row colours is the
    amber, so an amber ring around that row's block was invisible exactly when
    the room asked about it. Black reads against all five. */
