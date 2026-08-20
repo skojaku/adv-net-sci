@@ -473,9 +473,24 @@ partition belongs to the graph, and only the visit order is yours.
 <script src="/assets/anim/comp-sweep.js" defer></script>
 ```
 
-### Connectivity when edges have direction
+### When edges have direction
 
-What if edges run one way, like one-way streets? These are called **directed graphs**, and they have two flavours of connectivity:
+What if edges run one way, like one-way streets? These are called **directed graphs**, and two things you have been treating as one quantity each now split in two.
+
+The first is degree. An undirected node has a single count; a directed node has two:
+
+- **In-degree** $k^{\text{in}}_i$ — how many edges arrive at $i$.
+- **Out-degree** $k^{\text{out}}_i$ — how many leave it.
+
+They need not be equal, and the gap between them is usually the interesting part: a paper with a large in-degree is cited often, one with a large out-degree cites often, and those are not the same paper. The handshake changes shape too. Every edge still leaves exactly one node and arrives at exactly one, so
+
+$$
+\sum_i k^{\text{in}}_i = \sum_i k^{\text{out}}_i = M,
+$$
+
+where the undirected version gave $2M$ — the factor of two was only ever the two ends of an edge being counted separately, and now each end belongs to a different sum. Module 6 divides by out-degree to define PageRank and Module 7 walks along out-edges, so this is the split those modules assume you have.
+
+The second is connectivity, which now comes in two flavours:
 
 - **Weakly connected**: the graph would be connected if we ignored the arrows, meaning there is a path from A to B but perhaps not from B to A.
 - **Strongly connected**: there is a directed path from any node to every other node. No matter where you start, you can follow the arrows to get anywhere else.

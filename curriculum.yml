@@ -539,6 +539,33 @@ modules:
         prereq: [m01.c21, m01.c10]
         coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: [], out_class: [], assessment: []}
 
+      # Both belong with c17-c18 by topic; the ids continue the sequence so that
+      # nothing already referring to m01.c17 has to move.
+      - id: m01.c31
+        name: "In-degree and out-degree"
+        type: definition
+        level: core
+        statement: "Once edges have direction a node's degree splits in two: in-degree counts the edges arriving, out-degree counts the edges leaving, and the two need not be equal."
+        note: >-
+          Added because m06.c21 (PageRank) states its formula in terms of
+          d_j^out and m07.c28 divides by out-degree, while the inventory
+          defined no such quantity - the prereq chain stopped at m01.c17,
+          'directed graph'. The slide deck was the only place it was taught.
+        prereq: [m01.c05, m01.c17]
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#in-degree-and-out-degree"], in_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#when-edges-have-direction"], out_class: [], assessment: []}
+
+      - id: m01.c32
+        name: "Directed Eulerian condition"
+        type: theorem
+        level: extension
+        statement: "A directed graph has an Eulerian circuit iff it is connected ignoring direction and every node has in-degree equal to out-degree; it has an Eulerian trail iff one node has out-degree minus in-degree equal to 1, one has the reverse, and every other balances."
+        note: >-
+          Extension rather than core: no later concept takes it as a prereq. It
+          earns its place as the payoff of the module - the parity rule
+          survives orientation, with balance standing in for evenness.
+        prereq: [m01.c31, m01.c09]
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-directed-euler-condition"], in_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#the-same-rule-when-edges-have-direction"], out_class: [], assessment: []}
+
 # =============================================================================
 # M02: Small World
 # =============================================================================
@@ -1931,7 +1958,7 @@ modules:
         type: metric
         level: core
         statement: "c_i = (1-beta) sum_j A_ji c_j / d_j^out + beta/N: importance flows along links but is divided among a node's out-links, so a link from a promiscuous linker is worth less."
-        prereq: [m06.c12, m01.c17]
+        prereq: [m06.c12, m01.c17, m01.c31]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m06.c22
@@ -2243,7 +2270,7 @@ modules:
         type: model
         level: core
         statement: "Asymmetric transitions, no degree formula for pi, and dead ends that require teleportation to handle."
-        prereq: [m07.c04, m01.c17]
+        prereq: [m07.c04, m01.c17, m01.c31]
         coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m07.c29
