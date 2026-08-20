@@ -3,7 +3,7 @@
 Every rule below is extracted from the eight existing sheets. Quotes are verbatim.
 
 Sources:
-- `lecture-note/m02-small-world/pen-paper-csr/exercise.tex` — network representations / CSR
+- `lecture-note/m02-small-world/pen-and-paper/csr.tex` — network representations / CSR
 - `lecture-note/m03-robustness/pen-and-paper/exercise.tex` — MST, attacks, redesign
 - `lecture-note/m04-node-degree/pen-and-paper/exercise.tex` — data visualization, log scales, CCDF
 - `lecture-note/m05-clustering/pen-and-paper/exercise.tex` — pseudo-cliques, cuts

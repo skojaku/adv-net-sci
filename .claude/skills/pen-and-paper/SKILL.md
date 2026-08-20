@@ -3,17 +3,24 @@ name: pen-and-paper
 description: >-
   Write or revise a pen-and-paper exercise sheet (LaTeX worksheet) for a module
   of the network science course, in Sadamori's discovery-first house style —
-  students do the exercise BEFORE the lecture and reconstruct the concept with
-  their own hands. Use when asked to create, extend, review, or fix a
+  students work the sheet IN CLASS, before the concept is named, and reconstruct
+  it with their own hands. Use when asked to create, extend, review, or fix a
   pen-and-paper / worksheet / exercise sheet for any module m00-m09.
 ---
 
 # Pen-and-paper exercise sheets
 
-A pen-and-paper sheet is **not** a practice problem set. Students meet it
-*before* they are taught the concept. The sheet's job is to walk them into the
-concept by hand, so the lecture afterwards only has to give a name to something
-they already built.
+A pen-and-paper sheet is **not** a practice problem set, and it is **not
+homework**. It is handed out in class and worked there, in the half hour before
+the concept has a name. The sheet's job is to walk the room into the concept by
+hand, so that the rest of the session only has to give a name to something they
+have already built, and can start from what they actually found.
+
+Two consequences for how a sheet is written. It has to be finishable in the
+time the room has, by someone with no preparation — nobody has read ahead. And
+its questions are discussed out loud a few minutes after they are answered, so
+a question whose answers differ between neighbours is a feature: that
+disagreement is the material the session is built on.
 
 If the student could answer a question by recalling a definition, the question
 is wrong. Every question must be answerable with a pencil, a small drawing, and
