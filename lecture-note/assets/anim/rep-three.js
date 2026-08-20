@@ -79,11 +79,11 @@
     },
     {
       label: "Adjacency matrix",
-      note: "Every pair gets a cell now, including the thirteen that hold nothing. That is the price of one-lookup answers and of linear algebra.",
+      note: "One edge, two cells, mirrored across the diagonal — the colour says which. And every pair gets a cell now, including the thirteen that hold nothing.",
       async run(ctx) {
         ctx.drawGraph();
         ctx.blocks(["m"]);
-        await ctx.fillMatrix({ pause: 420 });
+        await ctx.fillMatrix({ pause: 420, colour: true });
         await ctx.sleep(2200);
       }
     },
@@ -224,13 +224,16 @@
         }
         for (let k = 0; k < EDGES.length; k++) {
           const e = EDGES[k];
-          /* One edge, two cells — the mirror is the whole point of the beat. */
+          /* One edge, two cells — the mirror is the whole point of the beat,
+             and `colour` is what makes it checkable rather than assertable:
+             the edge and the two cells it fills carry one colour, so a room
+             can point at a cell and name the edge. */
           [[e[0], e[1]], [e[1], e[0]]].forEach(function (p) {
             const c = cells[p[0] * N + p[1]];
             c.textContent = "1";
-            c.classList.add("rt-on");
+            c.classList.add(o.colour ? "rt-c" + k : "rt-on");
           });
-          if (S.edges[k]) S.edges[k].classList.add("rt-lit");
+          if (S.edges[k]) S.edges[k].classList.add(o.colour ? "rt-c" + k : "rt-lit");
           await beat(o.pause);
         }
       }

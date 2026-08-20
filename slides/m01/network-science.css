@@ -826,7 +826,7 @@ section #kb-tracer .kb-name { font-family: var(--_hand); font-size: 15px; font-w
    one spoke at each landmass that has nothing to pair with. */
 section #kb-tracer .kb-spoke { stroke: var(--_ink-faint); stroke-width: 1.6; stroke-dasharray: 3 3; fill: none; }
 section #kb-tracer .kb-hub { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.6; }
-section #kb-tracer .kb-pair { stroke: var(--_accent); stroke-width: 3.4; fill: none; stroke-linecap: round; }
+section #kb-tracer .kb-pair { stroke: var(--_ink-soft); stroke-width: 3.2; fill: none; stroke-linecap: round; }
 section #kb-tracer .kb-left { stroke: var(--_amber); stroke-width: 3.6; fill: none; stroke-linecap: round; }
 section #kb-tracer .kb-left-dot { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.2; }
 /* Where you are standing, and where you put the pencil down. */
@@ -1217,6 +1217,23 @@ section #rep-three .rt-m { display: grid; grid-template-columns: repeat(5, 30px)
 section #rep-three .rt-m > i { height: 30px; color: var(--_ink-faint); }
 section #rep-three .rt-m > i.rt-on { background: var(--_accent-soft); border-color: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
 section #rep-three .rt-m > i.rt-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+
+/* Which cell is which edge. Six edges, six colours, and the two cells an edge
+   fills carry its colour — so the mirror across the diagonal is one edge seen
+   twice rather than a rule to take on trust. Only the matrix beat uses these:
+   the last beat is about one node's row and wants its amber back. */
+section #rep-three .anim-edge.rt-c0 { stroke: #593196; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c1 { stroke: #c2410c; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c2 { stroke: #1d4e89; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c3 { stroke: #a81b6b; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c4 { stroke: #0f6f86; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c5 { stroke: #8a6a12; stroke-width: 3.4; }
+section #rep-three .rt-m > i.rt-c0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c5 { background: #8a6a12; border-color: #8a6a12; color: var(--_white); font-weight: 700; }
 
 section #rep-three .rt-pair.rt-hi { background: var(--_amber); border-color: var(--_amber); color: var(--_white); font-weight: 700; }
 section #rep-three .rt-alrow.rt-hi > b { color: var(--_amber); font-weight: 700; }
