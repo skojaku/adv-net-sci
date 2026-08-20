@@ -29,10 +29,6 @@ molab:
   m01: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/coding.py"
   m01_sparse: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/sparse-matrices.py"
   m01_exercises: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/03-exercises.py"
-  # The paired lab the pen-and-paper sheet hands off to. The sheet prints a
-  # short redirect (go.skojaku.com/m01lab) because students type it by hand;
-  # point that redirect here.
-  m01_lab: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m01-euler-tour/pen-and-paper-lab.py"
   m02: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m02-small-world/coding.py"
   m03: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m03-robustness/coding.py"
   m04: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m04-friendship-paradox/coding.py"
@@ -41,6 +37,15 @@ molab:
   m07: "https://marimo.app/https://github.com/skojaku/adv-net-sci/blob/main/notebooks/m07-randomwalks/coding.py"
 
   # --- needs molab or a local environment ----------------------------------
+  # The lab the m01 pen-and-paper sheet hands off to. Its source is
+  # lecture-note/m01-euler_tour/pen-and-paper/lab.py -- NOT anything under
+  # notebooks/m01-euler-tour/, which is an older, different lab. Built by
+  # tools/build_m01_lab_notebooks.py and uploaded to molab by hand, so the URL
+  # here is the course short link rather than the molab address: the redirect
+  # lives on the droplet (ssh digitalocean, /etc/caddy/Caddyfile, the
+  # go.skojaku.com block) and re-uploading the lab is a line on the server. The
+  # printed sheet points at the same short link. See lecture-note/LAB_NOTEBOOK_GUIDE.md.
+  m01_lab: "https://go.skojaku.com/m01lab"
   # m08 imports gensim (compiled; no Pyodide wheel).
   m08: TODO
 

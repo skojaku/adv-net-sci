@@ -620,7 +620,7 @@ def _():
     # 3 · Matrix, then degree
 
     A grid where row `i`, column `j` holds **how many roads join i and j**. It
-    is the grid you filled in for Question 6(a). Back to the village, where it
+    is the grid you filled in for Question 5(a). Back to the village, where it
     fits on one screen:
     """)
     return
@@ -706,7 +706,7 @@ def _():
 def _():
     mo.md(r"""
     **Degree** — how many roads touch a place — is now a row, added up. That is
-    Question 6(b), and it is also the counting you did in Question 3.
+    Question 5(b), and it is also the counting you did in Question 3.
     """)
     return
 
@@ -795,7 +795,7 @@ def _():
 
     # 4 · Two-step routes
 
-    Question 6 used a smaller network — four nodes, four lines. On paper you
+    Question 5 used a smaller network — four nodes, four lines. On paper you
     numbered them **1 to 4**. Python counts from **0**, so paper node 1 is row
     `0` here, paper node 3 is row `2`, and everything is shifted by one. This is
     the single most common way to get a right answer and read it wrong.
@@ -813,13 +813,13 @@ def _():
             [
                 mo.vstack(
                     [
-                        mo.md("**$A$** — your Question 6(a) grid"),
+                        mo.md("**$A$** — your Question 5(a) grid"),
                         mo.Html(matrix_html(_A)),
                     ]
                 ),
                 mo.vstack(
                     [
-                        mo.md("**$A^2$** — your Question 6(d) prediction"),
+                        mo.md("**$A^2$** — your Question 5(d) prediction"),
                         mo.Html(matrix_html(_A @ _A)),
                     ]
                 ),
@@ -860,6 +860,9 @@ def _():
     | 0 | drive every road once, finish where you began | `"circuit"` |
     | 2 | drive every road once, finish elsewhere | `"path"` |
     | anything else | nothing | `"impossible"` |
+
+    `"path"` here is Euler's traditional name, not the name from Question 4.
+    That drive revisits cities, so by your own table it is a **trail**.
 
     A map in two pieces is **always** impossible, whatever the degrees say.
     `is_connected(A)` is written for you — check it first.
