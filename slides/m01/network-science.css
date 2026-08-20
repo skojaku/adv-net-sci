@@ -461,6 +461,12 @@ section .csrw-ctl { display: flex; gap: 16px; align-items: center; font-size: 24
 section .csrw-ctl input[type="range"] { width: 300px; accent-color: var(--accent); }
 section .csrw-ctl output { color: var(--contrast); font-weight: 700; min-width: 210px; }
 
+/* The widget came over from the lecture note's appendix, where it sits in a
+   text column; on a slide it has the whole width and would otherwise hug the
+   left edge. */
+section #csr-rows .csrw-top { justify-content: center; margin: 6px 0 2px; }
+section #csr-rows .csrw-m { flex: none; }
+
 /* ---------- animation stage ---------- */
 /* The slide-sized port of lecture-note/assets/anim.css. Same ink, same paper,
    same class names, so a scene script written for the note runs here unchanged
@@ -1158,6 +1164,83 @@ section #walk-power .wp-term {
 section #walk-power .wp-term-on { color: var(--_amber); border-color: var(--_amber); font-weight: 700; }
 section #walk-power .wp-read { font-family: var(--_hand); font-size: 20px; line-height: 1.3; min-height: calc(2 * 1.3em); }
 section #walk-power .wp-read b { color: var(--_accent); }
+
+/* One graph, three data structures (m01). The right column carries whichever
+   structure the beat is about, at a size a room can read; the last beat has to
+   hold all three at once, and .rt-compact is the only place that bites. */
+section #rep-three { --anim-svg-max: 330px; }
+section #rep-three .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+section #rep-three .anim-grid-2.rt-solo { grid-template-columns: minmax(0, 1fr); }
+section #rep-three .rt-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
+/* The node the last beat reads a degree off, in the same amber the three
+   structures use to mark its entries. */
+section #rep-three .rt-node.rt-focus { fill: var(--_amber); }
+section #rep-three .rt-name { font-family: var(--_hand); font-size: 19px; font-weight: 700; fill: var(--_white); }
+section #rep-three .anim-edge.rt-lit { stroke: var(--_accent); }
+
+section #rep-three [data-rt-side] { display: flex; align-items: center; }
+section #rep-three .rt-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+section #rep-three .rt-h { font-family: var(--_hand); font-size: 22px; color: var(--_ink-soft); margin-bottom: 4px; }
+
+section #rep-three .rt-el { display: flex; flex-wrap: wrap; gap: 6px; }
+section #rep-three .rt-pair,
+section #rep-three .rt-cell,
+section #rep-three .rt-m > i {
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 20px;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
+}
+section #rep-three .rt-pair { padding: 2px 9px; }
+section #rep-three .rt-cell {
+  width: 30px;
+  height: 30px;
+  background: var(--_accent-soft);
+  border-color: var(--_accent-soft);
+  color: var(--_accent);
+  font-weight: 700;
+}
+section #rep-three .rt-alrow { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
+section #rep-three .rt-alrow > b {
+  width: 26px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 20px;
+  color: var(--_ink-soft);
+}
+section #rep-three .rt-m { display: grid; grid-template-columns: repeat(5, 30px); gap: 2px; }
+/* Zeros recede, so the sparsity pattern is the first thing the eye gets. */
+section #rep-three .rt-m > i { height: 30px; color: var(--_ink-faint); }
+section #rep-three .rt-m > i.rt-on { background: var(--_accent-soft); border-color: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
+section #rep-three .rt-m > i.rt-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+
+section #rep-three .rt-pair.rt-hi { background: var(--_amber); border-color: var(--_amber); color: var(--_white); font-weight: 700; }
+section #rep-three .rt-alrow.rt-hi > b { color: var(--_amber); font-weight: 700; }
+section #rep-three .rt-alrow.rt-hi > i { background: var(--_amber); border-color: var(--_amber); color: var(--_white); }
+
+/* The last beat is the only one holding three structures at once, and the
+   stack it makes is what decides whether the card clears 720px. Stacking all
+   three costs a font size nobody at the back can read, so the two narrow ones
+   go side by side and the pairs span above them — height bought with the
+   width the column was wasting. */
+section #rep-three .rt-compact {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  gap: 8px 26px;
+}
+section #rep-three .rt-compact .rt-block:first-child { grid-column: 1 / -1; }
+section #rep-three .rt-compact .rt-h { font-size: 18px; margin-bottom: 2px; }
+section #rep-three .rt-compact .rt-pair { font-size: 16px; padding: 1px 6px; }
+section #rep-three .rt-compact .rt-cell { width: 25px; height: 25px; font-size: 17px; }
+section #rep-three .rt-compact .rt-alrow { gap: 4px; margin-bottom: 3px; }
+section #rep-three .rt-compact .rt-alrow > b { width: 18px; font-size: 17px; }
+section #rep-three .rt-compact .rt-m { grid-template-columns: repeat(5, 25px); }
+section #rep-three .rt-compact .rt-m > i { height: 25px; font-size: 17px; }
 
 /* ---------- pagination ---------- */
 section::after {

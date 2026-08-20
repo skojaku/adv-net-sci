@@ -965,6 +965,36 @@ Each is good at something the others are not.
 
 ---
 
+## One graph, three structures
+
+<hr>
+
+Six edges, filed three ways. Watch what each one makes easy.
+
+<figure class="anim-stage" id="rep-three">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-rt-map></div>
+    <div data-anim-clear data-rt-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/rep-three.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+The graph is the same five nodes as the walk-counting stage and the CSR knob two slides on — say so, it is the whole reason they are one picture. Beats: 1 the graph, and the room's answer to "how would you store this". 2 six pairs, and the cost line is the one to say aloud: a neighbour question scans everything. 3 the same six edges filed twice, once under each endpoint, and the highlight walks down the graph so the rows read as nodes. 4 the thirteen empty cells are the price, and the mirror across the diagonal is one edge lighting two cells. 5 the payoff: node 1 is degree 3 three different-looking ways. Ask which they would pick before you show it.
+-->
+
+---
+
 <!-- _class: mid -->
 
 ## Multiply $A$ by itself. What does one entry mean?
@@ -1029,6 +1059,36 @@ Walks, not paths — repetition is allowed. Later modules reuse this for cluster
 
 ---
 
+## Where the count comes from
+
+<hr>
+
+The two routes, drawn — then the row-times-column that produces the same 2.
+
+<figure class="anim-stage" id="walk-power">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-wp-map></div>
+    <div data-anim-clear data-wp-side></div>
+  </div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/walk-power.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+Beats: 1 no single edge joins 1 to 4, so the cell is zero. 2 two two-step routes, counted by hand, and squaring the matrix puts that 2 in the cell. 3 the same number as row 1 against column 4 — a term counts only where both factors are 1, which is to say at a real middle node. 4 the one to linger on: entry (1,1) of A squared is three, out and straight back once per neighbour, so the diagonal is the degree — and that is only true because walks may repeat. 5 drag the knob rather than stepping it, the growth is the point. The diagonal of A cubed counts each triangle twice, which is where Module 2's clustering comes from.
+-->
+
+---
+
 <!-- _class: mid -->
 
 ## A dense matrix for eight billion people — how much memory?
@@ -1069,29 +1129,42 @@ More storage than most data centers hold, just to record who is *not* connected.
 
 Most pairs aren't linked — store only what's there. The **Compressed Sparse Row (CSR)** format keeps three arrays: **indptr** where each row starts, **indices** the column of each nonzero, **data** the values.
 
-<div class="csrw">
-<div class="csrw-top">
-<div class="csrw-m" id="csrm"></div>
-<div class="csrw-arrays">
-<div class="csrw-row"><b>indptr</b><span id="csrp"></span></div>
-<div class="csrw-row"><b>indices</b><span id="csri"></span></div>
-<div class="csrw-row"><b>data</b><span id="csrd"></span></div>
-</div>
-</div>
-<div class="csrw-ctl">
-<label for="csrr">row</label>
-<input type="range" id="csrr" min="0" max="4" value="1">
-<output id="csro"></output>
-</div>
-</div>
+<figure class="anim-stage" id="csr-rows">
+  <div class="csrw-top">
+    <div class="csrw-m" data-csr-m></div>
+    <div class="csrw-arrays">
+      <div class="csrw-row"><b>indptr</b><span data-csr-p></span></div>
+      <div class="csrw-row"><b>indices</b><span data-csr-i></span></div>
+      <div class="csrw-row"><b>data</b><span data-csr-d></span></div>
+    </div>
+  </div>
+
+  <div class="anim-range">
+    <div class="anim-track"><div class="anim-knob" data-csr-knob></div></div>
+  </div>
+
+  <figcaption class="anim-note" data-csr-out></figcaption>
+</figure>
 
 <script>
-(function () {
-  var P = [0, 2, 5, 8, 10, 12],
-      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
-      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      A = [[0,1,1,0,0],[1,0,1,1,0],[1,1,0,0,1],[0,1,0,0,1],[0,0,1,1,0]];
+/* The lecture note's appendix widget, unchanged: the kit's knob rather than a
+   bare range input, every lookup scoped to the stage. Queued through
+   animReady so it does not care whether anim.js has loaded yet. */
+(window.animReady = window.animReady || []).push(function () {
+  var root = document.getElementById("csr-rows");
+  if (!root || !window.mountKnob) return;
 
+  var A = [[0, 1, 1, 0, 0], [1, 0, 1, 1, 0], [1, 1, 0, 0, 1], [0, 1, 0, 0, 1], [0, 0, 1, 1, 0]],
+      P = [0, 2, 5, 8, 10, 12],
+      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
+      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+  var mBox = root.querySelector("[data-csr-m]"),
+      out = root.querySelector("[data-csr-out]");
+
+  /* `bounds` marks the two endpoints of the row rather than the span between
+     them, because indptr is the one array where the row is a pair of numbers
+     and not a slice. */
   function cells(host, vals, lo, hi, bounds) {
     host.innerHTML = "";
     vals.forEach(function (v, k) {
@@ -1104,27 +1177,30 @@ Most pairs aren't linked — store only what's there. The **Compressed Sparse Ro
   }
 
   function draw(r) {
-    var m = document.getElementById("csrm");
-    m.innerHTML = "";
-    A.forEach(function (row, i) {
-      row.forEach(function (v) {
+    mBox.innerHTML = "";
+    A.forEach(function (rowVals, i) {
+      rowVals.forEach(function (v) {
         var c = document.createElement("i");
         c.textContent = v;
         c.className = (v ? "on " : "") + (i === r ? "row" : "");
-        m.appendChild(c);
+        mBox.appendChild(c);
       });
     });
-    cells(document.getElementById("csrp"), P, r, r + 1, true);
-    cells(document.getElementById("csri"), I, P[r], P[r + 1], false);
-    cells(document.getElementById("csrd"), D, P[r], P[r + 1], false);
-    document.getElementById("csro").textContent =
-      "indptr " + P[r] + "\u2192" + P[r + 1] + "  \u2014  columns " + I.slice(P[r], P[r + 1]).join(", ");
+    cells(root.querySelector("[data-csr-p]"), P, r, r + 1, true);
+    cells(root.querySelector("[data-csr-i]"), I, P[r], P[r + 1], false);
+    cells(root.querySelector("[data-csr-d]"), D, P[r], P[r + 1], false);
+    out.innerHTML = "row " + r + " \u2014 indptr " + P[r] + " \u2192 " + P[r + 1] +
+      ", so degree " + (P[r + 1] - P[r]) +
+      " and neighbours " + I.slice(P[r], P[r + 1]).join(", ") + ".";
   }
 
-  var s = document.getElementById("csrr");
-  s.addEventListener("input", function () { draw(+s.value); });
-  draw(+s.value);
-})();
+  window.mountKnob(root.querySelector("[data-csr-knob]"), {
+    min: 0, max: 4, step: 1, value: 1,
+    label: "which row of the matrix",
+    format: function (v) { return "row " + v; },
+    onInput: draw
+  }).set(1);
+});
 </script>
 
 ---
