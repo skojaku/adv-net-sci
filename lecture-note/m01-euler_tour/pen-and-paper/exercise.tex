@@ -21,9 +21,21 @@
 
 % Body: a readable, economical text face, guarded so the file still compiles
 % on a machine that has none of them.
-\IfFontExistsTF{Charter}{\setmainfont{Charter}}{
-  \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
-    \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}
+% Charter, and the four ways to get it. XCharter *is* Charter and ships with a
+% full TeX Live, so it is asked for first and by file: a CI runner answers yes
+% to \IfFontExistsTF{Charter}, then cannot typeset it, which is how this sheet
+% stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
 
 % Title: the house hand face, if this machine has one.
 \newcommand{\ppfont}{}

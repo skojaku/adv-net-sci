@@ -36,17 +36,26 @@ jobs:
       # _quarto.yml copies whatever is on disk at render time, so the sheets
       # must exist before Quarto runs.
       #
-      # The package set is the exact one the sheets \usepackage, plus
-      # texlive-fonts-extra for XCharter (m01 is set in Charter, and XCharter
-      # is the copy a runner has).
+      # The package set is the one the sheets \usepackage, plus:
+      #   texlive-fonts-recommended  psnfss, and with it ZapfDingbats (pzdr).
+      #                              Nothing asks for it by name, but hyperref
+      #                              and tcolorbox between them do, and without
+      #                              it xelatex drops into mktextfm and dies.
+      #   texlive-fonts-extra        XCharter, which is the Charter m01 is set in.
+      #
+      # `--no-install-recommends` is deliberate: the full texlive-* recommends
+      # graph is several gigabytes and pulls doc and source trees nobody reads.
       - name: Install TeX Live
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             texlive-xetex \
+            texlive-latex-recommended \
             texlive-latex-extra \
             texlive-pictures \
+            texlive-fonts-recommended \
             texlive-fonts-extra \
+            texlive-plain-generic \
             latexmk \
             fontconfig
 
@@ -59,6 +68,11 @@ jobs:
           cp tools/fonts/*.ttf ~/.local/share/fonts/
           fc-cache -f
           fc-list | grep -i excalifont
+          # The two faces the sheets resolve to on a runner. Printed rather
+          # than asserted: if either moves, the sheet still builds in some
+          # other face and this line is what says which.
+          kpsewhich XCharter-Roman.otf || echo "no XCharter under that name"
+          kpsewhich pzdr.tfm || echo "no ZapfDingbats"
 
       - name: Build worksheets
         run: bash tools/build_worksheets.sh
