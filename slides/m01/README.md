@@ -34,9 +34,10 @@ Math is KaTeX (`math: katex` in the front matter), so `$...$` and `$$...$$` work
 
 ## `--html` is not optional, and it is not a front-matter directive
 
-Seven slides carry live HTML: the CSR widget on "Store only the nonzeros"
-(`<input type="range">` plus a script) and six animation stages (`<button>`s
-plus two `<script src>`s each). Without `--html`, Marp escapes all of it
+Five slides carry live HTML: the CSR widget on "Store only the nonzeros"
+(`<input type="range">` plus a script) and four animation stages (`<button>`s
+plus two `<script src>`s each) — `kb-tracer`, `euler-builder`, `comp-sweep`,
+`dir-reach`. Without `--html`, Marp escapes all of it
 to literal text and prints the source code on the slide, in **every** export,
 images and PDF included.
 

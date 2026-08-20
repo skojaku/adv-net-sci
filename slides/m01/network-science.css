@@ -194,6 +194,34 @@ section.part p {
   max-width: 900px;
 }
 
+/* A part divider names the lecture-note page that carries the section, so that
+   "where do I look this up afterwards" has an answer which is not the deck.
+   Smaller and fainter than the subtitle above it, because it is a pointer and
+   not a second claim; the rule above it keeps the two from reading as one
+   paragraph. */
+section.part .review {
+  margin: 30px 80px 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  max-width: 900px;
+}
+/* The paragraph inside carries `section.part p`'s 80px side margin, which would
+   land on top of the wrapper's own and indent the pointer past the title it
+   sits under. Zero it and set the type here. */
+section.part .review p {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.35;
+  color: var(--ink-faint);
+}
+/* No accent-red in here. `strong` is the deck's key-term mark; a lecture-note
+   page title is a destination, not a term, and letting it turn red spends the
+   colour on the one line of the slide that matters least. */
+section.part .review em {
+  font-style: normal;
+  color: var(--ink-soft);
+}
+
 /* Shallow slides: centre the BODY in the space under the rule, and leave the
    title where it always is. Centring the whole section pushed the title down
    the frame, so a `mid` slide's heading no longer lined up with its neighbours'.
