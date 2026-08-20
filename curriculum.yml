@@ -529,15 +529,17 @@ modules:
       - id: m01.c30
         name: "Matrix powers count walks"
         type: theorem
-        level: extension
+        level: core
         statement: "(A^k)_ij is the number of walks of length k from i to j, because matrix multiplication sums over every intermediate node - the identity that later makes Katz centrality and random walks computable."
         note: >-
-          The lecture note demonstrates this only in code comments
-          (04-advanced.qmd, 'Matrix powers for path counting'); it is never
-          stated as prose. Worth promoting to explicit teaching, since m06 and
-          m07 both depend on it.
+          Was extension while the lecture note demonstrated this only in code
+          comments and never stated it as prose. It is now taught twice over -
+          derived in 01b-vocabulary.qmd with an animation, proved by induction
+          in 04-appendix.qmd - and m06 and m07 both depend on it, so it is core
+          and fair game on the exam. Note the counted object is a walk, not a
+          path: the argument never asks whether a node or an edge repeats.
         prereq: [m01.c21, m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#the-adjacency-matrix-and-what-its-powers-count", "lecture-note/m01-euler_tour/04-appendix.qmd#why-matrix-powers-count-walks", "lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       # Both belong with c17-c18 by topic; the ids continue the sequence so that
       # nothing already referring to m01.c17 has to move.
