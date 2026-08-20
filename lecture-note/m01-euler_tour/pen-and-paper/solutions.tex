@@ -38,7 +38,8 @@
 \newcommand{\ppfont}{}
 \IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
   \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
-    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{}}}
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.4em}
@@ -96,15 +97,12 @@ Binghamton, Albany.
 
 {\bf Question 1(a)}: Drive every highway exactly once, without lifting your
 pencil. Start and finish anywhere; cities may repeat, highways may not. Write
-in each circle when you drive that road --- 1 first, then 2, on to 7.
+in each circle when you drive that road --- 1 first, then 2, on to 7. Two are
+filled in: you start at Ithaca, take NY-13, then NY-34 straight back.
 
 \arrow One drive out of many. Whichever roads it takes in between, it has to
 start at \ans{Ithaca} and finish at \ans{Albany}: those are the two cities with
 an odd number of roads, and an odd city is where a drive begins or ends.
-
-\begin{center}
-\nymap{}{\tourfill}
-\end{center}
 
 {\bf Question 1(b)}: The same four cities, and an eighth highway: US-11, which
 really does run alongside I-81. Number your route again. Can you drive every
@@ -116,8 +114,15 @@ one. US-11 pushes Syracuse to five roads and Binghamton to five, so \ans{four}
 cities now have a left-over road, and a drive has one start and one finish.
 
 \begin{center}
-\nymap{\usroad}{\tourfill \node[ordnum, pltblue] at (o11) {$\times$};}
+\begin{tabular}{@{}c@{\hspace{0.8cm}}c@{}}
+\resizebox{0.44\textwidth}{!}{\nymap{}{\tourfill}} &
+\resizebox{0.44\textwidth}{!}{\nymap{\usroad}{\tourfill \node[ordnum, pltblue] at (o11) {$\times$};}} \\[0.5em]
+\small\bfseries 1(a): seven highways & \small\bfseries 1(b): with US-11 \\
+\end{tabular}
 \end{center}
+
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
 {\bf Question 2}: One city, on its own. Arriving uses up one highway, leaving
 uses up another --- so highways get used in \textbf{pairs}. Join two road-ends
@@ -136,7 +141,7 @@ with a curved line to mean ``in here, out there''. Pair up as far as you can.
 
 \begin{center}
 {\setlength{\tabcolsep}{9pt}
-\begin{tabular}{|C{3.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|}
+\begin{tabular}{|C{3.4cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|}
 \hline
  & \textbf{2 roads} & \textbf{3 roads} & \textbf{4 roads} &
 \textbf{5 roads} \\
@@ -146,10 +151,15 @@ roads left over & 0 & \ans{1} & \ans{0} & \ans{1} \\ \hline
 \end{tabular}}
 \end{center}
 
-(a) Which ones can you drive straight \emph{through}? \arrow \ans{2 and 4}, the
-ones with nothing left over. \quad (b) What do those numbers share? \arrow
-\ans{They are even.} \quad (c) A left-over road has no partner, so this city
-must be the tour's \arrow \ans{start or finish.}
+(a) Which of these cities can you drive straight \emph{through}? \arrow
+\ans{2 and 4}, the ones with nothing left over. \quad (b) What do those numbers
+share? \arrow \ans{They are even.} \quad (c) A left-over road has no partner.
+What must this city be for the tour? \arrow \ans{Start or finish.}
+
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
 {\bf Question 3}: Count the highways at each city.
 
@@ -165,44 +175,33 @@ with US-11 too & \ans{3} & \ans{5} & \ans{5} & \ans{3} & \ans{4} \\ \hline
 \end{tabular}}
 \end{center}
 
-One start, one finish. So at most \ans{2} cities may have a left-over road.
-Seven roads: \ans{a drive exists} (Ithaca to Albany). Eight roads: \ans{none
-exists}. No route with eight because \ans{four cities have a left-over road,
-and a drive has only one start and one finish.}
+One start, one finish, so at most how many cities may have a left-over road?
+\arrow \ans{2}.
 
-\begin{minipage}[t]{0.55\textwidth}
-\vspace{0pt}
-{\bf Question 4}: The same puzzle, 1736. Königsberg: four pieces of land, seven
-bridges. Two pairs join the same land; both of a pair must be crossed.
+For the seven roads: can you drive every highway exactly once? If so, where
+does that drive begin and end? \arrow \ans{Yes} --- the drive existing means its
+two odd cities are its ends, so it runs \ans{Ithaca} to \ans{Albany}.
 
-\arrow Bridges: \ans{A 5, \; B 3, \; C 3, \; D 3} --- fourteen ends for seven
-bridges, as always.
+For the eight roads, with US-11: can you drive every highway exactly once?
+\arrow \ans{No.}
 
-\arrow Is the walk possible? \ans{No}: all four pieces of land are odd.
+Why is there no route with eight? \arrow \ans{Four cities have a left-over
+road, and a drive has only one start and one finish.}
 
-\arrow Destroying one bridge is enough. Which ones work? \ans{Any of the
-seven.} Every bridge joins two odd lands, so knocking one out makes both of
-them even and leaves exactly two odd lands --- and the map stays in one piece
-whichever you choose. (Königsberg's own answer was to build one, not to destroy
-one.)
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.40\textwidth}
-\vspace{0pt}
-\begin{center}
-\konigsberggraph
-\end{center}
 \end{minipage}
 
 \parthead{2}{Three kinds of route}
 
-A different network: five bus stops.
+A different network: four stops, numbered 1 to 4.
 
 \begin{center}
-\busstopgraph
+\fournodegraph
 \end{center}
 
-{\bf Question 5(a)}: Fill in the table. The last column takes one of these
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
+
+{\bf Question 4(a)}: Fill in the table. The last column takes one of these
 three names.
 
 \begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
@@ -217,35 +216,46 @@ Repeats nothing: \textbf{path}. \quad Never repeats a line: \textbf{trail}.
 \textbf{route} & \textbf{repeats a line?} & \textbf{repeats a stop?} &
 \textbf{name} \\
 \hline
-A B D B C & yes (B--D twice) & yes (B) & \ans{walk} \\ \hline
-A B D C B & \ans{no} & \ans{yes (B)} & \ans{trail} \\ \hline
-A B C D E & \ans{no} & \ans{no} & \ans{path} \\ \hline
+1 2 3 2 4 & yes (2--3 twice) & yes (2) & \ans{walk} \\ \hline
+1 2 3 4 2 & \ans{no} & \ans{yes (2)} & \ans{trail} \\ \hline
+1 2 3 4 & \ans{no} & \ans{no} & \ans{path} \\ \hline
 \end{tabular}}
 \end{center}
 
-{\bf Question 5(b)}: A route from A to E that repeats a stop but no line.
+\end{minipage}
 
-\arrow \ans{A \; D \; B \; C \; D \; E.} The lines A--D, D--B, B--C, C--D, D--E
-are five different lines; D is the stop that comes round twice.
+{\bf Question 4(b)}: Write a route from 1 to 2 that repeats a stop but no
+line.
 
-{\bf Question 5(c)}: Your drive in 1(a) used no road twice, but it did come
-back to a city it had already visited. It is a \ldots
+\arrow \ans{1 \; 2 \; 3 \; 4 \; 2.} The lines 1--2, 2--3, 3--4, 4--2 are four
+different lines; 2 is the stop that comes round twice.
 
-\arrow \ans{trail.} No road twice makes it a trail; coming back to a city it
+{\bf Question 4(c)}: Your drive in 1(a) used no road twice, but it did come
+back to a city it had already visited. Which is it --- a path, a trail, or a
+walk?
+
+\arrow \ans{A trail.} No road twice makes it a trail; coming back to a city it
 had already visited is what stops it being a path.
 
-{\bf Question 5(d)}: It could not have been a path. A path of 7 roads would
-have to touch \ldots\ different cities, and the highway map has only \ldots
+{\bf Question 4(d)}: It could not have been a path. How many different cities
+would a path of 7 roads have to touch? How many does the highway map have? Why
+does that rule out a path?
 
-\arrow \ans{8} cities --- one more city than roads, because a path never comes
-back --- and the map has only \ans{4}.
+\arrow A path of 7 roads touches \ans{8} cities --- one more city than roads,
+because a path never comes back --- and the map has only \ans{4}. With nowhere
+near 8 cities to visit, the drive cannot be a path.
 
-\parthead{3}{Predictions for the notebook}
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
-\begin{minipage}[t]{0.52\textwidth}
-\vspace{0pt}
-{\bf Question 6(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
-$i$ and $j$, else \textbf{0}. \quad {\bf 6(b)}: Add up each row.
+\parthead{3}{Predictions}
+
+Part 4 hands the student a notebook --- a computer page that runs the network
+from Part 2. Worked out on paper first, then checked by the notebook.
+
+{\bf Question 5(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
+$i$ and $j$, else \textbf{0}, for the network from Part 2. \quad {\bf 5(b)}:
+Add up each row.
 
 \begin{center}
 {\setlength{\tabcolsep}{4pt}
@@ -261,25 +271,19 @@ $i$ and $j$, else \textbf{0}. \quad {\bf 6(b)}: Add up each row.
 \end{tabular}}
 \end{center}
 
-Each row total is the \ans{degree} of that node.
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.42\textwidth}
-\vspace{0pt}
-\begin{center}
-\fournodegraph
-\end{center}
+Each row total counts the \ans{degree} of that node.
+
 \end{minipage}
 
-{\bf Question 6(c)}: A \textbf{2-step route} goes along one line, then along
-one more. Count them on the picture.
+{\bf Question 5(c)}: A \textbf{2-step route} goes along one line, then along
+one more. Count them on the network from Part 2.
 
 \arrow From 1 to 3: \ans{1} of them, 1 $\rightarrow$ \ans{2} $\rightarrow$ 3.
 \quad From 1 to 2: \ans{0}, because \ans{the first step has to go to 2, and the
 second step has to leave it again}. \quad From node 2 back to node 2: \ans{3},
 out and back along each of its three lines.
 
-{\bf Question 6(d)}: The notebook will square your grid. Say what you expect to
+{\bf Question 5(d)}: The notebook will square your grid. Say what you expect to
 find in $A^2$.
 
 \arrow Row 1, column 3: \ans{1}. \quad Row 1, column 2: \ans{0}. \quad The
@@ -295,6 +299,8 @@ A^2 =
 1 & 1 & 1 & 2
 \end{pmatrix}
 \]
+
+\clearpage
 
 \parthead{4}{The lab}
 

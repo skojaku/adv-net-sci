@@ -1,10 +1,10 @@
 % Pen-and-paper worksheet for Module 1.
 % Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
 %
-% Set in Charter 12pt rather than the 14pt hand face of the older sheets:
-% Charter was drawn to stay legible small, and the sheet has to fit five parts
-% without becoming a stack of paper. The hand face is kept for the title.
-\documentclass[a4paper, 12pt]{extarticle}
+% Set in Charter. 14pt rather than 12pt: the sheet is read with a pencil in
+% hand, and the questions are free-form (answers go on the back), so the space
+% that used to go to inline blanks now goes to the text itself.
+\documentclass[a4paper, 14pt]{extarticle}
 \usepackage[top=0.8in, bottom=0.75in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -37,18 +37,10 @@
     \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
       \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
 
-% Title: the house hand face, if this machine has one.
-\newcommand{\ppfont}{}
-\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
-  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
-    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{}}}
-
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.4em}
+\setlength{\emergencystretch}{1.2em}
 \raggedbottom
-
-\newcommand{\ansline}{\underline{\hspace{0.98\textwidth}}}
-\newcommand{\blank}[1][2cm]{\underline{\hspace{#1}}}
 
 % The lab the sheet hands off to. Both the QR code and the printed address are
 % the course's own short link, not the notebook's: paper outlives any one
@@ -81,37 +73,30 @@
 
 \begin{document}
 
-\begin{center}
-{\ppfont\LARGE Drive Every Highway Once, Then Teach a Computer to Do It}
-\end{center}
-
-{\small Do this before the lecture, in pencil. Nothing here needs a word you
-have not been given on the sheet.}
-
 \parthead{1}{Seven highways}
 
-Seven highways join four Upstate New York cities: \textbf{I}thaca,
-\textbf{S}yracuse, \textbf{B}inghamton, \textbf{A}lbany.
+Seven highways join four Upstate New York cities: Ithaca, Syracuse,
+Binghamton, and Albany.
 
 {\bf Question 1(a)}: Drive every highway exactly once, without lifting your
 pencil. Start and finish anywhere; cities may repeat, highways may not. Write
 in each circle when you drive that road --- 1 first, then 2, on to 7. Two are
 filled in: you start at Ithaca, take NY-13, then NY-34 straight back.
 
-\begin{center}
-\nymap{}{\node[ordnum] at (o13) {1}; \node[ordnum] at (o34) {2};}
-\end{center}
-
-{\bf Question 1(b)}: The same four cities, and an eighth highway: \textbf{US-11},
-which really does run alongside I-81. Number your route again.
+{\bf Question 1(b)}: The same four cities, and an eighth highway:
+\textbf{US-11}, which really does run alongside I-81. Number your route again.
+Can you drive every highway without lifting your pencil?
 
 \begin{center}
-\nymap{\usroad}{}
+\begin{tabular}{@{}c@{\hspace{0.8cm}}c@{}}
+\resizebox{0.44\textwidth}{!}{\nymap{}{\node[ordnum] at (o13) {1}; \node[ordnum] at (o34) {2};}} &
+\resizebox{0.44\textwidth}{!}{\nymap{\usroad}{}} \\[0.5em]
+\small\bfseries 1(a): seven highways & \small\bfseries 1(b): with US-11 \\
+\end{tabular}
 \end{center}
 
-Can you drive every highway without lifting your pencil? \blank[4cm]
-
-\clearpage
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
 {\bf Question 2}: One city, on its own. Arriving uses up one highway, leaving
 uses up another --- so highways get used in \textbf{pairs}.
@@ -136,7 +121,7 @@ as far as you can. The first is done.
 
 \begin{center}
 {\setlength{\tabcolsep}{9pt}
-\begin{tabular}{|C{3.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|C{1.9cm}|}
+\begin{tabular}{|C{3.4cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|}
 \hline
  & \textbf{2 roads} & \textbf{3 roads} & \textbf{4 roads} &
 \textbf{5 roads} \\
@@ -148,14 +133,18 @@ roads left over & 0 & & & \\[0.45cm] \hline
 
 \vspace{0.5em}
 
-(a) Which ones can you drive straight \emph{through}? \blank[5cm]
+(a) Which of these cities can you drive straight \emph{through}?
 
-(b) What do those numbers share? \blank[6cm]
+(b) What do those numbers share?
 
-(c) A left-over road has no partner, so this city must be the tour's
-\blank[4.5cm]
+(c) A left-over road has no partner. What must this city be for the tour?
+
+\end{minipage}
 
 \vspace{0.8em}
+
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
 {\bf Question 3}: Count the highways at each city. Ithaca is done.
 
@@ -171,55 +160,31 @@ with US-11 too & & & & & \\[0.55cm] \hline
 \end{tabular}}
 \end{center}
 
-\begin{minipage}{\textwidth}
-One start, one finish. So at most \blank[1.2cm] cities may have a left-over
-road.
+One start, one finish, so at most how many cities may have a left-over road?
 
-\vspace{0.4em}
+For the seven roads: can you drive every highway exactly once? If so, where
+does that drive begin and end?
 
-Seven roads: \blank[3.6cm] \hfill Eight roads: \blank[3.6cm] \hspace*{0.5cm}
+For the eight roads, with US-11: can you drive every highway exactly once?
 
-\vspace{0.4em}
+Why is there no route with eight?
 
-No route with eight because \underline{\hspace{8.5cm}}
 \end{minipage}
 
-\vspace{0.9em}
-
-\begin{minipage}{0.53\textwidth}
-{\bf Question 4}: The same puzzle, 1736. Königsberg: four pieces of land, seven
-bridges. Two pairs join the same land; both of a pair must be crossed.
-
-\vspace{0.6em}
-
-Bridges: A \blank[0.9cm] B \blank[0.9cm] C \blank[0.9cm] D \blank[0.9cm]
-
-\vspace{0.6em}
-
-Is the walk possible? \blank[3.5cm]
-
-\vspace{0.6em}
-
-Destroying one bridge is enough. Which ones work? \blank[3cm]
-\end{minipage}
-\hfill
-\begin{minipage}{0.42\textwidth}
-\begin{center}
-\konigsberggraph
-\end{center}
-\end{minipage}
-
-\vspace{1em}
+\clearpage
 
 \parthead{2}{Three kinds of route}
 
-A different network: five bus stops.
+A different network: four stops, numbered 1 to 4.
 
 \begin{center}
-\busstopgraph
+\fournodegraph
 \end{center}
 
-{\bf Question 5(a)}: Fill in the table. The last column takes one of these
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
+
+{\bf Question 4(a)}: Fill in the table. The last column takes one of these
 three names. First row done.
 
 \begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt]
@@ -234,44 +199,39 @@ Repeats nothing: \textbf{path}. \quad Never repeats a line: \textbf{trail}.
 \textbf{route} & \textbf{repeats a line?} & \textbf{repeats a stop?} &
 \textbf{name} \\
 \hline
-A B D B C & yes (B--D twice) & yes (B) & \\[0.35cm] \hline
-A B D C B & & & \\[0.5cm] \hline
-A B C D E & & & \\[0.5cm] \hline
+1 2 3 2 4 & yes (2--3 twice) & yes (2) & \\[0.35cm] \hline
+1 2 3 4 2 & & & \\[0.5cm] \hline
+1 2 3 4 & & & \\[0.5cm] \hline
 \end{tabular}}
 \end{center}
 
-{\bf Question 5(b)}: A route from A to E that repeats a stop but no line:
+\end{minipage}
 
-\vspace{0.3em}
+{\bf Question 4(b)}: Write a route from 1 to 2 that repeats a stop but no
+line.
 
-A \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] \blank[1.3cm] E
+{\bf Question 4(c)}: Back to the highway map. Your drive in 1(a) used no road
+twice, but it did come back to a city it had already visited. Which is it ---
+a path, a trail, or a walk?
 
-\vspace{0.9em}
+{\bf Question 4(d)}: It could not have been a path. How many different cities
+would a path of 7 roads have to touch? How many does the highway map have? Why
+does that rule out a path?
 
-{\bf Question 5(c)}: Back to the highway map. Your drive in 1(a) used no road
-twice, but it did come back to a city it had already visited. It is a
-\blank[3.2cm].
+\vspace{0.4em}
 
-\vspace{0.6em}
+\begin{minipage}{\textwidth}
+\setlength{\parskip}{0.4em}
 
-{\bf Question 5(d)}: It could not have been a path. A path of 7 roads would
-have to touch \blank[1.5cm] different cities, and the highway map has only
-\blank[1.5cm].
+\parthead{3}{Predictions}
 
-\vspace{0.9cm}
-
-\parthead{3}{Predictions for the notebook}
-
-Part 4 sends you to a notebook that will run this network for you. Work the
-answers out on paper first; the notebook will check them.
-
-\begin{center}
-\fournodegraph
-\end{center}
+Part 4 hands you a notebook --- a computer page that will run the network from
+Part 2 for you. Work the answers out on paper first; the notebook will check
+them.
 
 \begin{minipage}[t]{0.46\textwidth}
-{\bf Question 6(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
-$i$ and $j$, else \textbf{0}. Row 1 done.
+{\bf Question 5(a)}: Write \textbf{1} in row $i$, column $j$ if a line joins
+$i$ and $j$, else \textbf{0}, for the network from Part 2. Row 1 done.
 
 \vspace{0.4em}
 
@@ -290,62 +250,41 @@ $i$ and $j$, else \textbf{0}. Row 1 done.
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.5\textwidth}
-{\bf Question 6(b)}: Add up each row, then compare with the picture.
-
-\vspace{0.5em}
-
-row totals: \blank[1cm] \blank[1cm] \blank[1cm] \blank[1cm]
-
-\vspace{0.6em}
-
-Each row total is the \underline{\hspace{4.4cm}}
-
-\vspace{0.9em}
-
-of that node.
+{\bf Question 5(b)}: Add up each row, then compare with the network from
+Part 2. What are the four row totals? What does each row total count, for that
+node?
 \end{minipage}
 
-\vspace{1.2em}
+\end{minipage}
 
-{\bf Question 6(c)}: A \textbf{2-step route} goes along one line, then along
+\vspace{0.1em}
+
+{\bf Question 5(c)}: A \textbf{2-step route} goes along one line, then along
 one more. From node 1 to node 3, $1 \rightarrow 2 \rightarrow 3$ is one such
-route. Using the picture, count the 2-step routes:
+route. Using the network from Part 2, count the 2-step routes:
 
-\vspace{0.5em}
+How many go from 1 to 3? Write one out.
 
-from 1 to 3: how many? \blank[1.2cm] \; write one out: $1 \rightarrow$
-\blank[1cm] $\rightarrow 3$ \hspace*{1.5cm}
+How many go from 1 to 2? Why so few?
 
-\vspace{1.1cm}
+How many go from node 2 back to node 2?
 
-from 1 to 2: how many? \blank[1.2cm] \; why so few?
-\underline{\hspace{4.6cm}}
+\vspace{0.1em}
 
-\vspace{1.1cm}
-
-from node 2 back to node 2: how many? \blank[1.2cm]
-
-\vspace{1.2cm}
-
-{\bf Question 6(d)}: The notebook in Part 4 will square your grid for you.
+{\bf Question 5(d)}: The notebook in Part 4 will square your grid for you.
 Before it does, say what you expect to find in $A^2$.
 
-\vspace{0.5em}
+What do you expect in row 1, column 3? In row 1, column 2?
 
-row 1, column 3: \blank[1.5cm] \qquad row 1, column 2: \blank[1.5cm]
+What is on the diagonal of $A^2$, and why?
 
-\vspace{1.1cm}
-
-the diagonal: \underline{\hspace{8cm}}
-
-\vspace{1.3cm}
-
+\begin{minipage}{\textwidth}
 \parthead{4}{The lab, on your own}
 
-\begin{tcolorbox}[colback=white, boxsep=1pt, top=6pt, bottom=6pt]
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
 \begin{minipage}[c]{0.26\textwidth}
 \begin{center}
-\includegraphics[width=3cm]{m01lab-qr.png}
+\includegraphics[width=2.6cm]{m01lab-qr.png}
 \end{center}
 \end{minipage}
 \hfill
@@ -360,5 +299,6 @@ asks you to write them down in a form a computer can read.
 \molaburl
 \end{minipage}
 \end{tcolorbox}
+\end{minipage}
 
 \end{document}
