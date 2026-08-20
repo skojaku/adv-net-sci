@@ -190,7 +190,13 @@
       async run(ctx) {
         ctx.idle();
         ctx.resetWalk();
-        ctx.cap("dashed: the bridge-ends · purple: a pair, one in and one out");
+        /* Not purple, and not amber: those two are spoken for. Three beats
+           earlier purple was "a bridge you can still cross" and amber was
+           "one you have crossed", so a purple arc here reads as a half-drawn
+           walk. Pairs are the ones that are taken care of — grey — and the
+           only colour left in these two beats is on the spare, which is the
+           whole point of them. */
+        ctx.cap("dashed: the bridge-ends · grey: a pair, one in and one out");
         const c = ctx.card("one in, one out");
         c.appendChild(ctx.el("div", "anim-quote",
           "arriving costs a bridge, leaving costs another — so the bridge-ends at a landmass have to pair up."));
@@ -214,7 +220,7 @@
     },
     {
       label: "Four ends, and a walk has two",
-      note: "Every landmass here has an odd number of bridges, so every one of them keeps a spare — a bridge-end with no partner, which can only be used on the way in at the very start or on the way out at the very end. Four landmasses need to be an end. A walk has two. No such walk exists.",
+      note: "A spare can only start or end the walk. Four landmasses need to; a walk has two.",
       async run(ctx) {
         ctx.idle();
         ctx.resetWalk();
@@ -234,14 +240,16 @@
 
         const big = ctx.el("div", "anim-big anim-fade", "4");
         c.appendChild(big);
+        /* One line, not two: this beat's card is the tallest in the stage, and
+           on a 720px slide the wrapped version pushes the caption off. */
         c.appendChild(ctx.el("div", "anim-caption anim-fade",
-          "landmasses that must be a start or an end"));
+          "landmasses that must be an end"));
         await ctx.sleep(1600);
-        c.appendChild(ctx.el("div", "anim-tally anim-fade",
-          "<span>a walk has</span><b>1 start, 1 end</b>"));
-        await ctx.sleep(1400);
+        /* The card's own title already says a walk has two ends, and this is
+           the tallest card in the stage — on a 720px slide the row that
+           repeated it was what pushed the caption off the frame. */
         c.appendChild(ctx.el("div", "anim-quote anim-fade",
-          "four ends needed, two available. The walk cannot exist."));
+          "four ends needed, two available — no such walk."));
         await ctx.sleep(3200);
       }
     }
