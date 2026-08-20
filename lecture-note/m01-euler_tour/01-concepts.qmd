@@ -207,6 +207,103 @@ A graph has an **Eulerian trail** (a route crossing every edge exactly once) if 
 
 The discussion above proves one direction: if such a route exists, there are at most two odd nodes. This direction is all the Königsberg problem needs, because its four odd nodes already rule out the possibility. The reverse direction — that these conditions are also *sufficient*, so that a route can actually be built whenever they are met — requires a short separate argument, sketched in the [appendix](04-appendix.qmd).
 
+You can watch that direction do its work before you read the argument. The
+graph below is not Königsberg: it has exactly two odd corners, so Euler's
+condition promises a trail is in there somewhere. Step through and one gets
+built, edge by edge. Then the same graph is walked from an *even* corner and
+strands one edge short — not bad luck, but the two odd corners insisting on
+being the two ends. The last step hands you the pencil.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Euler builder — only the layout and the ink this one stage needs. The paper,
+   the panels, the buttons and the motion come from assets/anim.css, the
+   sequencer from assets/anim.js, and the scenes from
+   assets/anim/euler-builder.js, which the m01 deck mounts too. Colours are the
+   kit's resolved tokens (var(--_ink), var(--_accent), var(--_amber)) — never
+   literals. Everything is scoped to #euler-builder, because a page may carry
+   more than one stage. Keyframe names cannot be scoped, so they carry an eb-
+   prefix.
+   -------------------------------------------------------------------------- */
+
+/* The degree is printed inside each disc, so the discs are large and the
+   drawing wants the wider half; the card beside it is only a counter. The
+   split has to be repeated under the kit's 820px breakpoint, because an id
+   selector outranks the kit's class selector whatever the media query says.
+   The drawing cap is a variable, so the kit's own narrow rule can still take
+   it to 100%. */
+#euler-builder { --anim-svg-max: 400px; }
+#euler-builder .anim-grid-2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+@media (max-width: 820px) {
+  #euler-builder .anim-grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* An edge is ink until it is one you may take (accent, breathing), and amber
+   once it is behind you. */
+#euler-builder .eb-edge { stroke: var(--_ink); stroke-width: 5; fill: none; stroke-linecap: round; }
+#euler-builder .eb-open { stroke: var(--_accent); animation: eb-pulse 1.2s ease-in-out infinite; }
+#euler-builder .eb-used { stroke: var(--_amber); }
+@keyframes eb-pulse { 50% { stroke-width: 8; } }
+/* The one edge a stranded walk could not reach. */
+#euler-builder .eb-left { stroke: var(--_accent); stroke-dasharray: 6 5; }
+
+/* Refused: one flinch from the edge you cannot have. */
+#euler-builder .eb-nope { animation: eb-nope 0.42s ease; }
+@keyframes eb-nope {
+  0%, 100% { stroke-width: 5; opacity: 1; }
+  30% { stroke-width: 9; opacity: 0.3; }
+}
+
+#euler-builder .eb-node { fill: var(--_ink); stroke: var(--_ink); stroke-width: 2; }
+#euler-builder .eb-odd { fill: var(--_amber); stroke: var(--_amber); }
+#euler-builder .eb-on { stroke: var(--_accent); stroke-width: 3; }
+#euler-builder .eb-deg { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_white); }
+#euler-builder .eb-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_ink); }
+#euler-builder .eb-order { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_amber); }
+#euler-builder .eb-here { fill: none; stroke: var(--_accent); stroke-width: 2.4; }
+
+/* Invisible, generous targets laid over the drawing. A quadratic path closes
+   itself for fill purposes, so an edge target must answer on its stroke alone
+   or it swallows half the drawing. */
+#euler-builder .eb-hit { fill: transparent; stroke: transparent; stroke-width: 22; pointer-events: all; }
+#euler-builder .eb-hit-edge { fill: none; pointer-events: stroke; }
+#euler-builder .eb-clickable .eb-hit { cursor: pointer; }
+
+#euler-builder .eb-card { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-start; }
+/* Two lines are always reserved, so a refusal never shoves the reset button
+   out from under the pointer. */
+#euler-builder .eb-msg {
+  font-family: var(--_hand);
+  font-size: 0.84rem;
+  line-height: 1.32;
+  min-height: calc(2 * 1.32em);
+  margin-top: 0.1rem;
+}
+#euler-builder .eb-msg-no { color: var(--_amber); }
+</style>
+
+<figure class="anim-stage" id="euler-builder">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-eb-map></div>
+    <div data-anim-clear data-eb-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="/assets/anim/euler-builder.js" defer></script>
+```
+
 ### The bombs that changed the answer
 
 There is an ironic ending to the story of the seven bridges. During World War II, Königsberg was subjected to a fierce bombing in which two of the seven bridges, *b* and *d* — one from each of the island's two parallel pairs — were destroyed.
