@@ -918,6 +918,134 @@ window.Quarto = {
 <li>Asking <em>“who are node 47’s neighbours?”</em> takes one row of the adjacency list, versus a scan of the entire edge list.</li>
 <li>The matrix explicitly stores every <strong>non</strong>-edge. For a network of a million nodes this requires <span class="math inline">10^{12}</span> entries, most of which are zeros, which is why real code stores it in a compressed form — see the <a href="../m01-euler_tour/04-appendix.html">appendix</a>.</li>
 </ul>
+<p>All three are the same edges filed three ways, and the stage below files them. Again the graph is not Königsberg — five nodes, six edges, no parallel pair, the same five that the matrix-powers stage uses further down — because the structures are easier to read where every entry is a 0 or a 1. On the matrix step each edge carries a colour and so do the two cells it fills, which is the mirror across the diagonal made checkable rather than asserted. The last step is the one to sit with: node 1 has degree 3 in all three, and it is a different-looking fact each time.</p>
+<style>
+/* --------------------------------------------------------------------------
+   One graph, three data structures — only the layout and the ink this one
+   stage needs. The paper, the panels, the buttons and the motion come from
+   assets/anim.css, the sequencer from assets/anim.js, and the scenes from
+   assets/anim/rep-three.js, which the m01 deck mounts too. Colours are the
+   kit's resolved tokens, except the six edge colours, which are literals for
+   the same reason a categorical scale always is: they have to be six
+   distinguishable things, and no token means "the fourth of six". Scoped to
+   #rep-three.
+   -------------------------------------------------------------------------- */
+
+#rep-three { --anim-svg-max: 290px; }
+#rep-three .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+@media (max-width: 820px) {
+  #rep-three .anim-grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
+/* The opening step names no structure yet, and half a column of white beside a
+   small graph reads as something failing to load. */
+#rep-three .anim-grid-2.rt-solo { grid-template-columns: minmax(0, 1fr); }
+
+#rep-three .rt-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
+/* The node the last step reads a degree off, in the same amber the three
+   structures use to mark its entries. */
+#rep-three .rt-node.rt-focus { fill: var(--_amber); }
+#rep-three .rt-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_white); }
+#rep-three .anim-edge.rt-lit { stroke: var(--_accent); }
+
+#rep-three [data-rt-side] { display: flex; align-items: center; }
+#rep-three .rt-stack { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
+#rep-three .rt-h { font-family: var(--_hand); font-size: 0.8rem; color: var(--_ink-soft); margin-bottom: 0.15rem; }
+
+#rep-three .rt-el { display: flex; flex-wrap: wrap; gap: 4px; }
+#rep-three .rt-pair,
+#rep-three .rt-cell,
+#rep-three .rt-m > i {
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 0.72rem;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
+}
+#rep-three .rt-pair { padding: 0.05rem 0.35rem; }
+#rep-three .rt-cell {
+  width: 23px;
+  height: 23px;
+  background: var(--_accent-soft);
+  border-color: var(--_accent-soft);
+  color: var(--_accent);
+  font-weight: 700;
+}
+#rep-three .rt-alrow { display: flex; gap: 3px; align-items: center; margin-bottom: 3px; }
+#rep-three .rt-alrow > b {
+  width: 20px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 0.72rem;
+  color: var(--_ink-soft);
+}
+#rep-three .rt-m { display: grid; grid-template-columns: repeat(5, 23px); gap: 2px; }
+/* Zeros recede, so the sparsity pattern is the first thing the eye gets. */
+#rep-three .rt-m > i { height: 23px; color: var(--_ink-faint); }
+#rep-three .rt-m > i.rt-on { background: var(--_accent-soft); border-color: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
+#rep-three .rt-m > i.rt-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+
+#rep-three .rt-pair.rt-hi { background: var(--_amber); border-color: var(--_amber); color: var(--_white); font-weight: 700; }
+#rep-three .rt-alrow.rt-hi > b { color: var(--_amber); font-weight: 700; }
+#rep-three .rt-alrow.rt-hi > i { background: var(--_amber); border-color: var(--_amber); color: var(--_white); }
+
+/* Which cell is which edge. Six edges, six colours, and the two cells an edge
+   fills carry its colour — so the mirror across the diagonal is one edge seen
+   twice. Only the matrix step uses these: the last step is about one node's
+   row and wants its amber back. */
+#rep-three .anim-edge.rt-c0 { stroke: #593196; stroke-width: 3.4; }
+#rep-three .anim-edge.rt-c1 { stroke: #c2410c; stroke-width: 3.4; }
+#rep-three .anim-edge.rt-c2 { stroke: #1d4e89; stroke-width: 3.4; }
+#rep-three .anim-edge.rt-c3 { stroke: #a81b6b; stroke-width: 3.4; }
+#rep-three .anim-edge.rt-c4 { stroke: #0f6f86; stroke-width: 3.4; }
+#rep-three .anim-edge.rt-c5 { stroke: #8a6a12; stroke-width: 3.4; }
+#rep-three .rt-m > i.rt-c0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+#rep-three .rt-m > i.rt-c1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+#rep-three .rt-m > i.rt-c2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+#rep-three .rt-m > i.rt-c3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+#rep-three .rt-m > i.rt-c4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+#rep-three .rt-m > i.rt-c5 { background: #8a6a12; border-color: #8a6a12; color: var(--_white); font-weight: 700; }
+
+/* The last step is the only one holding three structures at once. Stacking all
+   three costs a font size nobody reads, so the two narrow ones go side by side
+   and the pairs span above them. */
+#rep-three .rt-compact {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  gap: 0.4rem 1.2rem;
+}
+#rep-three .rt-compact .rt-block:first-child { grid-column: 1 / -1; }
+#rep-three .rt-compact .rt-h { font-size: 0.72rem; }
+#rep-three .rt-compact .rt-pair { font-size: 0.66rem; padding: 0.02rem 0.28rem; }
+#rep-three .rt-compact .rt-cell { width: 20px; height: 20px; font-size: 0.66rem; }
+#rep-three .rt-compact .rt-alrow { gap: 3px; margin-bottom: 2px; }
+#rep-three .rt-compact .rt-alrow > b { width: 16px; font-size: 0.66rem; }
+#rep-three .rt-compact .rt-m { grid-template-columns: repeat(5, 20px); }
+#rep-three .rt-compact .rt-m > i { height: 20px; font-size: 0.66rem; }
+</style>
+
+<figure class="anim-stage figure" id="rep-three">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step=""></div>
+    <div class="anim-dots" data-anim-dots=""></div>
+    <button class="anim-btn" type="button" data-anim-prev="" aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play="">⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next="" aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay="">↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas="">
+    <div data-anim-clear="" data-rt-map=""></div>
+    <div data-anim-clear="" data-rt-side=""></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note=""></figcaption>
+</figure>
+
+<script src="../assets/anim/rep-three.js" defer=""></script>
 </section>
 <section id="the-adjacency-matrix-and-what-its-powers-count" class="level2">
 <h2 class="anchored" data-anchor-id="the-adjacency-matrix-and-what-its-powers-count">The adjacency matrix, and what its powers count</h2>
@@ -1088,7 +1216,7 @@ window.Quarto = {
 <li>A graph is <strong>connected</strong> if there is a path between every pair of nodes.</li>
 <li>A <strong>disconnected</strong> graph breaks into islands of nodes called <strong>connected components</strong>. A connected component is a <em>maximal</em> set of nodes that can reach each other, maximality meaning that you cannot add another node without breaking the property.</li>
 </ul>
-<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
+<div id="fig-connected-components" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-connected-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/connected-component.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A graph whose nodes are shaded in three groups, one of eight nodes, one of two, one of one.">
@@ -1214,7 +1342,7 @@ Figure&nbsp;1: There are eight nodes 0–7 forming one connected component, node
 <li><strong>Weakly connected</strong>: the graph would be connected if we ignored the arrows, meaning there is a path from A to B but perhaps not from B to A.</li>
 <li><strong>Strongly connected</strong>: there is a directed path from any node to every other node. No matter where you start, you can follow the arrows to get anywhere else.</li>
 </ul>
-<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A directed graph with three nodes shaded to mark a strongly connected component.">
+<div id="fig-connected-components-directed" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A directed graph with three nodes shaded to mark a strongly connected component." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-connected-components-directed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/connected-component-directed.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A directed graph with three nodes shaded to mark a strongly connected component.">

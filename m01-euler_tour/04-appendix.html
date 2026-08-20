@@ -802,149 +802,121 @@ k^{\text{out}}_s - k^{\text{in}}_s = 1, \qquad k^{\text{in}}_e - k^{\text{out}}_
 <li><strong>Degree of node <span class="math inline">i</span></strong>: <code>indptr[i+1] - indptr[i]</code> — the number of non-zero entries in row <span class="math inline">i</span>.</li>
 <li><strong>Neighbours of node <span class="math inline">i</span></strong>: <code>indices[indptr[i]:indptr[i+1]]</code> — the column IDs in row <span class="math inline">i</span>, which are exactly the nodes <span class="math inline">i</span> connects to. The matching edge weights are <code>data[indptr[i]:indptr[i+1]]</code>.</li>
 </ul>
-<p>Both one-liners are easier to believe once you have watched them move. Drag the knob below through the rows of a small five-node graph — no parallel edges, so every entry is a 0 or a 1. The chosen row is outlined in the dense matrix on the left; the two amber cells in <code>indptr</code> are where that row starts and stops, and everything between them in <code>indices</code> and <code>data</code> is the row itself. The degree is the distance between the two amber cells. The neighbours are what lies between them.</p>
+<p>Both one-liners are easier to believe once you have watched CSR get built. The stage below starts from the adjacency list of a small five-node graph — no parallel edges, so every value is a 1 — and lays its rows end to end. What survives that gluing is <code>indices</code>. What it destroys is the row breaks, and writing those down is all <code>indptr</code> is. Then drag the knob: the degree is the distance between the two marked cells in <code>indptr</code>, and the neighbours are what lies between them in <code>indices</code>.</p>
 <style>
 /* --------------------------------------------------------------------------
-   CSR rows — a static widget, not a sequence: no scenes, no sequencer, just
-   the kit's paper, the kit's knob and one redraw. The m01 deck carries the
-   same widget in its own stylesheet, at slide sizes. Colours are the kit's
-   resolved tokens — never literals. Scoped to #csr-rows.
+   CSR, built out of the adjacency list — only the layout and the ink this one
+   stage needs. The paper, the panels, the buttons, the knob and the motion
+   come from assets/anim.css, the sequencer from assets/anim.js, and the scenes
+   from assets/anim/csr-build.js, which the m01 deck mounts too. Colours are
+   the kit's resolved tokens, except the five row colours, which are literals
+   for the same reason a categorical scale always is: they have to be five
+   distinguishable things, and no token means "the third of five". Scoped to
+   #csr-build.
    -------------------------------------------------------------------------- */
 
-#csr-rows .csrw-top {
-  display: flex;
-  gap: 1.4rem;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+/* The list is as wide as its widest row and no wider: an fr column leaves a
+   band of nothing between it and the arrays, which reads as a missing figure
+   rather than as a margin. Under the kit's breakpoint the arrays drop below
+   the list instead. */
+#csr-build .anim-grid-2 { grid-template-columns: max-content minmax(0, 1fr); gap: 1.1rem; align-items: center; }
+@media (max-width: 820px) {
+  #csr-build .anim-grid-2 { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* the 5x5 dense matrix */
-#csr-rows .csrw-m { display: grid; grid-template-columns: repeat(5, 28px); gap: 3px; flex: none; }
-#csr-rows .csrw-m > i {
-  display: inline-grid;
-  place-items: center;
-  height: 28px;
-  font-family: var(--_mono);
-  font-style: normal;
-  font-size: 0.78rem;
-  /* Zeros recede so the sparsity pattern is the first thing the eye gets. */
-  color: var(--_ink-faint);
-  background: var(--_white);
-  border: 1px solid var(--_rule);
-}
-#csr-rows .csrw-m > i.on { background: var(--_accent); border-color: var(--_accent); color: var(--_white); }
-#csr-rows .csrw-m > i.row { outline: 2.4px solid var(--_amber); outline-offset: -2.4px; }
-
-/* the three arrays */
-#csr-rows .csrw-arrays { display: flex; flex-direction: column; gap: 0.4rem; }
-#csr-rows .csrw-row { display: flex; gap: 0.25rem; align-items: center; }
-#csr-rows .csrw-row b {
-  width: 4.2rem;
+#csr-build .cb-h { font-family: var(--_hand); font-size: 0.82rem; color: var(--_ink-soft); margin-bottom: 0.25rem; }
+#csr-build .cb-row { display: flex; gap: 3px; align-items: center; margin-bottom: 3px; transition: opacity 0.25s ease; }
+#csr-build .cb-row > b {
+  width: 18px;
   text-align: right;
-  font-family: var(--_hand);
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-family: var(--_mono);
+  font-size: 0.76rem;
+  color: var(--_ink-soft);
+}
+/* Consumed by the glue, and dimmed while the block it became lands. */
+#csr-build .cb-row.cb-done { opacity: 0.4; }
+
+#csr-build .cb-arrays { display: flex; flex-direction: column; gap: 0.35rem; }
+#csr-build .cb-arow { display: flex; gap: 0.4rem; align-items: center; }
+#csr-build .cb-arow > b {
+  width: 54px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 0.74rem;
   color: var(--_accent);
 }
-/* The script appends each cell into the row's <span>, so this has to be a
-   descendant selector, not a child one — and <i> is inline by default, so the
-   boxes need inline-grid or the cells run together into one number. */
-#csr-rows .csrw-row i {
+#csr-build .cb-strip { display: flex; gap: 2px; }
+
+#csr-build .cb-cell {
   display: inline-grid;
   place-items: center;
-  min-width: 24px;
-  height: 24px;
-  margin-right: 3px;
+  width: 21px;
+  height: 21px;
   font-family: var(--_mono);
   font-style: normal;
-  font-size: 0.74rem;
-  color: var(--_ink);
+  font-size: 0.72rem;
   background: var(--_white);
   border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
 }
-/* What the row occupies, and the two bounds that delimit it. */
-#csr-rows .csrw-row i.slice { background: var(--_accent-soft); border-color: var(--_accent); color: var(--_accent); }
-#csr-rows .csrw-row i.bound { background: var(--_amber); border-color: var(--_amber); color: var(--_white); }
+#csr-build .cb-cell.cb-r0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+#csr-build .cb-cell.cb-r1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+#csr-build .cb-cell.cb-r2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+#csr-build .cb-cell.cb-r3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+#csr-build .cb-cell.cb-r4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+#csr-build .cb-cell.cb-total { background: var(--_ink-soft); border-color: var(--_ink-soft); color: var(--_white); font-weight: 700; }
+/* data is a row of ones on a plain graph: present, and deliberately quiet. */
+#csr-build .cb-cell.cb-one { color: var(--_ink-faint); }
+
+/* Where a row began — the partition, which is the one thing gluing destroyed
+   and indptr buys back, so it gets a post standing taller than the cells
+   rather than a border the row colours swallow. */
+#csr-build .cb-cell.cb-cut { position: relative; margin-left: 9px; }
+#csr-build .cb-cell.cb-cut:first-child { margin-left: 0; }
+#csr-build .cb-cell.cb-cut::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: -5px;
+  bottom: -5px;
+  width: 3px;
+  background: var(--_ink);
+}
+#csr-build .cb-cell.cb-cut:first-child::before { display: none; }
+
+/* The ring is ink, not the usual amber: one of the five row colours is that
+   amber, so an amber ring around that row's block was invisible exactly when
+   the reader asked about it. */
+#csr-build .cb-cell.cb-slice { outline: 2px solid var(--_ink); outline-offset: -2px; }
+#csr-build .cb-cell.cb-bound { box-shadow: 0 0 0 2.5px var(--_ink); }
+#csr-build .cb-row.cb-on > b { color: var(--_ink); font-weight: 700; }
+#csr-build .cb-row.cb-on .cb-cell { outline: 2px solid var(--_ink); outline-offset: -2px; }
+
+#csr-build .cb-read { font-family: var(--_hand); font-size: 0.82rem; line-height: 1.3; color: var(--_ink); min-height: 1.3em; }
+/* The kit's knob wrapper is written for a block container; here it sits under
+   the arrays and lines up with the strips rather than with their labels. */
+#csr-build .anim-range { max-width: 280px; margin: 0.3rem 0 0.1rem 62px; }
 </style>
 
-<figure class="anim-stage figure" id="csr-rows">
-  <div class="csrw-top">
-    <div class="csrw-m" data-csr-m=""></div>
-    <div class="csrw-arrays">
-      <div class="csrw-row"><b>indptr</b><span data-csr-p=""></span></div>
-      <div class="csrw-row"><b>indices</b><span data-csr-i=""></span></div>
-      <div class="csrw-row"><b>data</b><span data-csr-d=""></span></div>
-    </div>
+<figure class="anim-stage figure" id="csr-build">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step=""></div>
+    <div class="anim-dots" data-anim-dots=""></div>
+    <button class="anim-btn" type="button" data-anim-prev="" aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play="">⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next="" aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay="">↻ Replay</button>
   </div>
 
-  <div class="anim-range">
-    <div class="anim-track"><div class="anim-knob" data-csr-knob=""></div></div>
+  <div class="anim-grid-2" data-anim-canvas="">
+    <div data-anim-clear="" data-cb-left=""></div>
+    <div data-anim-clear="" data-cb-right=""></div>
   </div>
 
-  <figcaption class="anim-note" data-csr-out=""></figcaption>
+  <figcaption class="anim-note" data-anim-note=""></figcaption>
 </figure>
 
-<script>
-/* Queued, because assets/anim.js is included after the body and mountKnob does
-   not exist yet. Every lookup is scoped to the stage root; a stray
-   getElementById here would reach into whatever else the page carries. */
-(window.animReady = window.animReady || []).push(function () {
-  var root = document.getElementById("csr-rows");
-  if (!root || !window.mountKnob) return;
-
-  /* The five-node graph the module keeps coming back to — the same one behind
-     the walk-counting stage on the vocabulary page. Written out rather than
-     derived: A is the dense matrix, P/I/D are what scipy.sparse.csr_matrix(A)
-     stores as indptr / indices / data. */
-  var A = [[0, 1, 1, 0, 0], [1, 0, 1, 1, 0], [1, 1, 0, 0, 1], [0, 1, 0, 0, 1], [0, 0, 1, 1, 0]],
-      P = [0, 2, 5, 8, 10, 12],
-      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
-      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-
-  var mBox = root.querySelector("[data-csr-m]"),
-      out = root.querySelector("[data-csr-out]");
-
-  /* `bounds` marks the two endpoints of the row rather than the span between
-     them, because indptr is the one array where the row is a pair of numbers
-     and not a slice. */
-  function cells(host, vals, lo, hi, bounds) {
-    host.innerHTML = "";
-    vals.forEach(function (v, k) {
-      var c = document.createElement("i");
-      c.textContent = v;
-      if (bounds) { if (k === lo || k === hi) c.className = "bound"; }
-      else if (k >= lo && k < hi) { c.className = "slice"; }
-      host.appendChild(c);
-    });
-  }
-
-  function draw(r) {
-    mBox.innerHTML = "";
-    A.forEach(function (rowVals, i) {
-      rowVals.forEach(function (v) {
-        var c = document.createElement("i");
-        c.textContent = v;
-        c.className = (v ? "on " : "") + (i === r ? "row" : "");
-        mBox.appendChild(c);
-      });
-    });
-    cells(root.querySelector("[data-csr-p]"), P, r, r + 1, true);
-    cells(root.querySelector("[data-csr-i]"), I, P[r], P[r + 1], false);
-    cells(root.querySelector("[data-csr-d]"), D, P[r], P[r + 1], false);
-    out.innerHTML = "row " + r + " — indptr " + P[r] + " → " + P[r + 1] +
-      ", so degree " + (P[r + 1] - P[r]) +
-      " and neighbours " + I.slice(P[r], P[r + 1]).join(", ") + ".";
-  }
-
-  window.mountKnob(root.querySelector("[data-csr-knob]"), {
-    min: 0, max: 4, step: 1, value: 1,
-    label: "which row of the matrix",
-    format: function (v) { return "row " + v; },
-    onInput: draw
-  }).set(1);
-});
-</script>
+<script src="../assets/anim/csr-build.js" defer=""></script>
 <p>CSR is the format every network library reaches for, because it makes the operation you perform most often — “give me this node’s neighbours” — a contiguous slice.</p>
 <p>Now go and build it.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
