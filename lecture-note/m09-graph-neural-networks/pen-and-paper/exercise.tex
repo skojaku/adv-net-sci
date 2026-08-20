@@ -17,8 +17,22 @@
 %\usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
-\tikzset{every picture/.style={/utils/exec={\fontspec{Pretty Neat}}}}
-\setmainfont{Pretty Neat}
+% Handwriting font, resolved once into \ppfont and \ppfontname.
+%
+% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
+% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
+% the one face that is always present; Latin Modern is the last resort.
+%
+% Naming a font that is not installed is a hard error, not a fallback, which is
+% why this is a chain and not a line: seven sheets used to name one outright
+% and stopped building the day it was uninstalled.
+\def\ppfontname{Latin Modern Roman}
+\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
+  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
+    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
+\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
+\expandafter\setmainfont\expandafter{\ppfontname}
+\tikzset{every picture/.style={/utils/exec={\ppfont}}}
 
 
 \makeatletter
@@ -44,7 +58,7 @@
 \makeatother
 
 \usepackage{etoolbox}
-\AtBeginEnvironment{tabular}{\fontspec{Pretty Neat}}
+\AtBeginEnvironment{tabular}{\ppfont}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}

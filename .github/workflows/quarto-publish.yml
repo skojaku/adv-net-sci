@@ -29,6 +29,55 @@ jobs:
           pip install -r tools/figures-requirements.txt
           bash tools/build_figures.sh
 
+      # --- pen-and-paper worksheets --------------------------------------
+      # The PDFs are built here, not committed: a worksheet is regenerated
+      # every time its .tex is touched, and thirteen binaries rewritten in
+      # place are what makes a git repository heavy. `resources:` in
+      # _quarto.yml copies whatever is on disk at render time, so the sheets
+      # must exist before Quarto runs.
+      #
+      # The package set is the exact one the sheets \usepackage, plus
+      # texlive-fonts-extra for XCharter (m01 is set in Charter, and XCharter
+      # is the copy a runner has).
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-xetex \
+            texlive-latex-extra \
+            texlive-pictures \
+            texlive-fonts-extra \
+            latexmk \
+            fontconfig
+
+      # Excalifont is the house hand face and lives in tools/fonts/. Without
+      # it every sheet falls back to Latin Modern and the printed worksheet
+      # stops looking like the one on the instructor's laptop.
+      - name: Install the house font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          cp tools/fonts/*.ttf ~/.local/share/fonts/
+          fc-cache -f
+          fc-list | grep -i excalifont
+
+      - name: Build worksheets
+        run: bash tools/build_worksheets.sh
+
+      # Both halves of a sheet are built, but only the exercise is published.
+      # `solutions.pdf` sitting next to `exercise.pdf` on a public site is
+      # readable by anyone who guesses the filename, linked or not — it goes
+      # in the run's artifact instead, where it needs a GitHub login.
+      - name: Collect worksheets (exercises and solutions)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pen-and-paper-worksheets
+          path: lecture-note/m0*/pen-and-paper/*.pdf
+          retention-days: 90
+
+      - name: Withhold solutions from the published site
+        run: |
+          rm -fv lecture-note/m0*/pen-and-paper/*solutions*.pdf
+
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:

@@ -9,20 +9,28 @@ format:
     include-in-header:
       text: |
         <style>
-        .course-map {
-          margin: 1.6rem 0 2.6rem;
-          border-top: 1px solid var(--rule);
+        .course-map { margin: 1.6rem 0 1rem; overflow-x: auto; }
+        /* The site gives every table `display: block; width: fit-content`, which
+           leaves the four tick columns crushed against the module column — and
+           on a block box `width: 100%` widens the box without widening the
+           anonymous table inside it. So this one table goes back to being a
+           table, and the scrolling moves out to the wrapper above. */
+        .course-map table {
+          display: table;
+          width: 100%;
+          min-width: 40rem;
         }
-        .course-map .stop {
-          padding: 1rem 0 .95rem;
-          border-bottom: 1px solid var(--rule);
+        .course-map td, .course-map th { vertical-align: top; }
+        /* The module cell carries three lines: number, title, question. Every
+           other cell is a tick or a dash, so they stay narrow and centred. */
+        .course-map td:not(:first-child),
+        .course-map th:not(:first-child) {
+          text-align: center;
+          white-space: nowrap;
         }
-        .course-map .stop p { margin: 0; }
-        .course-map .stop p + p { margin: .3rem 0 0 3.1rem; }
         .stop-no {
-          display: inline-block;
-          min-width: 3.1rem;
-          font-size: .82rem;
+          display: block;
+          font-size: .75rem;
           letter-spacing: .06em;
           text-transform: uppercase;
           color: var(--anim-ink-soft);
@@ -30,7 +38,7 @@ format:
         }
         a.stop-title {
           font-weight: 600;
-          font-size: 1.08rem;
+          font-size: 1.02rem;
           color: var(--anim-ink);
           text-decoration: none;
         }
@@ -39,24 +47,19 @@ format:
           color: var(--anim-accent);
           text-decoration: underline;
         }
-        /* The question keeps body size even when it is the stop's last line. */
         .stop-q {
           display: block;
-          font-size: 1rem;
-          color: var(--anim-ink-soft);
-        }
-        /* The worksheet line is always the last paragraph of a stop. */
-        .course-map .stop p:last-child {
-          margin-top: .45rem;
           font-size: .85rem;
+          line-height: 1.4;
           color: var(--anim-ink-soft);
+          margin-top: .2rem;
+          white-space: normal;
         }
-        /* Links there are marked by their underline, as everywhere on the site. */
-        .course-map .stop p:last-child a { color: inherit; }
-        @media (max-width: 620px) {
-          .course-map .stop p + p { margin-left: 0; }
-          .stop-no { display: block; min-width: 0; }
-        }
+        /* A sheet title is the one thing in a tick column that wraps. */
+        .course-map .sheet { white-space: normal; font-size: .85rem; }
+        /* "not in this module" should read as absence, not as a value. */
+        .course-map .none { color: var(--anim-ink-faint); }
+        .course-map + p { font-size: .85rem; color: var(--anim-ink-soft); }
         </style>
 ---
 
@@ -82,93 +85,41 @@ Mini-Project](course/mini-project.qmd) built with up to two teammates.
 
 ## The nine modules
 
-One question opens the course, and each of the nine modules asks another. Every
-question is a link into the lecture note; the worksheet under it is the one you
-do before that lecture, with a pencil.
+One question opens the course, and each of the nine modules asks another. The
+course begins with [Why Networks?](intro/why-networks.qmd) — why we need a
+science of networks instead of ordinary statistics — and there is nothing to
+hand in for it.
+
+After that, every module carries its own set of materials, and **not every
+module carries all of them**. This is the table to come back to when you are
+not sure which thing you are supposed to be doing this week.
 
 <!-- TODO(anim): course-as-one-journey, nine stops -->
 
 :::: {.course-map}
 
-::: {.stop}
-[Start]{.stop-no} [Why Networks?](intro/why-networks.qmd){.stop-title}
-
-[Why do we need a science of networks instead of ordinary statistics?]{.stop-q}
-:::
-
-::: {.stop}
-[M01]{.stop-no} [Euler Tour](m01-euler_tour/01-concepts.qmd){.stop-title}
-
-[Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?]{.stop-q}
-
-Worksheet: [the Königsberg bridges](https://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf) (PDF, hosted by Esteban Moro)
-:::
-
-::: {.stop}
-[M02]{.stop-no} [Small World](m02-small-world/01-concepts.qmd){.stop-title}
-
-[Why is a stranger on the other side of the world only about six handshakes away?]{.stop-q}
-
-Worksheets: [Six Handshakes](m02-small-world/pen-and-paper/six-handshakes.pdf) · [Turning the Dial](m02-small-world/pen-and-paper/turning-the-dial.pdf) · [Do Your Friends Know Each Other?](m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf)
-:::
-
-::: {.stop}
-[M03]{.stop-no} [Robustness](m03-robustness/01-concepts.qmd){.stop-title}
-
-[How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?]{.stop-q}
-
-Worksheet: [Build it, Break it, and Build it Back](m03-robustness/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M04]{.stop-no} [Friendship Paradox](m04-node-degree/01-concepts.qmd){.stop-title}
-
-[Why do your friends have more friends than you do?]{.stop-q}
-
-Worksheet: [Reading Heavy Tails](m04-node-degree/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M05]{.stop-no} [Clustering](m05-clustering/01-concepts.qmd){.stop-title}
-
-[What is a community in a network, and how would you know if the one you found is real?]{.stop-q}
-
-Worksheet: [Discovering Friend Groups](m05-clustering/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M06]{.stop-no} [Centrality](m06-centrality/01-concepts.qmd){.stop-title}
-
-[Which node is the most important — and important in what sense?]{.stop-q}
-
-Worksheet: [Who's the Big Cheese in the University Clubs?](m06-centrality/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M07]{.stop-no} [Random Walks](m07-random-walks/01-concepts.qmd){.stop-title}
-
-[What does a network look like to a walker who has no idea where they are going?]{.stop-q}
-
-Worksheet: [Where Does the Drunkard Sleep?](m07-random-walks/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M08]{.stop-no} [Embedding](m08-embedding/01-concepts.qmd){.stop-title}
-
-[How do you turn a network into coordinates without throwing away what makes it a network?]{.stop-q}
-
-Worksheet: [From Matrix to Map](m08-embedding/pen-and-paper/exercise.pdf)
-:::
-
-::: {.stop}
-[M09]{.stop-no} [Graph Neural Networks](m09-graph-neural-networks/01-concepts.qmd){.stop-title}
-
-[An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?]{.stop-q}
-
-Worksheet: [Convolution and the Weisfeiler-Lehman Test](m09-graph-neural-networks/pen-and-paper/exercise.pdf)
-:::
+| Module | Pen & paper | [Mini-project](course/mini-project.qmd) | [Pair Notebook](course/pair-notebook.qmd) | Lab notebook | [Quiz](course/activities.md) |
+|:---------------------------------|:------------|:---:|:---:|:---:|:---:|
+| [M01]{.stop-no}[Euler Tour](m01-euler_tour/01-concepts.qmd){.stop-title}<br>[Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?]{.stop-q} | [Seven Highways](m01-euler_tour/pen-and-paper/exercise.pdf){.sheet} | ✓ [+ talk]{.stop-no} | [—]{.none} | [m01lab](https://go.skojaku.com/m01lab){.sheet} | ✓ |
+| [M02]{.stop-no}[Small World](m02-small-world/01-concepts.qmd){.stop-title}<br>[Why is a stranger on the other side of the world only about six handshakes away?]{.stop-q} | [Six Handshakes](m02-small-world/pen-and-paper/six-handshakes.pdf){.sheet} · [Turning the Dial](m02-small-world/pen-and-paper/turning-the-dial.pdf){.sheet} · [Do Your Friends Know Each Other?](m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
+| [M03]{.stop-no}[Robustness](m03-robustness/01-concepts.qmd){.stop-title}<br>[How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?]{.stop-q} | [Build it, Break it, and Build it Back](m03-robustness/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
+| [M04]{.stop-no}[Friendship Paradox](m04-node-degree/01-concepts.qmd){.stop-title}<br>[Why do your friends have more friends than you do?]{.stop-q} | [Reading Heavy Tails](m04-node-degree/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
+| [M05]{.stop-no}[Clustering](m05-clustering/01-concepts.qmd){.stop-title}<br>[What is a community in a network, and how would you know if the one you found is real?]{.stop-q} | [Discovering Friend Groups](m05-clustering/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
+| [M06]{.stop-no}[Centrality](m06-centrality/01-concepts.qmd){.stop-title}<br>[Which node is the most important — and important in what sense?]{.stop-q} | [Who's the Big Cheese in the University Clubs?](m06-centrality/pen-and-paper/exercise.pdf){.sheet} | ✓ | ✓ | [—]{.none} | ✓ |
+| [M07]{.stop-no}[Random Walks](m07-random-walks/01-concepts.qmd){.stop-title}<br>[What does a network look like to a walker who has no idea where they are going?]{.stop-q} | [Where Does the Drunkard Sleep?](m07-random-walks/pen-and-paper/exercise.pdf){.sheet} | [—]{.none} | [—]{.none} | [—]{.none} | ✓ |
+| [M08]{.stop-no}[Embedding](m08-embedding/01-concepts.qmd){.stop-title}<br>[How do you turn a network into coordinates without throwing away what makes it a network?]{.stop-q} | [From Matrix to Map](m08-embedding/pen-and-paper/exercise.pdf){.sheet} | [—]{.none} | [—]{.none} | [—]{.none} | ✓ |
+| [M09]{.stop-no}[Graph Neural Networks](m09-graph-neural-networks/01-concepts.qmd){.stop-title}<br>[An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?]{.stop-q} | [Convolution and the Weisfeiler-Lehman Test](m09-graph-neural-networks/pen-and-paper/exercise.pdf){.sheet} | [—]{.none} | [—]{.none} | [—]{.none} | ✓ |
 
 ::::
+
+**Pen & paper** is a printable PDF you do *before* that module's lecture, with a
+pencil — nothing is submitted, but the lecture starts from it and the quiz
+assumes it. **Mini-project** and **Pair Notebook** are the two graded
+assignments, both handed out through Classroom 50; the column headings link to
+what each one is. A **lab notebook** is the marimo notebook a worksheet hands
+off to at the end of class, opened from the QR code on the printed sheet.
+**Quiz** opens the following week's class. A dash means that module does not
+have one, not that it is missing.
 
 ## Everything else
 

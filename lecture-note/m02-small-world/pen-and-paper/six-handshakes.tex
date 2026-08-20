@@ -16,22 +16,23 @@
 \usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
 
-% Handwriting font. "Pretty Neat" (xkcd-style) is the house font; it is not
-% installed everywhere, so guard it and fall back silently.
-\newcommand{\ppfont}{}
-\IfFontExistsTF{Pretty Neat}{
-  \setmainfont{Pretty Neat}
-  \renewcommand{\ppfont}{\fontspec{Pretty Neat}}
-  \tikzset{every picture/.style={/utils/exec={\fontspec{Pretty Neat}}}}
-  \AtBeginEnvironment{tabular}{\fontspec{Pretty Neat}}
-}{
-  \IfFontExistsTF{Humor Sans}{
-    \setmainfont{Humor Sans}
-    \renewcommand{\ppfont}{\fontspec{Humor Sans}}
-    \tikzset{every picture/.style={/utils/exec={\fontspec{Humor Sans}}}}
-    \AtBeginEnvironment{tabular}{\fontspec{Humor Sans}}
-  }{}
-}
+% Handwriting font, resolved once into \ppfont and \ppfontname.
+%
+% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
+% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
+% the one face that is always present; Latin Modern is the last resort.
+%
+% Naming a font that is not installed is a hard error, not a fallback, which is
+% why this is a chain and not a line: seven sheets used to name one outright
+% and stopped building the day it was uninstalled.
+\def\ppfontname{Latin Modern Roman}
+\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
+  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
+    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
+\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
+\expandafter\setmainfont\expandafter{\ppfontname}
+\tikzset{every picture/.style={/utils/exec={\ppfont}}}
+\AtBeginEnvironment{tabular}{\ppfont}
 
 % xkcd-style hand-drawn line decoration.
 % WARNING: applying [xkcd] to many nodes can throw "Dimension too large".

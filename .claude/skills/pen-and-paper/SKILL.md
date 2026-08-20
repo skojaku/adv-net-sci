@@ -145,8 +145,13 @@ preamble used across all existing sheets, plus a font guard.
   `node distance=1.5cm` relative placement or explicit polar coordinates
   (`at (90:1.3)`) for ring-shaped groups.
 - The handwriting font is `Pretty Neat` (some older sheets use `Humor Sans`).
-  It is **not installed on this machine** — the guard in `assets/preamble.tex`
-  falls back silently so the file still compiles. Do not remove the guard.
+  Neither is installed on this machine, and **naming a missing font is a hard
+  error in fontspec, not a fallback** — seven sheets named one outright and
+  stopped building. `assets/preamble.tex` resolves the face once, through
+  `Pretty Neat → Humor Sans → Excalifont → Latin Modern Roman`, into `\ppfont`
+  and `\ppfontname`. Excalifont is vendored in `tools/fonts/` and is what the
+  chain actually lands on, here and in CI. Use `\ppfont`; never write
+  `\fontspec{<a name>}`, and do not remove the chain.
 - The `xkcd` sketch decoration exists in the preamble but is fragile: applying
   it to many nodes (as m03 does) throws `Dimension too large` and produces no
   output. Prefer plain `\node[draw, circle]`; use `[xkcd]` only on a few plain
@@ -217,10 +222,22 @@ New sheets: `lecture-note/mNN/<slug>/exercise.tex`, where `<slug>` is a
 short kebab-case name of the sheet's idea (e.g. `m02/counting-triangles`).
 Existing legacy sheets stay under `lecture-note/mNN-name/pen-and-paper/`.
 
-Build with `xelatex -interaction=nonstopmode exercise.tex` run twice, from the
-sheet's own directory. Commit the `.tex` and the `.pdf`; do not commit `.xdv`,
-`.aux`, `.log`, `.out`. The repo `.gitignore` has a blanket `*.pdf`, so the PDF
-needs `git add -f`.
+Build with `bash tools/build_worksheets.sh <the sheet's directory>`, or
+`xelatex -interaction=nonstopmode exercise.tex` run twice from the sheet's own
+directory. A full TeX Live is needed; BasicTeX lacks `adjustbox` and
+`tikz-3dplot` (`sudo tlmgr install adjustbox tikz-3dplot`).
+
+**Commit the `.tex` only. The PDF is not committed** — `.gitignore` has a
+blanket `*.pdf`, and it is meant. Every sheet is rebuilt from source by
+`.github/workflows/quarto-publish.yml` before the lecture note is published, so
+the link on the site always matches the `.tex` that was pushed. Do not
+`git add -f` a PDF back in; a rewritten binary on every edit is what makes a
+repository heavy.
+
+`solutions.pdf` is built but deliberately **not published** — the workflow
+deletes it before Quarto renders, and it reaches the instructor through the run's
+`pen-and-paper-worksheets` artifact instead. A solutions file sitting beside the
+exercise on a public site is readable by anyone who guesses the URL.
 
 Proofread by rendering: `pdftoppm -r 60 -png exercise.pdf out` and read the
 images. Tables and their question text drift apart across page breaks — wrap
