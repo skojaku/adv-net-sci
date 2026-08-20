@@ -493,12 +493,13 @@ World War II. Königsberg is bombed and two bridges are destroyed.
 
 * Five bridges remain. Only two landmasses are left odd.
 * The 200-year impossible walk becomes possible — by accident of war.
+* Two odd, though, not zero: you finish on the far island. The **round trip** the citizens asked for is as impossible as it ever was.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/konigsberg-bombed.png)
-<figcaption>two odd → now possible</figcaption>
+<figcaption>two odd → a trail at last, still no circuit</figcaption>
 
 </div>
 </div>
@@ -1127,81 +1128,29 @@ More storage than most data centers hold, just to record who is *not* connected.
 
 <hr>
 
-Most pairs aren't linked — store only what's there. The **Compressed Sparse Row (CSR)** format keeps three arrays: **indptr** where each row starts, **indices** the column of each nonzero, **data** the values.
+Most pairs aren't linked — store only what's there. **Compressed Sparse Row (CSR)** is the adjacency list, glued into one line.
 
-<figure class="anim-stage" id="csr-rows">
-  <div class="csrw-top">
-    <div class="csrw-m" data-csr-m></div>
-    <div class="csrw-arrays">
-      <div class="csrw-row"><b>indptr</b><span data-csr-p></span></div>
-      <div class="csrw-row"><b>indices</b><span data-csr-i></span></div>
-      <div class="csrw-row"><b>data</b><span data-csr-d></span></div>
-    </div>
+<figure class="anim-stage" id="csr-build">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
   </div>
-
-  <div class="anim-range">
-    <div class="anim-track"><div class="anim-knob" data-csr-knob></div></div>
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-cb-left></div>
+    <div data-anim-clear data-cb-right></div>
   </div>
-
-  <figcaption class="anim-note" data-csr-out></figcaption>
+  <figcaption class="anim-note" data-anim-note></figcaption>
 </figure>
 
-<script>
-/* The lecture note's appendix widget, unchanged: the kit's knob rather than a
-   bare range input, every lookup scoped to the stage. Queued through
-   animReady so it does not care whether anim.js has loaded yet. */
-(window.animReady = window.animReady || []).push(function () {
-  var root = document.getElementById("csr-rows");
-  if (!root || !window.mountKnob) return;
+<script src="../../lecture-note/assets/anim/csr-build.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
-  var A = [[0, 1, 1, 0, 0], [1, 0, 1, 1, 0], [1, 1, 0, 0, 1], [0, 1, 0, 0, 1], [0, 0, 1, 1, 0]],
-      P = [0, 2, 5, 8, 10, 12],
-      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
-      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-
-  var mBox = root.querySelector("[data-csr-m]"),
-      out = root.querySelector("[data-csr-out]");
-
-  /* `bounds` marks the two endpoints of the row rather than the span between
-     them, because indptr is the one array where the row is a pair of numbers
-     and not a slice. */
-  function cells(host, vals, lo, hi, bounds) {
-    host.innerHTML = "";
-    vals.forEach(function (v, k) {
-      var c = document.createElement("i");
-      c.textContent = v;
-      if (bounds) { if (k === lo || k === hi) c.className = "bound"; }
-      else if (k >= lo && k < hi) { c.className = "slice"; }
-      host.appendChild(c);
-    });
-  }
-
-  function draw(r) {
-    mBox.innerHTML = "";
-    A.forEach(function (rowVals, i) {
-      rowVals.forEach(function (v) {
-        var c = document.createElement("i");
-        c.textContent = v;
-        c.className = (v ? "on " : "") + (i === r ? "row" : "");
-        mBox.appendChild(c);
-      });
-    });
-    cells(root.querySelector("[data-csr-p]"), P, r, r + 1, true);
-    cells(root.querySelector("[data-csr-i]"), I, P[r], P[r + 1], false);
-    cells(root.querySelector("[data-csr-d]"), D, P[r], P[r + 1], false);
-    out.innerHTML = "row " + r + " \u2014 indptr " + P[r] + " \u2192 " + P[r + 1] +
-      ", so degree " + (P[r + 1] - P[r]) +
-      " and neighbours " + I.slice(P[r], P[r + 1]).join(", ") + ".";
-  }
-
-  window.mountKnob(root.querySelector("[data-csr-knob]"), {
-    min: 0, max: 4, step: 1, value: 1,
-    label: "which row of the matrix",
-    format: function (v) { return "row " + v; },
-    onInput: draw
-  }).set(1);
-});
-</script>
+<!--
+Do not present CSR as three arrays to memorise. It is the adjacency list with the row breaks thrown away and then written back down, and the stage builds it in that order. Beats: 1 the list they met two slides ago, twelve numbers because every edge is filed twice. 2 glue the rows — say "nothing is lost yet", the colours prove it. 3 the one thing gluing did lose is where a row stopped, so keep the cut points; indptr has one per node plus the total, and the total is why it is N+1 long. 4 hand over the knob: degree is a subtraction, neighbours are a slice, and neither needs the picture. The colours here are per node's row; on "One graph, three structures" the same palette was per edge.
+-->
 
 ---
 
@@ -1300,7 +1249,7 @@ Picture a graph where every node has degree 2 — parity satisfied.
 
 <div class="note">
 
-The lab's last task — hold up the map you built.
+Part C of the lab did this to you — the network your sweep split in two.
 
 </div>
 

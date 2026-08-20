@@ -1259,6 +1259,67 @@ section #rep-three .rt-compact .rt-alrow > b { width: 18px; font-size: 17px; }
 section #rep-three .rt-compact .rt-m { grid-template-columns: repeat(5, 25px); }
 section #rep-three .rt-compact .rt-m > i { height: 25px; font-size: 17px; }
 
+/* CSR, built out of the adjacency list (m01). The left column is the list,
+   the right column the three arrays; one colour per node's row, carried into
+   the glued strip, is what lets a block be traced back to the row it came
+   from without a word of narration. */
+section #csr-build .anim-grid-2 { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.6fr); align-items: center; }
+section #csr-build .cb-h { font-family: var(--_hand); font-size: 22px; color: var(--_ink-soft); margin-bottom: 6px; }
+section #csr-build .cb-row { display: flex; gap: 4px; align-items: center; margin-bottom: 4px; transition: opacity 0.25s ease; }
+section #csr-build .cb-row > b {
+  width: 24px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 20px;
+  color: var(--_ink-soft);
+}
+/* Consumed by the glue, and dimmed while the block it became lands. */
+section #csr-build .cb-row.cb-done { opacity: 0.4; }
+
+section #csr-build .cb-arrays { display: flex; flex-direction: column; gap: 9px; }
+section #csr-build .cb-arow { display: flex; gap: 10px; align-items: center; }
+section #csr-build .cb-arow > b {
+  width: 76px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 19px;
+  color: var(--_accent);
+}
+section #csr-build .cb-strip { display: flex; gap: 2px; }
+
+section #csr-build .cb-cell {
+  display: inline-grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 18px;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
+}
+section #csr-build .cb-cell.cb-r0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-total { background: var(--_ink-soft); border-color: var(--_ink-soft); color: var(--_white); font-weight: 700; }
+/* data is a row of ones on a plain graph: present, and deliberately quiet. */
+section #csr-build .cb-cell.cb-one { color: var(--_ink-faint); }
+/* Where a row began. The blocks are already colour-separated; this is what
+   makes indptr read as a position in the strip rather than five more numbers. */
+section #csr-build .cb-cell.cb-cut { border-left: 3px solid var(--_ink); }
+/* The ring is ink, not the usual amber: one of the five row colours is the
+   amber, so an amber ring around that row's block was invisible exactly when
+   the room asked about it. Black reads against all five. */
+section #csr-build .cb-cell.cb-slice { outline: 2.4px solid var(--_ink); outline-offset: -2.4px; }
+section #csr-build .cb-cell.cb-bound { box-shadow: 0 0 0 3px var(--_ink); }
+section #csr-build .cb-row.cb-on > b { color: var(--_ink); font-weight: 700; }
+section #csr-build .cb-row.cb-on .cb-cell { outline: 2.4px solid var(--_ink); outline-offset: -2.4px; }
+section #csr-build .cb-read { font-family: var(--_hand); font-size: 21px; color: var(--_ink); min-height: 1.3em; }
+section #csr-build .anim-range { max-width: 340px; margin: 6px 0 2px 86px; }
+
 /* ---------- pagination ---------- */
 section::after {
   font-family: var(--serif);
