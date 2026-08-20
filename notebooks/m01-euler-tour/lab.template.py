@@ -446,9 +446,9 @@ def _(B, mo, np):
     network has **{len(_comps)}**: {_shown}.
 
     /// admonition | Back to the bridges
-    Every node in component {{2, 4, 6}} has an even number of lines. So does
-    every node in {{1, 3, 5}}. Your rule from Question 3(d) says a route
-    crossing every line exactly once should exist — and it does not.
+    Only nodes 2 and 6 have a left-over line — two of them, not three or
+    four. Your rule from Question 3 says a route crossing every line exactly
+    once should exist, and it does not.
 
     Write the missing condition on your sheet, using the word *component*.
     ///
