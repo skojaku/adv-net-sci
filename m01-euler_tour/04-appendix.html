@@ -784,6 +784,149 @@ window.Quarto = {
 <li><strong>Degree of node <span class="math inline">i</span></strong>: <code>indptr[i+1] - indptr[i]</code> — the number of non-zero entries in row <span class="math inline">i</span>.</li>
 <li><strong>Neighbours of node <span class="math inline">i</span></strong>: <code>indices[indptr[i]:indptr[i+1]]</code> — the column IDs in row <span class="math inline">i</span>, which are exactly the nodes <span class="math inline">i</span> connects to. The matching edge weights are <code>data[indptr[i]:indptr[i+1]]</code>.</li>
 </ul>
+<p>Both one-liners are easier to believe once you have watched them move. Drag the knob below through the rows of a small five-node graph — no parallel edges, so every entry is a 0 or a 1. The chosen row is outlined in the dense matrix on the left; the two amber cells in <code>indptr</code> are where that row starts and stops, and everything between them in <code>indices</code> and <code>data</code> is the row itself. The degree is the distance between the two amber cells. The neighbours are what lies between them.</p>
+<style>
+/* --------------------------------------------------------------------------
+   CSR rows — a static widget, not a sequence: no scenes, no sequencer, just
+   the kit's paper, the kit's knob and one redraw. The m01 deck carries the
+   same widget in its own stylesheet, at slide sizes. Colours are the kit's
+   resolved tokens — never literals. Scoped to #csr-rows.
+   -------------------------------------------------------------------------- */
+
+#csr-rows .csrw-top {
+  display: flex;
+  gap: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* the 5x5 dense matrix */
+#csr-rows .csrw-m { display: grid; grid-template-columns: repeat(5, 28px); gap: 3px; flex: none; }
+#csr-rows .csrw-m > i {
+  display: inline-grid;
+  place-items: center;
+  height: 28px;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 0.78rem;
+  /* Zeros recede so the sparsity pattern is the first thing the eye gets. */
+  color: var(--_ink-faint);
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+}
+#csr-rows .csrw-m > i.on { background: var(--_accent); border-color: var(--_accent); color: var(--_white); }
+#csr-rows .csrw-m > i.row { outline: 2.4px solid var(--_amber); outline-offset: -2.4px; }
+
+/* the three arrays */
+#csr-rows .csrw-arrays { display: flex; flex-direction: column; gap: 0.4rem; }
+#csr-rows .csrw-row { display: flex; gap: 0.25rem; align-items: center; }
+#csr-rows .csrw-row b {
+  width: 4.2rem;
+  text-align: right;
+  font-family: var(--_hand);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--_accent);
+}
+/* The script appends each cell into the row's <span>, so this has to be a
+   descendant selector, not a child one — and <i> is inline by default, so the
+   boxes need inline-grid or the cells run together into one number. */
+#csr-rows .csrw-row i {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  margin-right: 3px;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 0.74rem;
+  color: var(--_ink);
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+}
+/* What the row occupies, and the two bounds that delimit it. */
+#csr-rows .csrw-row i.slice { background: var(--_accent-soft); border-color: var(--_accent); color: var(--_accent); }
+#csr-rows .csrw-row i.bound { background: var(--_amber); border-color: var(--_amber); color: var(--_white); }
+</style>
+
+<figure class="anim-stage figure" id="csr-rows">
+  <div class="csrw-top">
+    <div class="csrw-m" data-csr-m=""></div>
+    <div class="csrw-arrays">
+      <div class="csrw-row"><b>indptr</b><span data-csr-p=""></span></div>
+      <div class="csrw-row"><b>indices</b><span data-csr-i=""></span></div>
+      <div class="csrw-row"><b>data</b><span data-csr-d=""></span></div>
+    </div>
+  </div>
+
+  <div class="anim-range">
+    <div class="anim-track"><div class="anim-knob" data-csr-knob=""></div></div>
+  </div>
+
+  <figcaption class="anim-note" data-csr-out=""></figcaption>
+</figure>
+
+<script>
+/* Queued, because assets/anim.js is included after the body and mountKnob does
+   not exist yet. Every lookup is scoped to the stage root; a stray
+   getElementById here would reach into whatever else the page carries. */
+(window.animReady = window.animReady || []).push(function () {
+  var root = document.getElementById("csr-rows");
+  if (!root || !window.mountKnob) return;
+
+  /* The five-node graph the module keeps coming back to — the same one behind
+     the walk-counting stage on the vocabulary page. Written out rather than
+     derived: A is the dense matrix, P/I/D are what scipy.sparse.csr_matrix(A)
+     stores as indptr / indices / data. */
+  var A = [[0, 1, 1, 0, 0], [1, 0, 1, 1, 0], [1, 1, 0, 0, 1], [0, 1, 0, 0, 1], [0, 0, 1, 1, 0]],
+      P = [0, 2, 5, 8, 10, 12],
+      I = [1, 2, 0, 2, 3, 0, 1, 4, 1, 4, 2, 3],
+      D = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+  var mBox = root.querySelector("[data-csr-m]"),
+      out = root.querySelector("[data-csr-out]");
+
+  /* `bounds` marks the two endpoints of the row rather than the span between
+     them, because indptr is the one array where the row is a pair of numbers
+     and not a slice. */
+  function cells(host, vals, lo, hi, bounds) {
+    host.innerHTML = "";
+    vals.forEach(function (v, k) {
+      var c = document.createElement("i");
+      c.textContent = v;
+      if (bounds) { if (k === lo || k === hi) c.className = "bound"; }
+      else if (k >= lo && k < hi) { c.className = "slice"; }
+      host.appendChild(c);
+    });
+  }
+
+  function draw(r) {
+    mBox.innerHTML = "";
+    A.forEach(function (rowVals, i) {
+      rowVals.forEach(function (v) {
+        var c = document.createElement("i");
+        c.textContent = v;
+        c.className = (v ? "on " : "") + (i === r ? "row" : "");
+        mBox.appendChild(c);
+      });
+    });
+    cells(root.querySelector("[data-csr-p]"), P, r, r + 1, true);
+    cells(root.querySelector("[data-csr-i]"), I, P[r], P[r + 1], false);
+    cells(root.querySelector("[data-csr-d]"), D, P[r], P[r + 1], false);
+    out.innerHTML = "row " + r + " — indptr " + P[r] + " → " + P[r + 1] +
+      ", so degree " + (P[r + 1] - P[r]) +
+      " and neighbours " + I.slice(P[r], P[r + 1]).join(", ") + ".";
+  }
+
+  window.mountKnob(root.querySelector("[data-csr-knob]"), {
+    min: 0, max: 4, step: 1, value: 1,
+    label: "which row of the matrix",
+    format: function (v) { return "row " + v; },
+    onInput: draw
+  }).set(1);
+});
+</script>
 <p>CSR is the format every network library reaches for, because it makes the operation you perform most often — “give me this node’s neighbours” — a contiguous slice.</p>
 <p>Now go and build it.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Where the code lives">
