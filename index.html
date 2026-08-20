@@ -74,20 +74,28 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>
-.course-map {
-  margin: 1.6rem 0 2.6rem;
-  border-top: 1px solid var(--rule);
+.course-map { margin: 1.6rem 0 1rem; overflow-x: auto; }
+/* The site gives every table `display: block; width: fit-content`, which
+   leaves the four tick columns crushed against the module column — and
+   on a block box `width: 100%` widens the box without widening the
+   anonymous table inside it. So this one table goes back to being a
+   table, and the scrolling moves out to the wrapper above. */
+.course-map table {
+  display: table;
+  width: 100%;
+  min-width: 40rem;
 }
-.course-map .stop {
-  padding: 1rem 0 .95rem;
-  border-bottom: 1px solid var(--rule);
+.course-map td, .course-map th { vertical-align: top; }
+/* The module cell carries three lines: number, title, question. Every
+   other cell is a tick or a dash, so they stay narrow and centred. */
+.course-map td:not(:first-child),
+.course-map th:not(:first-child) {
+  text-align: center;
+  white-space: nowrap;
 }
-.course-map .stop p { margin: 0; }
-.course-map .stop p + p { margin: .3rem 0 0 3.1rem; }
 .stop-no {
-  display: inline-block;
-  min-width: 3.1rem;
-  font-size: .82rem;
+  display: block;
+  font-size: .75rem;
   letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--anim-ink-soft);
@@ -95,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
 }
 a.stop-title {
   font-weight: 600;
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   color: var(--anim-ink);
   text-decoration: none;
 }
@@ -104,24 +112,19 @@ a.stop-title:focus {
   color: var(--anim-accent);
   text-decoration: underline;
 }
-/* The question keeps body size even when it is the stop's last line. */
 .stop-q {
   display: block;
-  font-size: 1rem;
-  color: var(--anim-ink-soft);
-}
-/* The worksheet line is always the last paragraph of a stop. */
-.course-map .stop p:last-child {
-  margin-top: .45rem;
   font-size: .85rem;
+  line-height: 1.4;
   color: var(--anim-ink-soft);
+  margin-top: .2rem;
+  white-space: normal;
 }
-/* Links there are marked by their underline, as everywhere on the site. */
-.course-map .stop p:last-child a { color: inherit; }
-@media (max-width: 620px) {
-  .course-map .stop p + p { margin-left: 0; }
-  .stop-no { display: block; min-width: 0; }
-}
+/* A sheet title is the one thing in a tick column that wraps. */
+.course-map .sheet { white-space: normal; font-size: .85rem; }
+/* "not in this module" should read as absence, not as a value. */
+.course-map .none { color: var(--anim-ink-faint); }
+.course-map + p { font-size: .85rem; color: var(--anim-ink-soft); }
 </style>
 
 
@@ -722,59 +725,98 @@ a.stop-title:focus {
 <p>Outside class you hand in two things: a <a href="./course/pair-notebook.html">Pair Notebook</a> — a module taught as a one-on-one session with an AI tutor in your terminal, where the conversation is what gets graded, not the code — and a <a href="./course/mini-project.html">Group Mini-Project</a> built with up to two teammates. <a href="./course/activities.html">Activities and grading</a> lists everything that counts.</p>
 <section id="the-nine-modules" class="level2">
 <h2 class="anchored" data-anchor-id="the-nine-modules">The nine modules</h2>
-<p>One question opens the course, and each of the nine modules asks another. Every question is a link into the lecture note; the worksheet under it is the one you do before that lecture, with a pencil.</p>
+<p>One question opens the course, and each of the nine modules asks another. The course begins with <a href="./intro/why-networks.html">Why Networks?</a> — why we need a science of networks instead of ordinary statistics — and there is nothing to hand in for it.</p>
+<p>After that, every module carries its own set of materials, and <strong>not every module carries all of them</strong>. This is the table to come back to when you are not sure which thing you are supposed to be doing this week.</p>
 <!-- TODO(anim): course-as-one-journey, nine stops -->
 <div class="course-map">
-<div class="stop">
-<p><span class="stop-no">Start</span> <a href="./intro/why-networks.html" class="stop-title">Why Networks?</a></p>
-<p><span class="stop-q">Why do we need a science of networks instead of ordinary statistics?</span></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Module</th>
+<th style="text-align: left;">Pen &amp; paper</th>
+<th style="text-align: center;"><a href="./course/mini-project.html">Mini-project</a></th>
+<th style="text-align: center;"><a href="./course/pair-notebook.html">Pair Notebook</a></th>
+<th style="text-align: center;">Lab notebook</th>
+<th style="text-align: center;"><a href="./course/activities.html">Quiz</a></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="stop-no">M01</span><a href="./m01-euler_tour/01-concepts.html" class="stop-title">Euler Tour</a><br><span class="stop-q">Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?</span></td>
+<td style="text-align: left;"><a href="m01-euler_tour/pen-and-paper/exercise.pdf" class="sheet">Seven Highways</a></td>
+<td style="text-align: center;">✓ <span class="stop-no">+ talk</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><a href="https://go.skojaku.com/m01lab" class="sheet">m01lab</a></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="stop-no">M02</span><a href="./m02-small-world/01-concepts.html" class="stop-title">Small World</a><br><span class="stop-q">Why is a stranger on the other side of the world only about six handshakes away?</span></td>
+<td style="text-align: left;"><a href="m02-small-world/pen-and-paper/six-handshakes.pdf" class="sheet">Six Handshakes</a> · <a href="m02-small-world/pen-and-paper/turning-the-dial.pdf" class="sheet">Turning the Dial</a> · <a href="m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf" class="sheet">Do Your Friends Know Each Other?</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="stop-no">M03</span><a href="./m03-robustness/01-concepts.html" class="stop-title">Robustness</a><br><span class="stop-q">How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?</span></td>
+<td style="text-align: left;"><a href="m03-robustness/pen-and-paper/exercise.pdf" class="sheet">Build it, Break it, and Build it Back</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="stop-no">M04</span><a href="./m04-node-degree/01-concepts.html" class="stop-title">Friendship Paradox</a><br><span class="stop-q">Why do your friends have more friends than you do?</span></td>
+<td style="text-align: left;"><a href="m04-node-degree/pen-and-paper/exercise.pdf" class="sheet">Reading Heavy Tails</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="stop-no">M05</span><a href="./m05-clustering/01-concepts.html" class="stop-title">Clustering</a><br><span class="stop-q">What is a community in a network, and how would you know if the one you found is real?</span></td>
+<td style="text-align: left;"><a href="m05-clustering/pen-and-paper/exercise.pdf" class="sheet">Discovering Friend Groups</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="stop-no">M06</span><a href="./m06-centrality/01-concepts.html" class="stop-title">Centrality</a><br><span class="stop-q">Which node is the most important — and important in what sense?</span></td>
+<td style="text-align: left;"><a href="m06-centrality/pen-and-paper/exercise.pdf" class="sheet">Who’s the Big Cheese in the University Clubs?</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="stop-no">M07</span><a href="./m07-random-walks/01-concepts.html" class="stop-title">Random Walks</a><br><span class="stop-q">What does a network look like to a walker who has no idea where they are going?</span></td>
+<td style="text-align: left;"><a href="m07-random-walks/pen-and-paper/exercise.pdf" class="sheet">Where Does the Drunkard Sleep?</a></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="stop-no">M08</span><a href="./m08-embedding/01-concepts.html" class="stop-title">Embedding</a><br><span class="stop-q">How do you turn a network into coordinates without throwing away what makes it a network?</span></td>
+<td style="text-align: left;"><a href="m08-embedding/pen-and-paper/exercise.pdf" class="sheet">From Matrix to Map</a></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="stop-no">M09</span><a href="./m09-graph-neural-networks/01-concepts.html" class="stop-title">Graph Neural Networks</a><br><span class="stop-q">An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?</span></td>
+<td style="text-align: left;"><a href="m09-graph-neural-networks/pen-and-paper/exercise.pdf" class="sheet">Convolution and the Weisfeiler-Lehman Test</a></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;"><span class="none">—</span></td>
+<td style="text-align: center;">✓</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="stop">
-<p><span class="stop-no">M01</span> <a href="./m01-euler_tour/01-concepts.html" class="stop-title">Euler Tour</a></p>
-<p><span class="stop-q">Can you walk a city crossing each bridge exactly once — and how would you ever prove you cannot?</span></p>
-<p>Worksheet: <a href="https://estebanmoro.org/pdf/netsci_for_kids/the_konisberg_bridges.pdf">the Königsberg bridges</a> (PDF, hosted by Esteban Moro)</p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M02</span> <a href="./m02-small-world/01-concepts.html" class="stop-title">Small World</a></p>
-<p><span class="stop-q">Why is a stranger on the other side of the world only about six handshakes away?</span></p>
-<p>Worksheets: <a href="m02-small-world/pen-and-paper/six-handshakes.pdf">Six Handshakes</a> · <a href="m02-small-world/pen-and-paper/turning-the-dial.pdf">Turning the Dial</a> · <a href="m02-small-world/pen-and-paper/do-your-friends-know-each-other.pdf">Do Your Friends Know Each Other?</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M03</span> <a href="./m03-robustness/01-concepts.html" class="stop-title">Robustness</a></p>
-<p><span class="stop-q">How much of a network can you destroy before it falls apart — and does it matter whether the damage is random or deliberate?</span></p>
-<p>Worksheet: <a href="m03-robustness/pen-and-paper/exercise.pdf">Build it, Break it, and Build it Back</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M04</span> <a href="./m04-node-degree/01-concepts.html" class="stop-title">Friendship Paradox</a></p>
-<p><span class="stop-q">Why do your friends have more friends than you do?</span></p>
-<p>Worksheet: <a href="m04-node-degree/pen-and-paper/exercise.pdf">Reading Heavy Tails</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M05</span> <a href="./m05-clustering/01-concepts.html" class="stop-title">Clustering</a></p>
-<p><span class="stop-q">What is a community in a network, and how would you know if the one you found is real?</span></p>
-<p>Worksheet: <a href="m05-clustering/pen-and-paper/exercise.pdf">Discovering Friend Groups</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M06</span> <a href="./m06-centrality/01-concepts.html" class="stop-title">Centrality</a></p>
-<p><span class="stop-q">Which node is the most important — and important in what sense?</span></p>
-<p>Worksheet: <a href="m06-centrality/pen-and-paper/exercise.pdf">Who’s the Big Cheese in the University Clubs?</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M07</span> <a href="./m07-random-walks/01-concepts.html" class="stop-title">Random Walks</a></p>
-<p><span class="stop-q">What does a network look like to a walker who has no idea where they are going?</span></p>
-<p>Worksheet: <a href="m07-random-walks/pen-and-paper/exercise.pdf">Where Does the Drunkard Sleep?</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M08</span> <a href="./m08-embedding/01-concepts.html" class="stop-title">Embedding</a></p>
-<p><span class="stop-q">How do you turn a network into coordinates without throwing away what makes it a network?</span></p>
-<p>Worksheet: <a href="m08-embedding/pen-and-paper/exercise.pdf">From Matrix to Map</a></p>
-</div>
-<div class="stop">
-<p><span class="stop-no">M09</span> <a href="./m09-graph-neural-networks/01-concepts.html" class="stop-title">Graph Neural Networks</a></p>
-<p><span class="stop-q">An image filter slides over every pixel in the same way. What do you slide over a network, where no two nodes have the same neighborhood?</span></p>
-<p>Worksheet: <a href="m09-graph-neural-networks/pen-and-paper/exercise.pdf">Convolution and the Weisfeiler-Lehman Test</a></p>
-</div>
-</div>
+<p><strong>Pen &amp; paper</strong> is a printable PDF you do <em>before</em> that module’s lecture, with a pencil — nothing is submitted, but the lecture starts from it and the quiz assumes it. <strong>Mini-project</strong> and <strong>Pair Notebook</strong> are the two graded assignments, both handed out through Classroom 50; the column headings link to what each one is. A <strong>lab notebook</strong> is the marimo notebook a worksheet hands off to at the end of class, opened from the QR code on the printed sheet. <strong>Quiz</strong> opens the following week’s class. A dash means that module does not have one, not that it is missing.</p>
 </section>
 <section id="everything-else" class="level2">
 <h2 class="anchored" data-anchor-id="everything-else">Everything else</h2>
