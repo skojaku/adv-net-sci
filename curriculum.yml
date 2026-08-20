@@ -324,7 +324,7 @@ modules:
         level: core
         statement: "Konigsberg has two bridges between the same pair of landmasses, so it is a multigraph - parallel edges are allowed and each one counts."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m01-euler_tour/01-concepts.qmd#what-a-graph-is-formally", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-word-for-a-doubled-pair"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m01-euler_tour/01-concepts.qmd#what-a-graph-is-formally", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c05
         name: "Node degree"
@@ -444,7 +444,7 @@ modules:
         level: core
         statement: "A network stored as a list of node pairs - compact, natural for data files, but answering 'who are i's neighbors?' requires a scan."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#you-have-used-all-three-here-are-their-names"], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c20
         name: "Adjacency list representation"
@@ -452,7 +452,7 @@ modules:
         level: core
         statement: "For each node, the list of its neighbors - the representation that makes neighborhood traversal cheap."
         prereq: [m01.c19]
-        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#you-have-used-all-three-here-are-their-names"], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down"], assessment: []}
 
       - id: m01.c21
         name: "Adjacency matrix representation"
@@ -468,7 +468,7 @@ modules:
         level: core
         statement: "Degree is a row sum of A, a count of incidences in the edge list, or a list length in the adjacency list - the same quantity read three ways."
         prereq: [m01.c05, m01.c19, m01.c20, m01.c21]
-        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#you-have-used-all-three-here-are-their-names"], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c23
         name: "Graph traversal for components"
@@ -516,7 +516,7 @@ modules:
         level: core
         statement: "Degree of node i is indptr[i+1] - indptr[i] and its neighbors are indices[indptr[i]:indptr[i+1]] - the semantics of the arrays are what make the format fast, not the storage alone."
         prereq: [m01.c27]
-        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#reading-a-graph-off-csr--and-when-not-to-bother"], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
 
       - id: m01.c29
         name: "When dense beats sparse"
@@ -524,7 +524,7 @@ modules:
         level: extension
         statement: "Sparse formats win for row-based operations and matrix-vector products on large sparse networks; dense arrays win for small or dense networks and random single-entry access."
         prereq: [m01.c27]
-        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#reading-a-graph-off-csr--and-when-not-to-bother"], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
 
       - id: m01.c30
         name: "Matrix powers count walks"

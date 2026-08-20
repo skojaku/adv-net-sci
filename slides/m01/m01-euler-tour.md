@@ -260,6 +260,18 @@ For Königsberg: four landmasses, seven bridges.
 
 ---
 
+## The word for a doubled pair
+
+<hr>
+
+Question 1 gave you two bridges between the same two cities, and the lab made you write that pair down **twice**. Both bridges count — merge them and you are solving a different puzzle with a different answer.
+
+* A pair that repeats is a **multi-edge**.
+* A graph that allows them is a **multigraph**.
+* Königsberg is one, twice over — which is why the doubling had to survive the abstraction.
+
+---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Three</span><span class="count">03 / 08</span></div>
@@ -312,8 +324,7 @@ Every dashed line you drew joined an arrival to a departure. Roads get spent two
 
 * Even city — every road finds a partner.
 * Odd city — one road is left alone.
-
-The leftover has nowhere to go except the start or the end.
+* The leftover has nowhere to go except the start or the end.
 
 </div>
 <div class="fig">
@@ -1002,6 +1013,19 @@ A pair is a coordinate, and it lights two cells — the grid is a mirror.
 
 ---
 
+## You have used all three. Here are their names
+
+<hr>
+
+The lab had you write the map as pairs, turn the pairs into a grid, then read a degree off a row. Each step was a different **representation**, and each is good at something the others are not.
+
+* **Edge list** — one pair per edge. Compact, and what a data file looks like; “who are $i$'s neighbours?” costs a scan of everything.
+* **Adjacency list** — each node's neighbours, kept together. Traversal is cheap, which is what the component sweep needed.
+* **Adjacency matrix** — the grid. Buys linear algebra, at $O(n^2)$ whether or not the edges are there.
+* Degree comes off each differently: count a node's appearances, take a list's length, sum a row.
+
+---
+
 <!-- _class: mid -->
 
 ## Multiply $A$ by itself. What does one entry mean?
@@ -1165,6 +1189,19 @@ Most pairs aren't linked — store only what's there. The **Compressed Sparse Ro
   draw(+s.value);
 })();
 </script>
+
+---
+
+## Reading a graph off CSR — and when not to bother
+
+<hr>
+
+Cover the picture and use only the two arrays. Everything you need is still there:
+
+* Degree of node $i$ is $\texttt{indptr}[i{+}1] - \texttt{indptr}[i]$ — a subtraction, no search.
+* Its neighbours are $\texttt{indices}[\texttt{indptr}[i] : \texttt{indptr}[i{+}1]]$ — a slice, already contiguous.
+* What it is bad at is **insertion**: one new edge shifts everything after it.
+* So **dense beats sparse** on graphs that are small, nearly complete, or changing constantly. CSR pays off on the large, fixed, mostly-empty ones — which is what real networks are.
 
 ---
 
