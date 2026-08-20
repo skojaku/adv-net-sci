@@ -27,7 +27,7 @@ meta:
   source_of_truth:
     # Primary: the lecture note. Every concept below was checked against these.
     - lecture-note/intro/why-networks.qmd
-    - lecture-note/m01-euler_tour/{01-concepts,04-advanced}.qmd
+    - lecture-note/m01-euler_tour/{01-concepts,01b-vocabulary,04-appendix}.qmd
     - lecture-note/m02-small-world/{01-concepts,appendix,04-appendix}.qmd
     - lecture-note/m03-robustness/01-concepts.qmd
     - lecture-note/m04-node-degree/{01-concepts,03-exercises}
@@ -308,7 +308,7 @@ modules:
         level: core
         statement: "Euler discarded geography, distance and shape, keeping only which landmass touches which bridge; the shape of the map is irrelevant to the answer."
         prereq: [m01.c01]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#what-can-you-throw-away", "slides/m01/m01-euler-tour.md#eulers-move--each-landmass-becomes-a-node", "slides/m01/m01-euler-tour.md#eulers-move--each-bridge-becomes-an-edge"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c03
         name: "Graph as (V, E)"
@@ -324,7 +324,7 @@ modules:
         level: core
         statement: "Konigsberg has two bridges between the same pair of landmasses, so it is a multigraph - parallel edges are allowed and each one counts."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m01-euler_tour/01-concepts.qmd#what-a-graph-is-formally", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c05
         name: "Node degree"
@@ -332,7 +332,7 @@ modules:
         level: core
         statement: "The degree of a node is the number of edges attached to it."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c06
         name: "Self-loop and degree"
@@ -340,7 +340,7 @@ modules:
         level: core
         statement: "A self-loop joins a node to itself and contributes 2 to that node's degree, because both endpoints attach to the same node."
         prereq: [m01.c05]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-graph-written-down"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#does-a-selfloop-add-1-to-a-nodes-degree-or-2", "slides/m01/m01-euler-tour.md#two"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c07
         name: "Degree parity argument"
@@ -348,7 +348,7 @@ modules:
         level: core
         statement: "Every visit to a node uses one edge in and one edge out, so a node of even degree can be passed through, while a node of odd degree must be a start or an end of the walk."
         prereq: [m01.c05]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-and-the-parity-argument"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#you-drew-this-already--question-2", "slides/m01/m01-euler-tour.md#a-graph-with-such-a-walk-has-at-most-two-odd-nodes"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c08
         name: "Eulerian path condition"
@@ -356,7 +356,7 @@ modules:
         level: core
         statement: "An Eulerian path exists if and only if the graph is connected and has exactly zero or exactly two nodes of odd degree."
         prereq: [m01.c07, m01.c14]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit", "slides/m01/m01-euler-tour.md#the-konigsberg-verdict"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path", "slides/m01/m01-euler-tour.md#the-verdict"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c09
         name: "Eulerian circuit condition"
@@ -364,7 +364,7 @@ modules:
         level: core
         statement: "A closed Eulerian walk (circuit) exists if and only if the graph is connected and every node has even degree; Konigsberg has four odd-degree nodes, so the walk is impossible."
         prereq: [m01.c08]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-path-and-circuit"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulerian-circuit", "slides/m01/m01-euler-tour.md#watch-the-trail-get-built"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c10
         name: "Walk"
@@ -372,7 +372,7 @@ modules:
         level: core
         statement: "A walk is any sequence of adjacent nodes; both nodes and edges may repeat."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c11
         name: "Trail"
@@ -380,7 +380,7 @@ modules:
         level: core
         statement: "A trail is a walk that never repeats an edge, though it may revisit nodes."
         prereq: [m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#trail"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c12
         name: "Path"
@@ -388,7 +388,7 @@ modules:
         level: core
         statement: "A path is a walk that never repeats a node (and hence never repeats an edge)."
         prereq: [m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#walk-trail-path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#path"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c13
         name: "Circuit and cycle"
@@ -396,7 +396,7 @@ modules:
         level: core
         statement: "A circuit is a closed trail and a cycle is a closed path; both start and end at the same node, but only the cycle forbids intermediate repetition."
         prereq: [m01.c11, m01.c12]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#circuit-cycle-and-eulers-language"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#circuit", "slides/m01/m01-euler-tour.md#cycle"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c14
         name: "Connected vs disconnected graph"
@@ -404,7 +404,7 @@ modules:
         level: core
         statement: "A graph is connected when a path exists between every pair of nodes; otherwise it splits into separate islands."
         prereq: [m01.c12]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#components", "slides/m01/m01-euler-tour.md#the-graph-is-in-two-pieces"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c15
         name: "Connected component"
@@ -412,7 +412,7 @@ modules:
         level: core
         statement: "A connected component is a maximal set of nodes that are mutually reachable."
         prereq: [m01.c14]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#connected-graphs-and-components"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#components"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c16
         name: "Giant component"
@@ -420,7 +420,7 @@ modules:
         level: core
         statement: "A giant component is a connected component holding a finite fraction of all nodes - typically the one component that matters in a real network."
         prereq: [m01.c15]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-giant-component"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-component-has-1000-nodes-is-it-giant", "slides/m01/m01-euler-tour.md#the-giant-component"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c17
         name: "Directed graph"
@@ -428,7 +428,7 @@ modules:
         level: core
         statement: "In a directed graph each edge has an orientation, so reachability from i to j does not imply reachability from j to i."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#edges-with-direction"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c18
         name: "Weak vs strong connectivity"
@@ -436,7 +436,7 @@ modules:
         level: core
         statement: "A directed graph is weakly connected if it becomes connected when directions are ignored, and strongly connected if a directed path runs from every node to every other node."
         prereq: [m01.c17, m01.c14]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#directed-graphs-weak-vs-strong"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#strongly-connected", "slides/m01/m01-euler-tour.md#weakly-connected", "slides/m01/m01-euler-tour.md#turn-an-arrow-round"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c19
         name: "Edge list representation"
@@ -444,7 +444,7 @@ modules:
         level: core
         statement: "A network stored as a list of node pairs - compact, natural for data files, but answering 'who are i's neighbors?' requires a scan."
         prereq: [m01.c03]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c20
         name: "Adjacency list representation"
@@ -452,7 +452,7 @@ modules:
         level: core
         statement: "For each node, the list of its neighbors - the representation that makes neighborhood traversal cheap."
         prereq: [m01.c19]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network", "slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down"], assessment: []}
 
       - id: m01.c21
         name: "Adjacency matrix representation"
@@ -460,7 +460,7 @@ modules:
         level: core
         statement: "The n-by-n matrix A with A_ij = 1 when i and j are connected; it turns network questions into linear algebra but costs O(n^2) memory if stored densely."
         prereq: [m01.c19]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks", "slides/m01/m01-euler-tour.md#three-ways-to-store-the-same-network"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#adjacency-matrix"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c22
         name: "Degree from each representation"
@@ -468,7 +468,7 @@ modules:
         level: core
         statement: "Degree is a row sum of A, a count of incidences in the edge list, or a list length in the adjacency list - the same quantity read three ways."
         prereq: [m01.c05, m01.c19, m01.c20, m01.c21]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#degree-three-ways"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#three-ways-to-write-a-network-down", "lecture-note/m01-euler_tour/pen-and-paper/lab.py"], assessment: []}
 
       - id: m01.c23
         name: "Graph traversal for components"
@@ -476,7 +476,7 @@ modules:
         level: core
         statement: "Depth-first (or breadth-first) search from a seed node visits exactly its connected component, which is how components are found in practice."
         prereq: [m01.c15, m01.c20]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#finding-components-dfs-and-bfs"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#run-the-sweep"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c24
         name: "Birth of graph theory"
@@ -484,7 +484,7 @@ modules:
         level: extension
         statement: "Euler's 1736 abstraction created graph theory, now the substrate for social, transportation, brain and Internet analysis."
         prereq: [m01.c02]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--and-a-new-field"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#eulers-move--each-bridge-becomes-an-edge"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c25
         name: "Konigsberg after the bombing"
@@ -492,7 +492,7 @@ modules:
         level: extension
         statement: "WWII destroyed two of the seven bridges, leaving only two odd-degree landmasses - the 200-year-old impossible puzzle became possible by accident of war."
         prereq: [m01.c09]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#which-two-bridges-would-you-destroy", "slides/m01/m01-euler-tour.md#a-tragic-epilogue"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m01.c26
         name: "Real networks are sparse"
@@ -500,7 +500,7 @@ modules:
         level: core
         statement: "Most node pairs are not connected, so a dense n-by-n matrix is hopeless at scale - Earth's 8 billion people would need 512 exabytes."
         prereq: [m01.c21]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#a-dense-matrix-for-eight-billion-people--how-much-memory", "slides/m01/m01-euler-tour.md#64-exabytes"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c27
         name: "Compressed Sparse Row (CSR)"
@@ -508,7 +508,7 @@ modules:
         level: core
         statement: "Store only non-zero entries in three arrays - data, indices, indptr - where row i occupies data[indptr[i]:indptr[i+1]]; memory drops from O(n^2) to O(m+n)."
         prereq: [m01.c26, m01.c20]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#store-only-the-nonzeros"], in_class: [], out_class: [], assessment: []}
 
       - id: m01.c28
         name: "Reading structure off CSR"
@@ -516,7 +516,7 @@ modules:
         level: core
         statement: "Degree of node i is indptr[i+1] - indptr[i] and its neighbors are indices[indptr[i]:indptr[i+1]] - the semantics of the arrays are what make the format fast, not the storage alone."
         prereq: [m01.c27]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#real-networks-are-sparse--use-csr"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
 
       - id: m01.c29
         name: "When dense beats sparse"
@@ -524,7 +524,7 @@ modules:
         level: extension
         statement: "Sparse formats win for row-based operations and matrix-vector products on large sparse networks; dense arrays win for small or dense networks and random single-entry access."
         prereq: [m01.c27]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#when-to-use-which-format"], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#storing-a-matrix-that-does-not-fit"], assessment: []}
 
       - id: m01.c30
         name: "Matrix powers count walks"
@@ -539,7 +539,7 @@ modules:
           and fair game on the exam. Note the counted object is a walk, not a
           path: the argument never asks whether a node or an edge repeats.
         prereq: [m01.c21, m01.c10]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-adjacency-matrix-counts-walks"], in_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#the-adjacency-matrix-and-what-its-powers-count", "lecture-note/m01-euler_tour/04-appendix.qmd#why-matrix-powers-count-walks", "lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#multiply-a-by-itself-what-does-one-entry-mean", "slides/m01/m01-euler-tour.md#now-predict-a3-and-a4", "slides/m01/m01-euler-tour.md#ak-counts-walks"], in_class: ["lecture-note/m01-euler_tour/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#the-adjacency-matrix-and-what-its-powers-count", "lecture-note/m01-euler_tour/04-appendix.qmd#why-matrix-powers-count-walks"], assessment: []}
 
       # Both belong with c17-c18 by topic; the ids continue the sequence so that
       # nothing already referring to m01.c17 has to move.
@@ -554,7 +554,7 @@ modules:
           defined no such quantity - the prereq chain stopped at m01.c17,
           'directed graph'. The slide deck was the only place it was taught.
         prereq: [m01.c05, m01.c17]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#in-degree-and-out-degree"], in_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#when-edges-have-direction"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#indegree-and-outdegree"], in_class: [], out_class: ["lecture-note/m01-euler_tour/01b-vocabulary.qmd#when-edges-have-direction"], assessment: []}
 
       - id: m01.c32
         name: "Directed Eulerian condition"
@@ -566,7 +566,7 @@ modules:
           earns its place as the payoff of the module - the parity rule
           survives orientation, with balance standing in for evenness.
         prereq: [m01.c31, m01.c09]
-        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-directed-euler-condition"], in_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#the-same-rule-when-edges-have-direction"], out_class: [], assessment: []}
+        coverage: {slide: ["slides/m01/m01-euler-tour.md#the-directed-euler-condition", "slides/m01/m01-euler-tour.md#your-turn-does-a-closed-tour-survive"], in_class: [], out_class: ["lecture-note/m01-euler_tour/04-appendix.qmd#the-same-rule-when-edges-have-direction"], assessment: []}
 
 # =============================================================================
 # M02: Small World
