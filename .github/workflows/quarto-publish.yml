@@ -74,19 +74,22 @@ jobs:
           kpsewhich XCharter-Roman.otf || echo "no XCharter under that name"
           kpsewhich pzdr.tfm || echo "no ZapfDingbats"
 
-      # M01 is the only module whose sheet is published, so it is the only one
-      # whose build may fail the run. Both halves of it go up — exercise and
-      # solutions — and `resources:` in _quarto.yml copies whatever is on disk.
-      - name: Build the published worksheets (m01)
-        run: bash tools/build_worksheets.sh lecture-note/m01-euler_tour/pen-and-paper
+      # M01 and M02 are the modules whose sheets are published and linked from
+      # the lecture note, so they are the ones whose build may fail the run.
+      # Both halves of each go up — exercise and solutions — and `resources:`
+      # in _quarto.yml copies whatever is on disk.
+      - name: Build the published worksheets (m01, m02)
+        run: |
+          bash tools/build_worksheets.sh lecture-note/m01-euler_tour/pen-and-paper
+          bash tools/build_worksheets.sh lecture-note/m02-small-world/pen-and-paper
 
-      # M02-M09 are being reviewed and rewritten. They are still built, so a
+      # M03-M09 are being reviewed and rewritten. They are still built, so a
       # sheet that stops compiling is visible in the log and its PDF can be
       # pulled from the artifact for proofreading — but a half-rewritten sheet
       # must not be able to block a publish.
-      - name: Build the sheets under revision (m02-m09)
+      - name: Build the sheets under revision (m03-m09)
         continue-on-error: true
-        run: bash tools/build_worksheets.sh lecture-note/m0[2-9]*/pen-and-paper
+        run: bash tools/build_worksheets.sh lecture-note/m0[3-9]*/pen-and-paper
 
       - name: Collect every worksheet, published or not
         uses: actions/upload-artifact@v4
@@ -95,10 +98,13 @@ jobs:
           path: lecture-note/m0*/pen-and-paper/*.pdf
           retention-days: 90
 
-      - name: Publish m01's sheets only
+      # Everything else stays in the artifact and off the site: a sheet still
+      # under revision must not be reachable from a link somebody found.
+      - name: Publish the m01 and m02 sheets only
         run: |
           find lecture-note -path '*/pen-and-paper/*.pdf' \
-               -not -path '*m01-euler_tour*' -print -delete
+               -not -path '*m01-euler_tour*' \
+               -not -path '*m02-small-world*' -print -delete
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
