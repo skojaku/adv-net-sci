@@ -6,14 +6,19 @@ is `.claude/skills/pen-and-paper/SKILL.md`; this file is the notebook half of
 the same deliverable.
 
 A sheet's last part sends the student to a marimo notebook that runs, by
-machine, the thing they have just done in pencil. The working example is
-Module 1:
+machine, the thing they have just done in pencil. Two of them exist, under
+`lecture-note/m01-euler_tour/pen-and-paper/` and
+`lecture-note/m02-small-world/pen-and-paper/`, and each directory holds:
 
-- `lecture-note/m01-euler_tour/pen-and-paper/lab.py` — the student's copy
-- `lecture-note/m01-euler_tour/pen-and-paper/lecture-hall.css` — the look,
-  copied verbatim from the mini-project's `assignment/lecture-hall.css`
-- `lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py` — generated
-- `tools/build_m01_lab_notebooks.py` — generates it, and welds the CSS in
+- `lab.py` — the student's copy
+- `lecture-hall.css` — the look, copied verbatim from the mini-project's
+  `assignment/lecture-hall.css`
+- `lab-solutions.py` — generated
+- `mNNlab-qr.png` — the square printed on the sheet
+
+One tool builds both: `tools/build_lab_notebooks.py [module-slug ...]`, which
+welds the CSS in and writes the worked copy. Its per-module table of answers is
+the only thing in it that is not shared.
 
 The notebook is uploaded to [molab](https://molab.marimo.io). **molab is the
 deployment target, and it is what constrains the file.**
@@ -102,7 +107,7 @@ def _():
 ```
 
 Base64, not a triple-quoted string: no quote or backslash in the CSS can then
-break the Python. `tools/build_m01_lab_notebooks.py` rewrites the `# BUILT`
+break the Python. `tools/build_lab_notebooks.py` rewrites the `# BUILT`
 line from the `.css` file, so the stylesheet stays editable as CSS and the
 notebook stays self-contained. Run it after touching either.
 
@@ -110,12 +115,14 @@ Verify it actually landed, rather than trusting the local render:
 
 ```sh
 uvx marimo export html --sandbox lab.py -o /tmp/lab.html
-python3 -c "print('\"text/html\": \"<style>' in open('/tmp/lab.html').read())"
+python3 -c "print('\"text/html\": \"\\u003Cstyle' in open('/tmp/lab.html').read())"
 ```
 
 The output must be stored as **`text/html`**, not `text/plain` — that is the
 difference between a live `<style>` element and the CSS printed on the page as
-text.
+text. Grep for `\u003Cstyle`, not for `<style>`: marimo escapes the angle
+brackets on the way out, so the literal spelling this file used to give matches
+nothing now, and reads as a broken notebook rather than a stale check.
 
 ---
 
@@ -156,7 +163,7 @@ notation.
 ## The answer copy
 
 `lab-solutions.py` is generated, never edited. Every answer in
-`tools/build_m01_lab_notebooks.py` is anchored to a string that must appear in
+`tools/build_lab_notebooks.py` is anchored to a string that must appear in
 `lab.py` **exactly once**; if a blank moves or a hint is reworded, the script
 stops rather than writing an answer copy that is a version behind. It also
 asserts no `TASK` survives, and stamps a do-not-edit banner into the output.

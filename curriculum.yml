@@ -598,7 +598,7 @@ modules:
         level: core
         statement: "Packets sent from Nebraska and Boston were forwarded person to person toward a Boston target; 64 of 296 arrived, passing through 5.2 intermediaries on average (Travers and Milgram 1969)."
         prereq: [m01.c12]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c02
         name: "Six degrees of separation"
@@ -606,7 +606,7 @@ modules:
         level: core
         statement: "The claim that any two people are separated by a handful of social steps - short paths in a network of billions."
         prereq: [m02.c01]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c03
         name: "Modern replications"
@@ -622,7 +622,7 @@ modules:
         level: core
         statement: "Milgram showed people can *find* short chains using only local knowledge, which is a stronger and different claim than short paths merely existing - the point made vivid by playing Wikirace."
         prereq: [m02.c02]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c05
         name: "Shortest path and geodesic distance"
@@ -630,7 +630,7 @@ modules:
         level: core
         statement: "The distance d(i,j) is the number of edges on a shortest path between i and j, and is infinite when no path exists."
         prereq: [m01.c12, m01.c14]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c06
         name: "Average path length"
@@ -638,7 +638,7 @@ modules:
         level: core
         statement: "The mean of d(i,j) over all node pairs; for the 4-node example with distances [1,1,2,1,1,1] it is 7/6 = 1.16."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c07
         name: "Diameter"
@@ -646,7 +646,7 @@ modules:
         level: core
         statement: "The largest shortest-path distance in the network - the worst case rather than the average case; a lattice has a large diameter, a small-world network does not."
         prereq: [m02.c05]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c08
         name: "Triangle and connected triplet"
@@ -654,7 +654,7 @@ modules:
         level: core
         statement: "A triangle is three mutually connected nodes; a connected triplet is any three nodes with at least two edges among them (open or closed)."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c09
         name: "Local clustering coefficient"
@@ -662,7 +662,7 @@ modules:
         level: core
         statement: "C_i is the fraction of possible edges among node i's neighbors that actually exist: (triangles at i) / [k_i (k_i - 1) / 2]."
         prereq: [m02.c08, m01.c05]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c10
         name: "Average local clustering"
@@ -670,7 +670,7 @@ modules:
         level: core
         statement: "The unweighted mean of C_i over all nodes, which gives every node - hub or leaf - the same weight."
         prereq: [m02.c09]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c11
         name: "Global clustering (transitivity)"
@@ -678,7 +678,7 @@ modules:
         level: core
         statement: "C = 3 x (number of triangles) / (number of connected triplets), a network-level ratio that weights high-degree nodes more heavily than the average local clustering."
         prereq: [m02.c08]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m02.c12
         name: "Why the naive ratio fails"
@@ -686,7 +686,7 @@ modules:
         level: core
         statement: "A complete graph has C = 1 and L = 1, so s_naive = 1 - the largest value the ratio can take - even though it is trivially not a small world. Raw values cannot certify small-worldness."
         prereq: [m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m02.c13
         name: "Erdos-Renyi random graph"
@@ -694,7 +694,7 @@ modules:
         level: core
         statement: "Each pair of n nodes is connected independently with probability p - the standard structureless baseline."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c14
         name: "Random-graph reference values"
@@ -702,7 +702,7 @@ modules:
         level: core
         statement: "For an ER graph, clustering is about <k>/(n-1) and average path length is about ln(n)/ln(<k>) - short paths come free, high clustering does not."
         prereq: [m02.c13, m02.c06, m02.c10]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c15
         name: "Small-world index sigma"
@@ -710,7 +710,7 @@ modules:
         level: core
         statement: "sigma = (C/C_rand) / (L/L_rand); sigma > 1 means small-world, sigma about 1 means random-like, sigma < 1 means anti-small-world."
         prereq: [m02.c12, m02.c14]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c16
         name: "Regular ring lattice"
@@ -718,7 +718,7 @@ modules:
         level: core
         statement: "n nodes on a ring, each joined to its k nearest neighbors: clustering 3(k-2)/(4(k-1)), which depends on k alone, and path length about n/(2k), which grows linearly with n."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c17
         name: "Local vs random wiring trade-off"
@@ -726,7 +726,7 @@ modules:
         level: core
         statement: "Purely local wiring gives high clustering and long paths; purely random wiring gives short paths and no clustering. Real networks somehow have both."
         prereq: [m02.c16, m02.c13]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c18
         name: "Watts-Strogatz rewiring"
@@ -734,7 +734,7 @@ modules:
         level: core
         statement: "Start from a ring lattice and rewire each edge with probability p to a random endpoint, avoiding self-loops and duplicates."
         prereq: [m02.c16]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c19
         name: "The role of p in Watts-Strogatz"
@@ -742,7 +742,7 @@ modules:
         level: core
         statement: "p = 0 is a lattice, p = 1 is a random graph, and a wide intermediate band gives high clustering together with short paths."
         prereq: [m02.c18, m02.c17]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c20
         name: "Shortcuts as the mechanism"
@@ -750,7 +750,7 @@ modules:
         level: core
         statement: "A handful of long-range edges collapses path length while leaving almost all local triangles intact - which is why the small-world regime is so broad."
         prereq: [m02.c19]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
       - id: m02.c21
         name: "Small-worldness across domains"
@@ -774,7 +774,7 @@ modules:
         level: core
         statement: "Among a node's k neighbors there are k(k-1)/2 possible edges, each present with probability p independently, so E[C_i] = p regardless of degree - hence C_rand = <k>/(n-1)."
         prereq: [m02.c22, m02.c09]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c24
         name: "Tree-expansion argument for path length"
@@ -782,7 +782,7 @@ modules:
         level: core
         statement: "Breadth-first growth from any node reaches about k^h nodes in h steps (few cycles in a sparse random graph); setting k^h = n gives L ~ ln n / ln <k>, i.e. logarithmic scaling."
         prereq: [m02.c22, m02.c06]
-        coverage: {slide: [], in_class: ["lecture-note/m02/six-handshakes/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: ["lecture-note/m02-small-world/pen-and-paper/exercise.pdf"], out_class: [], assessment: []}
 
       - id: m02.c25
         name: "Which clustering coefficient goes into sigma"
@@ -790,7 +790,7 @@ modules:
         level: core
         statement: "Watts and Strogatz used average local clustering while Humphries used global clustering; the same network can get different sigma values depending on the choice."
         prereq: [m02.c15, m02.c11]
-        coverage: {slide: [], in_class: ["lecture-note/m02/do-your-friends-know-each-other/exercise.pdf", "lecture-note/m02/turning-the-dial/exercise.pdf"], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
 
       - id: m02.c26
         name: "Generative models as explanation"
@@ -798,7 +798,7 @@ modules:
         level: core
         statement: "'What I cannot create, I do not understand' - building a mechanism that reproduces an observed property is how network science explains that property, not merely measures it."
         prereq: [m02.c18]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [], out_class: ["lecture-note/m02-small-world/pen-and-paper/lab.py"], assessment: []}
 
 # =============================================================================
 # M03: Robustness

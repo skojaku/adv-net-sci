@@ -1,0 +1,121 @@
+% Ringville, and the two other figures the Module 2 sheet draws. Kept in their
+% own file because the answer key draws exactly the same town with the boxes
+% filled in. Needs tikz, its calc and positioning libraries, and the colours
+% pltblue and pltrust, all of which the including file sets up.
+% ---------------------------------------------------------------------------
+% The town: sixteen people in a circle, everybody friends with the two on
+% their left and the two on their right. Four friends each, thirty-two
+% friendships. That one drawing has to carry both halves of the module --
+% distance AND triangles -- which is why it is next-two-neighbours rather than
+% next-one: a ring of next-one neighbours has no triangle anywhere in it.
+%
+% Two more things fall out of the choice and both are used on the sheet. The
+% town is left-right symmetric about the line through person 1 and person 9,
+% so a student who has worked out people 2 to 9 already has 10 to 16. And the
+% two shortcuts (1--9 and 5--13) are diameters, so they cross at the middle of
+% the drawing and read as two lines rather than as a tangle.
+% ---------------------------------------------------------------------------
+\tikzset{
+  % Every friendship is drawn the same, so no line weight says "this one
+  % matters more". The two shortcuts are the exception, and they are the point.
+  friend/.style   = {line width=1.4pt, black!58, line cap=round},
+  shortcut/.style = {line width=2.1pt, pltrust, line cap=round},
+  chair/.style    = {circle, draw=black!72, fill=white, line width=0.9pt,
+                     minimum size=0.66cm, inner sep=0pt, font=\footnotesize},
+  chairhot/.style = {chair, draw=pltblue!75!black, line width=1.5pt,
+                     fill=pltblue!14},
+  % The box a student writes a handshake count into, one per person, printed
+  % outside the ring where no friendship line can reach it.
+  dbox/.style     = {draw=pltblue!70, line width=0.7pt, fill=white,
+                     minimum size=0.58cm, inner sep=0pt, rounded corners=1.2pt},
+  dnum/.style     = {font=\bfseries\footnotesize, inner sep=0pt},
+  % A pair that might or might not be a friendship. The student darkens it.
+  maybe/.style    = {line width=1.3pt, black!52, dash pattern=on 1.6pt off 2.2pt},
+}
+
+% \ringtown{extra lines}{numbers already written in}.
+%
+% The count goes in the box beside the person, on the drawing, rather than
+% into a list of blanks underneath it: the thing the sheet is teaching is that
+% the number belongs to a seat, and a column of fifteen blanks hides that.
+\newcommand{\ringtown}[2]{%
+\begin{tikzpicture}[x=1cm, y=1cm]
+    \foreach \i in {1,...,16} {
+        \pgfmathsetmacro{\ang}{90 - (\i-1)*22.5}
+        \coordinate (c\i) at (\ang:2.7);
+    }
+    % Next door, both sides: the rim of the circle.
+    \foreach \i in {1,...,16} {
+        \pgfmathtruncatemacro{\j}{mod(\i,16)+1}
+        \draw[friend] (c\i) -- (c\j);
+    }
+    % One seat over, both sides. Bowed inward: drawn straight, the chord passes
+    % 0.14cm inside the chair sitting between its two ends and is drawn through
+    % that person's face.
+    \foreach \i in {1,...,16} {
+        \pgfmathtruncatemacro{\j}{mod(\i+1,16)+1}
+        \pgfmathsetmacro{\amid}{90 - \i*22.5}
+        \draw[friend] (c\i) .. controls (\amid:2.12) .. (c\j);
+    }
+    #1
+    \foreach \i in {1,...,16} {
+        \pgfmathsetmacro{\ang}{90 - (\i-1)*22.5}
+        \node[chair] (p\i) at (\ang:2.7) {\i};
+        \node[dbox, name=b\i] at (\ang:3.44) {};
+    }
+    #2
+\end{tikzpicture}}
+
+% The two friendships that came back from college. Both are diameters of the
+% circle -- 1 is opposite 9 and 5 is opposite 13 -- so they cross at the
+% centre, which is the one place in the drawing with nothing else in it.
+\newcommand{\shortcuts}{%
+    \draw[shortcut] (c1) -- (c9);
+    \draw[shortcut] (c5) -- (c13);}
+
+% A number written into person #1's box.
+\newcommand{\dfill}[2]{\node[dnum] at (b#1) {#2};}
+
+% Every distance from person 1 in the plain town, and in the town with the two
+% shortcuts. The sheet prints two of each; the answer key prints them all.
+\newcommand{\plainfill}{%
+  \dfill{1}{0}\dfill{2}{1}\dfill{3}{1}\dfill{4}{2}\dfill{5}{2}\dfill{6}{3}%
+  \dfill{7}{3}\dfill{8}{4}\dfill{9}{4}\dfill{10}{4}\dfill{11}{3}\dfill{12}{3}%
+  \dfill{13}{2}\dfill{14}{2}\dfill{15}{1}\dfill{16}{1}}
+\newcommand{\cutfill}{%
+  \dfill{1}{0}\dfill{2}{1}\dfill{3}{1}\dfill{4}{2}\dfill{5}{2}\dfill{6}{3}%
+  \dfill{7}{2}\dfill{8}{2}\dfill{9}{1}\dfill{10}{2}\dfill{11}{2}\dfill{12}{3}%
+  \dfill{13}{2}\dfill{14}{2}\dfill{15}{1}\dfill{16}{1}}
+
+% ---------------------------------------------------------------------------
+% Person 3's four friends, lifted out of the circle. Person 3 is NOT in this
+% picture: drawn in, their four lines cross the six pairs the student is being
+% asked to read, and the figure stops being readable at exactly the moment it
+% is needed.
+%
+% The four are placed 1, 4, 2, 5 clockwise from the top left rather than in
+% seat order. In seat order the three real friendships are the three shortest
+% lines in the figure and the answer can be had without looking at the town;
+% shuffled, the student has to go back to the circle for all six.
+% ---------------------------------------------------------------------------
+\newcommand{\hoodfig}[1]{%
+\begin{tikzpicture}[x=1cm, y=1cm]
+    \coordinate (h1) at (-1.55, 1.30);
+    \coordinate (h4) at ( 1.55, 1.30);
+    \coordinate (h2) at ( 1.55,-1.30);
+    \coordinate (h5) at (-1.55,-1.30);
+    \draw[maybe] (h1) -- (h4);
+    \draw[maybe] (h4) -- (h2);
+    \draw[maybe] (h2) -- (h5);
+    \draw[maybe] (h5) -- (h1);
+    \draw[maybe] (h1) -- (h2);
+    \draw[maybe] (h4) -- (h5);
+    #1
+    \foreach \i in {1,2,4,5} {\node[chair] at (h\i) {\i};}
+\end{tikzpicture}}
+
+% The three of the six that really are friendships, for the answer key.
+\newcommand{\hoodreal}{%
+    \draw[friend, pltblue!80!black] (h4) -- (h2);
+    \draw[friend, pltblue!80!black] (h1) -- (h2);
+    \draw[friend, pltblue!80!black] (h4) -- (h5);}

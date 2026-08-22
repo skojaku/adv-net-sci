@@ -1,0 +1,423 @@
+% Answer key for the Module 2 pen-and-paper sheet.
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+%
+% It carries the questions as well as the answers, so it can be read on its
+% own, and it draws the same town as the sheet out of townkit.tex -- an answer
+% to a question about a drawing should be a drawing, and fifteen handshake
+% counts in a row of blanks is the one thing that cannot show a student the
+% shape they were meant to see.
+\documentclass[a4paper, 11pt]{extarticle}
+\usepackage[top=0.7in, bottom=0.7in, left=0.8in, right=0.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+\definecolor{pltrust}{HTML}{B14434}
+
+% Charter, and the four ways to get it. XCharter *is* Charter and ships with a
+% full TeX Live, so it is asked for first and by file: a CI runner answers yes
+% to \IfFontExistsTF{Charter}, then cannot typeset it, which is how this sheet
+% stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\raggedbottom
+
+\newcommand{\parthead}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.2em}}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% An answer, set apart from the question it belongs to. Wrapped rather than
+% switched: a bare \color inside a p-column cell costs the cell its first line.
+\newcommand{\ans}[1]{\textbf{\textcolor{pltblue!75!black}{#1}}}
+
+% The line that turns from question to answer.
+\newcommand{\arrow}{\textcolor{pltblue!75!black}{$\Rightarrow$}\;}
+
+% The same as \ans, for something already inside math. \ans wraps its argument
+% in \textbf, which leaves math mode and takes the formula with it.
+\newcommand{\mans}[1]{{\color{pltblue!75!black}#1}}
+
+% Ringville and the neighbourhood figure, shared with exercise.tex.
+\input{townkit}
+
+\begin{document}
+
+\begin{center}
+{\ppfont\LARGE Answers}
+\end{center}
+
+{\small The sheet with its answers, \ans{in blue}. Question 1 is a guess and
+has no wrong answer; every other question has one right one, except 8(c),
+where the chain depends on a tie you are free to break either way.}
+
+\parthead{1}{A letter from Omaha}
+
+{\bf Question 1}: The letter arrived. How many hands did it pass through on the
+way? Write your guess, and write why you guessed that.
+
+\arrow A guess, and the room's guesses are the material for the session. The
+number is in 8(d): the chains that arrived ran about \ans{five or six} people
+long. Most guesses in a lecture hall are far too high, which is exactly what
+makes the arithmetic in 8(a) worth doing.
+
+\parthead{2}{Ringville}
+
+Sixteen people live in Ringville and they sit in one circle. Everybody is
+friends with the two on their left and the two on their right: four friends
+each, thirty-two friendships in the town.
+
+{\bf Question 2(a)}: Person 1 has a letter for person 9. Trace the chain on the
+drawing. How many handshakes does it take?
+
+\arrow \ans{Four}, and there are exactly two chains that do it:
+\ans{1--3--5--7--9} and \ans{1--15--13--11--9}. Person 9 is eight chairs away
+and no single handshake covers more than two chairs, so nothing beats four.
+
+{\bf Question 2(b)}: In each person's box, write how many handshakes it takes
+to reach them from person 1.
+
+\arrow Below left. Going round one way gives the same numbers as going round
+the other, so people 10 to 16 are people 8 to 2 read backwards --- half the
+work, and the reason the drawing is symmetric is that person 1 has no idea
+which way is which.
+
+\begin{center}
+\begin{tabular}{@{}c@{\hspace{0.9cm}}c@{}}
+\resizebox{0.43\textwidth}{!}{\ringtown{}{\plainfill}} &
+\resizebox{0.43\textwidth}{!}{\ringtown{\shortcuts}{\cutfill}} \\[0.4em]
+\small\bfseries 2(b): Ringville & \small\bfseries 4: with the two shortcuts \\
+\end{tabular}
+\end{center}
+
+{\bf Question 2(c)}: Add up every number in the boxes. Share that total out
+among the fifteen other people --- the average. And the biggest number in any
+box --- the worst case.
+
+\arrow Total \ans{36}, average $36/15 = \ans{2.4}$, worst case \ans{4}, which
+three people share: 8, 9 and 10.
+
+{\bf Question 2(d)}: One of those two numbers you would give to a newspaper.
+The other you would give to an engineer who has to promise the letter arrives.
+Which is which, and why?
+
+\arrow \ans{2.4 is the newspaper's} number and \ans{4 is the engineer's}. An
+average describes the letter you would typically send; it promises nothing
+about any particular one. The worst case is the only number you can put a
+guarantee behind, because no letter in this town ever takes longer. Both get
+names in the lecture: \ans{average path length} and \ans{diameter}.
+
+{\bf Question 3}: A thousand people, still one circle, still four friends each.
+How many handshakes to the person sitting directly opposite? And with eight
+billion? Could a world wired like Ringville deliver the Omaha letter in six?
+
+\arrow With a thousand people the person opposite is 500 chairs away, so
+\ans{250} handshakes. With eight billion they are four billion chairs away, so
+\ans{two billion}. \ans{No} --- in a ring the distance grows in step with the
+town, so a ring-wired world would need billions of handshakes, not six.
+Whatever explains Milgram, it is not this shape.
+
+\parthead{3}{Two shortcuts}
+
+Person 1 is now also friends with person 9, and person 5 with person 13.
+Thirty-four friendships, not thirty-two.
+
+{\bf Question 4}: Fill in the boxes again. New total, new average, new worst
+case.
+
+\arrow Above right. Total \ans{27}, average $27/15 = \ans{1.8}$, worst case
+\ans{3}, now reached only by persons 6 and 12.
+
+{\bf Question 5}: Friendships went up by what per cent, and the average down by
+what per cent? What did those two lines do that thirty-two ordinary friendships
+could not?
+
+\arrow Friendships up by $2/32 = \ans{6.25\%}$; the average down from 2.4 to
+1.8, which is \ans{25\%}. Four times the effect, for one sixteenth of the
+wiring.
+
+An ordinary Ringville friendship joins two people who were already one or two
+handshakes apart, so it shortens nothing for anybody. These two joined people
+\emph{four} handshakes apart --- and the saving is not theirs alone. Once
+person 1 can reach person 9 in a single step, so can everybody sitting near
+person 1, for everybody sitting near person 9. One line rewrote the distance
+between two whole neighbourhoods.
+
+\parthead{4}{Do your friends know each other?}
+
+Person 3's four friends are persons 1, 2, 4 and 5, and those four make six
+pairs.
+
+{\bf Question 6(a)}: Go back to the circle on page 1 and check the six pairs.
+Darken the dashed lines that are real friendships. How many of the six?
+
+\arrow \ans{Three of six}, drawn below: \ans{1 \& 2}, \ans{2 \& 4} and
+\ans{4 \& 5}. The other three --- 1 \& 4, 1 \& 5, 2 \& 5 --- sit three or four
+chairs apart, which is further than a Ringville friendship reaches.
+
+\begin{center}
+\resizebox{0.26\textwidth}{!}{\hoodfig{\hoodreal}}
+\end{center}
+
+{\bf Question 6(b)}: Ringville grows to ten thousand people, still four friends
+each. How many of the six are friends now?
+
+\arrow \ans{Still three of six.} Person 3's friends are still the people in
+chairs 1, 2, 4 and 5, and whether two of them are friends depends only on how
+many chairs apart they sit. The size of the town never enters the question.
+
+{\bf Question 6(c)}: The same sixteen people and the same thirty-two
+friendships, drawn out of a hat. What is the chance two people are friends?
+How many of the six pairs would you expect? And in a hat-drawn town of ten
+thousand?
+
+\arrow Each person has 4 friends among the 15 others, so the chance is
+$4/15 \approx \ans{0.27}$, and $6 \times 4/15 = \ans{1.6}$ of the six pairs.
+In a hat-drawn town of ten thousand it is $4/9999$, about one in 2{,}500, so
+$6 \times 4/9999 = \ans{0.0024}$ --- \ans{effectively none}.
+
+{\bf Question 6(d)}: That fraction is person 3's \textbf{local clustering}. Say
+in one sentence what makes it big and what makes it small.
+
+\arrow It is \ans{big when your friends are drawn from the same small pocket of
+the world you are drawn from}, because then they are in each other's pockets
+too, and \ans{small when they are drawn from the whole town}. Ringville holds
+$1/2$ at any size; the hat-drawn town falls away as $1/n$. That is the whole
+reason the two halves of this module are a puzzle at all: \ans{short paths come
+free from randomness, and high clustering does not}.
+
+Three people who are all friends with each other make a \textbf{triangle}.
+Ringville, before the two shortcuts, has sixteen.
+
+{\bf Question 7(a)}: Do persons 1 and 9 have a friend in common? Do 5 and 13?
+So how many triangles now?
+
+\arrow Person 1's friends are 15, 16, 2, 3; person 9's are 7, 8, 10, 11 ---
+\ans{no overlap}, and \ans{none} for 5 and 13 either, so neither new line
+closes a triangle. And a line that is \emph{added} can never destroy one. So
+\ans{sixteen, unchanged}. The average fell by a quarter and the town lost
+nothing.
+
+{\bf Question 7(b)}: Person 1 drops person 2 and befriends person 9 instead.
+Which friends did persons 1 and 2 have in common? So how many triangles does
+the town lose?
+
+\arrow Persons 1 and 2 both know \ans{person 16 and person 3}, so cutting
+1--2 kills the triangles \ans{1--2--16} and \ans{1--2--3}: \ans{two} go, and
+the town is left with \ans{fourteen}. This is what the Watts--Strogatz model
+actually does at each step, and it is the honest version of 7(a).
+
+{\bf Question 7(c)}: Put Question 5 beside 7(a) and 7(b). What does a shortcut
+buy the town, and what does it cost?
+
+\arrow It buys \ans{a quarter off the average distance} for two lines out of
+thirty-four. It costs \ans{nothing when the line is added, and two triangles
+out of sixteen when it is moved} --- and the triangles it breaks are all local
+to the one person it was moved from. \ans{Distance is cheap to buy and
+clustering is expensive to lose}, so a handful of shortcuts collapses the
+distances and leaves almost all of the local structure standing. That is the
+mechanism the whole model rests on.
+
+\parthead{5}{Back to Omaha}
+
+{\bf Question 8(a)}: Everybody knows 150 people and no two of your friends know
+each other. At how many handshakes do you pass eight billion?
+
+\begin{center}
+{\setlength{\tabcolsep}{9pt}
+\begin{tabular}{|C{2.6cm}|C{4.6cm}|}
+\hline
+{\small\bfseries handshakes} & {\small\bfseries people reached} \\
+\hline
+1 & 150 \\ \hline
+2 & 22,500 \\ \hline
+3 & about 3.4 million \\ \hline
+4 & \ans{about 506 million} \\ \hline
+5 & \ans{about 76 billion} \\ \hline
+\end{tabular}}
+\end{center}
+
+\arrow \ans{Five.} Four handshakes reach half a billion, which is not enough;
+five overshoot the planet by a factor of nine. Six degrees was never a
+measurement, it was this multiplication.
+
+{\bf Question 8(b)}: Question 6 says the pretending is false. Which way does
+that push the answer?
+
+\arrow \ans{More handshakes.} If your friends know each other --- and Question
+6 says half their pairs do --- then most of the 150 people your friend reaches
+are people you were already reaching yourself. Every step adds far fewer than
+150 times as many new people, so the tower of powers above is an
+\ans{overestimate of the reach} and therefore an \ans{underestimate of the
+number of handshakes}. Clustering is exactly what makes six degrees hard.
+
+{\bf Question 8(c)}: You are person 3, holding a letter for person 12, and you
+can only see your own friends and the chairs they sit in. Write the chain the
+rule produces, then the shortest chain that exists.
+
+\arrow Person 3's friends sit in chairs 1, 2, 4 and 5, which are 5, 6, 8 and 7
+chairs from chair 12 --- so the letter goes to \ans{person 1}. Person 1's
+friends are 15, 16, 2, 3 and 9, and \ans{15 and 9 tie} at three chairs away.
+Either way it takes four:
+\begin{center}
+\ans{3 --- 1 --- 15 --- 13 --- 12} \qquad or \qquad \ans{3 --- 1 --- 9 --- 11
+--- 12} \qquad \ans{4 handshakes}
+\end{center}
+The shortest chain is \ans{3 --- 5 --- 13 --- 12}, \ans{3 handshakes}.
+
+Person 3 never sends it that way, and is not being stupid. Person 5 sits
+\emph{seven} chairs from the target --- further round than person 1 --- so by
+the only rule person 3 can apply, person 5 is the wrong way. What person 3
+cannot know is that person 5 is the one holding the door to 13.
+
+{\bf Question 8(d)}: Of 296 letters sent from Omaha, 64 arrived, in five or six
+steps. Is ``a short chain exists'' the same claim as ``an ordinary person can
+find one''? Which did the letters test?
+
+\arrow \ans{Not the same claim}, and 8(c) is a town where the second is false
+while the first is true. The letters tested \ans{the finding, not the
+existing}: nobody in the chain ever saw the network, and each of them made one
+local guess.
+
+And \ans{232 of the 296 never arrived at all}. A chain that stalls is not
+evidence that no short chain existed --- it is evidence that somebody could not
+see it, or could not be bothered. The experiment measured the length of the
+chains that \emph{worked}, which is a number about people, not only about the
+network. That distinction is what the lecture is for.
+
+\clearpage
+
+\parthead{6}{The lab}
+
+Three functions, and everything else in the notebook runs off them.
+
+\begin{verbatim}
+def ring_edges(n, half):
+    return [(i, (i + d) % n) for i in range(n) for d in range(1, half + 1)]
+
+def distances_from(A, s):
+    n = len(A)
+    dist = np.full(n, -1)
+    dist[s] = 0
+    frontier = [s]
+    while frontier:
+        nxt = []
+        for u in frontier:
+            for v in np.flatnonzero(A[u]):
+                if dist[v] < 0:
+                    dist[v] = dist[u] + 1
+                    nxt.append(v)
+        frontier = nxt
+    return dist
+
+def local_clustering(A, i):
+    nbrs = np.flatnonzero(A[i])
+    k = len(nbrs)
+    if k < 2:
+        return 0.0
+    links = A[np.ix_(nbrs, nbrs)].sum() / 2
+    return links / (k * (k - 1) / 2)
+\end{verbatim}
+
+Run on the sheet's town they give \ans{36 / 2.4 / 4} and \ans{0.5} for every
+person, which are Questions 2(c) and 6(a) again, out of code that never looked
+at the drawing.
+
+\vspace{0.4em}
+
+{\bf Finished early --- the number that lies.} The notebook then measures
+$\sigma = (C/C_{\text{rand}}) / (L/L_{\text{rand}})$ on a plain ring of
+\emph{one thousand} people with \ans{no shortcuts at all}, and gets
+\ans{$\sigma = 4.96$}: a strong small world, by a test applied to a town that
+has none. Turn the $n$ dial up and the verdict gets \emph{stronger}, not
+weaker.
+
+The four quantities, for a ring of $n$ people with $k$ friends each:
+\[
+C = \tfrac12, \qquad L \approx \tfrac{n}{8}, \qquad
+C_{\text{rand}} = \tfrac{k}{n}, \qquad
+L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}
+\]
+\[
+\frac{C}{C_{\text{rand}}} = \frac{n}{8}, \qquad
+\frac{L}{L_{\text{rand}}} = \frac{n}{8}\cdot\frac{\ln k}{\ln n}, \qquad
+\sigma = \frac{n/8}{(n/8)(\ln k/\ln n)} = \mans{\frac{\ln n}{\ln k}}
+\]
+
+The $n$ cancels exactly. A ring is $n/8$ times more clustered than a random
+town \emph{and} $n/8$ times further across, and $\sigma$ divides one by the
+other, so it has measured nothing about this town at all. What survives the
+cancellation is the leftover $\ln n / \ln k$, which is there only because a
+random town's paths grow like $\ln n$ --- so slowly that the ring's enormous
+path-length penalty is discounted by that factor, and the clustering side wins
+by it. Any network whose clustering does not fall with $n$ scores
+$\sigma > 1$ automatically, shortcuts or no shortcuts. \ans{$\sigma$ was
+certifying that $C$ is constant, not that shortcuts exist.}
+
+The published repairs both add a \emph{second} yardstick --- a lattice, at the
+other end from the random graph --- because ``small world'' was always a claim
+about the middle of a range, and $\sigma$ only ever looked at one end:
+
+\begin{center}
+$\omega = L_{\text{rand}}/L - C/C_{\text{latt}}$ \quad (Telesford 2011;
+$-1$ lattice, $0$ small world, $+1$ random)
+\end{center}
+
+At $n = 1000$, $k = 4$:
+
+\begin{center}
+{\setlength{\tabcolsep}{10pt}
+\begin{tabular}{|l|C{2.4cm}|C{2.4cm}|C{2.4cm}|}
+\hline
+\textbf{town} & $\boldsymbol\sigma$ & $\boldsymbol\omega$ & \textbf{SWI} \\
+\hline
+plain ring, $p=0$ & \ans{4.96} \ passes & $-0.96$ & 0.00 \\ \hline
+rewired, $p=0.05$ & 47.7 & $-0.41$ & \ans{0.81} \ largest \\ \hline
+rewired, $p=0.2$  & 48.1 & 0.21 & 0.51 \\ \hline
+random, $p=1$     & 0.47 & 0.93 & 0.00 \\ \hline
+\end{tabular}}
+\end{center}
+
+The same network is a \emph{strong small world} to $\sigma$ and an
+\emph{almost perfect lattice} to $\omega$, and as $n$ grows the two run in
+opposite directions. The price of the repair is that $C_{\text{latt}}$ and
+$L_{\text{latt}}$ have to come from somewhere: here the town \emph{is} a
+lattice so they are free, and on real data you have to build a lattice with
+the same degrees yourself, which is not a small job. That is part of why
+$\sigma$ is still the one people quote.
+
+\vspace{0.4em}
+
+{\small The whole notebook with every blank filled in is
+\texttt{lab-solutions.py}, built from \texttt{lab.py} by\\
+\texttt{tools/build\_lab\_notebooks.py m02-small-world}.}
+
+\end{document}
