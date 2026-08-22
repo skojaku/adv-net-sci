@@ -1010,7 +1010,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="the-tutors-toolkit-installs-itself">The tutor’s toolkit installs itself</h3>
 <p>The Pair Notebook’s own two packages are not on that list, and you never install them by hand. The assignment folder’s <code>.pi/settings.json</code> pins them, and <code>pi</code> fetches them the first time you run it there:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode json no-fold code-with-copy"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="st">"packages"</span><span class="er">:</span> <span class="ot">[</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"git:github.com/sk-classroom/pi-pair-notebook@v0.3.0"</span><span class="ot">,</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"git:github.com/sk-classroom/pi-pair-notebook@v0.5.6"</span><span class="ot">,</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"npm:@juicesharp/rpiv-ask-user-question@2.4.0"</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>That first start therefore takes a few seconds longer than every one after it.</p>
@@ -1018,7 +1018,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <summary>
 If the fetch fails and you want to install them by hand
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install git:github.com/sk-classroom/pi-pair-notebook@v0.3.0</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash no-fold code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install git:github.com/sk-classroom/pi-pair-notebook@v0.5.6</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> install npm:@juicesharp/rpiv-ask-user-question@2.4.0</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pi</span> list     <span class="co"># both should be listed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Use the <strong>same version tags</strong> as the folder — a module and its toolkit are tested together.</p>
