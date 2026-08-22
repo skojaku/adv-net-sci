@@ -719,13 +719,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-lab-notebook-a-sheet-hands-off-to" class="level1">
 <h1>The lab notebook a sheet hands off to</h1>
 <p>How the marimo notebook at the end of a pen-and-paper sheet is built, and the two things about molab that will otherwise cost an afternoon. The sheet itself is <code>.claude/skills/pen-and-paper/SKILL.md</code>; this file is the notebook half of the same deliverable.</p>
-<p>A sheet’s last part sends the student to a marimo notebook that runs, by machine, the thing they have just done in pencil. The working example is Module 1:</p>
+<p>A sheet’s last part sends the student to a marimo notebook that runs, by machine, the thing they have just done in pencil. Two of them exist, under <code>lecture-note/m01-euler_tour/pen-and-paper/</code> and <code>lecture-note/m02-small-world/pen-and-paper/</code>, and each directory holds:</p>
 <ul>
-<li><code>lecture-note/m01-euler_tour/pen-and-paper/lab.py</code> — the student’s copy</li>
-<li><code>lecture-note/m01-euler_tour/pen-and-paper/lecture-hall.css</code> — the look, copied verbatim from the mini-project’s <code>assignment/lecture-hall.css</code></li>
-<li><code>lecture-note/m01-euler_tour/pen-and-paper/lab-solutions.py</code> — generated</li>
-<li><code>tools/build_m01_lab_notebooks.py</code> — generates it, and welds the CSS in</li>
+<li><code>lab.py</code> — the student’s copy</li>
+<li><code>lecture-hall.css</code> — the look, copied verbatim from the mini-project’s <code>assignment/lecture-hall.css</code></li>
+<li><code>lab-solutions.py</code> — generated</li>
+<li><code>mNNlab-qr.png</code> — the square printed on the sheet</li>
 </ul>
+<p>One tool builds both: <code>tools/build_lab_notebooks.py [module-slug ...]</code>, which welds the CSS in and writes the worked copy. Its per-module table of answers is the only thing in it that is not shared.</p>
 <p>The notebook is uploaded to <a href="https://molab.marimo.io">molab</a>. <strong>molab is the deployment target, and it is what constrains the file.</strong></p>
 <section id="getting-a-room-full-of-people-into-it" class="level2">
 <h2 class="anchored" data-anchor-id="getting-a-room-full-of-people-into-it">Getting a room full of people into it</h2>
@@ -777,14 +778,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    mo.Html(<span class="ss">f"&lt;style&gt;</span><span class="sc">{</span>LECTURE_HALL_CSS<span class="sc">}</span><span class="ss">&lt;/style&gt;"</span>)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<p>Base64, not a triple-quoted string: no quote or backslash in the CSS can then break the Python. <code>tools/build_m01_lab_notebooks.py</code> rewrites the <code># BUILT</code> line from the <code>.css</code> file, so the stylesheet stays editable as CSS and the notebook stays self-contained. Run it after touching either.</p>
+<p>Base64, not a triple-quoted string: no quote or backslash in the CSS can then break the Python. <code>tools/build_lab_notebooks.py</code> rewrites the <code># BUILT</code> line from the <code>.css</code> file, so the stylesheet stays editable as CSS and the notebook stays self-contained. Run it after touching either.</p>
 <p>Verify it actually landed, rather than trusting the local render:</p>
 <details class="qfold">
 <summary>Show the commands</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo export html <span class="at">--sandbox</span> lab.py <span class="at">-o</span> /tmp/lab.html</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print('</span><span class="dt">\"</span><span class="st">text/html</span><span class="dt">\"</span><span class="st">: </span><span class="dt">\"</span><span class="st">&lt;style&gt;' in open('/tmp/lab.html').read())"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"print('</span><span class="dt">\"</span><span class="st">text/html</span><span class="dt">\"</span><span class="st">: </span><span class="dt">\"\\</span><span class="st">u003Cstyle' in open('/tmp/lab.html').read())"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<p>The output must be stored as <strong><code>text/html</code></strong>, not <code>text/plain</code> — that is the difference between a live <code>&lt;style&gt;</code> element and the CSS printed on the page as text.</p>
+<p>The output must be stored as <strong><code>text/html</code></strong>, not <code>text/plain</code> — that is the difference between a live <code>&lt;style&gt;</code> element and the CSS printed on the page as text. Grep for <code>\u003Cstyle</code>, not for <code>&lt;style&gt;</code>: marimo escapes the angle brackets on the way out, so the literal spelling this file used to give matches nothing now, and reads as a broken notebook rather than a stale check.</p>
 <hr>
 </section>
 <section id="the-shape-of-the-notebook" class="level2">
@@ -805,7 +806,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="the-answer-copy" class="level2">
 <h2 class="anchored" data-anchor-id="the-answer-copy">The answer copy</h2>
-<p><code>lab-solutions.py</code> is generated, never edited. Every answer in <code>tools/build_m01_lab_notebooks.py</code> is anchored to a string that must appear in <code>lab.py</code> <strong>exactly once</strong>; if a blank moves or a hint is reworded, the script stops rather than writing an answer copy that is a version behind. It also asserts no <code>TASK</code> survives, and stamps a do-not-edit banner into the output.</p>
+<p><code>lab-solutions.py</code> is generated, never edited. Every answer in <code>tools/build_lab_notebooks.py</code> is anchored to a string that must appear in <code>lab.py</code> <strong>exactly once</strong>; if a blank moves or a hint is reworded, the script stops rather than writing an answer copy that is a version behind. It also asserts no <code>TASK</code> survives, and stamps a do-not-edit banner into the output.</p>
 </section>
 <section id="checking-a-notebook-before-calling-it-done" class="level2">
 <h2 class="anchored" data-anchor-id="checking-a-notebook-before-calling-it-done">Checking a notebook before calling it done</h2>
