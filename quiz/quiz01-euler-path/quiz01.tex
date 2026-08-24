@@ -1,7 +1,7 @@
 % Quiz 01 --- Euler paths. Printed, worked in class, 15 minutes.
 %
-% The sheet carries the questions only. No boxes and no ruled lines: answers go
-% into the Google Form, and any drawing happens on scratch paper or on the back.
+% The sheet carries the questions only. No boxes and no ruled lines: students
+% write on the back or on their own paper, and the Google Form takes a photo.
 %
 % Compile with: xelatex -interaction=nonstopmode quiz01.tex   (run twice)
 \documentclass[a4paper, 12pt]{extarticle}
@@ -37,35 +37,34 @@ and your labels readable.}
 % ---------------------------------------------------------------------------
 \question{1}{4}{Even degrees are not enough.}
 
-The graph here is undirected. The \textbf{degree} of a node is the number of
-edges touching it. An \textbf{Euler path} is a walk that uses every edge
-exactly once.
-
-Here is a tempting rule: \emph{if every node has even degree, an Euler path
-exists.} It is false.
+Let's consider an undirected graph in which every node has even degree. One may
+argue that an Euler path must exist. This is false. Why?
 
 \vspace{0.2em}
 
-\textbf{(a) [3 pts]} Give a counterexample. Your graph must have at most
-6 nodes, an even degree at every node, at least one edge at every node, and no
-Euler path. Name every node and give its degree.
+\textbf{(a) [3 pts]} Give an example graph in which every node has even degree
+but no Euler path exists. Your graph must have at most 6 nodes, and at least
+one edge at every node. Name every node and give its degree.
 
 \vspace{0.2em}
 
-\textbf{(b) [1 pt]} The tempting rule is missing one requirement. Name it, and
-say in one sentence why your graph violates it.
+\textbf{(b) [1 pt]} Apart from the requirement on the nodes' degrees, what is
+the additional requirement for a graph to have an Euler path? Explain why this
+condition is needed.
+
 
 % ---------------------------------------------------------------------------
 \question{2}{6}{Now the edges have directions.}
 
-Every edge now carries an arrow, and a walk may only follow the arrow. An
-Euler path in a directed graph is a walk that uses every directed edge exactly
-once.
+Now let's consider a directed graph, where a walk may only follow the arrow on
+each edge. An Euler path in a directed graph is a walk that uses every directed
+edge exactly once.
 
 \vspace{0.2em}
 
 \textbf{(a) [3 pts]} Write the condition under which a directed graph has an
-Euler path. Use the words \emph{in-degree} and \emph{out-degree}, and do not
+Euler path. Use the words \emph{in-degree} (the number of edges pointing to a
+node) and \emph{out-degree} (the number pointing away from it), and do not
 forget the condition that has nothing to do with degrees.
 
 \vspace{0.2em}
@@ -83,7 +82,6 @@ and give their in-degree and out-degree.
 \vfill
 
 {\footnotesize\color{rulegrey}
-Done early? Look at your Question 1 graph again. What is the smallest number of
-edges you can add to it so that an Euler path appears?}
+Done early? Start the assignment (the pair notebook) handed out before class.}
 
 \end{document}
