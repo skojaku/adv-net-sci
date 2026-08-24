@@ -1,7 +1,7 @@
 # Quiz 1 — Euler paths
 
 An in-class quiz, 15 minutes, 10 points. One printed page of questions;
-answers go into a Google Form.
+students write by hand and hand in a photo.
 
 1. **Even degrees are not enough** (4 pts). Give an *undirected* graph where
    every node has even degree but no Euler path exists, and name the missing
@@ -11,8 +11,7 @@ answers go into a Google Form.
    that does not.
 
 The sheet carries the questions only — no boxes and no ruled lines. Students
-think on the back or on scratch paper, type their graphs into the form as edge
-lists, and photograph their working for the upload question at the end.
+work on the back of it or on their own paper.
 
 ## Files
 
@@ -32,6 +31,48 @@ xelatex -interaction=nonstopmode quiz01.tex
 xelatex -interaction=nonstopmode solutions.tex
 ```
 
+## Two short links
+
+The QR square and the printed address are the course's own short links, not
+Google's. Paper outlives any one form or file, so swapping either is a line on
+the droplet rather than a reprint.
+
+| Link | Goes to |
+|---|---|
+| `go.skojaku.com/quiz01` | the question PDF on Drive |
+| `go.skojaku.com/ans-quiz01` | the Google Form, where the photo goes |
+
+Both are `handle` blocks in the `go.skojaku.com` site of
+`/etc/caddy/Caddyfile` on `ssh digitalocean`. After editing, run
+`caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile`, then
+`systemctl reload caddy`.
+
+If the printed link ever changes, rebuild the square and the PDF:
+
+```sh
+uvx --from segno segno --output=quiz01-form-qr.png --scale=20 --border=1 \
+    --error=m "https://go.skojaku.com/ans-quiz01"
+```
+
+and update `\formlink` and `\formshort` in `quizkit.tex`.
+
+## The question PDF on Drive
+
+`quiz01.pdf` is uploaded to the Drive course folder and shared **read-only with
+the `binghamton.edu` domain** — link-only, not searchable. Students are signed
+in to that account anyway, because the form demands it.
+
+- File id: `19oxyPszM11lZ9-CzStr1Yalog_aR9rkj`
+- <https://drive.google.com/file/d/19oxyPszM11lZ9-CzStr1Yalog_aR9rkj/view>
+
+Re-upload after any edit to the sheet, or the link serves a stale quiz:
+
+```sh
+GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
+gws drive files update --params '{"fileId": "19oxyPszM11lZ9-CzStr1Yalog_aR9rkj"}' \
+    --upload quiz01.pdf --upload-content-type application/pdf
+```
+
 ## The Google Form
 
 - **Students:** <https://go.skojaku.com/ans-quiz01>
@@ -39,27 +80,26 @@ xelatex -interaction=nonstopmode solutions.tex
 - Form id: `1zEVrm1Qt29IhAIcp4LieXNx854WGXPoj7vPzpSizS6Q`
 - Owned by the Binghamton account (`~/.config/gws-binghamton`).
 
-The form carries the full text of both questions, in the same order as the
-sheet. Each graph is typed as an edge list — `A - B` one per line for
-Question 1, `A -> B` for Question 2.
+The form is a **drop box, not a copy of the quiz**. It links to the PDF and
+takes one photo. Nothing in it has to stay in step with the sheet, and there is
+no typing for the student to do.
 
-Quiz mode is on and the point values match the sheet (3 / 1 and 3 / 2 / 1).
-Google Forms only takes whole-number points. Email collection is `VERIFIED`, so
-respondents sign in with their `@binghamton.edu` account — which is also what
-maps an uploaded photo back to a student.
+Email collection is `VERIFIED`, so respondents sign in with their
+`@binghamton.edu` account — which is what maps an uploaded photo back to a
+student.
 
-`python3 build_form.py --sync` rewrites the live form's questions from the
-script. It deletes every item first, so run it only before responses arrive.
+`python3 build_form.py --sync` rewrites the live form from the script. It
+deletes every item first, so run it only before responses arrive.
 
-### One question is added by hand
+### The upload question is added by hand
 
 The Forms API refuses to create file-upload questions —
-`Creation of file_upload question not supported`. So the photo-upload question
-in the closing "Your working" section is added in the Forms editor:
+`Creation of file_upload question not supported`. So the one question that
+matters is made in the Forms editor, under "Your working":
 
 > File upload · allow images and PDF · 2 files · 10 MB · required
 
-Do that once, in the editor link above, and re-add it after any `--sync`.
+Do that in the editor link above, and re-add it after any `--sync`.
 
 ## Where the photos go
 
@@ -85,30 +125,3 @@ python3 ~/Downloads/teaching/adv-net-sci-ops/gforms_download.py \
 
 That step needs the Forms API switched on in the GCP project
 `formal-precinct-489402-s5`; the folder-creating half works without it.
-
-## The short link
-
-The QR square and the printed address are both `go.skojaku.com/ans-quiz01`, not
-the form's own URL. Paper outlives any one form: Caddy on the course droplet
-sends that path to the current Google Form, so swapping forms is a line on the
-server rather than a reprint.
-
-```
-ssh digitalocean
-# /etc/caddy/Caddyfile, block go.skojaku.com
-	handle /ans-quiz01* {
-		redir https://docs.google.com/forms/d/e/1FAIpQLSfUFOW3jdXvEPvhac3tFVz865TkEaX4YOprQQnq7oV77r4lOA/viewform 302
-	}
-```
-
-After editing: `caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile`
-then `systemctl reload caddy`.
-
-If the printed link itself ever changes, rebuild the square and the PDF:
-
-```sh
-uvx --from segno segno --output=quiz01-form-qr.png --scale=20 --border=1 \
-    --error=m "https://go.skojaku.com/ans-quiz01"
-```
-
-and update `\formlink` and `\formshort` in `quizkit.tex`.
