@@ -1,0 +1,167 @@
+% Quiz 01 --- answer key. Instructor copy. Do not hand out.
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+\documentclass[a4paper, 12pt]{extarticle}
+\input{quizkit}
+
+\tikzset{
+  gnode/.style={circle, draw=pltblue, fill=pltblue!12, line width=0.9pt,
+                minimum size=8mm, inner sep=0pt, font=\small\bfseries},
+  garrow/.style={-{Stealth[length=3mm]}, line width=0.9pt, draw=rulegrey},
+  gedge/.style={line width=0.9pt, draw=rulegrey},
+  glabel/.style={font=\scriptsize, text=rulegrey}
+}
+
+% A grading note, set apart from the answer itself.
+\newenvironment{grading}
+  {\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
+                     sharp corners, boxsep=2pt, left=6pt, right=6pt,
+                     top=4pt, bottom=4pt]\small\textbf{Marking.}\ }
+  {\end{tcolorbox}}
+
+\begin{document}
+
+{\footnotesize\textsc{Advanced Network Science} \hfill \textsc{Fall 2026}}\par
+\vspace{-0.2em}\rule{\textwidth}{1pt}\par
+\vspace{0.3em}
+{\LARGE\bfseries Quiz 1 \; --- \; Answer key}\par
+\vspace{0.1em}
+{\small Instructor copy. Answers below are models, not the only correct ones.}\par
+\vspace{0.8em}
+
+% ---------------------------------------------------------------------------
+\question{1}{4}{Even degrees are not enough.}
+
+\textbf{(a) [3 pts]} Two separate triangles. Every node has degree $2$, which
+is even, and every node has an edge. There is still no Euler path, because no
+walk can cross from the left triangle to the right one.
+
+\begin{center}
+\begin{tikzpicture}
+  \node[gnode] (A) at (0,1.1) {A};
+  \node[gnode] (B) at (-0.95,-0.55) {B};
+  \node[gnode] (C) at (0.95,-0.55) {C};
+  \draw[gedge] (A) -- (B) -- (C) -- (A);
+  \node[glabel, above=1mm of A] {2};
+  \node[glabel, left=1mm of B] {2};
+  \node[glabel, right=1mm of C] {2};
+
+  \node[gnode] (D) at (5.4,1.1) {D};
+  \node[gnode] (E) at (4.45,-0.55) {E};
+  \node[gnode] (F) at (6.35,-0.55) {F};
+  \draw[gedge] (D) -- (E) -- (F) -- (D);
+  \node[glabel, above=1mm of D] {2};
+  \node[glabel, left=1mm of E] {2};
+  \node[glabel, right=1mm of F] {2};
+\end{tikzpicture}
+\end{center}
+
+\textbf{(b) [1 pt]} The missing requirement is \textbf{connectivity}. All the
+edges have to sit in one connected piece. An Euler path is a single unbroken
+walk, and a walk cannot jump between components, so it can only ever cover the
+edges of the component it starts in.
+
+\begin{grading}
+3 pts for any disconnected graph with all-even degrees and no isolated nodes:
+two triangles, two squares, a triangle and a square, two disjoint 4-cycles.
+1 pt for the word \emph{connected} or \emph{connectivity}, with or without the
+sentence. Watch for the near-miss: two triangles \textbf{sharing one node} is
+connected, has all even degrees, and \emph{does} have an Euler circuit ---
+that is not a counterexample, so no credit for (a), though (b) may still earn
+its point.
+\end{grading}
+
+\vspace{0.3em}
+
+{\small\textbf{Bonus (ungraded).} One edge. Join any node of the first triangle
+to any node of the second. The two joined nodes become degree $3$, so the graph
+now has exactly two odd nodes and is connected --- an Euler path exists, and it
+must start at one of those two nodes and end at the other.}
+
+\newpage
+
+% ---------------------------------------------------------------------------
+\question{2}{6}{Now the edges have directions.}
+
+\textbf{(a) [3 pts]} A directed graph has an Euler path exactly when both of
+these hold.
+
+\begin{enumerate}[label=\arabic*., leftmargin=1.8em, itemsep=0.2em, topsep=0.2em]
+  \item \textbf{Connectivity.} Ignore the arrows. Every node that has at least
+        one edge lies in one single connected piece.
+  \item \textbf{Degrees.} Either every node has in-degree $=$ out-degree
+        (then the walk is a closed \emph{circuit} and may start anywhere), or
+        exactly one node has out-degree $=$ in-degree $+\,1$ (the start),
+        exactly one node has in-degree $=$ out-degree $+\,1$ (the end), and
+        every other node has in-degree $=$ out-degree.
+\end{enumerate}
+
+The arrows into and out of a node have to pair up, because the walk enters and
+leaves every time it passes through. Only the start and the end are allowed one
+unpaired arrow each.
+
+\begin{grading}
+1 pt for the balanced condition, 1 pt for the two exceptions tied to the start
+and the end, 1 pt for connectivity. A student who writes only ``in-degree $=$
+out-degree everywhere'' has described an Euler \emph{circuit}; give 2 of the 3.
+``The graph must be in one piece'' counts for connectivity, and so does
+``strongly connected''.
+\end{grading}
+
+\textbf{(b) [2 pts]} One model answer. Euler path:
+$A \to B \to C \to A \to D$.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+  \node[gnode] (A) at (0,0) {A};
+  \node[gnode] (B) at (2.2,1.2) {B};
+  \node[gnode] (C) at (2.2,-1.2) {C};
+  \node[gnode] (D) at (-2.2,0) {D};
+  \draw[garrow] (A) -- (B);
+  \draw[garrow] (B) -- (C);
+  \draw[garrow] (C) -- (A);
+  \draw[garrow] (A) -- (D);
+  \node[glabel, below=1.5mm of A] {\textbf{S} --- out 2, in 1};
+  \node[glabel, below=1.5mm of D] {\textbf{E} --- out 0, in 1};
+  \node[glabel, right=1mm of B] {out 1, in 1};
+  \node[glabel, right=1mm of C] {out 1, in 1};
+\end{tikzpicture}
+\end{center}
+
+\begin{grading}
+1 pt for a graph that is connected, has 4 or 5 nodes, and satisfies the degree
+condition. 1 pt for marking \textbf{S} and \textbf{E} on the two nodes that
+are actually unbalanced. A correct graph with the endpoints unmarked or marked
+wrong keeps the first point only.
+\end{grading}
+
+\textbf{(c) [1 pt]} One model answer: three edges all leaving $A$.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+  \node[gnode] (A) at (0,0) {A};
+  \node[gnode] (B) at (2.2,1.2) {B};
+  \node[gnode] (C) at (2.4,0) {C};
+  \node[gnode] (D) at (2.2,-1.2) {D};
+  \draw[garrow] (A) -- (B);
+  \draw[garrow] (A) -- (C);
+  \draw[garrow] (A) -- (D);
+  \node[glabel, left=1mm of A] {out 3, in 0};
+  \node[glabel, right=1mm of B] {out 0, in 1};
+  \node[glabel, right=1mm of C] {out 0, in 1};
+  \node[glabel, right=1mm of D] {out 0, in 1};
+\end{tikzpicture}
+\end{center}
+
+$B$, $C$ and $D$ each have one more edge in than out, so each can only be an
+endpoint, and a walk has one end, not three. The other family of correct
+answers is \textbf{disconnected}: two separate directed triangles, where the
+degree condition passes and connectivity fails.
+
+\begin{grading}
+The single point needs both halves: a graph that genuinely has no Euler path,
+\emph{and} the offending node or nodes named with their in- and out-degrees. A
+common wrong answer is a graph the student believes fails but which actually
+has a path --- check by counting, not by trusting the label.
+\end{grading}
+
+\end{document}

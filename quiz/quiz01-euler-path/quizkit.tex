@@ -1,0 +1,97 @@
+% Shared preamble for Quiz 01 (quiz01.tex and solutions.tex).
+% Compile with: xelatex -interaction=nonstopmode <file>.tex   (run twice)
+%
+% Same house look as the pen-and-paper sheets in
+% lecture-note/*/pen-and-paper/: Charter, A4, generous leading, room to draw.
+
+\usepackage[top=0.7in, bottom=0.6in, left=0.8in, right=0.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,positioning,arrows.meta}
+\definecolor{pltblue}{HTML}{1F77B4}
+\definecolor{rulegrey}{HTML}{6A6D75}
+
+% Body face. Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file: a CI runner
+% answers yes to \IfFontExistsTF{Charter}, then cannot typeset it.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+\pagestyle{empty}
+
+% ---------------------------------------------------------------------------
+% The submission link.
+%
+% Both the QR square and the printed address are the course's own short link,
+% not the form's: paper outlives any one form. Caddy on the course droplet
+% points go.skojaku.com/ans-quiz01 at the current Google Form
+% (/etc/caddy/Caddyfile, block go.skojaku.com). Swapping the form is a line on
+% the server, not a reprint.
+%
+% If the link ever changes, rebuild the square with
+%
+%   uvx --from segno segno --output=quiz01-form-qr.png --scale=20 --border=1 \
+%       --error=m "<the url>"
+%
+% PNG rather than PDF for the square: segno's PDF is too spare for xdvipdfmx to
+% include, and a QR is squares, so 700px across a 3cm box is already sharper
+% than the printer.
+% ---------------------------------------------------------------------------
+\newcommand{\formlink}{https://go.skojaku.com/ans-quiz01}
+\newcommand{\formshort}{\href{\formlink}{\texttt{go.skojaku.com/ans-quiz01}}}
+
+% Quiz header. #1 = title, #2 = the line under it, #3 = term.
+\newcommand{\quizhead}[3]{%
+  {\footnotesize\textsc{Advanced Network Science} \hfill \textsc{#3}}\par
+  \vspace{-0.2em}\rule{\textwidth}{1pt}\par
+  \vspace{0.3em}
+  {\LARGE\bfseries #1}\par
+  \vspace{0.1em}
+  {\small #2}\par
+  \vspace{0.7em}
+  {\small Name \underline{\hspace{6cm}} \hfill Date \underline{\hspace{3.2cm}}}\par
+  \vspace{0.7em}}
+
+% A question heading with its point value.
+\newcommand{\question}[3]{%
+  \vspace{0.5em}
+  {\large\bfseries Question #1 \quad\normalsize\mdseries (#2 points)}\par
+  \vspace{-0.3em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par
+  \vspace{0.1em}
+  {\bfseries #3}\par
+  \vspace{0.2em}}
+
+% An empty box to draw or write in. #1 = height, #2 = caption under the rule.
+\newcommand{\drawbox}[2]{%
+  \begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                    sharp corners, height=#1, valign=top,
+                    boxsep=2pt, left=4pt, right=4pt, top=3pt, bottom=3pt]
+  {\footnotesize\color{rulegrey} #2}
+  \end{tcolorbox}}
+
+% Ruled writing lines, #1 of them.
+\newcommand{\writelines}[1]{%
+  \vspace{0.3em}
+  \foreach \i in {1,...,#1}{%
+    {\color{rulegrey}\rule{\textwidth}{0.4pt}}\par\vspace{1.5em}}}
