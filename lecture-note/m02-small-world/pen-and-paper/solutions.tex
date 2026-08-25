@@ -102,8 +102,9 @@ drawing. How many handshakes does it take?
 \ans{1--3--5--7--9} and \ans{1--15--13--11--9}. Person 9 is eight chairs away
 and no single handshake covers more than two chairs, so nothing beats four.
 
-{\bf Question 2(b)}: In each person's box, write how many handshakes it takes
-to reach them from person 1.
+{\bf Question 2(b)}: Now everybody. In each person's box on the drawing, write
+how many handshakes it takes to reach them from person 1. Two are written in
+already, and you may find you only have to work out half of the rest.
 
 \arrow Below left. Going round one way gives the same numbers as going round
 the other, so people 10 to 16 are people 8 to 2 read backwards --- half the
@@ -118,16 +119,16 @@ which way is which.
 \end{tabular}
 \end{center}
 
-{\bf Question 2(c)}: Add up every number in the boxes. Share that total out
-among the fifteen other people --- the average. And the biggest number in any
-box --- the worst case.
+{\bf Question 2(c)}: Add up every number in the boxes. What is the total?
+Share that total out among the fifteen other people --- the town's average. And
+what is the biggest number in any box, the town's worst case?
 
 \arrow Total \ans{36}, average $36/15 = \ans{2.4}$, worst case \ans{4}, which
 three people share: 8, 9 and 10.
 
-{\bf Question 2(d)}: One of those two numbers you would give to a newspaper.
-The other you would give to an engineer who has to promise the letter arrives.
-Which is which, and why?
+{\bf Question 2(d)}: Take the average and the worst case. One of the two you
+would give to a newspaper; the other you would give to an engineer who has to
+promise the letter arrives. Which is which, and why?
 
 \arrow \ans{2.4 is the newspaper's} number and \ans{4 is the engineer's}. An
 average describes the letter you would typically send; it promises nothing
@@ -135,9 +136,11 @@ about any particular one. The worst case is the only number you can put a
 guarantee behind, because no letter in this town ever takes longer. Both get
 names in the lecture: \ans{average path length} and \ans{diameter}.
 
-{\bf Question 3}: A thousand people, still one circle, still four friends each.
-How many handshakes to the person sitting directly opposite? And with eight
-billion? Could a world wired like Ringville deliver the Omaha letter in six?
+{\bf Question 3}: Ringville grows. A thousand people, still one circle, still
+four friends each. How many handshakes does it take to reach the person sitting
+directly opposite you? And if the circle held all eight billion people on Earth?
+Could a world wired like Ringville get the Omaha letter to Boston in six
+handshakes?
 
 \arrow With a thousand people the person opposite is 500 chairs away, so
 \ans{250} handshakes. With eight billion they are four billion chairs away, so
@@ -147,18 +150,21 @@ Whatever explains Milgram, it is not this shape.
 
 \parthead{3}{Two shortcuts}
 
-Person 1 is now also friends with person 9, and person 5 with person 13.
-Thirty-four friendships, not thirty-two.
+Two of the sixteen went to college and came home with a friend from the far
+side of town: person 1 is now also friends with person 9, and person 5 with
+person 13 --- thirty-four friendships, not thirty-two.
 
-{\bf Question 4}: Fill in the boxes again. New total, new average, new worst
-case.
+{\bf Question 4}: Write the handshake counts into the boxes again, this time for
+the town with the two new friendships. Then the same three numbers as in 2(c):
+the new total, the new average, and the new worst case.
 
 \arrow Above right. Total \ans{27}, average $27/15 = \ans{1.8}$, worst case
 \ans{3}, now reached only by persons 6 and 12.
 
-{\bf Question 5}: Friendships went up by what per cent, and the average down by
-what per cent? What did those two lines do that thirty-two ordinary friendships
-could not?
+{\bf Question 5}: Thirty-two friendships became thirty-four. Work out both
+changes as percentages: by how much did the number of friendships change, and by
+how much did the average change? Say what those two new friendships did that
+thirty-two ordinary ones could not.
 
 \arrow Friendships up by $2/32 = \ans{6.25\%}$; the average down from 2.4 to
 1.8, which is \ans{25\%}. Four times the effect, for one sixteenth of the
@@ -173,11 +179,13 @@ between two whole neighbourhoods.
 
 \parthead{4}{Do your friends know each other?}
 
-Person 3's four friends are persons 1, 2, 4 and 5, and those four make six
-pairs.
+Go back to Ringville as it was in Part 2, before the two shortcuts, and take
+somebody ordinary. Person 3's four friends are persons 1, 2, 4 and 5, and those
+four make six pairs.
 
-{\bf Question 6(a)}: Go back to the circle on page 1 and check the six pairs.
-Darken the dashed lines that are real friendships. How many of the six?
+{\bf Question 6(a)}: Check the six pairs against the circle in Part 2, one pair
+at a time. Darken the dashed lines that are real friendships. How many of the
+six are?
 
 \arrow \ans{Three of six}, drawn below: \ans{1 \& 2}, \ans{2 \& 4} and
 \ans{4 \& 5}. The other three --- 1 \& 4, 1 \& 5, 2 \& 5 --- sit three or four
@@ -188,24 +196,26 @@ chairs apart, which is further than a Ringville friendship reaches.
 \end{center}
 
 {\bf Question 6(b)}: Ringville grows to ten thousand people, still four friends
-each. How many of the six are friends now?
+each. How many of person 3's six pairs are friends now?
 
 \arrow \ans{Still three of six.} Person 3's friends are still the people in
 chairs 1, 2, 4 and 5, and whether two of them are friends depends only on how
 many chairs apart they sit. The size of the town never enters the question.
 
-{\bf Question 6(c)}: The same sixteen people and the same thirty-two
-friendships, drawn out of a hat. What is the chance two people are friends?
-How many of the six pairs would you expect? And in a hat-drawn town of ten
-thousand?
+{\bf Question 6(c)}: A different town: the same sixteen people and the same
+thirty-two friendships, but this time drawn out of a hat. Pick two people. What
+is the chance that they are friends? So how many of person 3's six pairs would
+you expect to be friends? And in a hat-drawn town of ten thousand, still four
+friends each?
 
 \arrow Each person has 4 friends among the 15 others, so the chance is
 $4/15 \approx \ans{0.27}$, and $6 \times 4/15 = \ans{1.6}$ of the six pairs.
 In a hat-drawn town of ten thousand it is $4/9999$, about one in 2{,}500, so
 $6 \times 4/9999 = \ans{0.0024}$ --- \ans{effectively none}.
 
-{\bf Question 6(d)}: That fraction is person 3's \textbf{local clustering}. Say
-in one sentence what makes it big and what makes it small.
+{\bf Question 6(d)}: That fraction has a name --- it is person 3's
+\textbf{local clustering}. You have now measured it four times. Say in one
+sentence what makes it big and what makes it small.
 
 \arrow It is \ans{big when your friends are drawn from the same small pocket of
 the world you are drawn from}, because then they are in each other's pockets
@@ -217,8 +227,9 @@ free from randomness, and high clustering does not}.
 Three people who are all friends with each other make a \textbf{triangle}.
 Ringville, before the two shortcuts, has sixteen.
 
-{\bf Question 7(a)}: Do persons 1 and 9 have a friend in common? Do 5 and 13?
-So how many triangles now?
+{\bf Question 7(a)}: Then the two shortcuts went in. Do persons 1 and 9 have a
+friend in common? Do persons 5 and 13? So how many triangles does the town have
+now?
 
 \arrow Person 1's friends are 15, 16, 2, 3; person 9's are 7, 8, 10, 11 ---
 \ans{no overlap}, and \ans{none} for 5 and 13 either, so neither new line
@@ -226,7 +237,8 @@ closes a triangle. And a line that is \emph{added} can never destroy one. So
 \ans{sixteen, unchanged}. The average fell by a quarter and the town lost
 nothing.
 
-{\bf Question 7(b)}: Person 1 drops person 2 and befriends person 9 instead.
+{\bf Question 7(b)}: The real model does not \emph{add} a shortcut, it
+\textbf{moves} one: person 1 drops person 2 and befriends person 9 instead.
 Which friends did persons 1 and 2 have in common? So how many triangles does
 the town lose?
 
@@ -248,8 +260,10 @@ mechanism the whole model rests on.
 
 \parthead{5}{Back to Omaha}
 
-{\bf Question 8(a)}: Everybody knows 150 people and no two of your friends know
-each other. At how many handshakes do you pass eight billion?
+{\bf Question 8(a)}: Everybody knows 150 people. Pretend for a moment that no
+two of your friends know each other, so every handshake reaches 150 people
+nobody in the chain has met yet. Carry the table two rows further. At how many
+handshakes do you pass eight billion?
 
 \begin{center}
 {\setlength{\tabcolsep}{9pt}
@@ -269,8 +283,9 @@ each other. At how many handshakes do you pass eight billion?
 five overshoot the planet by a factor of nine. Six degrees was never a
 measurement, it was this multiplication.
 
-{\bf Question 8(b)}: Question 6 says the pretending is false. Which way does
-that push the answer?
+{\bf Question 8(b)}: In Question 6 you found that person 3's friends do know
+each other, so the pretending in 8(a) is false. Which way does that push the
+answer --- more handshakes, or fewer? Why?
 
 \arrow \ans{More handshakes.} If your friends know each other --- and Question
 6 says half their pairs do --- then most of the 150 people your friend reaches
@@ -279,9 +294,11 @@ are people you were already reaching yourself. Every step adds far fewer than
 \ans{overestimate of the reach} and therefore an \ans{underestimate of the
 number of handshakes}. Clustering is exactly what makes six degrees hard.
 
-{\bf Question 8(c)}: You are person 3, holding a letter for person 12, and you
-can only see your own friends and the chairs they sit in. Write the chain the
-rule produces, then the shortest chain that exists.
+{\bf Question 8(c)}: You are person 3 in the town with the two shortcuts,
+holding a letter for person 12. You know only your own four friends and the
+chair each of them sits in, and you hand it to whichever of them sits closest to
+chair 12; they do the same. Write the chain that rule produces, then the
+shortest chain that exists.
 
 \arrow Person 3's friends sit in chairs 1, 2, 4 and 5, which are 5, 6, 8 and 7
 chairs from chair 12 --- so the letter goes to \ans{person 1}. Person 1's
@@ -300,7 +317,8 @@ cannot know is that person 5 is the one holding the door to 13.
 
 {\bf Question 8(d)}: Of 296 letters sent from Omaha, 64 arrived, in five or six
 steps. Is ``a short chain exists'' the same claim as ``an ordinary person can
-find one''? Which did the letters test?
+find one''? Which of the two did the letters test, and what do the 232 that
+never arrived say about it?
 
 \arrow \ans{Not the same claim}, and 8(c) is a town where the second is false
 while the first is true. The letters tested \ans{the finding, not the

@@ -212,11 +212,15 @@ interesting rather than obvious.
 
 ## Answer-space conventions
 
+Current sheets (m01, m02) carry **no inline blanks and no ruled gaps**. Answers
+go on the back; the paper that used to be answer space is spent on 14pt text and
+on drawings big enough to write into. The first two rows below are what the
+older sheets do, and what m01 and m02 had taken out of them twice.
+
 | Need | Markup |
 |---|---|
-| one word / number | `\underline{\hspace{2cm}}` |
-| one line of prose | `\underline{\hspace{\textwidth}}` |
-| short answer | `\vspace{3em}` or `\vspace{3cm}` |
-| reasoning / drawing | `\vspace{8em}`–`\vspace{10em}` |
+| ~~one word / number~~ | ~~`\underline{\hspace{2cm}}`~~ — ask it in words instead |
+| ~~short answer~~ | ~~`\vspace{3em}`~~ — the back of the sheet |
+| a number belonging to a node | a box on the drawing beside that node |
 | new part of the sheet | `\clearpage` |
 | table cell to write in | `p{1cm}` column + `\\[0.5cm]` |

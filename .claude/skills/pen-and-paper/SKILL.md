@@ -77,9 +77,18 @@ sheet.
 - **No answers, no solutions, no hints that give away the punchline.** Hints
   only explain *notation or mechanics* the student cannot guess (e.g. how the
   CSR `pointers` list is built, or the sum formula for a two-step walk).
-- **Leave physical space to write.** `\vspace{3em}` for one-liners, `\vspace{8em}`
-  to `\vspace{10em}` for reasoning, `\clearpage` between parts, `\underline{\hspace{2cm}}`
-  for inline blanks and `\underline{\hspace{\textwidth}}` for a full-line answer.
+- **No inline blanks, and no gap sized for an answer.** Sadamori took both out of
+  the m01 sheet and then out of m02: an underline after a question turns it into
+  a transcription, and a gap the answer has to fit in is a gap that says how long
+  the answer should be. Ask the question in words and let it be answered on the
+  back of the sheet. The space that used to go to ruled lines goes to 14pt text
+  and to bigger drawings. The one exception is the answer that belongs to a
+  place on a drawing — see *Where the answer goes* below — and there the
+  affordance is a box on the drawing, drawn big enough to write a digit in.
+- **One ask per line.** A question that runs "how many? \_\_ and the average? \_\_
+  and the worst case? \_\_" as one paragraph is three questions wearing one
+  number. Break them into three short paragraphs. The room reads the sheet once,
+  in half an hour, and much of it does not read English at home.
 - **Bookend it.** If the sheet opened with a guess, close by re-asking the same
   question after the machinery exists (m06 asks Q2/Q3 again as Q8/Q9). The
   student sees their own intuition confirmed or broken.
@@ -182,6 +191,14 @@ preamble used across all existing sheets, plus a font guard.
 - `to[out=m, in=m, looseness=1.35]` where `m` is the bisector of two directions
   draws a loop that goes *round* a node rather than across it. `bend left/right`
   between two points on a circle will cut through the middle.
+- **Never keep a question off a page break by comparing `\pagegoal` with
+  `\pagetotal`.** It is the obvious way to write a "break unless N lines are
+  left" macro and it is wrong: the page builder has not necessarily run when the
+  macro expands, so the numbers it reads can still be the *previous* page's. The
+  test then says "no room" on a page that is empty and the `\newpage` throws that
+  page away — m02 shipped a blank page 3 this way, and it is invisible in the
+  source. Use needspace's glue trick instead, which needs no `needspace.sty`:
+  `\vskip 0pt plus <N>` then `\penalty -100` then `\vskip 0pt plus -<N>`.
 - **Figures shared by the sheet and its answer key live in one file**
   (`mapkit.tex`), `\input` by both. Two copies of a 100-line TikZ picture drift
   within a day.

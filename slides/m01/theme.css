@@ -1,0 +1,1370 @@
+/* @theme network-science */
+
+/*-----------------------------------------------------------------------------
+  network-science.css — the one Marp theme for this course's decks.
+
+  It is the slide-sized twin of the lecture note's theme
+  (lecture-note/scss/minimal.scss). Same two hues, same neutrals, same serif,
+  same hand face inside an animation. A student moving between the note and
+  the room should not notice a change of house.
+
+    ONE accent   #593196 purple   structure: rules, markers, part label, nodes
+    ONE contrast #c2410c red      emphasis: key terms, the thing being pointed at
+    everything else is neutral grey. No green, no blue, no gold.
+
+  TYPE
+  ----
+  1280x720 (16:9); every size below is a 1920px design value / 1.5.
+
+    body          30px   the lecturer's floor
+    h2 (title)    40px   pinned to a 45px box so maths cannot move it
+    notes/caps    27px   secondary copy: .note, blockquote, figcaption
+    formula       30px
+
+  No webfont is fetched. The body face is the same system serif stack the note
+  uses, and the hand face (Excalifont, OFL 1.1 — see
+  lecture-note/assets/fonts/excalifont-LICENSE) is embedded at the bottom of
+  this file as a data: URI. A deck therefore renders identically offline, in
+  the marp image export, and on a lectern machine with no network.
+
+  KEEP THE TWO COPIES IDENTICAL. slides/intro/theme.css is the same file under
+  a different name (the intro deck's front matter names its theme file, not the
+  theme). Change one, copy to the other.
+-----------------------------------------------------------------------------*/
+
+section {
+  /* Marpit rewrites `:root` to `section`, so the tokens are declared here
+     directly. Custom properties inherit, so everything on the slide — including
+     an animation stage — resolves them without re-declaring. */
+  --ink: #22212b;
+  --ink-soft: #76757c;    /* annotations, captions */
+  --ink-faint: #bdbcbf;   /* pagination, disabled ink */
+  --accent: #593196;
+  --accent-soft: #f0e9fb;
+  --accent-mid: #7a51c0;  /* a second value in the ONE hue, never a third hue */
+  --contrast: #c2410c;
+  --contrast-soft: #fdeadf;
+  --rule: #e6e4e0;
+  --panel: #f6f4f9;       /* the formula wash — a pale tint of the accent */
+  --paper: #fffdf8;       /* sketch paper, animation stages only */
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+           "Hoefler Text", Georgia, "Times New Roman", serif;
+  --hand: "Excalifont", "Bradley Hand", "Chalkboard SE", "Segoe Print",
+          "Comic Sans MS", "Trebuchet MS", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", monospace;
+
+  width: 1280px;
+  height: 720px;
+  padding: 40px 80px 60px;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.42;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- headings ---------- */
+
+section h2 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.12;
+  /* A KaTeX line box is taller than a text one, so the headings containing math
+     pushed their own title and rule 16px below every other slide's -- measured
+     across the deck: title ink at y=42 and rule at y=103 everywhere except
+     those, which sat at 47 and 119. Pinning the height stops maths growing the
+     box. */
+  height: 45px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  flex: none;
+}
+
+/* the rule under every content title — use <hr> on the same slide, not --- */
+section h2 + hr {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  margin: 18px 0 22px;
+  flex: none;
+  width: 100%;
+}
+
+section h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---------- title slide ---------- */
+
+section.lead {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 34px;
+}
+section.lead h1 {
+  margin: 0;
+  font-size: 90px;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+section.lead hr {
+  border: 0;
+  width: 290px;
+  height: 3px;
+  background: var(--accent);
+  margin: 0;
+}
+section.lead .eyebrow {
+  font-size: 21px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+section.lead .sub {
+  font-size: 33px;
+  line-height: 1.4;
+  color: var(--ink);
+  max-width: 870px;
+}
+section.lead .credit {
+  font-size: 23px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+/* ---------- part dividers ---------- */
+/* A part opens on white, like every other slide. What marks the break is a
+   hairline and one accent label, not a field of colour — the same move the
+   lecture note makes at an h2. */
+
+section.part {
+  padding: 0;
+  justify-content: center;
+}
+section.part .band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  color: var(--accent);
+  padding: 36px 80px 22px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+section.part .band .count { color: var(--ink-faint); letter-spacing: 0.1em; }
+section.part h2 {
+  margin: 0 80px;
+  font-size: 67px;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  max-width: 1000px;
+  /* `section h2` pins height to 45px for the single-line 40px content title, so
+     a two-line part title (67px, line-height 1.08) overflowed that box and the
+     paragraph below started inside the overflow, printing its first line on top
+     of the title's wrapped second line. Part titles size to their own content. */
+  height: auto;
+}
+section.part p {
+  margin: 32px 80px 0;
+  font-size: 31px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  max-width: 900px;
+}
+
+/* A part divider names the lecture-note page that carries the section, so that
+   "where do I look this up afterwards" has an answer which is not the deck.
+   Smaller and fainter than the subtitle above it, because it is a pointer and
+   not a second claim; the rule above it keeps the two from reading as one
+   paragraph. */
+section.part .review {
+  margin: 30px 80px 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  max-width: 900px;
+}
+/* The paragraph inside carries `section.part p`'s 80px side margin, which would
+   land on top of the wrapper's own and indent the pointer past the title it
+   sits under. Zero it and set the type here. */
+section.part .review p {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.35;
+  color: var(--ink-faint);
+}
+/* No accent-red in here. `strong` is the deck's key-term mark; a lecture-note
+   page title is a destination, not a term, and letting it turn red spends the
+   colour on the one line of the slide that matters least. */
+section.part .review em {
+  font-style: normal;
+  color: var(--ink-soft);
+}
+
+/* Shallow slides: centre the BODY in the space under the rule, and leave the
+   title where it always is. Centring the whole section pushed the title down
+   the frame, so a `mid` slide's heading no longer lined up with its neighbours'.
+   The auto margins put the slack above and below the body block only.
+   Add `<!-- _class: mid -->` to the slide. */
+section.mid { justify-content: flex-start; }
+section.mid > h2 + hr { margin-bottom: auto; }
+section.mid > :last-child { margin-bottom: auto; }
+
+/* ---------- body ---------- */
+
+section p {
+  margin: 0 0 20px;
+  max-width: 1080px;
+  text-wrap: pretty;
+}
+section p:last-child { margin-bottom: 0; }
+
+section ul, section ol {
+  margin: 0 0 20px;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+section ul:last-child, section ol:last-child { margin-bottom: 0; }
+section li { line-height: 1.42; }
+section li::marker { color: var(--accent); }
+
+/* Key terms. The deck already bolds exactly the terms worth colouring, so
+   `strong` carries the highlight. Purple is structural (rules, part labels,
+   list markers, node fills), so the accent that reads as emphasis is the red. */
+strong { font-weight: 700; color: var(--contrast); }
+em { font-style: italic; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--contrast); }
+
+/* annotations / secondary copy */
+section .note,
+section blockquote {
+  font-size: 27px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 14px 0 26px;
+  border: 0;
+  padding: 0;
+  max-width: 1080px;
+}
+section .note:last-child, section blockquote:last-child { margin-bottom: 0; }
+
+/* lecturer's cues — readable from the lectern, not from the back row.
+   Wrap your own prompting bullets in <div class="cue"> … </div>. Body size,
+   so it is easy to read up close; near-white, so the room reads it as texture
+   rather than text. #d2d2d2 is fainter than the page number — darken it if your
+   projector washes out, lighten it if the room sees it. */
+section .cue,
+section .cue p,
+section .cue li,
+section .cue strong {
+  color: #d2d2d2;
+  font-weight: 400;
+}
+section .cue li::marker { color: #d2d2d2; }
+
+/* Captions and asides are one tier, as in the lecture note: same size, same
+   grey, whether the words sit under a figure or beside a paragraph. The hand
+   face is reserved for the inside of an animation, where it means "drawn, not
+   typeset"; a caption in it meant nothing. */
+section figcaption {
+  font-size: 27px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin-top: 10px;
+}
+/* .hand is still available for a deliberate aside in the animation's voice. */
+section .hand {
+  font-family: var(--hand);
+  font-size: 30px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+/* ---------- formula panel ---------- */
+
+section .formula {
+  background: var(--panel);
+  padding: 22px 28px;
+  margin: 0 0 22px;
+  font-size: 30px;
+}
+section .formula:last-child { margin-bottom: 0; }
+section .katex { color: var(--ink); }
+section .katex-display { margin: 0; }
+
+/* labelled derivation rows: | LABEL | formula | */
+section table.steps,
+section table.steps td { border: 0; }
+section table.steps td:first-child {
+  width: 210px;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  vertical-align: middle;
+}
+
+/* ---------- tables ---------- */
+
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 24px;
+}
+section th {
+  text-align: left;
+  padding: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-soft);
+}
+section td {
+  padding: 17px 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+}
+
+/* ---------- utility layout ---------- */
+
+section .cols {
+  display: grid;
+  /* minmax(0, 1fr), not 1fr: a `1fr` track is minmax(auto, 1fr), so an
+     unbreakable element in one column -- a wide LaTeX formula, say -- widens
+     its own track and steals room from the figure beside it. That made the
+     figure column 370px on one slide and 537px on every other. Pinning the
+     minimum to 0 keeps both columns at (1120 - 46) / 2 = 537px always. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 46px;
+  /* center, not start: a text column two lines shorter than the figure beside
+     it left an empty wedge bottom-left on eight slides of m02, measured at
+     150-208px. `_class: mid` cannot fix that -- it centres the whole body
+     block, so both columns move together and the wedge moves with them. The
+     columns have to be centred against each other. */
+  align-items: center;
+}
+section .cols3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+section .fig { min-width: 0; display: flex; flex-direction: column; align-items: center; }
+section .fig img {
+  max-width: 100%;
+  max-height: 380px;
+  width: auto !important;   /* defeats Marp's inline width:NNNpx */
+  height: auto;
+}
+/* modifiers: use when text above the figure eats the row */
+section .fig.tight img { max-height: 320px; }
+/* modifier: use on a .fig holding two stacked images */
+section .fig.stack img { max-height: 190px; }
+
+/* three-up statistic row */
+section .stats {
+  display: flex;
+  gap: 46px;
+  flex: 1;
+  align-items: center;
+}
+section .stats > div {
+  flex: 1;
+  border-left: 3px solid var(--accent);
+  padding-left: 29px;
+}
+section .stats .n {
+  font-size: 74px;
+  line-height: 1;
+  color: var(--ink);
+}
+section .stats .cap {
+  margin-top: 14px;
+  font-size: 23px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+/* numbered takeaway list */
+section .steps-list { display: flex; flex-direction: column; gap: 26px; }
+section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
+section .steps-list .i { font-size: 25px; color: var(--accent); flex: none; }
+
+/* secondary accents — use only where a contrast carries meaning */
+.accent-2 { color: var(--contrast); }
+.accent-3 { color: var(--accent-mid); }
+
+/* ---------- interactive CSR widget ---------- */
+/* Lives on "Store only the nonzeros". Marp strips inline style attributes, so
+   every rule the widget needs is here. It needs `html: true` in the deck's
+   front matter; with that set it runs in the image and PDF exports too, not
+   only in --html. */
+
+section .csrw { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+section .csrw-top { display: flex; gap: 34px; align-items: center; }
+
+/* the 5x5 matrix */
+section .csrw-m { display: grid; grid-template-columns: repeat(5, 38px); gap: 3px; }
+section .csrw-m > i {
+  display: inline-block; font-style: normal; font-size: 22px; line-height: 38px; text-align: center;
+  background: var(--panel); color: var(--ink-soft);
+}
+section .csrw-m > i.on { background: var(--accent); color: #ffffff; }
+section .csrw-m > i.row { outline: 3px solid var(--contrast); outline-offset: -3px; }
+
+/* the three arrays */
+section .csrw-arrays { display: flex; flex-direction: column; gap: 10px; }
+section .csrw-row { display: flex; gap: 4px; align-items: center; }
+section .csrw-row b {
+  width: 104px; text-align: right; font-size: 21px; font-weight: 700;
+  color: var(--accent);
+}
+/* The JS appends each cell into the row's <span>, so this has to be a
+   descendant selector, not a child one -- and <i> is inline by default, so the
+   box properties need inline-block or the cells run together into one number. */
+section .csrw-row i {
+  display: inline-block; font-style: normal;
+  min-width: 34px; height: 34px; line-height: 34px; margin-right: 4px;
+  text-align: center; font-size: 21px; background: var(--panel); color: var(--ink);
+}
+section .csrw-row i.slice { background: #ddd0f2; }
+section .csrw-row i.bound { background: var(--contrast); color: #ffffff; }
+
+/* the control */
+section .csrw-ctl { display: flex; gap: 16px; align-items: center; font-size: 24px; }
+section .csrw-ctl input[type="range"] { width: 300px; accent-color: var(--accent); }
+section .csrw-ctl output { color: var(--contrast); font-weight: 700; min-width: 210px; }
+
+/* The widget came over from the lecture note's appendix, where it sits in a
+   text column; on a slide it has the whole width and would otherwise hug the
+   left edge. */
+section #csr-rows .csrw-top { justify-content: center; margin: 6px 0 2px; }
+section #csr-rows .csrw-m { flex: none; }
+
+/* ---------- animation stage ---------- */
+/* The slide-sized port of lecture-note/assets/anim.css. Same ink, same paper,
+   same class names, so a scene script written for the note runs here unchanged
+   — only the sizes differ, because a slide's body is 30px where the note's is
+   18px. Drive it with slides/assets/anim.js.
+   Wrap the stage in <div class="stage-wrap"> when you want it centred. */
+
+section .anim-stage {
+  /* short private names, exactly as in the note's kit */
+  --_ink: var(--ink);
+  --_ink-soft: var(--ink-soft);
+  --_ink-faint: var(--ink-faint);
+  --_paper: var(--paper);
+  --_white: #ffffff;
+  --_accent: var(--accent);
+  --_accent-soft: var(--accent-soft);
+  --_amber: var(--contrast);
+  --_amber-soft: var(--contrast-soft);
+  --_rule: var(--rule);
+  --_hand: var(--hand);
+  --_mono: var(--mono);
+  --_shade: rgba(34, 33, 43, 0.18);
+
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 14px 16px 16px;
+  color: var(--_ink);
+  background-color: var(--_paper);
+  background-image:
+    linear-gradient(rgba(89, 49, 150, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(89, 49, 150, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 2px solid var(--_ink);
+  border-radius: 14px 7px 16px 9px / 9px 16px 7px 14px;
+  box-shadow: 4px 5px 0 -1px var(--_shade);
+}
+
+section .anim-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+}
+section .anim-step {
+  font-family: var(--_hand);
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+section .anim-step .anim-num {
+  display: inline-block;
+  min-width: 32px;
+  margin-right: 8px;
+  padding: 0 7px;
+  text-align: center;
+  color: #fff;
+  background: var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+
+section .anim-dots { display: flex; gap: 0; flex: none; }
+section .anim-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+section .anim-dot::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: 1.8px solid var(--_ink);
+  border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+  background: transparent;
+}
+section .anim-dot[aria-current="true"]::before {
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+section .anim-btn {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 5px 11px;
+  color: var(--_ink);
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 14px 6px 14px 6px / 6px 14px 6px 14px;
+  box-shadow: 2px 2px 0 -0.5px rgba(34, 33, 43, 0.35);
+  cursor: pointer;
+  flex: none;
+}
+section .anim-btn:hover { background: var(--_accent-soft); }
+section .anim-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+
+section .anim-grid-2 {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+section .anim-panel {
+  --tilt: 0deg;
+  position: relative;
+  margin: 0 0 10px;
+  padding: 9px 11px 10px;
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  box-shadow: 2px 3px 0 -1px var(--_shade);
+  transform: rotate(var(--tilt));
+}
+section .anim-panel:last-child { margin-bottom: 0; }
+
+/* .anim-stack tilts its panels alternately, like a real pile. */
+section .anim-stack > .anim-panel:nth-child(even) { --tilt: -0.3deg; }
+section .anim-stack > .anim-panel:nth-child(odd) { --tilt: 0.25deg; }
+/* An unpadded window frame with its own chrome; a dark terminal; an empty slot
+   waiting to be filled. The modifiers compose with .anim-panel. */
+section .anim-panel--frame {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-width: 2px;
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  box-shadow: 3px 4px 0 -1px rgba(34, 33, 43, 0.25);
+}
+section .anim-panel--term { background: #221f30; color: #ece9f5; }
+section .anim-panel--dashed {
+  background: #fbf8ff;
+  border: 2.2px dashed var(--_ink);
+  border-radius: 12px 6px 14px 7px / 7px 14px 6px 12px;
+  box-shadow: none;
+}
+section .anim-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: #86c5ff;
+  animation: anim-blink 1s step-end infinite;
+}
+@keyframes anim-blink { 50% { opacity: 0; } }
+
+section .anim-caption {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--_ink-soft);
+  margin-top: 5px;
+}
+section .anim-quote {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.4;
+  padding-left: 10px;
+  border-left: 3px solid var(--_accent);
+}
+/* A row of the drawing's own numbers. The gap is load-bearing: without it the
+   label and its value run together into one word. */
+section .anim-readout {
+  font-family: var(--_mono);
+  font-size: 20px;
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+section .anim-readout b { font-weight: 700; }
+section .anim-readout--tight { gap: 13px; font-size: 18px; }
+section .anim-tally {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--_hand);
+  font-size: 23px;
+  line-height: 1.5;
+  color: var(--_ink);
+}
+section .anim-tally b { font-weight: 700; }
+section .anim-big {
+  font-family: var(--_hand);
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--_ink);
+}
+/* The per-scene prose, and the stage's own account of itself for a reader who
+   cannot see the drawing. Two lines are reserved so the box never jumps. */
+section .anim-note {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--_ink);
+  margin-top: 10px;
+  padding-left: 9px;
+  border-left: 3px solid var(--_accent);
+  /* Three lines, always. The longest note either deck mounts is 286 characters,
+     which wraps to three at this size across a full-width stage; reserving them
+     stops the drawing above jumping as the scenes change. */
+  min-height: calc(3 * 1.3em);
+}
+
+/* SVG ink — identical to the note's, so a scene's own geometry needs no edit.
+   The cap is a variable: set --anim-svg-max on the stage (or on the wrapper
+   holding one wide drawing) rather than re-declaring .anim-svg. */
+section .anim-svg {
+  display: block;
+  width: 100%;
+  max-width: var(--anim-svg-max, 420px);
+  height: auto;
+  margin: 0 auto;
+}
+section .anim-edge {
+  stroke: var(--_ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+}
+section .anim-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.8; }
+section .anim-node-off { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.8; }
+section .anim-accent-stroke { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-accent-fill { fill: var(--_accent); }
+section .anim-amber-stroke { stroke: var(--_amber); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-amber-fill { fill: var(--_amber); }
+section .anim-axis { stroke: var(--_ink); stroke-width: 1.4; }
+section .anim-marker { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+section .anim-marker--accent { stroke: var(--_accent); }
+section .anim-marker--faint { stroke: var(--_ink-faint); }
+section .anim-label { font-family: var(--_hand); font-size: 11px; fill: var(--_ink); }
+section .anim-faint { stroke: var(--_ink-faint); fill: var(--_ink-faint); }
+section .anim-knockout {
+  paint-order: stroke fill;
+  stroke: var(--_paper);
+  stroke-width: var(--anim-knockout-w, 3px);
+  stroke-linejoin: round;
+}
+section .anim-shade { fill: var(--_accent); fill-opacity: 0.16; stroke: none; }
+section .anim-trail {
+  stroke: var(--_amber);
+  stroke-width: 4.5;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+section .anim-token { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* motion primitives — plain add-on classes, so ink and motion stay separable */
+section .anim-draw {
+  stroke-dasharray: var(--dash, 240);
+  stroke-dashoffset: var(--dash, 240);
+  animation: anim-draw 0.4s ease forwards;
+}
+@keyframes anim-draw { to { stroke-dashoffset: 0; } }
+section .anim-fade { opacity: 0; animation: anim-fade 0.3s ease forwards; }
+@keyframes anim-fade { to { opacity: 1; } }
+section .anim-fade-out { animation: anim-fade-out 0.45s ease forwards; }
+@keyframes anim-fade-out { from { opacity: 1; } to { opacity: 0; } }
+section .anim-glide { transition: transform 0.34s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+section .anim-pop { animation: anim-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes anim-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+
+/* the knob — see mountKnob() in slides/assets/anim.js */
+section .anim-range { max-width: 420px; margin: 8px auto 4px; }
+section .anim-track {
+  position: relative;
+  height: 10px;
+  margin: 16px 7px 9px;
+  background: var(--_rule);
+  border: 1.8px solid var(--_ink);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+  touch-action: none;
+  cursor: pointer;
+}
+section .anim-knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background: var(--_accent);
+  border: 1.8px solid var(--_ink);
+  border-radius: 58% 42% 50% 50% / 50% 50% 42% 58%;
+  transition: left 0.12s linear;
+  touch-action: none;
+  cursor: grab;
+}
+section .anim-knob-live { transition: none; cursor: grabbing; }
+
+/* ---------- per-stage rules ---------- */
+/* One block per animation the decks mount, mirroring the block that sits beside
+   the same stage in the lecture note. Only sizes differ: the note has a 520px
+   column and this has a 1120px slide, so a drawing that fills the note's width
+   would leave a slide two-thirds empty. Everything else — every colour, every
+   class, every coordinate — comes from the shared scene file under
+   lecture-note/assets/anim/, which both mount.
+   Colours are the kit's resolved tokens, never literals. */
+
+/* One line of note, not the kit's three. The kit reserves three because the
+   note is a reader's whole account of a drawing they cannot see; on a slide
+   the lecturer is the account, and a paragraph under the picture competes with
+   them for the room. These five keep a one-line caption that names what just
+   changed — enough for a glance and for a screen reader — and the prose that
+   used to sit here is in the slide's speaker notes. kb-tracer is left alone:
+   the lecture note mounts the same file and reads it on its own. */
+section #comp-sweep .anim-note,
+section #route-namer .anim-note,
+section #euler-builder .anim-note,
+section #dir-reach .anim-note,
+section #walk-power .anim-note { min-height: 1.3em; }
+
+/* Konigsberg tracer (m01). The map is the argument, so it takes the wider half.
+   Keyframe names cannot be scoped, hence the kb- prefix. */
+/* 430px, not the note's 470: a 320x200 map at 470 stands 294px tall, and the
+   slide's budget under the title, the instruction line and the stage's own bar
+   and note is 297. */
+section #kb-tracer { --anim-svg-max: 430px; }
+section #kb-tracer .anim-grid-2 { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+section #kb-tracer .kb-water { fill: var(--_accent-soft); }
+/* The banks are white and so is the paper, so without an edge the map has no
+   extent. Drawn over everything, deaf to the pointer. */
+section #kb-tracer .kb-frame { fill: none; stroke: var(--_ink); stroke-width: 2.4; pointer-events: none; }
+section #kb-tracer .kb-land { fill: var(--_white); stroke: var(--_ink); stroke-width: 2; }
+/* A bridge is ink until it is one you may take (accent, breathing), and amber
+   once it is behind you. */
+section #kb-tracer .kb-bridge { stroke: var(--_ink); stroke-width: 7; fill: none; }
+section #kb-tracer .kb-open { stroke: var(--_accent); animation: kb-pulse 1.2s ease-in-out infinite; }
+section #kb-tracer .kb-used { stroke: var(--_amber); }
+@keyframes kb-pulse { 50% { stroke-width: 10.5; } }
+/* Refused: one flinch from the bridge you cannot have. */
+section #kb-tracer .kb-nope { animation: kb-nope 0.42s ease; }
+@keyframes kb-nope {
+  0%, 100% { stroke-width: 7; opacity: 1; }
+  30% { stroke-width: 12; opacity: 0.3; }
+}
+/* Invisible, generous targets laid over the drawing: landmasses first, then
+   bridges, so a bridge always wins where the two overlap. */
+section #kb-tracer .kb-hit { fill: transparent; stroke: transparent; stroke-width: 20; pointer-events: all; }
+section #kb-tracer .kb-live .kb-hit { cursor: pointer; }
+section #kb-tracer .kb-letter { font-family: var(--_hand); font-size: 11px; font-style: italic; fill: var(--_accent); }
+section #kb-tracer .kb-name { font-family: var(--_hand); font-size: 15px; font-weight: 700; fill: var(--_ink); }
+/* Beat two: every bridge-end as a spoke, the pairs that pass through, and the
+   one spoke at each landmass that has nothing to pair with. */
+section #kb-tracer .kb-spoke { stroke: var(--_ink-faint); stroke-width: 1.6; stroke-dasharray: 3 3; fill: none; }
+section #kb-tracer .kb-hub { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.6; }
+section #kb-tracer .kb-pair { stroke: var(--_ink-soft); stroke-width: 3.2; fill: none; stroke-linecap: round; }
+section #kb-tracer .kb-left { stroke: var(--_amber); stroke-width: 3.6; fill: none; stroke-linecap: round; }
+section #kb-tracer .kb-left-dot { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.2; }
+/* Where you are standing, and where you put the pencil down. */
+section #kb-tracer .kb-here { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+section #kb-tracer .kb-start { fill: none; stroke: var(--_amber); stroke-width: 2.4; }
+/* The tracer's reply to your last click. Three lines are always reserved, so a
+   refusal never shoves the reset button out from under the pointer. */
+section #kb-tracer .kb-msg {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.35;
+  color: var(--_ink);
+  min-height: calc(3 * 1.35em);
+  margin-top: 6px;
+}
+section #kb-tracer .kb-msg-no { color: var(--_amber); }
+
+/* H1N1 ruler swap (intro). The note stacks plot over side in one 520px column;
+   a 16:9 frame puts them beside each other instead. */
+section #h1n1-ruler { --anim-svg-max: 470px; --anim-knockout-w: 3.4px; }
+section #h1n1-ruler .h1-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+/* Reserve the tallest card so the column does not jump between steps. */
+section #h1n1-ruler .h1-side { min-height: 200px; }
+/* One set of dots, moved by transform. 0.16s linear, not the kit's 0.34s ease:
+   across 21 detents a long ease reads as lag under your own finger. */
+section #h1n1-ruler .h1-pt { transition: transform 0.16s linear; }
+section #h1n1-ruler .h1-plot { transition: opacity 0.5s ease; }
+section #h1n1-ruler .h1-named { stroke: var(--_ink); stroke-width: 1.5; }
+section #h1n1-ruler .h1-hi { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.6; }
+
+/* Component sweep (m01). The band graph is 4.7 times as wide as it is tall, so
+   this is the one stage that does not split the frame in two: the drawing takes
+   the full width and its bookkeeping sits underneath in a single row. */
+/* 880px, not the full 1120: a 700x156 band at 980 stands 218px tall and the
+   slide's budget under the title, the instruction line, the stage's own bar,
+   the readout row and the note is 199. */
+section #comp-sweep { --anim-svg-max: 880px; }
+section #comp-sweep .cs-col { display: flex; flex-direction: column; gap: 6px; }
+section #comp-sweep .cs-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.2; }
+/* Unvisited and waiting for a click; visited; and the ring the sweep is on. */
+section #comp-sweep .cs-open { stroke: var(--_accent); stroke-dasharray: 3 3; }
+section #comp-sweep .cs-seen { fill: var(--_accent); }
+section #comp-sweep .cs-front { fill: var(--_amber); animation: cs-pulse 1.1s ease-in-out infinite; }
+/* stroke-width and not r: the SVG geometry properties are animatable as CSS in
+   Chrome but not everywhere, and this has to hold up on a lectern machine. */
+@keyframes cs-pulse { 50% { stroke-width: 6; } }
+section #comp-sweep .cs-nope { animation: cs-nope 0.42s ease; }
+@keyframes cs-nope {
+  0%, 100% { opacity: 1; }
+  30% { opacity: 0.25; }
+}
+/* An edge the sweep has looked at — the O(N + M) count is about these. */
+section #comp-sweep .cs-tree { stroke: var(--_accent); stroke-width: 3.4; }
+section #comp-sweep .cs-num { font-family: var(--_hand); font-size: 15px; font-weight: 700; fill: var(--_amber); }
+section #comp-sweep .cs-name { font-family: var(--_hand); font-size: 13px; fill: var(--_ink-soft); }
+section #comp-sweep .cs-box { fill: none; stroke: var(--_accent); stroke-width: 2; stroke-dasharray: 7 5; }
+section #comp-sweep .cs-hit { fill: transparent; stroke: none; pointer-events: all; }
+section #comp-sweep .cs-clickable .cs-hit { cursor: pointer; }
+section #comp-sweep .cs-card { display: flex; flex-direction: column; gap: 5px; }
+/* One line always reserved, so the row underneath never jumps as the sweep
+   narrates itself. */
+section #comp-sweep .cs-msg { font-family: var(--_hand); font-size: 21px; line-height: 1.3; min-height: 1.3em; }
+section #comp-sweep .cs-rows { display: flex; flex-wrap: wrap; gap: 8px 26px; align-items: baseline; }
+section #comp-sweep .cs-rows .anim-tally { gap: 10px; }
+section #comp-sweep .cs-rows .anim-quote { flex-basis: 100%; }
+section #comp-sweep .cs-chip {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  padding: 2px 11px;
+  font-family: var(--_hand);
+  font-size: 20px;
+  background: var(--_accent-soft);
+  border: 1.6px solid var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+section #comp-sweep .cs-chip span { color: var(--_ink-soft); }
+
+/* Route namer (m01). The card carries five names and has to hold them on one
+   screen, so it takes the wider half; the campus square is small and does not
+   need it. */
+section #route-namer { --anim-svg-max: 380px; }
+section #route-namer .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+section #route-namer .rn-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.4; }
+section #route-namer .rn-open { stroke: var(--_accent); stroke-dasharray: 4 3; }
+section #route-namer .rn-been { fill: var(--_accent-soft); }
+section #route-namer .rn-here { fill: var(--_amber); }
+section #route-namer .rn-nope { animation: rn-nope 0.42s ease; }
+@keyframes rn-nope {
+  0%, 100% { opacity: 1; }
+  30% { opacity: 0.25; }
+}
+section #route-namer .rn-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_ink); }
+section #route-namer .rn-hit { fill: transparent; stroke: none; pointer-events: all; }
+section #route-namer .rn-clickable .rn-hit { cursor: pointer; }
+section #route-namer .rn-head { fill: var(--_amber); }
+section #route-namer .rn-step { font-family: var(--_hand); font-size: 15px; font-weight: 700; fill: var(--_ink); }
+/* A leg over an edge that has already been walked: the accent, so a repeat is
+   a different colour and not just a second stroke in the same one. */
+section #route-namer .rn-again { stroke: var(--_accent); }
+section #route-namer .rn-again-fill { fill: var(--_accent); }
+section #route-namer .rn-body { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+section #route-namer .rn-ladder { display: flex; flex-direction: column; gap: 3px; align-self: stretch; }
+section #route-namer .rn-chip {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  font-family: var(--_hand);
+  font-size: 19px;
+  line-height: 1.22;
+  border: 1.6px solid transparent;
+  border-radius: 11px 5px 11px 5px / 5px 11px 5px 11px;
+}
+section #route-namer .rn-chip span { color: var(--_ink-faint); }
+section #route-namer .rn-on {
+  background: var(--_accent-soft);
+  border-color: var(--_accent);
+}
+section #route-namer .rn-on b { color: var(--_accent); }
+section #route-namer .rn-on span { color: var(--_ink-soft); }
+section #route-namer .rn-route { font-family: var(--_mono); font-size: 18px; color: var(--_ink); }
+/* Two lines reserved: narration, verdicts and refusals all land here, and a
+   refusal must not shove the reset button out from under the pointer. */
+section #route-namer .rn-why {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--_ink);
+  min-height: calc(2 * 1.3em);
+  align-self: stretch;
+}
+section #route-namer .rn-why-no { color: var(--_amber); }
+
+/* Euler builder (m01). The degree lives inside each disc, so the discs are
+   large and the drawing needs the room; the card is only a counter. */
+section #euler-builder { --anim-svg-max: 400px; }
+section #euler-builder .anim-grid-2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+section #euler-builder .eb-edge { stroke: var(--_ink); stroke-width: 5; fill: none; stroke-linecap: round; }
+section #euler-builder .eb-open { stroke: var(--_accent); animation: eb-pulse 1.2s ease-in-out infinite; }
+section #euler-builder .eb-used { stroke: var(--_amber); }
+@keyframes eb-pulse { 50% { stroke-width: 8; } }
+/* The one edge a stranded walk could not reach. */
+section #euler-builder .eb-left { stroke: var(--_accent); stroke-dasharray: 6 5; }
+section #euler-builder .eb-nope { animation: eb-nope 0.42s ease; }
+@keyframes eb-nope {
+  0%, 100% { stroke-width: 5; opacity: 1; }
+  30% { stroke-width: 9; opacity: 0.3; }
+}
+section #euler-builder .eb-node { fill: var(--_ink); stroke: var(--_ink); stroke-width: 2; }
+section #euler-builder .eb-odd { fill: var(--_amber); stroke: var(--_amber); }
+section #euler-builder .eb-on { stroke: var(--_accent); stroke-width: 3; }
+section #euler-builder .eb-deg { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_white); }
+section #euler-builder .eb-name { font-family: var(--_hand); font-size: 17px; font-weight: 700; fill: var(--_ink); }
+section #euler-builder .eb-order { font-family: var(--_hand); font-size: 16px; font-weight: 700; fill: var(--_amber); }
+section #euler-builder .eb-here { fill: none; stroke: var(--_accent); stroke-width: 2.4; }
+section #euler-builder .eb-hit { fill: transparent; stroke: transparent; stroke-width: 22; pointer-events: all; }
+/* A quadratic path closes itself for fill purposes, so an edge target must
+   answer on its stroke alone or it swallows half the drawing. */
+section #euler-builder .eb-hit-edge { fill: none; pointer-events: stroke; }
+section #euler-builder .eb-clickable .eb-hit { cursor: pointer; }
+section #euler-builder .eb-card { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+section #euler-builder .eb-msg {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.32;
+  min-height: calc(2 * 1.32em);
+  margin-top: 2px;
+}
+section #euler-builder .eb-msg-no { color: var(--_amber); }
+
+/* Directed reachability (m01). Five corners, six streets, 64 orientations. The
+   verdict lives on the drawing — a reach count beside every corner — so the
+   card is only two flags and a line, and the drawing takes the wider half and
+   as much of it as the frame allows. 435px on a 420x340 box is 352px tall,
+   which is what the slide has left under the title, the instruction line, the
+   stage's bar and its one-line note — 450 overran the frame by 10. */
+section #dir-reach { --anim-svg-max: 435px; }
+section #dir-reach .anim-grid-2 { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+section #dir-reach .dr-arc { stroke: var(--_ink); stroke-width: 4.2; fill: none; }
+section #dir-reach .dr-head { fill: var(--_ink); }
+/* An arc the flood has just used. */
+section #dir-reach .dr-on { stroke: var(--_amber); stroke-width: 5.6; }
+section #dir-reach .dr-flipped { stroke: var(--_accent); }
+section #dir-reach .dr-flipped-fill { fill: var(--_accent); }
+/* One beat of scene 4 rubs the arrowheads out — the same six streets, asked
+   the weaker question. */
+section #dir-reach .dr-undirected .dr-head { opacity: 0; }
+section #dir-reach .dr-undirected .dr-arc { stroke: var(--_accent); }
+section #dir-reach .dr-node { fill: var(--_white); stroke: var(--_ink); stroke-width: 2.6; }
+/* An amber rim on any corner that cannot reach the whole town: a broken
+   orientation should be visible before you read a single number. */
+section #dir-reach .dr-part { stroke: var(--_amber); stroke-width: 3.4; }
+section #dir-reach .dr-src { fill: var(--_amber); }
+section #dir-reach .dr-lit { fill: var(--_accent); }
+section #dir-reach .dr-name { font-family: var(--_hand); font-size: 24px; font-weight: 700; fill: var(--_ink); }
+section #dir-reach .dr-name-on { fill: var(--_white); }
+/* How many of the other four this corner reaches. Five fours is the verdict. */
+section #dir-reach .dr-count {
+  font-family: var(--_hand);
+  font-size: 23px;
+  font-weight: 700;
+  fill: var(--_accent);
+}
+section #dir-reach .dr-count-low { fill: var(--_amber); }
+section #dir-reach .dr-hit { fill: none; stroke: transparent; stroke-width: 30; pointer-events: stroke; }
+section #dir-reach .dr-clickable .dr-hit { cursor: pointer; }
+section #dir-reach .dr-card { display: flex; flex-direction: column; gap: 5px; }
+section #dir-reach .dr-verdict { display: flex; gap: 10px; flex-wrap: wrap; }
+/* One line, not two: stacking the verdict under its label cost 26px the slide
+   did not have. */
+section #dir-reach .dr-flag {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  padding: 2px 10px;
+  font-family: var(--_hand);
+  font-size: 18px;
+  line-height: 1.3;
+  border: 1.8px solid var(--_ink);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+section #dir-reach .dr-flag span { font-weight: 700; font-size: 20px; }
+section #dir-reach .dr-yes { background: var(--_accent-soft); border-color: var(--_accent); }
+section #dir-reach .dr-yes span { color: var(--_accent); }
+section #dir-reach .dr-no { background: var(--_amber-soft); border-color: var(--_amber); }
+section #dir-reach .dr-no span { color: var(--_amber); }
+section #dir-reach .dr-msg {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.3;
+  min-height: calc(2 * 1.3em);
+}
+section #dir-reach .dr-msg-no { color: var(--_amber); }
+
+/* A^k counts walks (m01). Three things have to share the frame — the graph,
+   the matrix and the bookkeeping — so the right half splits again in two
+   rather than stacking, which would run the matrix off the bottom. */
+section #walk-power { --anim-svg-max: 380px; }
+section #walk-power .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+section #walk-power [data-wp-side] { display: flex; gap: 16px; align-items: flex-start; }
+section #walk-power .wp-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
+section #walk-power .wp-name { font-family: var(--_hand); font-size: 19px; font-weight: 700; fill: var(--_white); }
+/* The two corners the watched entry is about, ringed in the same amber as the
+   watched cell — so at k = 4, where eleven walks are too many to draw, the
+   graph still says which pair the number belongs to. */
+section #walk-power .wp-end { fill: none; stroke: var(--_amber); stroke-width: 3; }
+section #walk-power .wp-leg { stroke-width: 5; fill: none; stroke-linecap: round; stroke-opacity: 0.85; }
+/* The two route colours the deck's own adjacency-squared.png already uses. */
+section #walk-power .wp-red { stroke: var(--_amber); }
+section #walk-power .wp-purple { stroke: var(--_accent); }
+/* The power, the grid, and what the grid counts, as one stack. The power used
+   to be the grid's own corner cell at header size, which is how a slide ends
+   up showing a wall of numbers nobody can name. */
+section #walk-power .wp-mwrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+}
+section #walk-power .wp-title {
+  font-family: var(--_hand);
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.02;
+  color: var(--_accent);
+}
+section #walk-power .wp-title sup { font-size: 0.62em; }
+section #walk-power .wp-sub {
+  font-family: var(--_hand);
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--_ink-soft);
+}
+section #walk-power .wp-m {
+  display: grid;
+  grid-template-columns: repeat(6, 30px);
+  gap: 2px;
+  flex: none;
+}
+section #walk-power .wp-m > i {
+  display: inline-grid;
+  place-items: center;
+  height: 30px;
+  font-family: var(--_mono);
+  font-size: 18px;
+  font-style: normal;
+  /* Zeros recede so the sparsity pattern is the first thing the eye gets. */
+  color: var(--_ink-faint);
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+}
+/* `> i` on the base rule, so every state below has to carry the child
+   combinator too or it loses on specificity and only its colour lands — which
+   is exactly how the highlighted cell first shipped as white on white. */
+section #walk-power .wp-m > i.wp-h { border: 0; background: none; color: var(--_ink-soft); font-weight: 700; }
+section #walk-power .wp-m > i.wp-h-on { color: var(--_amber); }
+/* Every nonzero in the accent, so the shape of the matrix reads at a glance
+   and the one amber cell is unmistakably the one being talked about. */
+section #walk-power .wp-m > i.wp-on { background: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
+section #walk-power .wp-m > i.wp-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+section #walk-power .wp-m > i.wp-hi {
+  background: var(--_amber);
+  border-color: var(--_amber);
+  color: var(--_white);
+  font-weight: 700;
+}
+section #walk-power .wp-card { display: flex; flex-direction: column; gap: 5px; flex: 1 1 auto; min-width: 0; }
+/* The kit's knob wrapper carries `margin: 8px auto 4px`, written for a block
+   container. As a flex item those auto side margins beat `stretch`, the track
+   resolves to its content width — nothing — and all that renders is a knob
+   floating in the middle of the card. Kill the auto margins, not the rule. */
+section #walk-power .wp-card .anim-range {
+  align-self: stretch;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+section #walk-power .wp-formula { font-family: var(--_mono); font-size: 21px; color: var(--_accent); }
+section #walk-power .wp-terms { display: flex; gap: 7px; flex-wrap: wrap; }
+section #walk-power .wp-term {
+  padding: 1px 8px;
+  font-family: var(--_mono);
+  font-size: 17px;
+  color: var(--_ink-faint);
+  border: 1.4px solid var(--_rule);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+}
+section #walk-power .wp-term-on { color: var(--_amber); border-color: var(--_amber); font-weight: 700; }
+section #walk-power .wp-read { font-family: var(--_hand); font-size: 20px; line-height: 1.3; min-height: calc(2 * 1.3em); }
+section #walk-power .wp-read b { color: var(--_accent); }
+
+/* One graph, three data structures (m01). The right column carries whichever
+   structure the beat is about, at a size a room can read; the last beat has to
+   hold all three at once, and .rt-compact is the only place that bites. */
+section #rep-three { --anim-svg-max: 330px; }
+section #rep-three .anim-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+section #rep-three .anim-grid-2.rt-solo { grid-template-columns: minmax(0, 1fr); }
+section #rep-three .rt-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 2; }
+/* The node the last beat reads a degree off, in the same amber the three
+   structures use to mark its entries. */
+section #rep-three .rt-node.rt-focus { fill: var(--_amber); }
+section #rep-three .rt-name { font-family: var(--_hand); font-size: 19px; font-weight: 700; fill: var(--_white); }
+section #rep-three .anim-edge.rt-lit { stroke: var(--_accent); }
+
+section #rep-three [data-rt-side] { display: flex; align-items: center; }
+section #rep-three .rt-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+section #rep-three .rt-h { font-family: var(--_hand); font-size: 22px; color: var(--_ink-soft); margin-bottom: 4px; }
+
+section #rep-three .rt-el { display: flex; flex-wrap: wrap; gap: 6px; }
+section #rep-three .rt-pair,
+section #rep-three .rt-cell,
+section #rep-three .rt-m > i {
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 20px;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
+}
+section #rep-three .rt-pair { padding: 2px 9px; }
+section #rep-three .rt-cell {
+  width: 30px;
+  height: 30px;
+  background: var(--_accent-soft);
+  border-color: var(--_accent-soft);
+  color: var(--_accent);
+  font-weight: 700;
+}
+section #rep-three .rt-alrow { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
+section #rep-three .rt-alrow > b {
+  width: 26px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 20px;
+  color: var(--_ink-soft);
+}
+section #rep-three .rt-m { display: grid; grid-template-columns: repeat(5, 30px); gap: 2px; }
+/* Zeros recede, so the sparsity pattern is the first thing the eye gets. */
+section #rep-three .rt-m > i { height: 30px; color: var(--_ink-faint); }
+section #rep-three .rt-m > i.rt-on { background: var(--_accent-soft); border-color: var(--_accent-soft); color: var(--_accent); font-weight: 700; }
+section #rep-three .rt-m > i.rt-band { outline: 1.6px solid var(--_amber); outline-offset: -1.6px; }
+
+/* Which cell is which edge. Six edges, six colours, and the two cells an edge
+   fills carry its colour — so the mirror across the diagonal is one edge seen
+   twice rather than a rule to take on trust. Only the matrix beat uses these:
+   the last beat is about one node's row and wants its amber back. */
+section #rep-three .anim-edge.rt-c0 { stroke: #593196; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c1 { stroke: #c2410c; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c2 { stroke: #1d4e89; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c3 { stroke: #a81b6b; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c4 { stroke: #0f6f86; stroke-width: 3.4; }
+section #rep-three .anim-edge.rt-c5 { stroke: #8a6a12; stroke-width: 3.4; }
+section #rep-three .rt-m > i.rt-c0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+section #rep-three .rt-m > i.rt-c5 { background: #8a6a12; border-color: #8a6a12; color: var(--_white); font-weight: 700; }
+
+section #rep-three .rt-pair.rt-hi { background: var(--_amber); border-color: var(--_amber); color: var(--_white); font-weight: 700; }
+section #rep-three .rt-alrow.rt-hi > b { color: var(--_amber); font-weight: 700; }
+section #rep-three .rt-alrow.rt-hi > i { background: var(--_amber); border-color: var(--_amber); color: var(--_white); }
+
+/* The last beat is the only one holding three structures at once, and the
+   stack it makes is what decides whether the card clears 720px. Stacking all
+   three costs a font size nobody at the back can read, so the two narrow ones
+   go side by side and the pairs span above them — height bought with the
+   width the column was wasting. */
+section #rep-three .rt-compact {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  gap: 8px 26px;
+}
+section #rep-three .rt-compact .rt-block:first-child { grid-column: 1 / -1; }
+section #rep-three .rt-compact .rt-h { font-size: 18px; margin-bottom: 2px; }
+section #rep-three .rt-compact .rt-pair { font-size: 16px; padding: 1px 6px; }
+section #rep-three .rt-compact .rt-cell { width: 25px; height: 25px; font-size: 17px; }
+section #rep-three .rt-compact .rt-alrow { gap: 4px; margin-bottom: 3px; }
+section #rep-three .rt-compact .rt-alrow > b { width: 18px; font-size: 17px; }
+section #rep-three .rt-compact .rt-m { grid-template-columns: repeat(5, 25px); }
+section #rep-three .rt-compact .rt-m > i { height: 25px; font-size: 17px; }
+
+/* CSR, built out of the adjacency list (m01). The left column is the list,
+   the right column the three arrays; one colour per node's row, carried into
+   the glued strip, is what lets a block be traced back to the row it came
+   from without a word of narration. */
+/* The list is as wide as its widest row and no wider: an fr column left a
+   band of nothing between it and the arrays, which reads as a missing figure
+   rather than as a margin. */
+section #csr-build .anim-grid-2 { grid-template-columns: max-content minmax(0, 1fr); gap: 26px; align-items: center; }
+section #csr-build .cb-h { font-family: var(--_hand); font-size: 22px; color: var(--_ink-soft); margin-bottom: 6px; }
+section #csr-build .cb-row { display: flex; gap: 4px; align-items: center; margin-bottom: 4px; transition: opacity 0.25s ease; }
+section #csr-build .cb-row > b {
+  width: 24px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 20px;
+  color: var(--_ink-soft);
+}
+/* Consumed by the glue, and dimmed while the block it became lands. */
+section #csr-build .cb-row.cb-done { opacity: 0.4; }
+
+section #csr-build .cb-arrays { display: flex; flex-direction: column; gap: 9px; }
+section #csr-build .cb-arow { display: flex; gap: 10px; align-items: center; }
+section #csr-build .cb-arow > b {
+  width: 76px;
+  text-align: right;
+  font-family: var(--_mono);
+  font-size: 19px;
+  color: var(--_accent);
+}
+section #csr-build .cb-strip { display: flex; gap: 2px; }
+
+section #csr-build .cb-cell {
+  display: inline-grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  font-family: var(--_mono);
+  font-style: normal;
+  font-size: 18px;
+  background: var(--_white);
+  border: 1px solid var(--_rule);
+  color: var(--_ink-soft);
+}
+section #csr-build .cb-cell.cb-r0 { background: #593196; border-color: #593196; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r1 { background: #c2410c; border-color: #c2410c; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r2 { background: #1d4e89; border-color: #1d4e89; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r3 { background: #a81b6b; border-color: #a81b6b; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-r4 { background: #0f6f86; border-color: #0f6f86; color: var(--_white); font-weight: 700; }
+section #csr-build .cb-cell.cb-total { background: var(--_ink-soft); border-color: var(--_ink-soft); color: var(--_white); font-weight: 700; }
+/* data is a row of ones on a plain graph: present, and deliberately quiet. */
+section #csr-build .cb-cell.cb-one { color: var(--_ink-faint); }
+/* Where a row began — the partition, which is the one thing gluing destroyed
+   and indptr buys back, so it gets a fence post taller than the cells rather
+   than a border the row colours swallow. */
+section #csr-build .cb-cell.cb-cut { position: relative; margin-left: 11px; }
+section #csr-build .cb-cell.cb-cut:first-child { margin-left: 0; }
+section #csr-build .cb-cell.cb-cut::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: -6px;
+  bottom: -6px;
+  width: 3.5px;
+  background: var(--_ink);
+}
+section #csr-build .cb-cell.cb-cut:first-child::before { display: none; }
+/* The ring is ink, not the usual amber: one of the five row colours is the
+   amber, so an amber ring around that row's block was invisible exactly when
+   the room asked about it. Black reads against all five. */
+section #csr-build .cb-cell.cb-slice { outline: 2.4px solid var(--_ink); outline-offset: -2.4px; }
+section #csr-build .cb-cell.cb-bound { box-shadow: 0 0 0 3px var(--_ink); }
+section #csr-build .cb-row.cb-on > b { color: var(--_ink); font-weight: 700; }
+section #csr-build .cb-row.cb-on .cb-cell { outline: 2.4px solid var(--_ink); outline-offset: -2.4px; }
+section #csr-build .cb-read { font-family: var(--_hand); font-size: 21px; color: var(--_ink); min-height: 1.3em; }
+section #csr-build .anim-range { max-width: 340px; margin: 6px 0 2px 86px; }
+
+/* ---------- pagination ---------- */
+section::after {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink-faint);
+  right: 80px;
+  bottom: 24px;
+}
+section.lead::after,
+section.part::after { display: none; }
+
+/* ---------------------------------------------------------------------------
+   The hand face, embedded.
+
+   Excalifont (Excalidraw's redesign of Virgil), SIL Open Font License 1.1 —
+   licence text at lecture-note/assets/fonts/excalifont-LICENSE. Subset to
+   Latin-1 plus the punctuation these decks use, 30 kB WOFF.
+
+   It is a data: URI and not a url() to a file on disk because Chrome treats
+   every file:// document as its own origin and refuses the cross-origin font
+   request — the marp image export and a deck opened from the filesystem would
+   both silently fall through to a generic `cursive`, and every height reserved
+   above would drift. Regenerate with:
+
+     base64 -i lecture-note/assets/fonts/excalifont-hand.woff | tr -d '\n'
+   --------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Excalifont";
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  src: url("data:font/woff;base64,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") format("woff");
+}
