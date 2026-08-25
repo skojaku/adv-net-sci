@@ -112,7 +112,7 @@ if you really mean to wipe the form, then re-add them in the editor.
 
 ## Where the photos go
 
-The course convention lives in `~/Downloads/teaching/adv-net-sci-ops/README.md`
+The course convention lives in `adv-net-sci-ops/tools/quiz-photos/README.md`
 and is owned by the Brightspace tooling, not by this folder. In short: uploads
 land in the form owner's Drive, and `gforms_download.py` files them under a
 per-session folder in the Drive folder `adv-net-sci-ops`
@@ -132,7 +132,7 @@ Folder id `1y9ndq4yvLsODnh-Eua9J0wgb-CQYg2FM`.
 To pull the photos down after class:
 
 ```sh
-python3 ~/Downloads/teaching/adv-net-sci-ops/gforms_download.py \
+python3 ~/Documents/teaching/adv-net-sci-ops/tools/quiz-photos/gforms_download.py \
     --form 1zEVrm1Qt29IhAIcp4LieXNx854WGXPoj7vPzpSizS6Q \
     --session M01-2026-08-25-EulerPaths
 ```
