@@ -1,7 +1,7 @@
 # Quiz 1 — Euler paths
 
 An in-class quiz, 15 minutes, 10 points. One printed page of questions;
-students write by hand and hand in a photo.
+students write by hand and hand in one photo per question.
 
 1. **Even degrees are not enough** (4 pts). Give an *undirected* graph where
    every node has even degree but no Euler path exists, and name the missing
@@ -11,7 +11,8 @@ students write by hand and hand in a photo.
    that does not.
 
 The sheet carries the questions only — no boxes and no ruled lines. Students
-work on the back of it or on their own paper.
+put each question's answer on its own page, then upload one photo per
+question.
 
 ## Files
 
@@ -40,7 +41,7 @@ the droplet rather than a reprint.
 | Link | Goes to |
 |---|---|
 | `go.skojaku.com/quiz01` | the question PDF on Drive |
-| `go.skojaku.com/ans-quiz01` | the Google Form, where the photo goes |
+| `go.skojaku.com/ans-quiz01` | the Google Form, where the photos go |
 
 Both are `handle` blocks in the `go.skojaku.com` site of
 `/etc/caddy/Caddyfile` on `ssh digitalocean`. After editing, run
@@ -81,8 +82,8 @@ gws drive files update --params '{"fileId": "19oxyPszM11lZ9-CzStr1Yalog_aR9rkj"}
 - Owned by the Binghamton account (`~/.config/gws-binghamton`).
 
 The form is a **drop box, not a copy of the quiz**. It links to the PDF and
-takes one photo. Nothing in it has to stay in step with the sheet, and there is
-no typing for the student to do.
+takes one photo per question. Nothing in it has to stay in step with the sheet,
+and there is no typing for the student to do.
 
 Email collection is `VERIFIED`, so respondents sign in with their
 `@binghamton.edu` account — which is what maps an uploaded photo back to a
@@ -91,15 +92,23 @@ student.
 `python3 build_form.py --sync` rewrites the live form from the script. It
 deletes every item first, so run it only before responses arrive.
 
-### The upload question is added by hand
+### The upload questions are added by hand
 
 The Forms API refuses to create file-upload questions —
-`Creation of file_upload question not supported`. So the one question that
-matters is made in the Forms editor, under "Your working":
+`Creation of file_upload question not supported`. So the two questions that
+matter are made in the Forms editor:
 
-> File upload · allow images and PDF · 2 files · 10 MB · required
+| Title | Settings |
+|---|---|
+| `Question 1` | File upload · images · 1 file · 10 MB · required |
+| `Question 2` | File upload · images · 1 file · 10 MB · required |
 
-Do that in the editor link above, and re-add it after any `--sync`.
+One box per quiz question is what lets you grade a question across the whole
+class in one pass: `gforms_download.py` reads the number out of the title and
+names the files `q1-…` and `q2-…`. Keep the titles numbered.
+
+`--sync` cannot put these back, so it refuses while they exist. Pass `--force`
+if you really mean to wipe the form, then re-add them in the editor.
 
 ## Where the photos go
 
@@ -112,8 +121,13 @@ per-session folder in the Drive folder `adv-net-sci-ops`
 This quiz's session folder already exists:
 
 ```
-adv-net-sci-ops/M01-2026-08-25-EulerPaths/   (1y9ndq4yvLsODnh-Eua9J0wgb-CQYg2FM)
+adv-net-sci-ops/M01-2026-08-25-EulerPaths/
+  student@binghamton.edu/
+    q1-IMG_1234.jpg
+    q2-IMG_1235.jpg
 ```
+
+Folder id `1y9ndq4yvLsODnh-Eua9J0wgb-CQYg2FM`.
 
 To pull the photos down after class:
 
@@ -123,5 +137,6 @@ python3 ~/Downloads/teaching/adv-net-sci-ops/gforms_download.py \
     --session M01-2026-08-25-EulerPaths
 ```
 
-That step needs the Forms API switched on in the GCP project
-`formal-precinct-489402-s5`; the folder-creating half works without it.
+The Forms API answers normally on these credentials, despite the note in that
+README saying it needs switching on — `forms.forms.responses.list` was checked
+on 2026-08-25 and returned an empty result rather than a 403.

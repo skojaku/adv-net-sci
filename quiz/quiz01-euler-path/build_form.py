@@ -15,12 +15,20 @@ before any responses come in.
 It shells out to `gws` (the Google Workspace CLI) against the Binghamton
 account. `gws` handles the OAuth; if the token has expired it opens a browser.
 
-THE UPLOAD QUESTION IS ADDED BY HAND. The Forms API answers "Creation of
-file_upload question not supported", so the one question that matters is made
-in the Forms editor: File upload, images and PDF, 2 files, 10 MB, required.
-Respondents must be signed in to a Google account, which every
-@binghamton.edu student is. `--sync` wipes it along with everything else, so
-re-add it afterwards.
+THE UPLOAD QUESTIONS ARE ADDED BY HAND. The Forms API answers "Creation of
+file_upload question not supported", so the two questions that matter are made
+in the Forms editor:
+
+    Question 1   File upload, images, 1 file, 10 MB, required
+    Question 2   File upload, images, 1 file, 10 MB, required
+
+One per quiz question, so `gforms_download.py` can name the files `q1-` and
+`q2-` and you can grade one question across the whole class at a time. The
+number in the title is what it reads, so keep "Question 1" / "Question 2".
+
+Respondents must be signed in to a Google account, which every @binghamton.edu
+student is. `--sync` wipes those two questions along with everything else, so
+re-add them afterwards --- it refuses unless you also pass --force.
 """
 
 import argparse
@@ -42,19 +50,19 @@ DESCRIPTION = (
     "Advanced Network Science - Fall 2026\n\n"
     "15 minutes - 10 points - Closed notes, work on your own.\n\n"
     f"The questions: {QUIZ_PDF}\n\n"
-    "Write your answers by hand, photograph the page, and upload it below. "
-    "Keep the drawings large and the labels readable."
+    "Write each question's answer on its own page. Photograph each page and "
+    "upload it below - one photo per question. Keep the drawings large and the "
+    "labels readable."
 )
 
 
 def items():
     return [
         {
-            "title": "Your working",
+            "title": "Your working file",
             "description": (
                 f"The two questions are in the PDF: {QUIZ_PDF}\n\n"
-                "Upload one clear photo of your handwritten answers. Two photos "
-                "if one page is not enough."
+                "One photo per question, in the two boxes below."
             ),
             "textItem": {},
         },
@@ -107,14 +115,29 @@ def batch_update(form_id, requests):
     )
 
 
-def sync():
+def sync(force=False):
     form = gws("forms", "forms", "get", "--params", json.dumps({"formId": FORM_ID}))
-    count = len(form.get("items", []))
-    requests = [{"deleteItem": {"location": {"index": i}}} for i in range(count - 1, -1, -1)]
+    existing = form.get("items", [])
+    uploads = [
+        it["title"] for it in existing
+        if "fileUploadQuestion" in ((it.get("questionItem") or {}).get("question") or {})
+    ]
+    if uploads and not force:
+        # The API cannot put these back, so refuse to be the thing that ate them.
+        print("refusing: this would delete upload questions the API cannot recreate")
+        for title in uploads:
+            print(f"  - {title}")
+        print("pass --force if you mean it, then re-add them in the Forms editor")
+        sys.exit(1)
+    requests = [
+        {"deleteItem": {"location": {"index": i}}}
+        for i in range(len(existing) - 1, -1, -1)
+    ]
     requests += payload()["requests"]
     batch_update(FORM_ID, requests)
-    print(f"replaced {count} items with {len(items())} on form {FORM_ID}")
-    print("now re-add the file-upload question by hand")
+    print(f"replaced {len(existing)} items with {len(items())} on form {FORM_ID}")
+    if uploads:
+        print("now re-add the file-upload questions by hand: " + ", ".join(uploads))
 
 
 def create():
@@ -138,13 +161,15 @@ if __name__ == "__main__":
                         help="dump the batchUpdate payload and exit")
     parser.add_argument("--sync", action="store_true",
                         help="rewrite the live form from this file")
+    parser.add_argument("--force", action="store_true",
+                        help="let --sync delete the hand-made upload questions")
     parser.add_argument("--create", action="store_true",
                         help="create a NEW form and fill it in")
     opts = parser.parse_args()
     if opts.dump:
         print(json.dumps(payload(), indent=2, ensure_ascii=False))
     elif opts.sync:
-        sync()
+        sync(force=opts.force)
     elif opts.create:
         create()
     else:
