@@ -1,8 +1,19 @@
 # House style, with evidence
 
-Every rule below is extracted from the eight existing sheets. Quotes are verbatim.
+Every rule below is extracted from the existing sheets. Quotes are verbatim.
+
+**Two ages of sheet.** `m01` and `m02` were rewritten in 2026-08 and iterated on
+with Sadamori until he signed them off; they are the current *form* — no title,
+no blanks, no ruled answer gaps, 14pt, four pages, one ask per line, answers on
+the back or on the drawing. `m03`-`m09` are the earlier form. The **patterns**
+below hold for both and are what this file is for; where a quoted example shows
+a blank or a `\vspace` answer gap, take the pattern and not the markup.
 
 Sources:
+- `lecture-note/m01-euler_tour/pen-and-paper/exercise.tex` — Euler trails, degree
+  parity, walk/trail/path, adjacency matrix. **Current form.**
+- `lecture-note/m02-small-world/pen-and-paper/exercise.tex` — path length,
+  diameter, clustering, triangles, greedy routing. **Current form.**
 - `lecture-note/m02-small-world/pen-and-paper/csr.tex` — network representations /
   CSR. **Deleted 2026-08-22**, when m02 became one sheet: CSR is m01's topic and
   m01's slides and appendix already carry it. Pattern 4 below quotes the sheet
@@ -187,6 +198,8 @@ trade-off — never another number.
 
 | Sheet | Scenario |
 |---|---|
+| m01 | four Upstate New York cities joined by seven real highways |
+| m02 | Milgram's Omaha letter, and sixteen people sitting in a circle |
 | m02-csr | storing a 5-person friendship network efficiently |
 | m03 | nine power stations, a cost table, an attacker |
 | m04 | hours per week people watch Game of Thrones |
@@ -209,6 +222,15 @@ interesting rather than obvious.
 - "Explain why you chose to cut where you did." — for justification.
 - "Discuss how your estimates compare to the actual ratios." — for calibration.
 - "How might the k-truss be related to the k-core?" — for linking two concepts.
+- "Trace the chain on the drawing. How many handshakes does it take?" — for an
+  answer that belongs on the figure.
+- "Say, in your own words, what those two new friendships did that thirty-two
+  ordinary ones could not." — for the discovery ask when the object has no name
+  yet.
+- "Put Question 5 beside 7(a) and 7(b). What does it buy, and what does it
+  cost?" — for making the student assemble three of their own answers.
+- "Is X the same claim as Y? Which of the two did the experiment test?" — for
+  the closing question that is about the idea, not a number.
 
 ## Answer-space conventions
 

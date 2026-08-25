@@ -26,23 +26,45 @@ If the student could answer a question by recalling a definition, the question
 is wrong. Every question must be answerable with a pencil, a small drawing, and
 counting.
 
+## Who it is written for
+
+Sadamori's instruction, in his words: write it so that somebody **with no
+background knowledge — assume high-school students — and who is not a native
+English speaker** can understand it. That is the standard every sentence is
+measured against, and it is the reason for most of the rules below: short
+sentences, one ask per line, no clause the student has to hold in their head
+while they read the next one. **Condense.** A question that needs a second
+reading has already spent the minutes it had.
+
+`lecture-note/m01-euler_tour/pen-and-paper/` and `m02-small-world/pen-and-paper/`
+are the two sheets written to this standard and iterated on with Sadamori until
+he was happy. Read them before anything else. `m03`-`m09` are the older shape —
+they still hold good scenarios, but their form (blanks, ruled answer gaps,
+titles, 12pt) is what m01 and m02 were rewritten *out of*.
+
 ## Before writing
 
 1. Read `curriculum.yml` (repo root) for the target module: `big_question`,
    `hook`, `objectives`, and the full `concepts` list with IDs.
-2. Read at least two existing sheets end to end to re-anchor the voice —
-   `lecture-note/m05-clustering/pen-and-paper/exercise.tex` (compare-two-
-   groups pattern) and `lecture-note/m06-centrality/pen-and-paper/exercise.tex`
-   (guess-then-compute-then-revisit pattern) are the two purest examples.
+2. Read at least two existing sheets end to end to re-anchor the voice — m01 and
+   m02 for the current form; `lecture-note/m05-clustering/pen-and-paper/exercise.tex`
+   (compare-two-groups pattern) and `lecture-note/m06-centrality/pen-and-paper/exercise.tex`
+   (guess-then-compute-then-revisit pattern) for the two purest arcs.
 3. Read `references/house-style.md` in this skill — the full style rules with
    quoted examples.
 4. Pick the concept set. Each sheet covers **one coherent cluster** of concept
    IDs, not a whole module. Two sheets per module means two disjoint clusters,
    each ending at its own "you just invented X" moment.
+5. **For a new sheet, write `plan.md` beside where the sheet will go and stop.**
+   Sadamori reviews the plan before a line of LaTeX is written — that is how m02
+   was built. Write the plan **in Japanese**, in language that assumes no
+   background, and say what each question asks, what the answer is, and which
+   concept ID it covers. Ask him anything you are unsure of instead of choosing.
+   A revision of an existing sheet does not need this.
 
 ## The shape of a sheet
 
-Standard arc, 5-10 questions, 1-4 pages:
+Standard arc, 5-10 questions, **four pages maximum**:
 
 1. **Concrete scenario, second person.** "You're new at a university and want to
    understand social dynamics of students." Real data on the page (a club
@@ -50,8 +72,10 @@ Standard arc, 5-10 questions, 1-4 pages:
 2. **Naive attempt first.** Ask for a guess, a drawing, or a brute-force count
    *before* any machinery. Often literally: "Without doing any calculations,
    which student would you approach first? Explain your reasoning."
-3. **Hand computation on scaffolded structures.** Pre-drawn tables, blanks, and
-   fill-in grids so the arithmetic is bounded and mechanical.
+3. **Hand computation on scaffolded structures.** Pre-drawn tables and grids so
+   the arithmetic is bounded and mechanical. Scaffolding is a table with its
+   columns already named, or a box beside every node — not a blank at the end
+   of a sentence.
 4. **The discovery question.** After the student has measured two or three
    cases, name the object and ask them to state the rule:
    "Group B is called a 1-plex. Based on your observations, what do you think
@@ -99,6 +123,11 @@ sheet.
   all shipped in an m01 draft and all had to be rewritten: the student cannot
   see what you meant. Write "the drive you numbered in 1(a)", "the highway map",
   "how many 2-step routes", "the notebook in Part 4".
+- **Point back by Part, never by page.** m02 said "go back to the circle on
+  page 1" and the circle moved to page 2 the next time the sheet was reflowed.
+  Parts are stable, pages are not. The same bullet applies to a demonstrative:
+  "one of those two numbers" was printed under a question that produced three.
+  Name them.
 - **Ask a question whose phrasing does not answer it.** "Which highway is left
   over?" tells the student that one will be. "Can you drive every highway
   without lifting your pencil?" does not.
@@ -121,8 +150,13 @@ on the map, with the first two filled in, and the student writes 1 to 7 into
 them. The constraint the sheet is teaching (each road exactly once) is then
 visible as one number per circle.
 
-If blanks really are the answer, count them against the answer: a 7-edge trail
-is 8 places and 7 roads, so 15 tokens, and the first draft printed 13.
+m02 does the same thing with a box printed outside the ring beside every one of
+sixteen people: the sheet is teaching that a distance belongs to a *seat*, and a
+column of fifteen numbers written underneath hides exactly that.
+
+Size the affordance for a hand, not for the page. A box the student writes a
+digit into wants ~6mm on paper, and the `\resizebox` around the figure is set
+from that number.
 
 ## Prefer material that exists
 
@@ -140,34 +174,90 @@ before writing a word of the story.
 
 ## Voice
 
-Second person, imperative, light. Titles are playful, not descriptive:
-"Who's the Big Cheese in the University Clubs?", "Build it, Break it, and Build
-it back!", "Discovering Friend Groups". Names in scenarios are ordinary student
-names (Sarah, Noah, Emma). Pop-culture props are fine (hours spent watching
-Game of Thrones). Never write in a textbook register.
+Second person, imperative, light. Names in scenarios are ordinary student names
+(Sarah, Noah, Emma). Pop-culture props are fine (hours spent watching Game of
+Thrones). Never write in a textbook register.
+
+**The sheet has no title.** It opens on Part 1 and its first sentence. A title
+line, an author line and a "do this before the lecture" line were all on the m01
+draft and all came off: the first costs three centimetres of paper for something
+nobody reads, and the last is wrong anyway — the sheet is worked **in class**.
+The playful title still exists, in the lecture note's link text
+("Six Handshakes to a Stranger"), where it is doing a job.
+
+Part headings carry the playfulness instead — "A letter from Omaha", "Ringville",
+"Do your friends know each other?", "Back to Omaha". They also give every
+question a name to point at: *the circle in Part 2*, *the whole drawing in
+Part 3*.
 
 Questions are labelled either `{\bf Question N}:` (running numbering across the
 whole sheet) or an `enumerate` list with `[resume]` across sections. Pick one
 per sheet and keep it.
 
+**Verbs.** The student *writes*, *counts*, *traces*, *darkens*, *draws*. They do
+not *fill in* — that verb belongs to the form of sheet this one is not.
+
+## The paper budget
+
+Four pages, 14pt, and no answer space is a tight budget, and it is meant to be:
+what does not fit is a question that was not earning its place. Where to find
+the room, in the order these were used:
+
+- **Put two related figures side by side** rather than a page apart. m01's seven
+  highways and the eight-highway version are one `tabular` of two `\resizebox`es
+  with captions under them, which halves their height *and* lets 1(a) and 1(b)
+  be compared without turning the sheet over.
+- **Do not draw a second figure when the first will do.** m01's Part 3 works on
+  the network from Part 2 and says so. Two drawings of the same object cost a
+  quarter of a page and start to disagree with each other.
+- **Approximate geometry is fine.** The map does not have to be to scale — "大体で
+  良い". Four cities in roughly the right relative positions read better than
+  four cities at true latitude and longitude squeezed into 7cm.
+- **Scale the drawing to the affordance, not the other way round.** If the
+  student writes a digit into a box on the figure, that box has to be ~6mm on
+  paper. Set the `\resizebox` width from that and let the text find room
+  elsewhere.
+- **Then cut a question.** m01 dropped its Königsberg question to buy a page.
+
+Measure the result rather than eyeballing it — a half-empty page is invisible
+until you count it, and a *fully* empty one gets missed entirely:
+
+```bash
+pdftoppm -r 60 -png exercise.pdf p
+for f in p-*.png; do echo -n "$f "; magick "$f" -crop x660+0+0 +repage \
+  -fuzz 5% -trim -format "slack_px=%[fx:660-(page.y+h)]\n" info:; done
+```
+
+`660` is the bottom of the text block at 60dpi for the usual margins; anything
+over ~60 is a page with a hole in it, and the crop keeps the page number from
+making every page look full.
+
 ## LaTeX mechanics
 
-Copy `assets/preamble.tex` verbatim as the top of a new sheet. It is the
-preamble used across all existing sheets, plus a font guard.
+Copy `assets/preamble.tex` verbatim as the top of a new sheet. It is m01's and
+m02's preamble: 14pt Charter, tight margins, `\needroom`, `\parthead`, the `C`
+column, the QR short-link macros, and the font guards. The older sheets
+(`m03`-`m09`) each carry their own, earlier preamble; do not copy from those.
 
 - Class: `\documentclass[a4paper, 14pt]{extarticle}` (17pt for very short,
-  drawing-heavy sheets like m03), 1in margins, `\parindent=0pt`, `\parskip=0.5em`.
+  drawing-heavy sheets like m03). `extarticle` has no 13pt — the valid sizes are
+  8, 9, 10, 11, 12, 14, 17, 20.
 - Networks are drawn in TikZ by hand, nodes as `\node[draw, circle]`, either
   `node distance=1.5cm` relative placement or explicit polar coordinates
   (`at (90:1.3)`) for ring-shaped groups.
+- **The body face is Charter, and the drawings are set in it too.** The
+  handwriting font is for a heading (the answer key's "Answers") and nothing
+  else: figure labels are read closely and want the text face.
 - The handwriting font is `Pretty Neat` (some older sheets use `Humor Sans`).
   Neither is installed on this machine, and **naming a missing font is a hard
   error in fontspec, not a fallback** — seven sheets named one outright and
-  stopped building. `assets/preamble.tex` resolves the face once, through
-  `Pretty Neat → Humor Sans → Excalifont → Latin Modern Roman`, into `\ppfont`
-  and `\ppfontname`. Excalifont is vendored in `tools/fonts/` and is what the
-  chain actually lands on, here and in CI. Use `\ppfont`; never write
-  `\fontspec{<a name>}`, and do not remove the chain.
+  stopped building. The preamble resolves the face once, through
+  `Pretty Neat → Humor Sans → Excalifont → nothing`, into `\ppfont`. Excalifont
+  is vendored in `tools/fonts/` and is what the chain actually lands on, here
+  and in CI. Use `\ppfont`; never write `\fontspec{<a name>}`, and do not remove
+  the chain. Charter has the same trap and the same guard: ask for
+  `XCharter-Roman.otf` **by file**, because a CI runner says yes to
+  `\IfFontExistsTF{Charter}` and then cannot typeset it.
 - The `xkcd` sketch decoration exists in the preamble but is fragile: applying
   it to many nodes (as m03 does) throws `Dimension too large` and produces no
   output. Prefer plain `\node[draw, circle]`; use `[xkcd]` only on a few plain
@@ -226,9 +316,33 @@ the public repo; ask before assuming that for another sheet.
 ## The lab notebook, if the sheet has one
 
 A sheet may end by handing the student to a marimo notebook that does by
-machine what they have just done in pencil — Module 1's Part 4 is the worked
-example, and it is done **alone**, not in pairs. Read
-`lecture-note/LAB_NOTEBOOK_GUIDE.md` before writing or editing one. The two
+machine what they have just done in pencil — Module 1's Part 4 and Module 2's
+Part 6 are the worked examples, and both are done **alone**, not in pairs. The
+sheet's last part is a `tcolorbox` with a QR code and a `go.skojaku.com/mNNlab`
+short link, and nothing else.
+
+**The notebook teaches the mechanism, so interactivity is the whole point.**
+Three beats, in this order:
+
+1. **An interactive visualisation that prepares them** — a slider, a step
+   button, something they turn with their hands before any code. It runs on a
+   *different, smaller* network than the one the sheet made them work out.
+2. **Then they write some code** — two or three `✍️` cells, small functions,
+   the rules the rest of the notebook runs on (`ring_edges`, `distances_from`,
+   `local_clustering` in m02).
+3. **Then a demo driven by their own code**, so they can see whether it does
+   what they expected. This is where the notebook earns its place: the student
+   watches their own three lines reproduce, or fail to reproduce, the number
+   they got in pencil.
+
+**Finished early** gets a fourth beat, and it is the best part of the m02
+notebook: something their correct code gets *wrong*. Ask them to explain why
+with algebra, give a hint rather than the derivation, ask them how they would
+repair the measure, and name the published repairs so the answer has somewhere
+to go. In m02 that is $\sigma$ scoring a plain ring with no shortcuts as a
+strong small world, and getting more confident as $n$ grows.
+
+Read `lecture-note/LAB_NOTEBOOK_GUIDE.md` before writing or editing one. The two
 things that will otherwise cost an afternoon:
 
 - **molab ignores a notebook's `css_file`**
@@ -242,9 +356,20 @@ things that will otherwise cost an afternoon:
 
 ## Where files go
 
-New sheets: `lecture-note/mNN/<slug>/exercise.tex`, where `<slug>` is a
-short kebab-case name of the sheet's idea (e.g. `m02/counting-triangles`).
-Existing legacy sheets stay under `lecture-note/mNN-name/pen-and-paper/`.
+`lecture-note/mNN-name/pen-and-paper/`, beside the module's `.qmd` files —
+that is where every sheet actually lives, m01 and m02 included. A module with
+two sheets puts them in one directory as `exercise.tex` and a second file named
+for its idea. Inside it:
+
+| file | what it is |
+|---|---|
+| `exercise.tex` | the sheet, four pages |
+| `solutions.tex` | the answer key, published alongside |
+| `<name>kit.tex` | the TikZ figures, `\input` by both |
+| `lab.py` | the marimo notebook, if there is one |
+| `lab-solutions.py` | generated from `lab.py`, never hand-edited |
+| `lecture-hall.css` | the notebook's stylesheet, embedded into it at build |
+| `mNNlab-qr.png` | the QR square for the short link |
 
 Build with `bash tools/build_worksheets.sh <the sheet's directory>`, or
 `xelatex -interaction=nonstopmode exercise.tex` run twice from the sheet's own
@@ -277,8 +402,9 @@ every geometry change rather than at the end.
 
 ## After writing
 
-1. Compile and read the PDF page by page. Check that every question has room to
-   answer and no question is orphaned across a page break.
+1. Compile and read the PDF page by page. Check that no question is orphaned
+   across a page break, no question is separated from its table or drawing, and
+   no page is left with a hole in it (measure it — see *The paper budget*).
 2. Register coverage in `curriculum.yml`: add the sheet path to the `in_class`
    list of every concept ID the sheet touches.
 3. Add a link from the module's lecture note (`01-concepts.qmd` or
@@ -289,17 +415,20 @@ every geometry change rather than at the end.
 ## Self-check before declaring done
 
 - [ ] Could a student who has never heard the term still answer Question 1?
+- [ ] Would a first-year reading English as a second language get every question
+      on one pass? Is any question three questions in one paragraph?
 - [ ] Is there a question that hands them a name and asks them to state the rule?
 - [ ] Is every computation doable in under two minutes by hand?
 - [ ] Does the sheet break or stress the idea, not just apply it?
 - [ ] Is the last question about the general procedure, not a number?
-- [ ] Does the PDF compile, and is there white space to write in?
+- [ ] Does the PDF compile, is it four pages or fewer, and is every page full?
 - [ ] Have you *looked* at every page as an image, at the size it prints?
+- [ ] Are there any blanks, ruled answer gaps, or a title left on it?
 - [ ] Does every question name what it is asking about, without the sheet in the
       other hand?
 - [ ] Does any question's wording give away its own answer?
 - [ ] Where the answer is a drawing, does the sheet give somewhere on the
-      drawing to put it?
+      drawing to put it, big enough to write in?
 - [ ] If there is a lab notebook: does it run clean with the blanks blank, does
       it carry its own stylesheet, and does it print nothing the student is
       being asked to work out?

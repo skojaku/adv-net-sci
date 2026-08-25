@@ -1,39 +1,108 @@
-% Standard pen-and-paper worksheet preamble.
+% Standard pen-and-paper worksheet preamble, in the form m01 and m02 use.
 % Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+%
+% 14pt, not 12pt: the sheet is read with a pencil in hand. There are no blanks
+% and no ruled answer gaps anywhere on it -- questions are asked in words and
+% answered on the back -- so the paper those would have cost goes to the text
+% and to the drawings.
 \documentclass[a4paper, 14pt]{extarticle}
-\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage[top=0.75in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{array}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
 \usepackage{tcolorbox}
 \usepackage{enumitem}
-\usepackage{multicol}
-\usepackage{adjustbox}
 \usepackage{etoolbox}
 \usepackage{tikz}
 \usepackage{fontspec}
 \usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
 
-% Handwriting font, resolved once into \ppfont and \ppfontname.
-%
-% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
-% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
-% the one face that is always present; Latin Modern is the last resort.
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
 %
 % Naming a font that is not installed is a hard error, not a fallback, which is
-% why this is a chain and not a line: seven sheets used to name one outright
-% and stopped building the day it was uninstalled. Write \ppfont, never
-% \fontspec{<a name>}.
-\def\ppfontname{Latin Modern Roman}
-\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
-  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
-    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
-\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
-\expandafter\setmainfont\expandafter{\ppfontname}
-\tikzset{every picture/.style={/utils/exec={\ppfont}}}
-\AtBeginEnvironment{tabular}{\ppfont}
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The lab the sheet hands off to, if it has one. Both the QR code and the
+% printed address are the course's own short link, never the notebook's: paper
+% outlives any one upload, so re-uploading a lab is a line on the server
+% (/etc/caddy/Caddyfile, block go.skojaku.com) and not a reprint.
+%
+%   uvx --from segno segno --output=mNNlab-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/mNNlab"
+%
+% --border=4 is the quiet zone the QR spec asks for and is not optional: at
+% --border=1 some codes run to the edge of the PNG and OpenCV reads nothing.
+\newcommand{\molablink}{https://go.skojaku.com/mNNlab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/mNNlab}}}
 
 % xkcd-style hand-drawn line decoration.
 % WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
@@ -59,6 +128,3 @@
 }
 \tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
 \makeatother
-
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.5em}
