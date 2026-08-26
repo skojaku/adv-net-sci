@@ -12,16 +12,17 @@
 | `lecture-note/` | The Quarto website published to GitHub Pages. Module pages, worksheets (`m0X/pen-and-paper/`), figures. |
 | `slides/` | Marp decks (`m01`–`m06`, `intro`) plus the old Quarto revealjs decks under `slides/legacy/`. See [slides/README.md](slides/README.md). |
 | `notebooks/` | Marimo/Jupyter coding exercises. Linked from the lecture note by URL — do not move or rename. |
+| `quiz/` | In-class paper quizzes: the LaTeX source, the solutions, and the script that builds the Google Form. |
 | `syllabus/` | `syllabus.tex` and the built PDF. |
 | `tutor-references/` | Per-module concept and code reference extracts. |
 | `tools/` | Figure build and page generation. See [tools/README.md](tools/README.md). |
 | `data/` | Course datasets. |
 | `curriculum.yml` | Hand-authored concept inventory: every concept the course teaches, and which activity covers it. Source of truth, not generated. |
 
-Everything here is material a student may read. The exam bank, the tutor
-prototype, the LLM gateway and the operational scripts live in a separate
-private repository — if you are looking for one of those, that is where it
-went.
+Everything here is material a student may read. The exam bank, the Pair Notebook
+authoring copies, the LLM gateway, the roster and the operational scripts live
+in a separate private repository — if you are looking for one of those, that is
+where it went. Nothing that names a student belongs in this tree.
 
 Nothing generated is committed — no `_site/`, no `_freeze/`, no rendered slides,
 no script-built figures. Build them:

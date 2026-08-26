@@ -78,19 +78,10 @@ slides/**/figures/data/
 *.gz
 *.zip
 
-# --- Pair Notebook sessions run in this repo ---------------------------------------
-# The module folders under tutor-prototype/ are the authoring copies of what
-# students clone. Their own .gitignore keeps the session artifacts TRACKED —
-# for a student those files are the submission — so the ignoring has to happen
-# here instead, or every test run of a session lands in this repo.
-tutor-prototype/*/notebook.py
-tutor-prototype/*/session_artifacts/
-tutor-prototype/*/assets/uploads/
-tutor-prototype/*/assets/exercises/
-tutor-prototype/*/.pi/git/
-tutor-prototype/*/.pi/npm/
-
 # --- Local scratch ----------------------------------------------------------
+# Grading clones and roster data are not scratch — they go to adv-net-sci-ops
+# (student-repos/, roster/), not here. These rules are the guard rail for when
+# one of them gets cloned into this tree by accident.
 assignments/
 tmp/
 tools/tmp/
@@ -130,8 +121,3 @@ var/
 htmlcov/
 coverage.xml
 nosetests.xml
-
-# Brightspace upload images: `convert -density 300 quiz_slides.pdf images/output_%d.jpg`
-# (see exam/README.md). Regenerated from quiz.json whenever the quiz changes.
-exam/images/
-exam/sampler-quiz-images/
