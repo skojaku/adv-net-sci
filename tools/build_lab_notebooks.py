@@ -164,7 +164,8 @@ M02 = [
     # no answer of its own -- it compares against Q1C in the hidden kit -- so
     # this is the only place the worked code exists.
     (
-        """    # ✍️ Write your igraph code here, then put each answer in its variable.
+        """    # ✍️ Write your igraph code here. Use as many lines as you like; the
+    #    three variables below are what gets marked.
 
     answer_total = ...  # ✍️ every handshake count from person 0, added up
     answer_average = ...  # ✍️ that total shared among the other 15 people
@@ -184,6 +185,13 @@ M02 = [
     (
         """    pairs = ...  # ✍️ replace the ... — how many pairs do k friends make?""",
         """    pairs = k * (k - 1) / 2""",
+    ),
+    # The same quantity, straight out of igraph, on Ringville.
+    (
+        """    g_clust = ...  # ✍️ replace the ... — build a graph of Ringville
+    transitivity = ...  # ✍️ replace the ... — its local clustering, per person""",
+        """    g_clust = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+    transitivity = g_clust.transitivity_local_undirected(mode="zero")""",
     ),
     # A test with a yardstick at both ends of the range.
     (

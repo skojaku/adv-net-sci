@@ -523,19 +523,12 @@ def _():
     # 2 · ✍️ Build the town
 
     Rather than typing thirty-two pairs, state the rule that generates them:
-    in a circle of `n` people, each person is friends with the `half` people on
+    in a circle of `n` people, each person is friends with the `half` people (an input variable of a function below) on
     each side of them.
 
-    The two loops are written for you. **One line is yours**: the person sitting
-    `d` seats clockwise from person `i`.
+    Note that the index $j$ for a node should be between 0 and n-1 (not n, since we count from zero). If it is greater than n-1, you need to offset. For example, Ringville `15 + 2` is `17`, and this town has no person 17.
 
-    Counting up gets you most of the way — the next chair along is `i + 1`, the
-    one after that is `i + 2`. It stops working at the end of the circle. In
-    Ringville `15 + 2` is `17`, and this town has no person 17. It has no person
-    16 either: the chairs are numbered 0 to 15, and then they start over.
-
-    So a `j` that has run off the end has to come back to the beginning. There
-    is more than one way to bring it back, and any of them is fine.
+    So a `j` that has run off the end has to come back to the beginning.
     """)
     return
 
@@ -634,8 +627,7 @@ def _():
 
     # 3 · Count the handshakes
 
-    You will not implement the search. Shortest paths are computed by
-    **igraph**, which is the library this course uses throughout.
+    Let's compute the shortest paths between nodes. We will use **igraph**, which is the library this course uses throughout.
 
     igraph stores a network and computes standard quantities on it: shortest
     path lengths, degrees, connected components, centralities, clustering. The
@@ -651,7 +643,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### Step 1 — an edge list becomes a graph
+    ### Step 1 — Create a graph object
 
     A town is a list of pairs. `igraph` turns that into something that can be
     asked questions:
@@ -728,10 +720,8 @@ def _():
     g.distances(source=0)
     ```
 
-    One gotcha, and it is the only one. You asked about **one** starting
-    person, but `distances` is built to take several, so it always answers with
-    a *list of rows* — one row per starting person. Yours is the first and only
-    row, so `[0]` on the end is what gets you the row itself.
+    One gotcha: it returns a list of lists. Each outer list corresponds to the index of the source nodes (where a shortest path start) and target nodes (where the path ends). Since you asked about **one** starting
+    person, you get something like [[0, 1, 2, 3, 1, ...]]. If you specify two nodes as source as a list, e.g., source=[0,1], you get, a list of two lists e.g., [[0, 1, 2, 3, 1], [1, 0, 2, 3, 2]] (numbers are just made up). To get the distances from a specific node, you need to slice the list of lists.
     ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#distances))
 
     **The next cell is empty of checks and yours to change.** Set `source`,
@@ -797,13 +787,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ Ringville by machine — Question 1(c)
+    ### ✍️ Verify Question 1(c) with igraph
 
-    Three numbers, and you already have all three in pencil. Get igraph to work
-    them out and see whether it agrees with you.
+    Let's verify your answer with igraph.
 
-    **This cell is empty on purpose.** Nothing is scaffolded — write the code.
-    Everything you need has already been on this page:
+    **Write the code** to verify your answers.
 
     - `ring_edges(TOWN_N, TOWN_HALF)` is your own rule from section 2, and
       `TOWN_N` is 16, `TOWN_HALF` is 2.
@@ -818,7 +806,8 @@ def _():
 
 @app.cell
 def _():
-    # ✍️ Write your igraph code here, then put each answer in its variable.
+    # ✍️ Write your igraph code here. Use as many lines as you like; the
+    #    three variables below are what gets marked.
 
     answer_total = ...  # ✍️ every handshake count from person 0, added up
     answer_average = ...  # ✍️ that total shared among the other 15 people
@@ -943,7 +932,7 @@ def _():
     mo.md(r"""
     ### ✍️ The fraction, as a rule
 
-    The same quantity as a formula. Person $i$ has $k_i$ friends. Let $L_i$
+    Let's put it mathematically. Person $i$ has $k_i$ friends. Let $L_i$
     be the number of pairs among those friends that are themselves friendships
     — the solid lines in the drawing. Divide it by the number of pairs there
     are in total:
@@ -1052,15 +1041,15 @@ def _():
     `nan` for them by default; `mode="zero"` returns 0 instead, which is the
     convention your own function uses on its `k < 2` line.
 
-    **The next cell is yours.** It returns the same seven values your own loop
-    was checked against, computed for all vertices in one call. Two things to
-    try:
+    **Try yourself.** In the cell below, build Ringville and call it on every
+    person at once. Every value comes back **0.5** — which is Question 5(a): a
+    ring lattice gives the same $C_i$ to everybody. Then change 16 to 10000 and
+    watch the values not move.
 
-    1. Swap the town for Ringville:
-       `igraph.Graph(n=16, edges=ring_edges(16, 2))`. Every value comes back
-       0.5, which is Question 5(a) — a ring lattice has the same $C_i$ at
-       every person, and it does not depend on `n`. Change 16 to 10000 and
-       the values do not move.
+    Two more things to try afterwards, nothing marked either way:
+
+    1. Put `DEMO_EDGES` back in and check the seven values against the ones
+       your own loop was checked on. They are the same numbers.
     2. Drop `mode="zero"` on a network where somebody has fewer than two
        friends — `igraph.Graph(n=3, edges=[(0, 1)])` — and you get `nan`
        instead of 0.
@@ -1070,9 +1059,11 @@ def _():
 
 @app.cell
 def _():
-    # ▶ Yours. Change the network and re-run; nothing here is marked.
-    g_clust = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
-    g_clust.transitivity_local_undirected(mode="zero")
+    # ▶ Yours. Nothing here is marked.
+    g_clust = ...  # ✍️ replace the ... — build a graph of Ringville
+    transitivity = ...  # ✍️ replace the ... — its local clustering, per person
+
+    transitivity
     return
 
 
@@ -1237,76 +1228,76 @@ def _():
         {
             "Where $C_{\\text{rand}}$ comes from": mo.md(
                 r"""
-**The model.** "Placed uniformly at random" has a precise meaning, and
-everything below follows from it. There are $\binom{n}{2} = n(n-1)/2$
-pairs of people who *could* be friends. Take each pair in turn and make it a
-friendship or not, with the same probability every time, and with no pair
-looking at what any other pair did. Define
+    **The model.** "Placed uniformly at random" has a precise meaning, and
+    everything below follows from it. There are $\binom{n}{2} = n(n-1)/2$
+    pairs of people who *could* be friends. Take each pair in turn and make it a
+    friendship or not, with the same probability every time, and with no pair
+    looking at what any other pair did. Define
 
-$$p \;=\; \Pr\big[\text{a given pair } (a, b) \text{ is a friendship}\big],$$
+    $$p \;=\; \Pr\big[\text{a given pair } (a, b) \text{ is a friendship}\big],$$
 
-the same $p$ for all $\binom{n}{2}$ pairs, independent across pairs. That is
-the whole model — it is the Erdős–Rényi random graph, written $G(n, p)$.
+    the same $p$ for all $\binom{n}{2}$ pairs, independent across pairs. That is
+    the whole model — it is the Erdős–Rényi random graph, written $G(n, p)$.
 
-*(This $p$ is not section 5's rewiring dial. Different quantity, same
-unfortunate letter.)*
+    *(This $p$ is not section 5's rewiring dial. Different quantity, same
+    unfortunate letter.)*
 
-**What $p$ has to be.** We are not free to pick it: the random graph has to
-have the same average number of friends as the town it is standing in for.
-Person $i$ has $n-1$ possible friends, each one realised with probability $p$,
-so the number of friends they end up with averages to
+    **What $p$ has to be.** We are not free to pick it: the random graph has to
+    have the same average number of friends as the town it is standing in for.
+    Person $i$ has $n-1$ possible friends, each one realised with probability $p$,
+    so the number of friends they end up with averages to
 
-$$k = p\,(n - 1) \qquad\Longrightarrow\qquad p = \frac{k}{n - 1}.$$
+    $$k = p\,(n - 1) \qquad\Longrightarrow\qquad p = \frac{k}{n - 1}.$$
 
-**Then the clustering.** Take person $i$ and two of their friends, $a$ and
-$b$. Are $a$ and $b$ friends? Their pair got its own draw, and independence
-says that draw did not look at the two draws that made $a$ and $b$ friends of
-$i$. So $(a, b)$ is a friendship with probability $p$, exactly like any pair
-chosen at random. $C_i$ is the fraction of $i$'s friend-pairs that are
-friendships; each of those pairs is a friendship with probability $p$, so the
-expected fraction is $p$:
+    **Then the clustering.** Take person $i$ and two of their friends, $a$ and
+    $b$. Are $a$ and $b$ friends? Their pair got its own draw, and independence
+    says that draw did not look at the two draws that made $a$ and $b$ friends of
+    $i$. So $(a, b)$ is a friendship with probability $p$, exactly like any pair
+    chosen at random. $C_i$ is the fraction of $i$'s friend-pairs that are
+    friendships; each of those pairs is a friendship with probability $p$, so the
+    expected fraction is $p$:
 
-$$C_{\text{rand}} = p = \frac{k}{n - 1}.$$
+    $$C_{\text{rand}} = p = \frac{k}{n - 1}.$$
 
-The `k / (n - 1)` in the kit's `measure()` is that line. Textbooks usually
-write $k/n$, which is the same number once $n$ is large.
+    The `k / (n - 1)` in the kit's `measure()` is that line. Textbooks usually
+    write $k/n$, which is the same number once $n$ is large.
 
-Worth noticing what it does **not** contain: any mention of who your friends
-are. Independence is exactly the assumption that removed it, and that is what
-"no structure" means. And with $k$ held fixed while $n$ grows,
-$C_{\text{rand}} \to 0$ — a random graph of a million people has essentially
-no triangles. That limit is what $\sigma$'s denominator depends on.
-"""
+    Worth noticing what it does **not** contain: any mention of who your friends
+    are. Independence is exactly the assumption that removed it, and that is what
+    "no structure" means. And with $k$ held fixed while $n$ grows,
+    $C_{\text{rand}} \to 0$ — a random graph of a million people has essentially
+    no triangles. That limit is what $\sigma$'s denominator depends on.
+    """
             ),
             "Where $L_{\\text{rand}}$ comes from": mo.md(
                 r"""
-This one you have already drawn. It is the tree in Question 7(a) on the sheet.
+    This one you have already drawn. It is the tree in Question 7(a) on the sheet.
 
-Stand on one person. About $k$ people are one handshake away. Each of those has
-about $k$ friends of their own, so about $k^2$ people are two handshakes away,
-then $k^3$, and so on:
+    Stand on one person. About $k$ people are one handshake away. Each of those has
+    about $k$ friends of their own, so about $k^2$ people are two handshakes away,
+    then $k^3$, and so on:
 
-$$\text{people within } d \text{ handshakes} \;\approx\; k^{d}.$$
+    $$\text{people within } d \text{ handshakes} \;\approx\; k^{d}.$$
 
-You have reached the whole town when that tower has covered it. Call the
-handshake count where that happens $L$:
+    You have reached the whole town when that tower has covered it. Call the
+    handshake count where that happens $L$:
 
-$$k^{L} \approx n
-\qquad\Longrightarrow\qquad L \ln k \approx \ln n
-\qquad\Longrightarrow\qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
+    $$k^{L} \approx n
+    \qquad\Longrightarrow\qquad L \ln k \approx \ln n
+    \qquad\Longrightarrow\qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
 
-**The assumption is Question 7(b).** Every branch of that tree was assumed to
-land on somebody nobody has reached yet. In a town with any clustering it does
-not — friends of your friends are often each other, so branches double back
-onto people already in the tree. $k^{d}$ therefore overestimates the reach, and
-$\ln n / \ln k$ underestimates the real distance.
+    **The assumption is Question 7(b).** Every branch of that tree was assumed to
+    land on somebody nobody has reached yet. In a town with any clustering it does
+    not — friends of your friends are often each other, so branches double back
+    onto people already in the tree. $k^{d}$ therefore overestimates the reach, and
+    $\ln n / \ln k$ underestimates the real distance.
 
-The *shape* survives the objection, and the shape is the point: distance grows
-like $\ln n$, not like $n$. Put the numbers in and you get six degrees —
-eight billion people at $k = 150$ gives $\ln(8 \times 10^{9}) / \ln 150
-\approx 4.5$. Ringville's $n/8$ is what it looks like when a town has no
-shortcuts at all.
-"""
+    The *shape* survives the objection, and the shape is the point: distance grows
+    like $\ln n$, not like $n$. Put the numbers in and you get six degrees —
+    eight billion people at $k = 150$ gives $\ln(8 \times 10^{9}) / \ln 150
+    \approx 4.5$. Ringville's $n/8$ is what it looks like when a town has no
+    shortcuts at all.
+    """
             ),
         }
     )
@@ -1388,26 +1379,26 @@ def _():
             ),
             "The answer": mo.md(
                 r"""
-$$C = \tfrac12,\qquad L \approx \tfrac{n}{8},\qquad
-C_{\text{rand}} = \tfrac{k}{n},\qquad L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}$$
+    $$C = \tfrac12,\qquad L \approx \tfrac{n}{8},\qquad
+    C_{\text{rand}} = \tfrac{k}{n},\qquad L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}$$
 
-$$\frac{C}{C_{\text{rand}}} = \frac{n}{8},\qquad
-\frac{L}{L_{\text{rand}}} = \frac{n}{8}\cdot\frac{\ln k}{\ln n},\qquad
-\sigma = \frac{n/8}{(n/8)(\ln k / \ln n)} = \frac{\ln n}{\ln k}$$
+    $$\frac{C}{C_{\text{rand}}} = \frac{n}{8},\qquad
+    \frac{L}{L_{\text{rand}}} = \frac{n}{8}\cdot\frac{\ln k}{\ln n},\qquad
+    \sigma = \frac{n/8}{(n/8)(\ln k / \ln n)} = \frac{\ln n}{\ln k}$$
 
-The factor $n/8$ appears in both ratios and cancels. A ring exceeds the
-random graph by $n/8$ in clustering and by $n/8$ in path length, and $\sigma$
-is one divided by the other, so the size of the town does not reach the answer.
+    The factor $n/8$ appears in both ratios and cancels. A ring exceeds the
+    random graph by $n/8$ in clustering and by $n/8$ in path length, and $\sigma$
+    is one divided by the other, so the size of the town does not reach the answer.
 
-What is left is $\ln n / \ln k$, and it is greater than 1 whenever $n > k$.
-It survives because the two $n/8$s are divided against each other while the
-random graph's own path length, $\ln n / \ln k$, is not.
+    What is left is $\ln n / \ln k$, and it is greater than 1 whenever $n > k$.
+    It survives because the two $n/8$s are divided against each other while the
+    random graph's own path length, $\ln n / \ln k$, is not.
 
-The general statement: $\sigma > 1$ for any network whose clustering does not
-fall towards zero as $n$ grows, whether or not it has shortcuts. A ring has
-$C = 1/2$ at every $n$. What $\sigma$ detects here is that $C$ is constant,
-not that shortcuts are present.
-"""
+    The general statement: $\sigma > 1$ for any network whose clustering does not
+    fall towards zero as $n$ grows, whether or not it has shortcuts. A ring has
+    $C = 1/2$ at every $n$. What $\sigma$ detects here is that $C$ is constant,
+    not that shortcuts are present.
+    """
             ),
         }
     )
@@ -1456,17 +1447,6 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    note(
-        "Your measurement lands on your formula, and the dotted line at "
-        "<b>σ = 1</b> is the threshold everybody quotes. A shortcut-free ring "
-        "clears it at every size and clears it by more the bigger it gets.",
-        BLUE,
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
     mo.md(r"""
     ### ✍️ Build an index that does not have this failure
 
@@ -1481,10 +1461,24 @@ def _():
     mo.accordion(
         {
             "Hint": mo.md(
-                "$\\sigma$ compares the town to a random graph and to "
-                "nothing else. A ring lattice also has high clustering, and no "
-                "term in $\\sigma$ measures the distance to one. A test needs a "
-                "second reference point at that end of the range."
+                r"""
+Look at what $\sigma$ is built from:
+
+$$\sigma = \frac{C / C_{\text{rand}}}{L / L_{\text{rand}}}$$
+
+Both denominators are the random graph. **No part of $\sigma$ refers to a
+lattice.**
+
+But "small world" means a network sitting *between* the two: as clustered as a
+lattice, with paths as short as a random graph. That is two comparisons, and
+$\sigma$ makes only one of them. A ring lattice is as clustered as a lattice —
+because it is one — so it passes the comparison $\sigma$ makes, and there is no
+second comparison to fail.
+
+Your index needs the lattice end as well. `m` already carries it:
+`m.C_latt` and `m.L_latt`, a ring with the same `n` and the same average
+degree.
+"""
             )
         }
     )
@@ -1591,49 +1585,49 @@ def _():
         {
             "The two published repairs": mo.md(
                 r"""
-Both add a second reference point: a ring lattice, at the opposite end of the
-range from the random graph. A small world is defined as lying between the two,
-and $\sigma$ contains a term for only one of them.
+    Both add a second reference point: a ring lattice, at the opposite end of the
+    range from the random graph. A small world is defined as lying between the two,
+    and $\sigma$ contains a term for only one of them.
 
-- **$\omega$** (Telesford et al. 2011): $\;\omega = L_{\text{rand}}/L - C/C_{\text{latt}}$.
-  $-1$ is a lattice, $+1$ is random, $0$ is a small world; it stays inside
-  $[-1, +1]$ whatever `n` does. As a score where bigger is better, use
-  $-\lvert\omega\rvert$.
-- **SWI** (Neal 2017):
-  $\;\text{SWI} = \frac{L - L_{\text{latt}}}{L_{\text{rand}} - L_{\text{latt}}}
-  \cdot \frac{C - C_{\text{rand}}}{C_{\text{latt}} - C_{\text{rand}}}$, from 0 to 1.
+    - **$\omega$** (Telesford et al. 2011): $\;\omega = L_{\text{rand}}/L - C/C_{\text{latt}}$.
+      $-1$ is a lattice, $+1$ is random, $0$ is a small world; it stays inside
+      $[-1, +1]$ whatever `n` does. As a score where bigger is better, use
+      $-\lvert\omega\rvert$.
+    - **SWI** (Neal 2017):
+      $\;\text{SWI} = \frac{L - L_{\text{latt}}}{L_{\text{rand}} - L_{\text{latt}}}
+      \cdot \frac{C - C_{\text{rand}}}{C_{\text{latt}} - C_{\text{rand}}}$, from 0 to 1.
 
-At n = 1000, k = 4:
+    At n = 1000, k = 4:
 
-| town | σ | ω | SWI |
-|---|---|---|---|
-| plain ring, p = 0 | **4.96** ← passes | −0.96 ✓ | 0.00 ✓ |
-| p = 0.05 | 47.7 | −0.41 | **0.81** ← largest |
-| p = 0.2 | 48.1 | 0.21 | 0.51 |
-| random graph, p = 1 | 0.47 ✓ | 0.93 ✓ | 0.00 ✓ |
+    | town | σ | ω | SWI |
+    |---|---|---|---|
+    | plain ring, p = 0 | **4.96** ← passes | −0.96 ✓ | 0.00 ✓ |
+    | p = 0.05 | 47.7 | −0.41 | **0.81** ← largest |
+    | p = 0.2 | 48.1 | 0.21 | 0.51 |
+    | random graph, p = 1 | 0.47 ✓ | 0.93 ✓ | 0.00 ✓ |
 
-For the plain ring the two indices disagree: σ = 4.96 puts it above the
-small-world threshold, ω = −0.96 puts it at the lattice end of its range. As
-`n` increases, σ increases and ω does not move.
+    For the plain ring the two indices disagree: σ = 4.96 puts it above the
+    small-world threshold, ω = −0.96 puts it at the lattice end of its range. As
+    `n` increases, σ increases and ω does not move.
 
-**Cost of the second reference point.** Both indices require
-$C_{\text{latt}}$ and $L_{\text{latt}}$, which have to be computed from a
-lattice with the same degree sequence as the network being tested. In this
-notebook the network already *is* a ring lattice, so `measure` obtains them
-directly. On an arbitrary network the lattice has to be constructed — place
-the vertices on a ring and rewire until edge lengths along the ring are
-minimised — which is why $\sigma$ remains the more commonly reported index.
+    **Cost of the second reference point.** Both indices require
+    $C_{\text{latt}}$ and $L_{\text{latt}}$, which have to be computed from a
+    lattice with the same degree sequence as the network being tested. In this
+    notebook the network already *is* a ring lattice, so `measure` obtains them
+    directly. On an arbitrary network the lattice has to be constructed — place
+    the vertices on a ring and rewire until edge lengths along the ring are
+    minimised — which is why $\sigma$ remains the more commonly reported index.
 
-**A second limitation, for empirical networks.** $C_{\text{rand}} = k/(n-1)$
-assumes $G(n,p)$, in which the degrees are concentrated around $k$. Empirical
-degree distributions are broad, and a broad degree distribution raises
-clustering on its own, independently of any structure. Part of a measured
-"$C \gg C_{\text{rand}}$" is therefore attributable to the degree sequence.
-The corresponding null model is the configuration model, which fixes the degree
-sequence and randomises only which vertices are joined. This notebook does not
-demonstrate the effect: every network in it is 4-regular, so fixing the degrees
-changes nothing.
-"""
+    **A second limitation, for empirical networks.** $C_{\text{rand}} = k/(n-1)$
+    assumes $G(n,p)$, in which the degrees are concentrated around $k$. Empirical
+    degree distributions are broad, and a broad degree distribution raises
+    clustering on its own, independently of any structure. Part of a measured
+    "$C \gg C_{\text{rand}}$" is therefore attributable to the degree sequence.
+    The corresponding null model is the configuration model, which fixes the degree
+    sequence and randomises only which vertices are joined. This notebook does not
+    demonstrate the effect: every network in it is 4-regular, so fixing the degrees
+    changes nothing.
+    """
             )
         }
     )
