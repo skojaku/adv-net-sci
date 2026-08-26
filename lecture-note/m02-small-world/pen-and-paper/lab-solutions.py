@@ -16,7 +16,7 @@
 # which fills in every blank of lab.py and writes this. The student's copy is
 # lab.py; edit that one.
 #
-# Part 6 of the Module 2 pen-and-paper sheet, done alone at a laptop.
+# Part 5 of the Module 2 pen-and-paper sheet, done alone at a laptop.
 #
 # The sheet builds Ringville by hand -- sixteen people in a circle, four
 # friends each -- counts the handshakes from person 1, adds two shortcuts and
@@ -29,7 +29,7 @@
 #
 #   * No animation walks Ringville. The wave that shows what a handshake count
 #     IS runs on a different, smaller town, because a coloured-in Ringville is
-#     Question 2(b)'s answer sitting on the screen. Ringville appears as a
+#     Question 1(b)'s answer sitting on the screen. Ringville appears as a
 #     picture with nothing printed off it, and the checks on the student's
 #     functions are run on the small town for the same reason.
 #
@@ -157,7 +157,7 @@ with app.setup(hide_code=True):
     def watts_strogatz(n, half, p, seed):
         """A ring with each friendship moved, with probability p, to a new
         person picked at random. Moved, not added -- which is the thing
-        Question 7(b) is about."""
+        Question 6(b) is about."""
         rng = np.random.default_rng(seed)
         edges = {tuple(sorted(e)) for e in kit_ring(n, half)}
         out = set(edges)
@@ -440,7 +440,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    # Part 6 · Hand the town to the machine — worked copy
+    # Part 5 · Hand the town to the machine — worked copy
 
     **Every ✍️ cell below is filled in.** The blank one, the one the students
     open, is `lab.py` next to this file.
@@ -574,7 +574,7 @@ def _():
                 note(
                     "<b>That is the town.</b> Thirty-two friendships, four each, "
                     "out of one line. Below is your own town drawn — compare it "
-                    "with the circle on page 1 of the sheet, remembering that "
+                    "with the circle in Part 1 of the sheet, remembering that "
                     "the labels here start at 0.",
                     BLUE,
                 ),
@@ -630,7 +630,7 @@ def distances_from(A, s):
 @app.cell(hide_code=True)
 def _():
     # Checked on the small town, not on Ringville: a row of sixteen right
-    # answers sitting here is Question 2(b) filled in for them.
+    # answers sitting here is Question 1(b) filled in for them.
     _A = plain_adjacency(DEMO_EDGES, DEMO_N)
     _want = kit_distances(_A, 0)
     try:
@@ -661,10 +661,10 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### Ringville, then — Question 2(c) and Question 4
+    ### Ringville, then — Question 1(c) and Question 3
 
-    Your two functions, run on your own town, twice: once as it is on page 1,
-    and once with the two shortcuts of page 2 added.
+    Your two functions, run on your own town, twice: once as it is in Part 1,
+    and once with the two shortcuts of Part 2 added.
     """)
     return
 
@@ -677,8 +677,8 @@ def _():
         _base = list(ring_edges(TOWN_N, TOWN_HALF))
         _cards = []
         for _title, _edges, _extra in [
-            ("page 1 · Ringville", _base, []),
-            ("page 2 · with the shortcuts", _base + TOWN_SHORTCUTS, TOWN_SHORTCUTS),
+            ("Part 1 · Ringville", _base, []),
+            ("Part 2 · with the shortcuts", _base + TOWN_SHORTCUTS, TOWN_SHORTCUTS),
         ]:
             _A = plain_adjacency(_edges, TOWN_N)
             _d = np.asarray(distances_from(_A, 0))
@@ -711,7 +711,7 @@ def _():
                     )
                 ),
                 note(
-                    "Those six numbers are Question 2(c) and Question 4. Two "
+                    "Those six numbers are Question 1(c) and Question 3. Two "
                     "friendships out of thirty-two — six per cent more wire — "
                     "and the average fell by a quarter. The <i>furthest away</i> "
                     "line is worth a look too: before the shortcuts three people "
@@ -851,13 +851,13 @@ def _():
                     big("every person in ringville", f"{_c[0]:.2f}", BLUE)
                     + f'<div style="font-family:{SANS};font-size:16px;color:{INK}">'
                     f"lowest {min(_c):.2f}, highest {max(_c):.2f} — "
-                    "which is Question 6(a) for all sixteen of them at once."
+                    "which is the darkening you did in Part 3, for all sixteen of them at once."
                     "</div>"
                 ),
                 note(
                     "Nobody in this town is special, and nothing here mentions "
                     "<b>16</b>. Change <code>TOWN_N</code> to 10,000 and the "
-                    "answer does not move — which is Question 6(b), and the "
+                    "answer does not move — which is Question 5(a), and the "
                     "reason a lattice's clustering is a property of "
                     "<code>half</code> and of nothing else.",
                     BLUE,
@@ -875,9 +875,9 @@ def _():
 
     # 5 · Turn the dial
 
-    Question 7(b) moved one friendship. Do that to **every** friendship with
+    Question 6(b) moved one friendship. Do that to **every** friendship with
     probability `p`, and you have the model the module is named after: `p = 0`
-    is Ringville, `p = 1` is a town drawn out of a hat, and the interesting
+    is Ringville, `p = 1` is a town wired uniformly at random, and the interesting
     part is in between.
 
     Forty people here, so the picture stays legible and the dial stays a dial.
@@ -981,7 +981,7 @@ def _():
         "The shaded band is the whole point. <b>L has already fallen off a "
         "cliff there and C has barely moved</b> — a handful of moved "
         "friendships buys nearly all of the short paths and costs almost none "
-        "of the triangles, which is Question 7(c) drawn as a picture. And it is "
+        "of the triangles, which is Question 6(c) drawn as a picture. And it is "
         "a wide band: you do not have to tune anything to land in it, which is "
         "why so many real networks do.",
         BLUE,

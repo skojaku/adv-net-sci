@@ -204,10 +204,10 @@ M02 = [
     ),
     # Say on the page which copy this is.
     (
-        """    # Part 6 · Hand the town to the machine
+        """    # Part 5 · Hand the town to the machine
 
     **On your own**, with the sheet next to the laptop.""",
-        """    # Part 6 · Hand the town to the machine — worked copy
+        """    # Part 5 · Hand the town to the machine — worked copy
 
     **Every ✍️ cell below is filled in.** The blank one, the one the students
     open, is `lab.py` next to this file.""",
