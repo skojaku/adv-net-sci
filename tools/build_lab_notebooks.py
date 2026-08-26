@@ -142,13 +142,21 @@ M01 = [
 
 # ---------------------------------------------------------------------------
 # Module 2 -- Ringville, the two shortcuts, and the index that lies.
+#
+# The worked copy differs from lab.py by the five answers and the title, and by
+# nothing else. It used to also carry three notes to the reader -- what the
+# notebook is for, the 1-to-16 versus 0-to-15 warning, and a line saying
+# my_index has many right answers. All three are gone from both copies: the
+# preamble was doing the sheet's job over again, and a student who has the
+# sheet beside them does not need to be told twice.
 # ---------------------------------------------------------------------------
 M02 = [
     # The town, as a rule rather than thirty-two typed pairs. Both loops are
     # already in lab.py; the answer is the one line inside them.
     (
         """            j = ...  # TASK: who sits d seats clockwise from i?""",
-        """            j = (i + d) % n  # count up, and % n closes the circle""",
+        """            j = (i + d) % n  # ONE answer of several; `if j >= n: j -= n` is
+                             # the same thing said longer, and is as good""",
     ),
     # No breadth-first search any more: igraph, in the two steps taught above.
     (
@@ -156,6 +164,28 @@ M02 = [
     return ...  # TASK: step 2 — the row of handshake counts out of person s""",
         """    g = igraph.Graph(n=n, edges=edges)
     return g.distances(source=s)[0]  # [0] because only one source was asked""",
+    ),
+    # The pencil answers the student marks themselves. The worked copy carries
+    # the sheet's own numbers, so every row of the marking table reads green.
+    (
+        """    # Question 1(c) — Ringville, as it is in Part 1.
+    my_total_1c = None  # every number in the boxes, added up
+    my_average_1c = None  # that total shared among the other 15
+    my_worst_1c = None  # the biggest number in any box
+
+    # Question 3 — the same town with the two shortcuts of Part 2.
+    my_total_3 = None
+    my_average_3 = None
+    my_worst_3 = None""",
+        """    # Question 1(c) — Ringville, as it is in Part 1.
+    my_total_1c = 36  # every number in the boxes, added up
+    my_average_1c = 2.4  # that total shared among the other 15
+    my_worst_1c = 4  # the biggest number in any box
+
+    # Question 3 — the same town with the two shortcuts of Part 2.
+    my_total_3 = 27
+    my_average_3 = 1.8
+    my_worst_3 = 3""",
     ),
     # The fraction of a person's friend-pairs who are friends.
     (
@@ -179,20 +209,12 @@ M02 = [
     """
     return -abs(m.L_rand / m.L - m.C / m.C_latt)''',
     ),
-    # Say on the page which copy this is.
+    # Say on the page which copy this is. The title carries it; the paragraph
+    # of explanation that used to sit under it was cut, along with the rest of
+    # the preamble -- see the note above M02.
     (
-        """    # Part 5 · Hand the town to the machine
-
-    **On your own**, with the sheet next to the laptop.""",
-        """    # Part 5 · Hand the town to the machine — worked copy
-
-    **Every ✍️ cell below is filled in.** The blank one, the one the students
-    open, is `lab.py` next to this file.""",
-    ),
-    (
-        "    Cells marked ✍️ are yours. Everything else runs itself.",
-        "    `my_index` has many right answers and the one below is omega; any\n"
-        "    formula that passes the two checks is as good.",
+        """    # Part 5 · Hand the town to the machine""",
+        """    # Part 5 · Hand the town to the machine — worked copy""",
     ),
 ]
 

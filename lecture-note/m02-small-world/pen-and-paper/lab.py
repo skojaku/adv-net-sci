@@ -23,10 +23,14 @@
 # handshake count is. So every blank sits inside a loop or a call that is
 # already written, and the longest answer is one short line:
 #
-#   * ring_edges     -- both loops given, the student writes `(i + d) % n`.
+#   * ring_edges     -- both loops given, the student writes one line for j.
+#     The page does NOT say to use `%`. It says j runs off the end of the
+#     circle and has to come back to the beginning, and that there is more than
+#     one way to do that; the modulo is one answer, not the answer.
 #   * distances_from -- no breadth-first search. igraph is taught in two steps
 #     on the small town first (edge list -> Graph, then .distances(source=s)),
-#     and the blank is those same two lines on a town it is handed.
+#     with a live cell whose `source` the student changes and checks against
+#     the drawing, and the blank is those two lines on a town it is handed.
 #   * local_clustering -- the loop over pairs is given, and it uses
 #     itertools.combinations rather than a numpy fancy-index square, so there
 #     is no double-counting trap to fall into and climb out of.
@@ -463,16 +467,7 @@ def _():
 
     **On your own**, with the sheet next to the laptop.
 
-    Almost every number this notebook prints is one you have already written in
-    pencil. When the screen and the sheet disagree, one of them is wrong, and
-    finding out which is the exercise.
-
     Cells marked ✍️ are yours. Everything else runs itself.
-
-    **One thing before you start.** The sheet calls them persons 1 to 16.
-    Python counts from 0, so the sheet's person 1 is `0` here, the sheet's
-    person 9 is `8`, and everything is shifted down by one. This is the single
-    most common way to get a right answer and read it wrong.
     """)
     return
 
@@ -535,10 +530,13 @@ def _():
     The two loops are written for you. **One line is yours**: the person sitting
     `d` seats clockwise from person `i`.
 
-    Going clockwise from `i` means counting up — `i + 1`, `i + 2` — but the
-    circle closes, so after person `n - 1` comes person `0` again, not person
-    `n`. `% n` is what does the closing: in Ringville `15 + 2` is `17`, and
-    `17 % 16` is `1`.
+    Counting up gets you most of the way — the next chair along is `i + 1`, the
+    one after that is `i + 2`. It stops working at the end of the circle. In
+    Ringville `15 + 2` is `17`, and this town has no person 17. It has no person
+    16 either: the chairs are numbered 0 to 15, and then they start over.
+
+    So a `j` that has run off the end has to come back to the beginning. There
+    is more than one way to bring it back, and any of them is fine.
     """)
     return
 
@@ -578,10 +576,10 @@ def _():
     elif any(not (0 <= int(e[1]) < TOWN_N) for e in _e):
         _bad = next(e for e in _e if not (0 <= int(e[1]) < TOWN_N))
         _msg = (
-            f"Not yet — you have person <code>{int(_bad[0])}</code> friends with "
-            f"person <code>{int(_bad[1])}</code>, and there is no such person in "
-            f"a town of <b>{TOWN_N}</b>. The circle has to close: "
-            "<code>% n</code> turns 17 back into 1."
+            f"Not yet — your <code>j</code> has reached "
+            f"<b>{int(_bad[1])}</b>, and this town stops at person "
+            f"<b>{TOWN_N - 1}</b>. <code>j</code> has run off the end of the "
+            "circle, and the chairs start over from 0 at that point."
         )
     else:
         _clean = [tuple(sorted(e)) for e in _e if len(tuple(e)) == 2]
@@ -639,9 +637,16 @@ def _():
     # 3 · Count the handshakes
 
     You are not going to write the wave. Sending it out is a solved problem,
-    and the library the rest of this course uses solves it in one call. What is
-    worth your time is knowing which call, and what comes back.
+    and it is solved for you in **igraph**.
 
+    igraph is a library for networks. You hand it a network, and it answers
+    questions about it — how far apart two people are, who is in the middle,
+    which parts are connected to which. It is written in C and wrapped for
+    Python, so it stays fast on networks far larger than Ringville, and it is
+    the library the rest of this course uses. Documentation:
+    [python.igraph.org](https://python.igraph.org/en/stable/).
+
+    What is worth your time is knowing which call to make and what comes back.
     Two steps, one line each. Both run below on the seven-person town.
     """)
     return
@@ -696,20 +701,42 @@ def _():
     person, but `distances` is built to take several, so it always answers with
     a *list of rows* — one row per starting person. Yours is the first and only
     row, so `[0]` on the end is what gets you the row itself.
+    ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#distances))
+
+    **This next cell is a real one, and it is yours.** Change the `0`, run it,
+    and check the answer against the picture underneath with your own finger.
     """)
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
+    # ▶ Try it. Change source to any person from 0 to 6 and run the cell.
+    source = 0
+
+    g_demo = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+    g_demo.distances(source=source)
+    return (source,)
+
+
+@app.cell(hide_code=True)
+def _(source):
     _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
-    _both = _g.distances(source=0)
-    mo.Html(
-        f'<div style="font-family:{MONO};font-size:14px;line-height:2.0">'
-        f'<div style="opacity:0.55">g.distances(source=0)</div>'
-        f'<b>{_both}</b><div style="opacity:0.55;margin-top:10px">'
-        f"g.distances(source=0)[0]</div>"
-        f'<b style="color:{BLUE}">{_both[0]}</b></div>'
+    _s = int(source) if 0 <= int(source) < DEMO_N else 0
+    _row = _g.distances(source=_s)[0]
+    _cells = "".join(
+        f'<tr><td style="padding:1px 10px 1px 0;opacity:0.55">person {i}</td>'
+        f'<td style="padding:1px 0"><b style="color:'
+        f'{RUST if i == _s else BLUE}">{int(_row[i])}</b></td></tr>'
+        for i in range(DEMO_N)
+    )
+    two_col(
+        demo_svg(fills={i: wave_fill(int(_row[i])) for i in range(DEMO_N)}),
+        f'<div style="font-family:{MONO};font-size:14px">'
+        f'<div style="opacity:0.55;margin-bottom:6px">'
+        f"g.distances(source={_s})[0]</div>"
+        f'<table style="border-collapse:collapse">{_cells}</table></div>',
+        left_basis=220,
     )
     return
 
@@ -717,9 +744,10 @@ def _():
 @app.cell(hide_code=True)
 def _():
     note(
-        "Read that second row against the slider in section 1: person 5 gets a "
-        "<b>4</b>, and the wave reached person 5 on its fourth pass. It is the "
-        "same count. All you have changed is who does the counting.",
+        "Pick somebody the picture puts a long way from your starting person "
+        "and count the steps along the lines yourself. It is the number igraph "
+        "gave them. The colours are the same waves the slider drew in section "
+        "1 — all you have changed is who does the counting.",
         BLUE,
     )
     return
@@ -743,7 +771,16 @@ def distances_from(edges, n, s):
     n      how many people are in the town.
     s      the person to count from.
 
-    Returns one row: the handshake count from s to person 0, to person 1, ...
+    Returns a LIST of n numbers, one per person, in order: the first is the
+    count to person 0, the second to person 1, and so on. Person s gets 0,
+    being already there.
+
+    For the seven-person town above, counting from person 0, the list is
+
+        [0, 1, 1, 2, 3, 4, 4]
+
+    which reads: person 1 is one handshake away, person 3 is two away, and
+    persons 5 and 6 are four away.
     """
     import igraph
 
@@ -797,42 +834,129 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### Ringville, then — Question 1(c) and Question 3
+    ### ✍️ Ringville, then — mark your own Question 1(c) and Question 3
 
-    Your two functions, run on your own town, twice: once as it is in Part 1,
-    and once with the two shortcuts of Part 2 added.
+    You worked these six numbers out in pencil. Copy them into the cell below
+    exactly as you have them on the sheet, wrong ones included — then your own
+    two functions will run on your own town and mark them.
+
+    Getting one wrong here is worth more than getting them all right. It tells
+    you which box on the drawing to go back to.
     """)
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
+    # ▶ Your pencil answers, off the sheet. Leave any you did not get as None.
+
+    # Question 1(c) — Ringville, as it is in Part 1.
+    my_total_1c = None  # every number in the boxes, added up
+    my_average_1c = None  # that total shared among the other 15
+    my_worst_1c = None  # the biggest number in any box
+
+    # Question 3 — the same town with the two shortcuts of Part 2.
+    my_total_3 = None
+    my_average_3 = None
+    my_worst_3 = None
+    return (
+        my_average_1c,
+        my_average_3,
+        my_total_1c,
+        my_total_3,
+        my_worst_1c,
+        my_worst_3,
+    )
+
+
+@app.cell(hide_code=True)
+def _(
+    my_average_1c,
+    my_average_3,
+    my_total_1c,
+    my_total_3,
+    my_worst_1c,
+    my_worst_3,
+):
     if not (town_ready(ring_edges) and distances_ready(distances_from)):
         _out = WAITING
     else:
         _base = list(ring_edges(TOWN_N, TOWN_HALF))
-        _cards = []
-        for _title, _edges, _extra in [
-            ("Part 1 · Ringville", _base, []),
-            ("Part 2 · with the shortcuts", _base + TOWN_SHORTCUTS, TOWN_SHORTCUTS),
-        ]:
+        _mine = [
+            (my_total_1c, my_average_1c, my_worst_1c),
+            (my_total_3, my_average_3, my_worst_3),
+        ]
+        _cards, _wrong, _blank = [], 0, 0
+        for _k, (_title, _edges) in enumerate(
+            [
+                ("Part 1 · Ringville", _base),
+                ("Part 2 · with the shortcuts", _base + TOWN_SHORTCUTS),
+            ]
+        ):
             _d = np.asarray(distances_from(_edges, TOWN_N, 0), dtype=float)
             _tot = int(_d[_d > 0].sum())
+            _machine = (_tot, _tot / (TOWN_N - 1), int(_d.max()))
+            _rows = ""
+            for _label, _got, _said in zip(
+                ("total", "average", "worst case"), _machine, _mine[_k]
+            ):
+                if _said is None:
+                    _blank += 1
+                    _mark, _tone, _yours = "—", INK, "not filled in"
+                elif abs(float(_said) - float(_got)) < 0.05:
+                    _mark, _tone, _yours = "✓", BLUE, f"{_said}"
+                else:
+                    _wrong += 1
+                    _mark, _tone, _yours = "✗", RUST, f"{_said}"
+                _shown = f"{_got:.1f}" if _label == "average" else f"{int(_got)}"
+                _rows += (
+                    f'<tr><td style="padding:2px 12px 2px 0;opacity:0.55">'
+                    f"{_label}</td>"
+                    f'<td style="padding:2px 12px 2px 0">your pencil '
+                    f'<b style="color:{_tone}">{_yours}</b></td>'
+                    f'<td style="padding:2px 12px 2px 0">your code '
+                    f'<b style="color:{BLUE}">{_shown}</b></td>'
+                    f'<td style="padding:2px 0;font-size:18px;color:{_tone}">'
+                    f"{_mark}</td></tr>"
+                )
             _cards.append(
                 mo.Html(
                     f'<div style="font-family:{SANS};padding-right:30px">'
                     f'<div style="font-size:12px;opacity:0.55;font-weight:700">'
                     f"{_title.upper()}</div>"
-                    + big("total", _tot)
-                    + f'<div style="font-size:16px;color:{INK}">average '
-                    f'<b style="color:{BLUE}">{_tot / (TOWN_N - 1):.1f}</b>'
-                    "&nbsp;&nbsp; worst case "
-                    f'<b style="color:{BLUE}">{int(_d.max())}</b>'
-                    f'<div style="opacity:0.6;font-size:14px;margin-top:4px">'
+                    f'<table style="border-collapse:collapse;font-size:15px">'
+                    f"{_rows}</table>"
+                    f'<div style="opacity:0.6;font-size:14px;margin-top:6px">'
                     "furthest away: "
                     f"{sorted(int(i) for i in np.flatnonzero(_d == _d.max()))}</div>"
-                    "</div></div>"
+                    "</div>"
                 )
+            )
+        if _blank == 6:
+            _verdict = note(
+                "Your six numbers go in the cell above. What your code makes of "
+                "the town is already in the two columns marked <i>your code</i> "
+                "— but read your own sheet first, or there is nothing to mark.",
+                INK,
+            )
+        elif _wrong:
+            _verdict = note(
+                f"<b>{_wrong} of them disagree.</b> The machine is not "
+                "automatically the one that is right: check the boxes on the "
+                "drawing before you believe it. What it cannot be is a "
+                "different town — you built this one out of your own rule, and "
+                "it came out with 32 friendships and 4 friends each.",
+                RUST,
+            )
+        else:
+            _verdict = note(
+                "<b>Your pencil and your code agree.</b> Two friendships out of "
+                "thirty-two — six per cent more wire — and the average fell by a "
+                "quarter. The <i>furthest away</i> line is worth a look too: "
+                "before the shortcuts three people were tied at the far side, "
+                "afterwards only two are, and they are the two the shortcuts "
+                "missed.",
+                BLUE,
             )
         _out = mo.vstack(
             [
@@ -845,15 +969,7 @@ def _():
                         size=300,
                     )
                 ),
-                note(
-                    "Those six numbers are Question 1(c) and Question 3. Two "
-                    "friendships out of thirty-two — six per cent more wire — "
-                    "and the average fell by a quarter. The <i>furthest away</i> "
-                    "line is worth a look too: before the shortcuts three people "
-                    "were tied at the far side, afterwards only two are, and "
-                    "they are the two the shortcuts missed.",
-                    BLUE,
-                ),
+                _verdict,
             ]
         )
     _out
@@ -914,12 +1030,20 @@ def _():
     mo.md(r"""
     ### ✍️ The fraction, as a rule
 
-    What the slider just did, counted twice over: how many of person `i`'s
-    friend-pairs are friends, out of how many pairs there are.
+    What the slider just did, written as a formula. Person $i$ has $k_i$
+    friends. Count how many of the pairs among those friends are friends with
+    each other — call it $L_i$, the solid lines in the picture — and divide by
+    how many pairs there were to begin with:
+
+    $$C_i \;=\; \frac{L_i}{\binom{k_i}{2}} \;=\; \frac{L_i}{k_i\,(k_i - 1)/2}$$
+
+    $\binom{k_i}{2}$ is every dashed line in the picture, solid or not.
+    $C_i = 1$ means all of person $i$'s friends know each other, and
+    $C_i = 0$ means none of them do.
 
     The loop over the pairs is written for you — `itertools.combinations` hands
-    you each pair of `i`'s friends exactly once, which is the same thing as
-    every dashed line in the picture above. **Two lines are yours.**
+    you each pair of `i`'s friends exactly once, one per dashed line.
+    **Two lines are yours.**
 
     `A` is the town's friendship table: `A[a, b]` is `1` when `a` and `b` are
     friends and `0` when they are not.
