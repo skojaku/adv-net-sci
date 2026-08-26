@@ -296,35 +296,42 @@ makes six degrees hard.
 
 \parthead{5}{The lab}
 
-Three functions, and everything else in the notebook runs off them.
+Three functions, and everything else in the notebook runs off them. Everything
+below except the five lines marked \verb|<--| is already on their screen; those
+five are the whole of the typing.
 
 \begin{verbatim}
 def ring_edges(n, half):
-    return [(i, (i + d) % n) for i in range(n) for d in range(1, half + 1)]
+    edges = []
+    for i in range(n):
+        for d in range(1, half + 1):
+            j = (i + d) % n                <--
+            edges.append((i, j))
+    return edges
 
-def distances_from(A, s):
-    n = len(A)
-    dist = np.full(n, -1)
-    dist[s] = 0
-    frontier = [s]
-    while frontier:
-        nxt = []
-        for u in frontier:
-            for v in np.flatnonzero(A[u]):
-                if dist[v] < 0:
-                    dist[v] = dist[u] + 1
-                    nxt.append(v)
-        frontier = nxt
-    return dist
+def distances_from(edges, n, s):
+    g = igraph.Graph(n=n, edges=edges)     <--
+    return g.distances(source=s)[0]        <--
 
 def local_clustering(A, i):
     nbrs = np.flatnonzero(A[i])
     k = len(nbrs)
     if k < 2:
         return 0.0
-    links = A[np.ix_(nbrs, nbrs)].sum() / 2
-    return links / (k * (k - 1) / 2)
+    links = 0
+    for a, b in itertools.combinations(nbrs, 2):
+        if A[a, b]:                        <--
+            links += 1
+    pairs = k * (k - 1) / 2                <--
+    return links / pairs
 \end{verbatim}
+
+Nobody writes a breadth-first search. The notebook teaches
+\verb|igraph.Graph(n=..., edges=...)| and then
+\verb|g.distances(source=s)| on the seven-person town first, and the blank is
+those same two lines on a town it is handed. The one thing that catches people
+is the \verb|[0]|: \verb|distances| takes several starting people, so it always
+answers with a list of rows, and only one of them is theirs.
 
 Run on the sheet's town they give \ans{36 / 2.4 / 4} and \ans{0.5} for every
 person, which are Question 1(c) and the darkened pairs in Part 3 again, out of

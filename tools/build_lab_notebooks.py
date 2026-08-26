@@ -144,50 +144,27 @@ M01 = [
 # Module 2 -- Ringville, the two shortcuts, and the index that lies.
 # ---------------------------------------------------------------------------
 M02 = [
-    # The town, as a rule rather than thirty-two typed pairs.
+    # The town, as a rule rather than thirty-two typed pairs. Both loops are
+    # already in lab.py; the answer is the one line inside them.
     (
-        '''    TASK: one line. For each person, and for each distance d from 1 to `half`,
-    the pair (i, i + d) — wrapped round the circle.
-    """
-    ...''',
-        '''    For each person, and for each distance d from 1 to `half`, the pair
-    (i, i + d) wrapped round the circle by `% n`.
-    """
-    return [(i, (i + d) % n) for i in range(n) for d in range(1, half + 1)]''',
+        """            j = ...  # TASK: who sits d seats clockwise from i?""",
+        """            j = (i + d) % n  # count up, and % n closes the circle""",
     ),
-    # Breadth-first search, which is the wave the slider drew.
+    # No breadth-first search any more: igraph, in the two steps taught above.
     (
-        '''    TASK: the two lines inside the `if`. When you reach v for the first time,
-    v is one further out than u — and v belongs to the next wave.
-    """''',
-        '''    Reaching v for the first time puts it one further out than u, and into
-    the next wave. Nobody is ever coloured twice, which is what makes the
-    first number v gets the smallest one it could have got.
-    """''',
-    ),
-    (
-        """                if dist[v] < 0:
-                    ...  # TASK
-                    ...  # TASK""",
-        """                if dist[v] < 0:
-                    dist[v] = dist[u] + 1
-                    nxt.append(v)""",
+        """    g = ...  # TASK: step 1 — a graph of n people with these friendships
+    return ...  # TASK: step 2 — the row of handshake counts out of person s""",
+        """    g = igraph.Graph(n=n, edges=edges)
+    return g.distances(source=s)[0]  # [0] because only one source was asked""",
     ),
     # The fraction of a person's friend-pairs who are friends.
     (
-        '''    TASK: the two lines. Somebody with fewer than two friends has no pairs at
-    all, and the 0.0 above is the answer there.
-    """''',
-        '''    The little square of the matrix counts every friendship among the
-    neighbours twice, because the matrix is a mirror; k friends make
-    k (k - 1) / 2 pairs.
-    """''',
+        """        if ...:  # TASK: are these two friends with each other?""",
+        """        if A[a, b]:  # 1 when they are friends, 0 when they are not""",
     ),
     (
-        """    links = ...  # TASK
-    pairs = ...  # TASK""",
-        """    links = A[np.ix_(nbrs, nbrs)].sum() / 2
-    pairs = k * (k - 1) / 2""",
+        """    pairs = ...  # TASK: how many pairs do k friends make?""",
+        """    pairs = k * (k - 1) / 2""",
     ),
     # A test with a yardstick at both ends of the range.
     (

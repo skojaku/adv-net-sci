@@ -4,6 +4,7 @@
 #     "marimo",
 #     "numpy==2.2.6",
 #     "pandas==2.3.1",
+#     "python-igraph==0.11.9",
 #     "tabulate",
 #     "matplotlib==3.10.3",
 # ]
@@ -21,11 +22,23 @@
 # The sheet builds Ringville by hand -- sixteen people in a circle, four
 # friends each -- counts the handshakes from person 1, adds two shortcuts and
 # counts again, then counts how many of one person's friend-pairs are friends.
-# This notebook does the same three things by machine, out of three rules the
-# student writes, and then does the one thing pencil and paper cannot: turns
-# the rewiring dial and draws the curve.
+# This notebook does the same three things by machine and then does the one
+# thing pencil and paper cannot: turns the rewiring dial and draws the curve.
 #
-# Two rules the file obeys, both learned the hard way on m01:
+# The programming is deliberately thin. The class is not a programming class,
+# and a student stuck on a nested comprehension is not learning what a
+# handshake count is. So every blank sits inside a loop or a call that is
+# already written, and the longest answer is one short line:
+#
+#   * ring_edges     -- both loops given, the student writes `(i + d) % n`.
+#   * distances_from -- no breadth-first search. igraph is taught in two steps
+#     on the small town first (edge list -> Graph, then .distances(source=s)),
+#     and the blank is those same two lines on a town it is handed.
+#   * local_clustering -- the loop over pairs is given, and it uses
+#     itertools.combinations rather than a numpy fancy-index square, so there
+#     is no double-counting trap to fall into and climb out of.
+#
+# Three rules the file obeys, the first two learned the hard way on m01:
 #
 #   * No animation walks Ringville. The wave that shows what a handshake count
 #     IS runs on a different, smaller town, because a coloured-in Ringville is
@@ -37,6 +50,10 @@
 #     (marimo-team/marimo#8467), so lecture-hall.css is carried here as base64
 #     and injected by the first cell. Refresh it with
 #     `python tools/build_lab_notebooks.py m02-small-world` after editing it.
+#
+#   * igraph is pinned to the version the coding notebooks already use
+#     (python-igraph==0.11.9, see notebooks/m02-small-world/starter.py), so the
+#     idiom a student meets here is the one they meet there.
 
 import marimo
 
@@ -46,8 +63,10 @@ app = marimo.App(width="medium")
 with app.setup(hide_code=True):
     # The drawing kit. Nothing here is yours to edit.
     import base64
+    import itertools
     import math
 
+    import igraph
     import marimo as mo
     import numpy as np
     import pandas as pd
@@ -130,6 +149,10 @@ with app.setup(hide_code=True):
     def kit_ring(n, half):
         """The kit's own ring, for everything that has to run before yours."""
         return [(i, (i + d) % n) for i in range(n) for d in range(1, half + 1)]
+
+    def edges_of(A):
+        """A friendship table back to the list of pairs igraph wants."""
+        return [(int(i), int(j)) for i, j in zip(*np.triu_indices_from(A, k=1)) if A[i, j]]
 
     def kit_distances(A, s):
         """The kit's own handshake counts, for the animations and the checks."""
@@ -355,10 +378,13 @@ with app.setup(hide_code=True):
             sources = range(n)
         else:
             sources = np.random.default_rng(seed).choice(n, cap, replace=False)
+        edges = edges_of(A)
         tot, cnt = 0.0, 0
         for s in sources:
-            d = np.asarray(fn(A, int(s)))
-            reached = d[(d > 0)]
+            d = np.asarray(fn(edges, n, int(s)), dtype=float)
+            # Rewiring can cut a town in two, and igraph scores an unreachable
+            # person `inf`. Those pairs are left out rather than averaged in.
+            reached = d[np.isfinite(d) & (d > 0)]
             tot += float(reached.sum())
             cnt += int(reached.size)
         return tot / cnt if cnt else float("inf")
@@ -404,10 +430,10 @@ with app.setup(hide_code=True):
 
     def distances_ready(fn):
         try:
-            got = np.asarray(fn(plain_adjacency(DEMO_EDGES, DEMO_N), 0))
+            got = np.asarray(fn(DEMO_EDGES, DEMO_N, 0), dtype=float)
         except Exception:
             return False
-        want = kit_distances(plain_adjacency(DEMO_EDGES, DEMO_N), 0)
+        want = kit_distances(plain_adjacency(DEMO_EDGES, DEMO_N), 0).astype(float)
         return got.shape == want.shape and bool(np.array_equal(got, want))
 
     def clustering_ready(fn):
@@ -515,8 +541,13 @@ def _():
     in a town of `n` people sitting in a circle, everybody is friends with the
     `half` people on each side.
 
-    Person `i` sits next to person `i + 1`, and the circle closes — after
-    person `n - 1` comes person `0` again, which is what `% n` is for.
+    The two loops are written for you. **One line is yours**: the person sitting
+    `d` seats clockwise from person `i`.
+
+    Going clockwise from `i` means counting up — `i + 1`, `i + 2` — but the
+    circle closes, so after person `n - 1` comes person `0` again, not person
+    `n`. `% n` is what does the closing: in Ringville `15 + 2` is `17`, and
+    `17 % 16` is `1`.
     """)
     return
 
@@ -525,12 +556,19 @@ def _():
 def ring_edges(n, half):
     """Every friendship in a circle of n people with `half` friends each side.
 
-    Return a list of (i, j) pairs.
+    n     how many people sit in the circle. Ringville has n = 16.
+    half  how many friends each person has on ONE side. Ringville has
+          half = 2, which is why everybody there ends up with 4 friends:
+          two clockwise and two anticlockwise.
 
-    For each person, and for each distance d from 1 to `half`, the pair
-    (i, i + d) wrapped round the circle by `% n`.
+    Returns a list of (i, j) pairs.
     """
-    return [(i, (i + d) % n) for i in range(n) for d in range(1, half + 1)]
+    edges = []
+    for i in range(n):                  # each person in turn
+        for d in range(1, half + 1):    # the seat 1 along, then 2 along, ...
+            j = (i + d) % n  # count up, and % n closes the circle
+            edges.append((i, j))
+    return edges
 
 
 @app.cell(hide_code=True)
@@ -541,6 +579,19 @@ def _():
         _e = None
     if _e is None:
         _msg = "Not yet — the cell above still returns nothing."
+    elif any(e[1] is Ellipsis or e[0] is Ellipsis for e in _e):
+        _msg = (
+            "Not yet — <code>j</code> is still <code>...</code>. One line: who "
+            "sits <code>d</code> seats clockwise from <code>i</code>?"
+        )
+    elif any(not (0 <= int(e[1]) < TOWN_N) for e in _e):
+        _bad = next(e for e in _e if not (0 <= int(e[1]) < TOWN_N))
+        _msg = (
+            f"Not yet — you have person <code>{int(_bad[0])}</code> friends with "
+            f"person <code>{int(_bad[1])}</code>, and there is no such person in "
+            f"a town of <b>{TOWN_N}</b>. The circle has to close: "
+            "<code>% n</code> turns 17 back into 1."
+        )
     else:
         _clean = [tuple(sorted(e)) for e in _e if len(tuple(e)) == 2]
         _loops = [e for e in _clean if e[0] == e[1]]
@@ -549,9 +600,10 @@ def _():
         _m = int(_A.sum() // 2)
         if _loops:
             _msg = (
-                "Not yet — you have people who are friends with themselves. "
-                "The distances round the circle start at <b>1</b>, not 0: "
-                "<code>range(1, half + 1)</code>."
+                "Not yet — you have people who are friends with themselves, so "
+                "<code>j</code> is coming out equal to <code>i</code>. The "
+                "nearest neighbour is <code>d</code> seats away, and "
+                "<code>d</code> starts at 1."
             )
         elif not np.all(_deg == 4):
             _bad = int(np.argmax(_deg != 4))
@@ -573,8 +625,9 @@ def _():
             [
                 note(
                     "<b>That is the town.</b> Thirty-two friendships, four each, "
-                    "out of one line. Below is your own town drawn — compare it "
-                    "with the circle in Part 1 of the sheet, remembering that "
+                    "out of one line of yours. Below is your own town drawn — "
+                    "compare it with the circle in Part 1 of the sheet, "
+                    "remembering that "
                     "the labels here start at 0.",
                     BLUE,
                 ),
@@ -592,39 +645,119 @@ def _():
     mo.md(r"""
     ---
 
-    # 3 · ✍️ Count the handshakes
+    # 3 · Count the handshakes
 
-    The wave in section 1, written down. Everybody starts at `-1`, meaning *not
-    reached yet*; person `s` starts at `0`; and each wave is everybody one step
-    out from the last wave who has not been reached already.
+    You are not going to write the wave. Sending it out is a solved problem,
+    and the library the rest of this course uses solves it in one call. What is
+    worth your time is knowing which call, and what comes back.
 
-    `np.flatnonzero(A[u])` hands you `u`'s friends.
+    Two steps, one line each. Both run below on the seven-person town.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Step 1 — an edge list becomes a graph
+
+    A town is a list of pairs. `igraph` turns that into something that can be
+    asked questions:
+
+    ```python
+    import igraph
+
+    g = igraph.Graph(n=7, edges=[(0, 1), (0, 2), (1, 2), ...])
+    ```
+
+    `n` has to be there. Without it igraph sizes the town from the pairs it can
+    see, so a person with no friends at all would quietly vanish.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+    two_col(
+        demo_svg(),
+        f'<div style="font-family:{MONO};font-size:14px;line-height:2.0">'
+        f'<div style="opacity:0.55">g.vcount()</div><b>{_g.vcount()}</b> people'
+        f'<div style="opacity:0.55;margin-top:10px">g.ecount()</div>'
+        f"<b>{_g.ecount()}</b> friendships"
+        f'<div style="opacity:0.55;margin-top:10px">g.neighbors(0)</div>'
+        f"<b>{_g.neighbors(0)}</b></div>",
+        left_basis=220,
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Step 2 — the graph is asked for handshake counts
+
+    ```python
+    g.distances(source=0)
+    ```
+
+    One gotcha, and it is the only one. You asked about **one** starting
+    person, but `distances` is built to take several, so it always answers with
+    a *list of rows* — one row per starting person. Yours is the first and only
+    row, so `[0]` on the end is what gets you the row itself.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+    _both = _g.distances(source=0)
+    mo.Html(
+        f'<div style="font-family:{MONO};font-size:14px;line-height:2.0">'
+        f'<div style="opacity:0.55">g.distances(source=0)</div>'
+        f'<b>{_both}</b><div style="opacity:0.55;margin-top:10px">'
+        f"g.distances(source=0)[0]</div>"
+        f'<b style="color:{BLUE}">{_both[0]}</b></div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    note(
+        "Read that second row against the slider in section 1: person 5 gets a "
+        "<b>4</b>, and the wave reached person 5 on its fourth pass. It is the "
+        "same count. All you have changed is who does the counting.",
+        BLUE,
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### ✍️ Now the two lines, for any town
+
+    Step 1 then step 2, on whatever town it is handed.
     """)
     return
 
 
 @app.function
-def distances_from(A, s):
+def distances_from(edges, n, s):
     """How many handshakes from person s to everybody else.
 
-    Reaching v for the first time puts it one further out than u, and into
-    the next wave. Nobody is ever coloured twice, which is what makes the
-    first number v gets the smallest one it could have got.
-    """
-    import numpy as np
+    edges  the town's friendships, a list of (i, j) pairs.
+    n      how many people are in the town.
+    s      the person to count from.
 
-    dist = np.full(len(A), -1)
-    dist[s] = 0
-    frontier = [s]
-    while frontier:
-        nxt = []
-        for u in frontier:
-            for v in np.flatnonzero(A[u]):
-                if dist[v] < 0:
-                    dist[v] = dist[u] + 1
-                    nxt.append(v)
-        frontier = nxt
-    return dist
+    Returns one row: the handshake count from s to person 0, to person 1, ...
+    """
+    import igraph
+
+    g = igraph.Graph(n=n, edges=edges)
+    return g.distances(source=s)[0]  # [0] because only one source was asked
 
 
 @app.cell(hide_code=True)
@@ -632,9 +765,9 @@ def _():
     # Checked on the small town, not on Ringville: a row of sixteen right
     # answers sitting here is Question 1(b) filled in for them.
     _A = plain_adjacency(DEMO_EDGES, DEMO_N)
-    _want = kit_distances(_A, 0)
+    _want = kit_distances(_A, 0).astype(float)
     try:
-        _got = np.asarray(distances_from(_A, 0))
+        _got = np.asarray(distances_from(DEMO_EDGES, DEMO_N, 0), dtype=float)
     except Exception:
         _got = None
     _ok = _got is not None and _got.shape == _want.shape and np.array_equal(_got, _want)
@@ -642,17 +775,29 @@ def _():
         _msg = (
             "<b>Correct on the small town</b> — the same waves the slider drew."
         )
-    elif _got is None or not np.any(np.asarray(_got, dtype=object) != None):  # noqa: E711
-        _msg = "Not yet — the two lines inside the <code>if</code> are still blank."
-    elif int(np.sum(np.asarray(_got) < 0)) > 1:
+    elif _got is None:
         _msg = (
-            "Not yet — people are still at <code>-1</code>, so the wave never "
-            "moved past the first ring. Did you add v to <code>nxt</code>?"
+            "Not yet — the two lines are still <code>...</code>. Step 1 is "
+            "<code>igraph.Graph(n=..., edges=...)</code>, step 2 is "
+            "<code>g.distances(source=...)</code>."
+        )
+    elif _got.ndim == 2:
+        _msg = (
+            "Not yet — you have handed back the <b>list of rows</b>, not the "
+            "row. That is the <code>[0]</code> on the end of "
+            "<code>g.distances(source=s)</code>."
+        )
+    elif not np.all(np.isfinite(_got)):
+        _msg = (
+            "Not yet — some people came back <code>inf</code>, meaning igraph "
+            "could not reach them at all. The small town is in one piece, so "
+            "the friendships did not all arrive: check that <code>edges</code> "
+            "is what you passed to <code>igraph.Graph</code>."
         )
     else:
         _msg = (
-            f"Not yet — you get <code>{list(np.asarray(_got))}</code> where the "
-            f"slider drew <code>{list(_want)}</code>."
+            f"Not yet — you get <code>{[int(v) for v in _got]}</code> where the "
+            f"slider drew <code>{[int(v) for v in _want]}</code>."
         )
     verdict(_ok, _msg, _msg)
     return
@@ -680,8 +825,7 @@ def _():
             ("Part 1 · Ringville", _base, []),
             ("Part 2 · with the shortcuts", _base + TOWN_SHORTCUTS, TOWN_SHORTCUTS),
         ]:
-            _A = plain_adjacency(_edges, TOWN_N)
-            _d = np.asarray(distances_from(_A, 0))
+            _d = np.asarray(distances_from(_edges, TOWN_N, 0), dtype=float)
             _tot = int(_d[_d > 0].sum())
             _cards.append(
                 mo.Html(
@@ -779,10 +923,15 @@ def _():
     mo.md(r"""
     ### ✍️ The fraction, as a rule
 
-    `k` friends make `k * (k - 1) / 2` pairs. `A[np.ix_(nbrs, nbrs)]` is the
-    little square of the matrix with only `i`'s friends in it, and everything
-    in it adds up to **twice** the friendships among them, because the matrix
-    is a mirror.
+    What the slider just did, counted twice over: how many of person `i`'s
+    friend-pairs are friends, out of how many pairs there are.
+
+    The loop over the pairs is written for you — `itertools.combinations` hands
+    you each pair of `i`'s friends exactly once, which is the same thing as
+    every dashed line in the picture above. **Two lines are yours.**
+
+    `A` is the town's friendship table: `A[a, b]` is `1` when `a` and `b` are
+    friends and `0` when they are not.
     """)
     return
 
@@ -791,17 +940,23 @@ def _():
 def local_clustering(A, i):
     """The fraction of person i's friend-pairs who are friends with each other.
 
-    The little square of the matrix counts every friendship among the
-    neighbours twice, because the matrix is a mirror; k friends make
-    k (k - 1) / 2 pairs.
+    A  the town's friendship table. A[a, b] is 1 when a and b are friends.
+    i  the person to look at.
     """
+    import itertools
+
     import numpy as np
 
-    nbrs = np.flatnonzero(A[i])
+    nbrs = np.flatnonzero(A[i])       # everybody i is friends with
     k = len(nbrs)
-    if k < 2:
+    if k < 2:                         # fewer than two friends, so no pairs
         return 0.0
-    links = A[np.ix_(nbrs, nbrs)].sum() / 2
+
+    links = 0
+    for a, b in itertools.combinations(nbrs, 2):   # each pair of i's friends
+        if A[a, b]:  # 1 when they are friends, 0 when they are not
+            links += 1
+
     pairs = k * (k - 1) / 2
     return links / pairs
 
@@ -828,8 +983,9 @@ def _():
             f"Not yet — you give person <code>{_bad}</code> "
             f"<b>{_got[_bad]}</b> where the slider counted <b>{_want[_bad]}</b>."
             + (
-                " That is exactly double: the matrix is a mirror, so the little "
-                "square counts every friendship twice."
+                " That is exactly double, so <code>pairs</code> is counting "
+                "each pair twice: <code>combinations</code> already hands you "
+                "each one once, which is what the <code>/ 2</code> is for."
                 if _got[_bad] and abs(_got[_bad] - 2 * _want[_bad]) < 1e-6
                 else ""
             )
