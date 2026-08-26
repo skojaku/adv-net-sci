@@ -229,10 +229,11 @@ closes a triangle. And a line that is \emph{added} can never destroy one. So
 \ans{sixteen, unchanged}. The average fell by a quarter and the town lost
 nothing.
 
-{\bf Question 6(b)}: The real model never adds a friendship. It takes one away
-and puts it back somewhere else: person 1 stops being friends with person 2,
-and becomes friends with person 9 instead. Which friends did persons 1 and 2
-have in common? So how many triangles does the town lose?
+{\bf Question 6(b)}: In Part 2 the two shortcuts were new friendships. The real
+model never adds one: it takes a friendship away and puts it back somewhere
+else. Do that once --- person 1 stops being friends with person 2, and becomes
+friends with person 9 instead. Which friends did persons 1 and 2 have in
+common? So how many triangles does the town lose?
 
 \arrow Persons 1 and 2 both know \ans{person 16 and person 3}, so cutting
 1--2 kills the triangles \ans{1--2--16} and \ans{1--2--3}: \ans{two} go, and
@@ -279,18 +280,19 @@ handshakes do you pass eight billion?
 five overshoot the planet by a factor of nine. Six degrees was never a
 measurement, it was this multiplication.
 
-{\bf Question 7(b)}: In Question 5 you found that person 3's friends do know
-each other, so the pretending in 7(a) is false. Which way does that push the
-answer --- more handshakes, or fewer? Why?
+{\bf Question 7(b)}: Nobody appears in the tree twice: every branch lands on a
+person the chain has not reached yet. But in Part 3 you found that your friends
+are often friends with each other, so some branches must land on somebody
+already in the tree. Does the real number of handshakes needed to reach eight
+billion go up or down? Why?
 
-\arrow \ans{More handshakes.} If your friends know each other --- and Question
-5 says half their pairs do --- then most of the 150 people your friend reaches
-are people you were already reaching yourself. The tree above is drawn with no
-two branches ever landing on the same person, and that is the part that is
-false. Every step adds far fewer than 150 times as many new people, so the
-tower of powers is an \ans{overestimate of the reach} and therefore an
-\ans{underestimate of the number of handshakes}. Clustering is exactly what
-makes six degrees hard.
+\arrow It goes \ans{up --- more handshakes}. Half of person 3's pairs of
+friends are friends with each other, so most of the 150 people your friend
+reaches are people you were already reaching yourself. Those branches land back
+inside the tree instead of on somebody new, so every step adds far fewer than
+150 times as many people. The table is therefore an \ans{overestimate of the
+reach} and an \ans{underestimate of the number of handshakes}. Clustering is
+exactly what makes six degrees hard.
 
 \clearpage
 
