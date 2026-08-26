@@ -46,5 +46,12 @@ The course Python packages are listed in
 conda env create -f lecture-note/environment.yml && conda activate advnetsci
 ```
 
-Building figures needs only a small subset — see `tools/figures-requirements.txt`
-and `slides/requirements.txt`.
+Building figures needs only a small subset. `tools/figures-requirements.lock`
+is the exact environment the committed figures were built in — install from it,
+not from the unpinned `tools/figures-requirements.txt` and
+`slides/requirements.txt` behind it:
+
+```sh
+uv venv .venv-figs --python 3.12
+uv pip install --python .venv-figs/bin/python -r tools/figures-requirements.lock
+```

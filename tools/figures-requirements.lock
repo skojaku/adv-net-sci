@@ -1,0 +1,58 @@
+# Exact contents of the .venv-figs that built the figures now in the repo,
+# captured 2026-08-26 with `uv pip freeze`. figures-requirements.txt and
+# slides/requirements.txt pin nothing, so a rebuild from those two alone
+# resolves to whatever is newest that day and the figures can come out
+# different. Rebuild from this file instead:
+#
+#   uv venv .venv-figs --python 3.12
+#   uv pip install --python .venv-figs/bin/python -r tools/figures-requirements.lock
+#
+# Python 3.12.13
+anyio==4.14.2
+certifi==2026.7.22
+charset-normalizer==3.4.9
+click==8.4.2
+contourpy==1.3.3
+cycler==0.12.1
+docutils==0.23
+fonttools==4.63.0
+h11==0.16.0
+idna==3.18
+igraph==1.0.0
+itsdangerous==2.2.0
+jedi==0.19.2
+kiwisolver==1.5.0
+loro==1.13.2
+marimo==0.23.16
+markdown==3.10.3
+matplotlib==3.11.1
+mpmath==1.4.1
+msgspec==0.21.1
+narwhals==2.24.0
+networkx==3.6.1
+numpy==2.5.1
+packaging==26.3
+pandas==3.0.5
+parso==0.8.7
+pillow==12.3.0
+powerlaw==2.0.0
+psutil==7.2.2
+pygments==2.20.0
+pymdown-extensions==11.0.1
+pyparsing==3.3.2
+python-dateutil==2.9.0.post0
+python-multipart==0.0.32
+pyyaml==6.0.3
+pyzmq==27.1.0
+requests==2.34.2
+scipy==1.18.0
+seaborn==0.13.2
+six==1.17.0
+starlette==1.3.1
+texttable==1.7.0
+tomlkit==0.15.1
+tqdm==4.70.0
+typing-extensions==4.16.0
+urllib3==2.7.0
+uvicorn==0.52.1
+websockets==17.0.1
