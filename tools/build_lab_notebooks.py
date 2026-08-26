@@ -167,32 +167,26 @@ M02 = [
         """    g = igraph.Graph(n=n, edges=edges)
     return g.distances(source=s)[0]  # [0] because only one source was asked""",
     ),
-    # The pencil answers the student marks themselves. The worked copy carries
-    # the sheet's own numbers, so every row of the marking table reads green.
+    # Question 1(c) with igraph, written from nothing. The marking cell holds
+    # no answer of its own -- it compares against Q1C in the hidden kit -- so
+    # this is the only place the worked code exists.
     (
-        """    # Question 1(c) — Ringville, as it is in Part 1.
-    my_total_1c = None  # every number in the boxes, added up
-    my_average_1c = None  # that total shared among the other 15
-    my_worst_1c = None  # the biggest number in any box
+        """    # ✍️ Write your igraph code here, then put each answer in its variable.
 
-    # Question 3 — the same town with the two shortcuts of Part 2.
-    my_total_3 = None
-    my_average_3 = None
-    my_worst_3 = None""",
-        """    # Question 1(c) — Ringville, as it is in Part 1.
-    my_total_1c = 36  # every number in the boxes, added up
-    my_average_1c = 2.4  # that total shared among the other 15
-    my_worst_1c = 4  # the biggest number in any box
+    answer_total = ...  # ✍️ every handshake count from person 0, added up
+    answer_average = ...  # ✍️ that total shared among the other 15 people
+    answer_worst = ...  # ✍️ the biggest of those counts""",
+        """    g_town = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+    counts = g_town.distances(source=0)[0]
 
-    # Question 3 — the same town with the two shortcuts of Part 2.
-    my_total_3 = 27
-    my_average_3 = 1.8
-    my_worst_3 = 3""",
+    answer_total = sum(counts)  # person 0's own 0 adds nothing
+    answer_average = sum(counts) / (TOWN_N - 1)  # shared among the other 15
+    answer_worst = max(counts)""",
     ),
     # The fraction of a person's friend-pairs who are friends.
     (
-        """        if ...:  # ✍️ replace the ... — are a and b friends with each other?""",
-        """        if A[a, b]:  # 1 when they are friends, 0 when they are not""",
+        """            if ...:  # ✍️ replace the ... — are a and b friends with each other?""",
+        """            if A[a, b]:  # 1 when they are friends, 0 when they are not""",
     ),
     (
         """    pairs = ...  # ✍️ replace the ... — how many pairs do k friends make?""",
@@ -200,14 +194,18 @@ M02 = [
     ),
     # A test with a yardstick at both ends of the range.
     (
-        '''    TASK: return one number. The check below never looks at your formula. It
-    runs it on four towns and asks two things of the answers.
+        '''    Return one number. The check below does not inspect your formula. It
+    evaluates it on four networks and tests two properties of the results:
+    that the p = 0.05 network scores highest, and that a shortcut-free ring
+    does not score higher at n = 2000 than at n = 250.
     """
     ...''',
-        '''    One right answer out of many: omega (Telesford et al. 2011), with the
-    sign flipped so that bigger is better. Zero is a small world, -1 is a
-    lattice and -1 is a hat-drawn graph, and it cannot run away with n
-    because each term is a ratio of two like things.
+        '''    One of many valid answers: omega (Telesford et al. 2011), negated so
+    that a larger value means more of a small world. omega itself runs from
+    -1 at a lattice to +1 at a random graph, with 0 at a small world, so
+    -|omega| peaks at 0 for a small world and is negative at both ends. It
+    is bounded in n because each term is a ratio of two path lengths or of
+    two clustering coefficients.
     """
     return -abs(m.L_rand / m.L - m.C / m.C_latt)''',
     ),

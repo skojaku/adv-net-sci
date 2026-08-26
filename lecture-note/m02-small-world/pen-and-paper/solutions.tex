@@ -356,13 +356,16 @@ L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}
 \]
 
 {\bf Where the two random-town numbers come from}, since the notebook derives
-them and the question may come back. Throwing the same friendships in a hat
-means every pair is a friendship with the same probability $p$, decided on its
-own. Each person has $n-1$ people they could befriend, so $k = p\,(n-1)$ and
-$p = k/(n-1)$, which is $k/n$ once $n$ is large. Two of your friends are a pair
-like any other --- their coin knows nothing about having landed on you --- so
-$C_{\text{rand}} = \mans{p}$. It does not mention who your friends are, and
-that is what having no structure means.
+them and the question may come back. The random reference is the
+Erd\H{o}s--R\'enyi graph $G(n,p)$: of the $\binom{n}{2}$ pairs who could be
+friends, each pair is made a friendship independently with the same probability
+$p$. Matching the average degree fixes $p$ --- person $i$ has $n-1$ possible
+friends, each realised with probability $p$, so $k = p\,(n-1)$ and
+$p = k/(n-1)$, which is $k/n$ for large $n$. For clustering: given that $a$ and
+$b$ are both friends of $i$, independence means the pair $(a,b)$ is still a
+friendship with probability $p$, so $C_{\text{rand}} = \mans{p}$. The
+expression contains no reference to $i$ or to who $i$'s friends are, which is
+what the independence assumption removed.
 
 $L_{\text{rand}}$ is the tree of 7(a). About $k$ people are one handshake away
 and $k^2$ are two away, so $k^L \approx n$, and taking logs gives
