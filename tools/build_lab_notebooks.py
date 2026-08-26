@@ -143,8 +143,10 @@ M01 = [
 # ---------------------------------------------------------------------------
 # Module 2 -- Ringville, the two shortcuts, and the index that lies.
 #
-# The worked copy differs from lab.py by the five answers and the title, and by
-# nothing else. It used to also carry three notes to the reader -- what the
+# The worked copy differs from lab.py by the answers and the title, and by
+# nothing else. Five of those answers are the ✍️-marked lines inside the three
+# functions, one is my_index, and one is the block of pencil answers off the
+# sheet. It used to also carry three notes to the reader -- what the
 # notebook is for, the 1-to-16 versus 0-to-15 warning, and a line saying
 # my_index has many right answers. All three are gone from both copies: the
 # preamble was doing the sheet's job over again, and a student who has the
@@ -154,14 +156,14 @@ M02 = [
     # The town, as a rule rather than thirty-two typed pairs. Both loops are
     # already in lab.py; the answer is the one line inside them.
     (
-        """            j = ...  # TASK: who sits d seats clockwise from i?""",
+        """            j = ...  # ✍️ replace the ... — who sits d seats clockwise from i?""",
         """            j = (i + d) % n  # ONE answer of several; `if j >= n: j -= n` is
                              # the same thing said longer, and is as good""",
     ),
     # No breadth-first search any more: igraph, in the two steps taught above.
     (
-        """    g = ...  # TASK: step 1 — a graph of n people with these friendships
-    return ...  # TASK: step 2 — the row of handshake counts out of person s""",
+        """    g = ...  # ✍️ replace the ... — step 1, a graph of n people with these edges
+    return ...  # ✍️ replace the ... — step 2, the counts out of person s""",
         """    g = igraph.Graph(n=n, edges=edges)
     return g.distances(source=s)[0]  # [0] because only one source was asked""",
     ),
@@ -189,11 +191,11 @@ M02 = [
     ),
     # The fraction of a person's friend-pairs who are friends.
     (
-        """        if ...:  # TASK: are these two friends with each other?""",
+        """        if ...:  # ✍️ replace the ... — are a and b friends with each other?""",
         """        if A[a, b]:  # 1 when they are friends, 0 when they are not""",
     ),
     (
-        """    pairs = ...  # TASK: how many pairs do k friends make?""",
+        """    pairs = ...  # ✍️ replace the ... — how many pairs do k friends make?""",
         """    pairs = k * (k - 1) / 2""",
     ),
     # A test with a yardstick at both ends of the range.

@@ -1119,6 +1119,94 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
+    mo.md(r"""
+    ### igraph has this one too
+
+    You wrote the loop because $C_i$ is the thing Part 3 was about, and a
+    number you have counted by hand once is a number you can trust. Now that it
+    is counted, here is the call you would reach for on any other day:
+
+    ```python
+    g.transitivity_local_undirected(mode="zero")
+    ```
+
+    It returns $C_i$ for **every** person at once, as a list in person order —
+    not one person at a time, the way yours takes an `i`.
+    ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#transitivity_local_undirected))
+
+    `mode="zero"` is the part worth knowing. Somebody with fewer than two
+    friends has no pairs, so $C_i$ is a fraction with nothing underneath it.
+    Left alone igraph hands back `nan` for those people; `mode="zero"` says to
+    call it 0 instead, which is the choice your own function makes on its
+    `k < 2` line.
+
+    **Run the cell below** and read it against your own answers underneath.
+    """)
+    return
+
+
+@app.cell
+def _():
+    # ▶ Try it. Change the town if you like — DEMO_EDGES is the seven-person
+    #   one drawn above, and ring_edges(16, 2) is your Ringville.
+    g_clust = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+    g_clust.transitivity_local_undirected(mode="zero")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+    _theirs = _g.transitivity_local_undirected(mode="zero")
+    _A = plain_adjacency(DEMO_EDGES, DEMO_N)
+    try:
+        _yours = [float(local_clustering(_A, i)) for i in range(DEMO_N)]
+    except Exception:
+        _yours = None
+    if _yours is None:
+        _out = note(
+            "igraph's answer is above. Yours will appear beside it once the two "
+            "blanks in <code>local_clustering</code> are filled in.",
+            INK,
+        )
+    else:
+        _rows = "".join(
+            f'<tr><td style="padding:2px 14px 2px 0;opacity:0.55">person {i}'
+            "</td>"
+            f'<td style="padding:2px 14px 2px 0">yours '
+            f'<b style="color:{BLUE}">{_yours[i]:.3f}</b></td>'
+            f'<td style="padding:2px 14px 2px 0">igraph '
+            f'<b style="color:{BLUE}">{_theirs[i]:.3f}</b></td>'
+            f'<td style="padding:2px 0;color:'
+            f'{BLUE if abs(_yours[i] - _theirs[i]) < 1e-9 else RUST}">'
+            f'{"✓" if abs(_yours[i] - _theirs[i]) < 1e-9 else "✗"}</td></tr>'
+            for i in range(DEMO_N)
+        )
+        _same = all(abs(a - b) < 1e-9 for a, b in zip(_yours, _theirs))
+        _out = mo.vstack(
+            [
+                mo.Html(
+                    f'<table style="font-family:{SANS};font-size:15px;'
+                    f'border-collapse:collapse">{_rows}</table>'
+                ),
+                note(
+                    "<b>Same seven numbers.</b> Which is the point: the library "
+                    "is not doing anything you have not just done by hand, it is "
+                    "only doing it for the whole town in one line."
+                    if _same
+                    else "Your loop and igraph disagree, so one of them is not "
+                    "counting what you think. Go back to the picture above and "
+                    "count one person's dashed and solid lines by eye.",
+                    BLUE if _same else RUST,
+                ),
+            ]
+        )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
     if not (town_ready(ring_edges) and clustering_ready(local_clustering)):
         _out = WAITING
     else:
