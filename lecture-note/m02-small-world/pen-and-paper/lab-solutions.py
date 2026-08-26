@@ -1370,9 +1370,14 @@ def _():
     $$\sigma = \frac{C / C_{\text{rand}}}{L / L_{\text{rand}}},$$
 
     where the *rand* pair are what the same friendships would give if they were
-    thrown in a hat: $C_{\text{rand}} = k/n$ and $L_{\text{rand}} = \ln n / \ln
-    k$. More clustered than a hat-drawn town, and no further across, means
-    $\sigma > 1$.
+    thrown in a hat:
+
+    $$C_{\text{rand}} = \frac{k}{n-1} \approx \frac{k}{n},
+    \qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
+
+    More clustered than a hat-drawn town, and no further across, means
+    $\sigma > 1$. Neither of those two is a definition — both are worked out
+    below, and both come out of one sentence each.
 
     Below, **your** two functions compute $\sigma$ for a plain ring — one
     thousand people, four friends each, and **not one shortcut anywhere**. Drag
@@ -1382,6 +1387,75 @@ def _():
     test an index on: at n = 16 every town in this module scores about 1.5 and
     nothing can be told apart. That is worth knowing on its own.)*
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.accordion(
+        {
+            "Where $C_{\\text{rand}}$ comes from": mo.md(
+                r"""
+Throwing the same friendships in a hat means one thing: each of the
+$\binom{n}{2}$ possible pairs is a friendship with the same probability $p$,
+decided independently of every other pair.
+
+**First, what $p$ is.** Each person has $n-1$ people they could be friends
+with, and each one becomes a friend with probability $p$. So the average number
+of friends is
+
+$$k = p\,(n - 1) \qquad\Longrightarrow\qquad p = \frac{k}{n - 1}.$$
+
+**Then the clustering.** Take person $i$ and two of their friends, $a$ and
+$b$. Are $a$ and $b$ friends? That pair had its own coin flipped, and the fact
+that both of them landed on $i$ says nothing about it — the flips do not talk
+to each other. So they are friends with probability $p$, like any other pair.
+$C_i$ counts the fraction of $i$'s friend-pairs who are friends, and every one
+of those pairs is a $p$, so
+
+$$C_{\text{rand}} = p = \frac{k}{n - 1}.$$
+
+The `k / (n - 1)` in the kit's `measure()` is that line. Textbooks usually
+write $k/n$, which is the same number once $n$ is large.
+
+Worth noticing what it does **not** contain: any mention of who your friends
+are. That is what "no structure" means. And with $k$ held fixed while $n$
+grows, $C_{\text{rand}} \to 0$ — a hat-drawn town of a million people has
+essentially no triangles, and that is the fact $\sigma$ leans on.
+"""
+            ),
+            "Where $L_{\\text{rand}}$ comes from": mo.md(
+                r"""
+This one you have already drawn. It is the tree in Question 7(a) on the sheet.
+
+Stand on one person. About $k$ people are one handshake away. Each of those has
+about $k$ friends of their own, so about $k^2$ people are two handshakes away,
+then $k^3$, and so on:
+
+$$\text{people within } d \text{ handshakes} \;\approx\; k^{d}.$$
+
+You have reached the whole town when that tower has covered it. Call the
+handshake count where that happens $L$:
+
+$$k^{L} \approx n
+\qquad\Longrightarrow\qquad L \ln k \approx \ln n
+\qquad\Longrightarrow\qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
+
+**The assumption is Question 7(b).** Every branch of that tree was assumed to
+land on somebody nobody has reached yet. In a town with any clustering it does
+not — friends of your friends are often each other, so branches double back
+onto people already in the tree. $k^{d}$ therefore overestimates the reach, and
+$\ln n / \ln k$ underestimates the real distance.
+
+The *shape* survives the objection, and the shape is the point: distance grows
+like $\ln n$, not like $n$. Put the numbers in and you get six degrees —
+eight billion people at $k = 150$ gives $\ln(8 \times 10^{9}) / \ln 150
+\approx 4.5$. Ringville's $n/8$ is what it looks like when a town has no
+shortcuts at all.
+"""
+            ),
+        }
+    )
     return
 
 

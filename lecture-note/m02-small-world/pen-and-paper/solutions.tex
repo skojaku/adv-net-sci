@@ -354,6 +354,24 @@ C = \tfrac12, \qquad L \approx \tfrac{n}{8}, \qquad
 C_{\text{rand}} = \tfrac{k}{n}, \qquad
 L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}
 \]
+
+{\bf Where the two random-town numbers come from}, since the notebook derives
+them and the question may come back. Throwing the same friendships in a hat
+means every pair is a friendship with the same probability $p$, decided on its
+own. Each person has $n-1$ people they could befriend, so $k = p\,(n-1)$ and
+$p = k/(n-1)$, which is $k/n$ once $n$ is large. Two of your friends are a pair
+like any other --- their coin knows nothing about having landed on you --- so
+$C_{\text{rand}} = \mans{p}$. It does not mention who your friends are, and
+that is what having no structure means.
+
+$L_{\text{rand}}$ is the tree of 7(a). About $k$ people are one handshake away
+and $k^2$ are two away, so $k^L \approx n$, and taking logs gives
+$\mans{L_{\text{rand}} \approx \ln n / \ln k}$. Question 7(b) is exactly this
+derivation's false assumption: branches that double back onto people already in
+the tree make $k^d$ an overestimate of the reach, so $\ln n/\ln k$ is an
+\emph{under}estimate of the real distance. The shape is right even so, and the
+shape is the point --- $\ln n$, not $n$. Eight billion people at $k = 150$
+gives $\ln(8\times 10^9)/\ln 150 \approx \ans{4.5}$, which is six degrees.
 \[
 \frac{C}{C_{\text{rand}}} = \frac{n}{8}, \qquad
 \frac{L}{L_{\text{rand}}} = \frac{n}{8}\cdot\frac{\ln k}{\ln n}, \qquad
