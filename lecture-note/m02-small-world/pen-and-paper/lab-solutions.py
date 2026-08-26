@@ -651,8 +651,8 @@ def _():
 
     # 3 · Count the handshakes
 
-You will not implement the search. Shortest paths are computed by **igraph**,
-    which is the library this course uses throughout.
+    You will not implement the search. Shortest paths are computed by
+    **igraph**, which is the library this course uses throughout.
 
     igraph stores a network and computes standard quantities on it: shortest
     path lengths, degrees, connected components, centralities, clustering. The
@@ -679,8 +679,13 @@ def _():
     g = igraph.Graph(n=7, edges=[(0, 1), (0, 2), (1, 2), ...])
     ```
 
-    `n` has to be there. Without it igraph sizes the town from the pairs it can
-    see, so a person with no friends at all would quietly vanish.
+    `n` has to be there. Without it igraph takes the number of people from the
+    pairs it can see, and a person who appears in no pair is left out of the
+    network entirely.
+
+    Three things a graph will tell you: `g.vcount()` the number of people,
+    `g.ecount()` the number of friendships, `g.neighbors(i)` person `i`'s
+    friends.
     """)
     return
 
@@ -704,6 +709,34 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
+    **Your turn — the cell below is empty and runs.** Build the graph and try
+    the three calls. Then change something and see what changes:
+
+    1. `g.neighbors(3)` — check what comes back against the drawing above.
+       Then try person 5, and person 0.
+    2. Build `igraph.Graph(edges=[(0, 1), (0, 2)])` with **no** `n=`, and read
+       `g.vcount()`. It is 3, not 7: igraph only knows about people it saw in
+       a pair. Add `n=7` and it becomes 7, with four people who have no
+       friends. That is why `n` is passed everywhere in this notebook.
+    3. `igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)])` — the pair
+       `(0, 1)` is now in the list twice. `g.ecount()` returns 10, not 9:
+       igraph keeps both copies. A graph with no repeated pair and no
+       self-pair is called a *simple graph*, and igraph does not enforce it.
+    """)
+    return
+
+
+@app.cell
+def _():
+    # ▶ Yours. Nothing here is checked or marked — change it and re-run.
+
+
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
     ### Step 2 — the graph is asked for handshake counts
 
     ```python
@@ -716,15 +749,25 @@ def _():
     row, so `[0]` on the end is what gets you the row itself.
     ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#distances))
 
-    **This next cell is a real one, and it is yours.** Change the `0`, run it,
-    and check the answer against the picture underneath with your own finger.
+    **The next cell is empty of checks and yours to change.** Set `source`,
+    run it, and the drawing underneath redraws for whoever you picked. Three
+    things to try:
+
+    1. Set `source = 5`. Person 0 should come back 4. Count the edges along a
+       shortest path from 5 to 0 on the drawing and confirm it.
+    2. Set `source = 3`. The largest value in the row drops to 2 — person 3
+       sits between the two halves of this network, and no one is further than
+       2 away. Compare that row with the one for `source = 0`.
+    3. Set `source = 7`. There is no person 7 in a 7-person network, and
+       igraph raises an error rather than returning something. Set it back
+       afterwards.
     """)
     return
 
 
 @app.cell
 def _():
-    # ▶ Try it. Change source to any person from 0 to 6 and run the cell.
+    # ▶ Yours. Change source and re-run; the drawing below follows it.
     source = 0
 
     g_demo = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
@@ -1157,22 +1200,30 @@ def _():
     not one person at a time, the way yours takes an `i`.
     ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#transitivity_local_undirected))
 
-`mode="zero"` sets the convention for $k_i < 2$. Such a person has no pairs
-    of friends, so $\binom{k_i}{2} = 0$ and $C_i$ is undefined. igraph returns
+    `mode="zero"` sets the convention for $k_i < 2$. Such a person has no
+    pairs of friends, so $\binom{k_i}{2} = 0$ and $C_i$ is undefined. igraph returns
     `nan` for them by default; `mode="zero"` returns 0 instead, which is the
     convention your own function uses on its `k < 2` line.
 
-    **Run the cell below.** It returns the same seven values your own loop
-    was checked against, computed for all vertices in one call rather than one
-    vertex at a time.
+    **The next cell is yours.** It returns the same seven values your own loop
+    was checked against, computed for all vertices in one call. Two things to
+    try:
+
+    1. Swap the town for Ringville:
+       `igraph.Graph(n=16, edges=ring_edges(16, 2))`. Every value comes back
+       0.5, which is Question 5(a) — a ring lattice has the same $C_i$ at
+       every person, and it does not depend on `n`. Change 16 to 10000 and
+       the values do not move.
+    2. Drop `mode="zero"` on a network where somebody has fewer than two
+       friends — `igraph.Graph(n=3, edges=[(0, 1)])` — and you get `nan`
+       instead of 0.
     """)
     return
 
 
 @app.cell
 def _():
-    # ▶ Try it. Change the town if you like — DEMO_EDGES is the seven-person
-    #   one drawn above, and ring_edges(16, 2) is your Ringville.
+    # ▶ Yours. Change the network and re-run; nothing here is marked.
     g_clust = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
     g_clust.transitivity_local_undirected(mode="zero")
     return
