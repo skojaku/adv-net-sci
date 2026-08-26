@@ -298,9 +298,8 @@ exactly what makes six degrees hard.
 
 \parthead{5}{The lab}
 
-Three functions, and everything else in the notebook runs off them. Everything
-below except the five lines marked \verb|<--| is already on their screen; those
-five are the whole of the typing.
+Two functions and one open-ended cell. Everything below except the lines
+marked \verb|<--| is already on their screen.
 
 \begin{verbatim}
 def ring_edges(n, half):
@@ -311,29 +310,40 @@ def ring_edges(n, half):
             edges.append((i, j))
     return edges
 
-def distances_from(edges, n, s):
-    g = igraph.Graph(n=n, edges=edges)     <--
-    return g.distances(source=s)[0]        <--
-
-def local_clustering(A, i):
-    nbrs = np.flatnonzero(A[i])
+def local_clustering(g, i):
+    nbrs = g.neighbors(i)
     k = len(nbrs)
     if k < 2:
         return 0.0
     links = 0
-    for a, b in itertools.combinations(nbrs, 2):
-        if A[a, b]:                        <--
-            links += 1
+    for x in range(k):
+        for y in range(x + 1, k):
+            a, b = nbrs[x], nbrs[y]
+            if g.are_adjacent(a, b):       <--
+                links += 1
     pairs = k * (k - 1) / 2                <--
     return links / pairs
 \end{verbatim}
 
-Nobody writes a breadth-first search. The notebook teaches
-\verb|igraph.Graph(n=..., edges=...)| and then
-\verb|g.distances(source=s)| on the seven-person town first, and the blank is
-those same two lines on a town it is handed. The one thing that catches people
-is the \verb|[0]|: \verb|distances| takes several starting people, so it always
-answers with a list of rows, and only one of them is theirs.
+Nobody writes a breadth-first search, and nobody wraps igraph in a function
+either --- the wrapper is two lines that are trivial once the API has been
+seen. Section 3 teaches \verb|igraph.Graph(n=..., edges=...)| and
+\verb|g.distances(source=s)| on the seven-person network, with cells to
+experiment in. Question 1(c) is then set as an empty cell: compute Ringville's
+three numbers with igraph and put them in three variables, marked against
+answers the notebook keeps hidden.
+
+\begin{verbatim}
+g = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+counts = g.distances(source=0)[0]
+
+answer_total   = sum(counts)
+answer_average = sum(counts) / (TOWN_N - 1)
+answer_worst   = max(counts)
+\end{verbatim}
+
+The one thing that catches people is the \verb|[0]|: \verb|distances| accepts
+several sources, so it always returns a list of rows.
 
 Run on the sheet's town they give \ans{36 / 2.4 / 4} and \ans{0.5} for every
 person, which are Question 1(c) and the darkened pairs in Part 3 again, out of

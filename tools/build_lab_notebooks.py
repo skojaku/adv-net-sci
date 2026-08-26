@@ -160,13 +160,6 @@ M02 = [
         """            j = (i + d) % n  # ONE answer of several; `if j >= n: j -= n` is
                              # the same thing said longer, and is as good""",
     ),
-    # No breadth-first search any more: igraph, in the two steps taught above.
-    (
-        """    g = ...  # ✍️ replace the ... — step 1, a graph of n people with these edges
-    return ...  # ✍️ replace the ... — step 2, the counts out of person s""",
-        """    g = igraph.Graph(n=n, edges=edges)
-    return g.distances(source=s)[0]  # [0] because only one source was asked""",
-    ),
     # Question 1(c) with igraph, written from nothing. The marking cell holds
     # no answer of its own -- it compares against Q1C in the hidden kit -- so
     # this is the only place the worked code exists.
@@ -186,7 +179,7 @@ M02 = [
     # The fraction of a person's friend-pairs who are friends.
     (
         """            if ...:  # ✍️ replace the ... — are a and b friends with each other?""",
-        """            if A[a, b]:  # 1 when they are friends, 0 when they are not""",
+        """            if g.are_adjacent(a, b):  # True when a and b are friends""",
     ),
     (
         """    pairs = ...  # ✍️ replace the ... — how many pairs do k friends make?""",

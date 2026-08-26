@@ -27,14 +27,18 @@
 #     The page does NOT say to use `%`. It says j runs off the end of the
 #     circle and has to come back to the beginning, and that there is more than
 #     one way to do that; the modulo is one answer, not the answer.
-#   * distances_from -- no breadth-first search. igraph is taught in two steps
-#     on the small town first (edge list -> Graph, then .distances(source=s)),
-#     with a live cell whose `source` the student changes and checks against
-#     the drawing, and the blank is those two lines on a town it is handed.
-#   * local_clustering -- the loop over pairs is given, and it uses
-#     two plain loops rather than a numpy fancy-index square, with the inner
-#     one starting at x + 1 so each pair comes up once and there is no
-#     double-counting trap to fall into and climb out of.
+#   * shortest paths -- nobody writes a search, and nobody wraps igraph in a
+#     function either: the wrapper is two lines that are trivial once you have
+#     seen the API, and section 3 has just shown it. igraph is taught there on
+#     the small network (edge list -> Graph, then .distances(source=s)) with
+#     cells to experiment in, and the exercise is Question 1(c): compute
+#     Ringville's three numbers with igraph, from an empty cell, marked
+#     against answers held in the hidden kit.
+#   * local_clustering -- takes the igraph graph, not an adjacency matrix, so
+#     the neighbours come from g.neighbors(i) and there is no np.flatnonzero
+#     to decode. Two plain loops rather than a numpy fancy-index square, with
+#     the inner one starting at x + 1 so each pair comes up once and there is
+#     no double-counting trap. The blank is g.are_adjacent(a, b).
 #
 # Three rules the file obeys, the first two learned the hard way on m01:
 #
@@ -87,14 +91,11 @@ with app.setup(hide_code=True):
     SANS = "system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
     WOBBLE = "7px 4px 8px 5px / 5px 8px 4px 7px"
 
-    # The sheet's town. Sixteen chairs, everybody friends with the two on each
-    # side; the two shortcuts are the ones that came home from college. The
-    # sheet numbers the chairs 1 to 16 and Python numbers them 0 to 15, so
-    # everything here is one lower than the drawing -- said out loud in the
-    # notebook, because it is the way to get a right answer and read it wrong.
+    # The sheet's town: sixteen chairs, everybody friends with the two on each
+    # side. The sheet numbers the chairs 1 to 16 and Python numbers them 0 to
+    # 15, so every label here is one lower than the one on the drawing.
     TOWN_N = 16
     TOWN_HALF = 2
-    TOWN_SHORTCUTS = [(0, 8), (4, 12)]
 
     # Question 1(c)'s three answers -- total, average, worst case -- for marking
     # the cell that asks a student to compute them with igraph. They live in
@@ -370,30 +371,27 @@ with app.setup(hide_code=True):
 
     # ---- what the town's numbers are, once your functions exist -------------
 
-    def mean_distance(A, fn, cap=40, seed=0):
-        """Average handshakes over every pair, using YOUR distances_from.
+    def mean_distance(A, cap=40, seed=0):
+        """Average shortest path length over every reachable pair, via igraph.
 
         Above `cap` people it averages over `cap` starting points rather than
-        all of them, so the dial below stays a dial and not a progress bar.
+        all of them, so the dial below stays responsive.
         """
         n = len(A)
         if n <= cap:
-            sources = range(n)
+            sources = [int(x) for x in range(n)]
         else:
-            sources = np.random.default_rng(seed).choice(n, cap, replace=False)
-        edges = edges_of(A)
-        tot, cnt = 0.0, 0
-        for s in sources:
-            d = np.asarray(fn(edges, n, int(s)), dtype=float)
-            # Rewiring can cut a town in two, and igraph scores an unreachable
-            # person `inf`. Those pairs are left out rather than averaged in.
-            reached = d[np.isfinite(d) & (d > 0)]
-            tot += float(reached.sum())
-            cnt += int(reached.size)
-        return tot / cnt if cnt else float("inf")
+            sources = [int(x) for x in np.random.default_rng(seed).choice(n, cap, replace=False)]
+        g = igraph.Graph(n=n, edges=edges_of(A))
+        d = np.asarray(g.distances(source=sources), dtype=float)
+        # Rewiring can disconnect the network, and igraph returns inf for an
+        # unreachable pair. Those pairs are excluded rather than averaged in.
+        reached = d[np.isfinite(d) & (d > 0)]
+        return float(reached.sum()) / int(reached.size) if reached.size else float("inf")
 
     def mean_clustering(A, fn):
-        return float(np.mean([fn(A, i) for i in range(len(A))]))
+        g = igraph.Graph(n=len(A), edges=edges_of(A))
+        return float(np.mean([fn(g, i) for i in range(len(A))]))
 
     from collections import namedtuple
 
@@ -401,7 +399,7 @@ with app.setup(hide_code=True):
         "Measured", "n k C L C_rand L_rand C_latt L_latt"
     )
 
-    def measure(A, C_fn, L_fn, seed=0):
+    def measure(A, C_fn, seed=0):
         """The six numbers a small-world test can be built out of, all of them
         computed with your two functions."""
         n = len(A)
@@ -411,11 +409,11 @@ with app.setup(hide_code=True):
             n=n,
             k=k,
             C=mean_clustering(A, C_fn),
-            L=mean_distance(A, L_fn, seed=seed),
+            L=mean_distance(A, seed=seed),
             C_rand=k / (n - 1),
             L_rand=math.log(n) / math.log(k),
             C_latt=mean_clustering(R, C_fn),
-            L_latt=mean_distance(R, L_fn, seed=seed),
+            L_latt=mean_distance(R, seed=seed),
         )
 
     def sigma(m):
@@ -431,18 +429,11 @@ with app.setup(hide_code=True):
             return False
         return got == sorted({tuple(sorted(e)) for e in kit_ring(8, 2)})
 
-    def distances_ready(fn):
-        try:
-            got = np.asarray(fn(DEMO_EDGES, DEMO_N, 0), dtype=float)
-        except Exception:
-            return False
-        want = kit_distances(plain_adjacency(DEMO_EDGES, DEMO_N), 0).astype(float)
-        return got.shape == want.shape and bool(np.array_equal(got, want))
-
     def clustering_ready(fn):
         A = plain_adjacency(DEMO_EDGES, DEMO_N)
+        g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
         try:
-            got = [round(float(fn(A, i)), 6) for i in range(DEMO_N)]
+            got = [round(float(fn(g, i)), 6) for i in range(DEMO_N)]
         except Exception:
             return False
         return got == [round(kit_local_clustering(A, i), 6) for i in range(DEMO_N)]
@@ -551,14 +542,14 @@ def _():
 
 @app.function
 def ring_edges(n, half):
-    """Every friendship in a circle of n people with `half` friends each side.
+    """Edge list of a ring lattice: n people in a circle, each joined to the
+    `half` people on either side of them.
 
-    n     how many people sit in the circle. Ringville has n = 16.
-    half  how many friends each person has on ONE side. Ringville has
-          half = 2, which is why everybody there ends up with 4 friends:
-          two clockwise and two anticlockwise.
+    n     number of people in the circle. Ringville has n = 16.
+    half  number of friends on ONE side. Ringville has half = 2, so each
+          person ends up with 4 friends: two clockwise, two anticlockwise.
 
-    Returns a list of (i, j) pairs.
+    Returns a list of n * half pairs (i, j).
     """
     edges = []
     for i in range(n):                  # each person in turn
@@ -701,8 +692,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    **Your turn — the cell below is empty and runs.** Build the graph and try
-    the three calls. Then change something and see what changes:
+    **Your turn.** The cell below builds `g` from the seven-person network and
+    calls `g.neighbors(3)`. Change either line and re-run — the first exercise
+    changes the call, the other two change the graph:
 
     1. `g.neighbors(3)` — check what comes back against the drawing above.
        Then try person 5, and person 0.
@@ -721,8 +713,9 @@ def _():
 @app.cell
 def _():
     # ▶ Yours. Nothing here is checked or marked — change it and re-run.
+    g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
 
-
+    g.neighbors(3)
     return
 
 
@@ -798,84 +791,6 @@ def _():
         "distances the slider showed in section 1, computed the same way.",
         BLUE,
     )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ### ✍️ Now the two lines, for any town
-
-    Step 1 then step 2, on whatever town it is handed.
-    """)
-    return
-
-
-@app.function
-def distances_from(edges, n, s):
-    """How many handshakes from person s to everybody else.
-
-    edges  the town's friendships, a list of (i, j) pairs.
-    n      how many people are in the town.
-    s      the person to count from.
-
-    Returns a LIST of n numbers, one per person, in order: the first is the
-    count to person 0, the second to person 1, and so on. Person s gets 0,
-    being already there.
-
-    For the seven-person town above, counting from person 0, the list is
-
-        [0, 1, 1, 2, 3, 4, 4]
-
-    which reads: person 1 is one handshake away, person 3 is two away, and
-    persons 5 and 6 are four away.
-    """
-    import igraph
-
-    g = ...  # ✍️ replace the ... — step 1, a graph of n people with these edges
-    return ...  # ✍️ replace the ... — step 2, the counts out of person s
-
-
-@app.cell(hide_code=True)
-def _():
-    # Checked on the small town, not on Ringville: a row of sixteen right
-    # answers sitting here is Question 1(b) filled in for them.
-    _A = plain_adjacency(DEMO_EDGES, DEMO_N)
-    _want = kit_distances(_A, 0).astype(float)
-    try:
-        _got = np.asarray(distances_from(DEMO_EDGES, DEMO_N, 0), dtype=float)
-    except Exception:
-        _got = None
-    _ok = _got is not None and _got.shape == _want.shape and np.array_equal(_got, _want)
-    if _ok:
-        _msg = (
-            "<b>Correct on the small town</b> — the same waves the slider drew."
-        )
-    elif _got is None:
-        _msg = (
-            "Not yet — the two lines are still <code>...</code>. Step 1 is "
-            "<code>igraph.Graph(n=..., edges=...)</code>, step 2 is "
-            "<code>g.distances(source=...)</code>."
-        )
-    elif _got.ndim == 2:
-        _msg = (
-            "Not yet — you have handed back the <b>list of rows</b>, not the "
-            "row. That is the <code>[0]</code> on the end of "
-            "<code>g.distances(source=s)</code>."
-        )
-    elif not np.all(np.isfinite(_got)):
-        _msg = (
-            "Not yet — some people came back <code>inf</code>, meaning igraph "
-            "could not reach them at all. The small town is in one piece, so "
-            "the friendships did not all arrive: check that <code>edges</code> "
-            "is what you passed to <code>igraph.Graph</code>."
-        )
-    else:
-        _msg = (
-            f"Not yet — you get <code>{[int(v) for v in _got]}</code> where the "
-            f"slider drew <code>{[int(v) for v in _want]}</code>."
-        )
-    verdict(_ok, _msg, _msg)
     return
 
 
@@ -976,72 +891,6 @@ def _(answer_average, answer_total, answer_worst):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### And Question 3 — what two shortcuts did
-
-    Nothing to write here. The same three numbers, computed on Ringville and
-    then on Ringville with the two friendships of Part 2 added.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    if not (town_ready(ring_edges) and distances_ready(distances_from)):
-        _out = WAITING
-    else:
-        _base = list(ring_edges(TOWN_N, TOWN_HALF))
-        _cards = []
-        for _title, _edges in [
-            ("Part 1 · Ringville", _base),
-            ("Part 2 · with the shortcuts", _base + TOWN_SHORTCUTS),
-        ]:
-            _d = np.asarray(distances_from(_edges, TOWN_N, 0), dtype=float)
-            _tot = int(_d[_d > 0].sum())
-            _cards.append(
-                mo.Html(
-                    f'<div style="font-family:{SANS};padding-right:30px">'
-                    f'<div style="font-size:12px;opacity:0.55;font-weight:700">'
-                    f"{_title.upper()}</div>"
-                    + big("total", _tot)
-                    + f'<div style="font-size:16px;color:{INK}">average '
-                    f'<b style="color:{BLUE}">{_tot / (TOWN_N - 1):.1f}</b>'
-                    "&nbsp;&nbsp; worst case "
-                    f'<b style="color:{BLUE}">{int(_d.max())}</b>'
-                    f'<div style="opacity:0.6;font-size:14px;margin-top:4px">'
-                    "furthest away: "
-                    f"{sorted(int(i) for i in np.flatnonzero(_d == _d.max()))}</div>"
-                    "</div></div>"
-                )
-            )
-        _out = mo.vstack(
-            [
-                mo.hstack(_cards, widths=[1, 1], align="start"),
-                mo.Html(
-                    ring_svg(
-                        TOWN_N,
-                        _base + TOWN_SHORTCUTS,
-                        extra=TOWN_SHORTCUTS,
-                        size=300,
-                    )
-                ),
-                note(
-                    "Two friendships were added to thirty-two, an increase of "
-                    "6.25%, and the average count fell from 2.4 to 1.8, a "
-                    "decrease of 25%. The <i>furthest away</i> line changes as "
-                    "well: three people are at the maximum before the "
-                    "shortcuts, two after, and those two are the ones neither "
-                    "shortcut touches.",
-                    BLUE,
-                ),
-            ]
-        )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
     ---
 
     # 4 · Pairs of friends, in the small town
@@ -1107,27 +956,33 @@ def _():
 
     The two loops over the pairs are written for you. The inner one starts at
     `x + 1` rather than at 0, which is what makes each pair come up exactly
-    once — one turn of the loop per dashed line in the picture, and no pair
+    once — one turn of the loop per dashed line in the drawing, and no pair
     seen twice. **Two lines are yours.**
 
-    `A` is the town's friendship table: `A[a, b]` is `1` when `a` and `b` are
-    friends and `0` when they are not.
+    The function is handed `g`, an igraph graph, so `g.neighbors(i)` gives the
+    list of `i`'s friends. One more igraph call is all the first blank needs:
+
+    ```python
+    g.are_adjacent(a, b)   # True when a and b are friends
+    ```
     """)
     return
 
 
 @app.function
-def local_clustering(A, i):
-    """The fraction of person i's friend-pairs who are friends with each other.
+def local_clustering(g, i):
+    """Local clustering coefficient of person i: the fraction of pairs among
+    i's friends that are themselves friendships.
 
-    A  the town's friendship table. A[a, b] is 1 when a and b are friends.
-    i  the person to look at.
+    g  an igraph graph.
+    i  the person to measure.
+
+    Returns a float between 0 and 1, and 0.0 when i has fewer than two
+    friends.
     """
-    import numpy as np
-
-    nbrs = np.flatnonzero(A[i])       # everybody i is friends with
+    nbrs = g.neighbors(i)              # the list of people i is friends with
     k = len(nbrs)
-    if k < 2:                         # fewer than two friends, so no pairs
+    if k < 2:                          # fewer than two friends, so no pairs
         return 0.0
 
     links = 0
@@ -1146,7 +1001,8 @@ def _():
     _A = plain_adjacency(DEMO_EDGES, DEMO_N)
     _want = [round(kit_local_clustering(_A, i), 4) for i in range(DEMO_N)]
     try:
-        _got = [round(float(local_clustering(_A, i)), 4) for i in range(DEMO_N)]
+        _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+        _got = [round(float(local_clustering(_g, i)), 4) for i in range(DEMO_N)]
     except Exception:
         _got = None
     _ok = _got == _want
@@ -1251,7 +1107,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(dial):
-    if not (distances_ready(distances_from) and clustering_ready(local_clustering)):
+    if not clustering_ready(local_clustering):
         _out = WAITING
     else:
         _n = 40
@@ -1261,7 +1117,7 @@ def _(dial):
             {tuple(sorted(e)) for e in _edges}
             - {tuple(sorted(e)) for e in kit_ring(_n, 2)}
         )
-        _L = mean_distance(_A, distances_from)
+        _L = mean_distance(_A)
         _C = mean_clustering(_A, local_clustering)
         _out = two_col(
             ring_svg(_n, _edges, size=300, labels=False, extra=_moved),
@@ -1291,20 +1147,20 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    if not (distances_ready(distances_from) and clustering_ready(local_clustering)):
+    if not clustering_ready(local_clustering):
         _out = WAITING
     else:
         _n, _reps = 500, 2
         _ps = [0.0004 * (2500 ** (k / 13)) for k in range(14)]
         _A0 = plain_adjacency(kit_ring(_n, 2), _n)
-        _L0 = mean_distance(_A0, distances_from)
+        _L0 = mean_distance(_A0)
         _C0 = mean_clustering(_A0, local_clustering)
         _Ls, _Cs = [], []
         for _p in _ps:
             _l, _c = [], []
             for _r in range(_reps):
                 _Ap = plain_adjacency(watts_strogatz(_n, 2, _p, seed=100 * _r + 3), _n)
-                _l.append(mean_distance(_Ap, distances_from))
+                _l.append(mean_distance(_Ap))
                 _c.append(mean_clustering(_Ap, local_clustering))
             _Ls.append(float(np.mean(_l)) / _L0)
             _Cs.append(float(np.mean(_c)) / _C0)
@@ -1468,12 +1324,12 @@ def _():
 
 @app.cell(hide_code=True)
 def _(nslider):
-    if not (distances_ready(distances_from) and clustering_ready(local_clustering)):
+    if not clustering_ready(local_clustering):
         _out = WAITING
     else:
         _n = nslider.value
         _m = measure(
-            plain_adjacency(kit_ring(_n, 2), _n), local_clustering, distances_from
+            plain_adjacency(kit_ring(_n, 2), _n), local_clustering
         )
         _s = sigma(_m)
         _out = mo.vstack(
@@ -1568,14 +1424,14 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    if not (distances_ready(distances_from) and clustering_ready(local_clustering)):
+    if not clustering_ready(local_clustering):
         _out = WAITING
     else:
         _ns = [100, 200, 400, 800, 1600, 3200]
         _meas, _pred = [], []
         for _n in _ns:
             _m = measure(
-                plain_adjacency(kit_ring(_n, 2), _n), local_clustering, distances_from
+                plain_adjacency(kit_ring(_n, 2), _n), local_clustering
             )
             _meas.append(sigma(_m))
             _pred.append(math.log(_n) / math.log(4))
@@ -1656,7 +1512,7 @@ def my_index(m):
 
 @app.cell(hide_code=True)
 def _():
-    if not (distances_ready(distances_from) and clustering_ready(local_clustering)):
+    if not clustering_ready(local_clustering):
         _out = WAITING
     else:
 
@@ -1664,7 +1520,7 @@ def _():
             return float(
                 my_index(
                     measure(
-                        plain_adjacency(edges, n), local_clustering, distances_from
+                        plain_adjacency(edges, n), local_clustering
                     )
                 )
             )
