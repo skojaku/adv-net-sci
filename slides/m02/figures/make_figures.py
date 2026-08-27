@@ -2164,6 +2164,16 @@ def fig_ring_lattice():
     return s
 
 
+def fig_ringville():
+    """The worksheet's town, with nothing measured on it yet.
+
+    Deliberately unannotated: it goes on the slide that hands out the sheet, and the
+    sheet's first four questions are the distances and the clustering.  `ring-lattice`
+    prints C-bar on the same drawing, which is one of those answers.
+    """
+    return _ring()
+
+
 RING_FAR = nx.shortest_path(_R16, 0, RING_N // 2)
 assert len(RING_FAR) - 1 == RING_DIA
 
@@ -3060,6 +3070,7 @@ FIGURES = [
     ("sigma-def", fig_sigma_def, "col"),
     ("ws1998-dots", fig_ws1998_dots, "full"),
     ("ws1998-sigma", fig_ws1998_sigma, "full"),
+    ("ringville", fig_ringville, "col"),
     ("ring-lattice", fig_ring_lattice, "col"),
     ("ring-distance", fig_ring_distance, "col"),
     ("random-graph", fig_random_graph, "col"),
