@@ -166,8 +166,8 @@ Milgram measured a median chain length; Guare supplied the slogan.
 </div>
 <div class="fig">
 
-![w:520](figures/six-degrees-timeline.png)
-<figcaption>twenty-three years separate the experiment from the phrase</figcaption>
+![w:520](figures/six-degrees-poster.jpg)
+<figcaption>the 1993 film adaptation of Guare’s play</figcaption>
 
 </div>
 </div>

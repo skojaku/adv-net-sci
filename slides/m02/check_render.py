@@ -8,6 +8,8 @@ run(
     deck="m02-small-world.md",
     node_fills=[(0x39, 0x59, 0xA6)],
     fig_h={"": 380, "tight": 320, "stack": 190},
-    exempt_figures=["konigsberg-map.png"],
+    # Photographs. The aspect and x-height checks both measure how far a
+    # *generated* drawing's type has been scaled, which a film poster does not have.
+    exempt_figures=["konigsberg-map.png", "six-degrees-poster.jpg"],
     content_bottom=660,
 )
