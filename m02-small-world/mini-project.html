@@ -9,7 +9,7 @@
 <meta name="author" content="Sadamori Kojaku">
 <meta name="dcterms.date" content="2026-09-01">
 
-<title>Exercises and Assignments – Advanced Topics in Network Science</title>
+<title>Advanced Topics in Network Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -28,26 +28,42 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
 }
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -57,8 +73,6 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m02-small-world/04-appendix.html" rel="next">
-<link href="../m02-small-world/02-coding.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -268,7 +282,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Advanced Topics in Network Science</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -405,13 +419,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">M02: Small World</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m02-small-world/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -426,7 +440,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link active">
+  <a href="../m02-small-world/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
@@ -699,22 +713,24 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#in-the-lecture-discover-it-yourself" id="toc-in-the-lecture-discover-it-yourself" class="nav-link active" data-scroll-target="#in-the-lecture-discover-it-yourself">In the Lecture: Discover It Yourself</a></li>
-  <li><a href="#after-the-lecture-break-it" id="toc-after-the-lecture-break-it" class="nav-link" data-scroll-target="#after-the-lecture-break-it">After the Lecture: Break It</a></li>
-  <li><a href="#assignments" id="toc-assignments" class="nav-link" data-scroll-target="#assignments">Assignments</a>
+  <li><a href="#mini-project-how-small-is-a-small-world" id="toc-mini-project-how-small-is-a-small-world" class="nav-link active" data-scroll-target="#mini-project-how-small-is-a-small-world">Mini Project — How small is a small world?</a>
   <ul class="collapse">
-  <li><a href="#pair-notebook" id="toc-pair-notebook" class="nav-link" data-scroll-target="#pair-notebook">Pair Notebook</a></li>
-  <li><a href="#group-mini-project" id="toc-group-mini-project" class="nav-link" data-scroll-target="#group-mini-project">Group Mini-Project</a></li>
+  <li><a href="#a-random-network" id="toc-a-random-network" class="nav-link" data-scroll-target="#a-random-network">1. A random network</a></li>
+  <li><a href="#a-ring" id="toc-a-ring" class="nav-link" data-scroll-target="#a-ring">2. A ring</a></li>
+  <li><a href="#grow-it" id="toc-grow-it" class="nav-link" data-scroll-target="#grow-it">3. Grow it</a></li>
+  <li><a href="#so-what-is-sigma-measuring" id="toc-so-what-is-sigma-measuring" class="nav-link" data-scroll-target="#so-what-is-sigma-measuring">4. So what is <span class="math inline">\sigma</span> measuring?</a></li>
+  <li><a href="#what-to-hand-in" id="toc-what-to-hand-in" class="nav-link" data-scroll-target="#what-to-hand-in">What to hand in</a></li>
+  <li><a href="#instructions-for-your-ai-assistant" id="toc-instructions-for-your-ai-assistant" class="nav-link" data-scroll-target="#instructions-for-your-ai-assistant">Instructions for your AI assistant</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/mini-project.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m02-small-world/01-concepts.html">M02: Small World</a></li><li class="breadcrumb-item"><a href="../m02-small-world/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Exercises and Assignments</h1>
+<h1 class="title">Advanced Topics in Network Science</h1>
 </div>
 
 
@@ -743,51 +759,95 @@ window.Quarto = {
 </header>
 
 
-<section id="in-the-lecture-discover-it-yourself" class="level2">
-<h2 class="anchored" data-anchor-id="in-the-lecture-discover-it-yourself">In the Lecture: Discover It Yourself</h2>
-<p>You work this in class, before any of it is named — it is designed so that you discover the concepts yourself, with nothing but a pencil.</p>
+<section id="mini-project-how-small-is-a-small-world" class="level1">
+<h1>Mini Project — How small is a small world?</h1>
+<p><strong>Teams of up to three. Ninety minutes, in class. Three minutes to present at the end.</strong></p>
+<p>The small-world index compares a network against a random one of the same size:</p>
+<p><span class="math display">\sigma \;=\; \frac{C / C_{rand}}{L / L_{rand}}</span></p>
+<p>Above 1 it says <em>small world</em>. Below 1 it says <em>not</em>. Everything below is about whether it should be believed.</p>
+<p>You will not need much code. What you need is a pencil, and the willingness to disagree with each other in front of a whiteboard.</p>
+<hr>
+<section id="a-random-network" class="level2">
+<h2 class="anchored" data-anchor-id="a-random-network">1. A random network</h2>
+<p>Take a random network: <span class="math inline">n</span> nodes, and every pair joined with the same probability <span class="math inline">p</span>, independently of every other pair. Write <span class="math inline">k</span> for the average number of links per node.</p>
 <ul>
-<li><a href="pen-and-paper/exercise.pdf"><strong>Six Handshakes to a Stranger</strong></a>: sixteen people sitting in a circle. You count how many handshakes it takes to get a letter across the town, decide which of the average and the worst case you would put in a headline and which on a postbox, add two long-range friendships and count again, ask whether one person’s friends know each other — and finish by multiplying 150 friends out to eight billion people and working out what clustering does to that answer. <a href="pen-and-paper/solutions.pdf">Worked answers</a>, for after you have tried it.</li>
-<li><a href="http://estebanmoro.org/pdf/netsci_for_kids/6_degrees_of_separation.pdf">It’s a small world!! 6 degrees of separation</a> <span class="citation" data-cites="esteban-moro-worksheet">(<a href="#ref-esteban-moro-worksheet" role="doc-biblioref">Moro 2017</a>)</span></li>
+<li>Work out <span class="math inline">C_{rand}</span>, its clustering.</li>
+<li>Work out <span class="math inline">L_{rand}</span>, its average distance.</li>
 </ul>
+<p>Both on paper, from the definitions. For <span class="math inline">L_{rand}</span> you will have to make an assumption about what the network looks like as you walk outward from one node. <strong>Say what that assumption is</strong>, in one sentence, and say where it stops being true.</p>
 </section>
-<section id="after-the-lecture-break-it" class="level2">
-<h2 class="anchored" data-anchor-id="after-the-lecture-break-it">After the Lecture: Break It</h2>
-<p>The last part of the sheet hands you off to a notebook, done alone with the sheet beside you. It builds the same town out of three rules you write, checks your pencilled numbers against its own, and then turns the rewiring dial that pencil and paper cannot — the famous clustering-and-distance curve comes out of your own two functions.</p>
+<section id="a-ring" class="level2">
+<h2 class="anchored" data-anchor-id="a-ring">2. A ring</h2>
+<p>Now the opposite: <span class="math inline">n</span> nodes in a circle, each joined to its <span class="math inline">k</span> nearest neighbours, <span class="math inline">k/2</span> on each side. No shortcuts anywhere.</p>
 <ul>
-<li><a href="https://go.skojaku.com/m02lab"><strong>The M02 lab notebook</strong></a> — or point a camera at the square on the last page of the sheet.</li>
+<li>Work out <span class="math inline">C_{ring}</span>.</li>
+<li>Work out <span class="math inline">L_{ring}</span>.</li>
 </ul>
-<p>Finish early and stop there. The notebook used to end with a town that has <strong>no shortcuts at all</strong> being certified a strong small world; that is now the mini-project, and it is better done in a group than alone.</p>
+<p>One of these does not depend on <span class="math inline">n</span> at all. Which, and why?</p>
 </section>
-<section id="assignments" class="level2">
-<h2 class="anchored" data-anchor-id="assignments">Assignments</h2>
-<section id="pair-notebook" class="level3">
-<h3 class="anchored" data-anchor-id="pair-notebook">Pair Notebook</h3>
-<p>Work through this module with the AI tutor and hand in the notebook that the session builds. What is graded is your reasoning, not your code — see <a href="../course/pair-notebook.html">the Pair Notebook guide</a> for the setup and a walkthrough of a full session.</p>
+<section id="grow-it" class="level2">
+<h2 class="anchored" data-anchor-id="grow-it">3. Grow it</h2>
+<p>Hold <span class="math inline">k</span> fixed and let <span class="math inline">n</span> get large.</p>
 <ul>
-<li>Repository for M02: <a href="https://github.com/sk-classroom/advnetsci-pair-notebook-m02-small-world"><code>advnetsci-pair-notebook-m02-small-world</code></a>. Accept the invitation through Classroom 50; the repository is private to the class.</li>
+<li>What happens to <span class="math inline">\sigma</span> for the ring? Work it out as a formula in <span class="math inline">n</span> and <span class="math inline">k</span>, and then say in words what it means.</li>
+<li>Is there a size at which the ring is called a small world? If so, find it. If not, show why not.</li>
 </ul>
+<p>Write your prediction down <strong>before</strong> you run anything.</p>
+<p>Then check it. Build rings of a few sizes, measure them, and see whether the numbers do what your formula said. The lab notebook already has everything you need to build and measure a network; you are not writing anything new.</p>
 </section>
-<section id="group-mini-project" class="level3">
-<h3 class="anchored" data-anchor-id="group-mini-project">Group Mini-Project</h3>
-<p><strong>How small is a small world?</strong> Groups of up to three, ninety minutes in class, three minutes to present. There is no Classroom assignment and no repository waiting for you this time: the whole thing is one page of questions, and most of the answers are worked out on paper.</p>
-<p>You derive <span class="math inline">C</span> and <span class="math inline">L</span> for a random network and for a ring, predict what the small-world index does to the ring as it grows, check the prediction, and then argue about what the index is actually measuring. That argument is the point of the session.</p>
+<section id="so-what-is-sigma-measuring" class="level2">
+<h2 class="anchored" data-anchor-id="so-what-is-sigma-measuring">4. So what is <span class="math inline">\sigma</span> measuring?</h2>
+<p>You now have a network with <strong>no shortcuts at all</strong> — the least small-world thing that exists — and a formula for what the index says about it.</p>
 <ul>
-<li><a href="https://github.com/skojaku/adv-net-sci/blob/main/lecture-note/m02-small-world/mini-project.md"><strong>The task sheet</strong></a> — read it before the session.</li>
+<li>Does <span class="math inline">\sigma &gt; 1</span> mean a network is a small world?</li>
+<li>If a paper reports <span class="math inline">\sigma = 4.2</span> for some network, what do you now want to know before you believe it?</li>
+<li>What would you report instead? Propose something, and say what it costs you.</li>
 </ul>
-<p>You hand in a short write-up, text and figures, in a public GitHub repository of your own, and submit the link. Any format except Word. The sheet ends with a block of instructions you can hand to a coding agent, which will build the repository and give you the link; you press the submit button yourself.</p>
-<p>Readers who are not enrolled in SSIE 641 cannot open the assignment repositories. The worksheet above and the <a href="../m02-small-world/02-coding.html">hands-on notebook</a> cover the same material and need no enrollment.</p>
+<p><strong>This is the part worth the ninety minutes.</strong> Argue about it, and write down what you settled on and what you did not.</p>
+<hr>
+</section>
+<section id="what-to-hand-in" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-hand-in">What to hand in</h2>
+<p>A short write-up: <strong>text and figures</strong>. Markdown, a PDF, a notebook, a photograph of a whiteboard — anything except Word.</p>
+<p>Put it in a <strong>public GitHub repository</strong> and submit the repository link.</p>
+<p>It should contain, and it does not need to be long:</p>
+<ul>
+<li>your derivations for §1 and §2, and the assumption you named</li>
+<li>your prediction for §3, and whether the numbers agreed with it</li>
+<li>your answer to §4, in your own words, including the thing you could not settle</li>
+<li>the names of everybody on the team</li>
+</ul>
+<p><strong>Submit here:</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform" class="uri">https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform</a></p>
+<p>One submission per team.</p>
+<hr>
+</section>
+<section id="instructions-for-your-ai-assistant" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-for-your-ai-assistant">Instructions for your AI assistant</h2>
+<p><em>Point your coding agent at this file and ask it to do the following. It will do everything up to the submission itself; you press the last button.</em></p>
+<blockquote class="blockquote">
+<p>You are helping a team of students hand in a mini-project for a graduate network science course. The work itself — the derivations, the prediction, the argument in §4 — is theirs. Do not do it for them, and do not invent results they did not get. Your job is to get what they have into a repository and give them a link.</p>
+<ol type="1">
+<li><p><strong>Ask them what they have.</strong> Their derivations, their numbers, their figures, and their answer to §4. If they have it on paper, ask them to photograph it and tell you the file paths. If a section is missing, say so and stop — do not fill it in.</p></li>
+<li><p><strong>Make a folder</strong> and write <code>README.md</code> in it: their names, then one section per numbered task above, in their words. Keep their phrasing. Reproduce their maths in LaTeX so it renders on GitHub.</p></li>
+<li><p><strong>Put the figures in the same folder</strong> and reference them from the README with relative paths. If they ran a numerical check, save the script next to it so somebody can re-run it. If their prediction and their measurement disagreed, say so in the README rather than hiding it — a disagreement they explain is worth more than one they smooth over.</p></li>
+<li><p><strong>Create a public repository and push</strong>, using the GitHub CLI:</p>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth status <span class="kw">||</span> <span class="ex">gh</span> auth login</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> init <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add <span class="at">-A</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"M02 mini project"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo create <span class="op">&lt;</span>a-name-they-choose<span class="op">&gt;</span> --public <span class="at">--source</span><span class="op">=</span>. <span class="at">--push</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>If <code>gh</code> is not installed or not logged in, tell them which of the two it is and how to fix it, and stop there.</p></li>
+<li><p><strong>Check the repository actually opens.</strong> Fetch the URL and confirm the README renders and the images load. A broken image link is the commonest failure and it is invisible locally.</p></li>
+<li><p><strong>Print the URL and stop.</strong> Tell them to paste it into the form at the link above. <strong>Do not submit the form yourself</strong> — they hand in their own work.</p></li>
+</ol>
+</blockquote>
 
 
-
 </section>
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-esteban-moro-worksheet" class="csl-entry" role="listitem">
-Moro, Esteban. 2017. <em>Network Science for Kids!</em> <a href="http://estebanmoro.org/2017/03/network-science-for-kids">http://estebanmoro.org/2017/03/network-science-for-kids</a>.
-</div>
-</div></section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <!-- Animation kit. `include-after-body` inlines a file verbatim, so pointing it
      at assets/anim.js directly would dump raw JavaScript into the body as text.
      The leading slash is the site root; Quarto rewrites it per page. -->
@@ -1192,18 +1252,6 @@ Moro, Esteban. 2017. <em>Network Science for Kids!</em> <a href="http://estebanm
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../m02-small-world/02-coding.html" class="pagination-link" aria-label="Hands-on: Measuring How Small the World Is">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Hands-on: Measuring How Small the World Is</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../m02-small-world/04-appendix.html" class="pagination-link" aria-label="Appendix: Why a Random Network Is Already Small">
-        <span class="nav-page-text">Appendix: Why a Random Network Is Already Small</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1212,7 +1260,7 @@ Moro, Esteban. 2017. <em>Network Science for Kids!</em> <a href="http://estebanm
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m02-small-world/mini-project.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
