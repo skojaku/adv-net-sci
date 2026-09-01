@@ -1,88 +1,69 @@
 # Mini Project — How small is a small world?
 
-**Teams of up to three. Ninety minutes, in class. Three minutes to present at
-the end.**
-
-The small-world index compares a network against a random one of the same size:
+The small-world index compares a network to a random network of the same size.
 
 $$\sigma \;=\; \frac{C / C_{rand}}{L / L_{rand}}$$
 
-Above 1 it says *small world*. Below 1 it says *not*. Everything below is about
-whether it should be believed.
-
-You will not need much code. What you need is a pencil, and the willingness to
-disagree with each other in front of a whiteboard.
+A value greater than 1 indicates a “small-world” network, while a value less than 1 indicates otherwise. The following discussion focuses on whether we should accept this claim.
 
 ---
 
 ## 1. A random network
 
-Take a random network: $n$ nodes, and every pair joined with the same
-probability $p$, independently of every other pair. Write $k$ for the average
-number of links per node.
+Consider a random network. There are $n$ nodes, and each pair of nodes is connected with probability $p$, independently of all other pairs. Let $k$ be the average number of links per node.
 
-- Work out $C_{rand}$, its clustering.
-- Work out $L_{rand}$, its average distance.
+- Calculate $C_{rand}$, that is, its clustering coefficient.
+- Calculate $L_{rand}$, that is, its average distance.
 
-Both on paper, from the definitions. For $L_{rand}$ you will have to make an
-assumption about what the network looks like as you walk outward from one node.
-**Say what that assumption is**, in one sentence, and say where it stops being
-true.
+Calculate both on paper based on their definitions. For $L_{rand}$, you must make an assumption about the shape of the network. The assumption is that the network is a tree, where every node has an offspring of $k-1$ nodes (1 for parent). 
 
 ## 2. A ring
 
-Now the opposite: $n$ nodes in a circle, each joined to its $k$ nearest
-neighbours, $k/2$ on each side. No shortcuts anywhere.
+Now consider the opposite case: $n$ nodes are arranged in a circle, and each node is connected to $k$ nearest-neighbor nodes—$k/2$ to the left and $k/2$ to the right. There are no shortcuts.
 
-- Work out $C_{ring}$.
-- Work out $L_{ring}$.
+- Find $C_{ring}$.
+- Find $L_{ring}$.
 
-One of these does not depend on $n$ at all. Which, and why?
+One of these values does not depend on $n$ at all. Which one is it, and why?
 
 ## 3. Grow it
 
-Hold $k$ fixed and let $n$ get large.
+Fix $k$ and let $n$ grow large.
 
-- What happens to $\sigma$ for the ring? Work it out as a formula in $n$ and
-  $k$, and then say in words what it means.
-- Is there a size at which the ring is called a small world? If so, find it. If
-  not, show why not.
+- What happens to $\sigma$ in the ring? Derive an expression using $n$ and $k$, and explain in words what it means.
+- Is there a size at which the ring is called a “small-world” network? If so, determine that size. If not, explain why.
 
-Write your prediction down **before** you run anything.
+Write down your predictions **before** doing anything.
 
-Then check it. Build rings of a few sizes, measure them, and see whether the
-numbers do what your formula said. The lab notebook already has everything you
-need to build and measure a network; you are not writing anything new.
+Then, verify them using code. 
+
+1. Create a ring network of $n$ nodes.
+2. Compute the small-world index as a function of $n$
+3. Plot both your prediction and actual value.
+
+Your lab notebook already contains everything you need to build and measure the networks. 
 
 ## 4. So what is $\sigma$ measuring?
-
-You now have a network with **no shortcuts at all** — the least small-world
-thing that exists — and a formula for what the index says about it.
 
 - Does $\sigma > 1$ mean a network is a small world?
 - If a paper reports $\sigma = 4.2$ for some network, what do you now want to
   know before you believe it?
-- What would you report instead? Propose something, and say what it costs you.
-
-**This is the part worth the ninety minutes.** Argue about it, and write down
-what you settled on and what you did not.
+- What would you report instead? Propose something.
 
 ---
 
 ## What to hand in
 
-A short write-up: **text and figures**. Markdown, a PDF, a notebook, a
-photograph of a whiteboard — anything except Word.
+Short description: **Text and figures**. Anything other than Word is acceptable, such as Markdown, PDFs, notebooks, or photos of whiteboards.
 
-Put it in a **public GitHub repository** and submit the repository link.
+Place it in a **public GitHub repository** and submit the repository link.
 
-It should contain, and it does not need to be long:
+The following content must be included, though it does not need to be lengthy:
 
-- your derivations for §1 and §2, and the assumption you named
-- your prediction for §3, and whether the numbers agreed with it
-- your answer to §4, in your own words, including the thing you could not
-  settle
-- the names of everybody on the team
+- The derivation process for §1 and §2, as well as the assumptions you identified
+- The prediction in §3, and whether the actual numbers matched it
+- Your answer to §4 in your own words, including any issues you were unable to resolve
+- The names of all team members
 
 **Submit here:** <https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform>
 
