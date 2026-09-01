@@ -761,61 +761,63 @@ window.Quarto = {
 
 <section id="mini-project-how-small-is-a-small-world" class="level1">
 <h1>Mini Project — How small is a small world?</h1>
-<p><strong>Teams of up to three. Ninety minutes, in class. Three minutes to present at the end.</strong></p>
-<p>The small-world index compares a network against a random one of the same size:</p>
+<p>The small-world index compares a network to a random network of the same size.</p>
 <p><span class="math display">\sigma \;=\; \frac{C / C_{rand}}{L / L_{rand}}</span></p>
-<p>Above 1 it says <em>small world</em>. Below 1 it says <em>not</em>. Everything below is about whether it should be believed.</p>
-<p>You will not need much code. What you need is a pencil, and the willingness to disagree with each other in front of a whiteboard.</p>
+<p>A value greater than 1 indicates a “small-world” network, while a value less than 1 indicates otherwise. The following discussion focuses on whether we should accept this claim.</p>
 <hr>
 <section id="a-random-network" class="level2">
 <h2 class="anchored" data-anchor-id="a-random-network">1. A random network</h2>
-<p>Take a random network: <span class="math inline">n</span> nodes, and every pair joined with the same probability <span class="math inline">p</span>, independently of every other pair. Write <span class="math inline">k</span> for the average number of links per node.</p>
+<p>Consider a random network. There are <span class="math inline">n</span> nodes, and each pair of nodes is connected with probability <span class="math inline">p</span>, independently of all other pairs. Let <span class="math inline">k</span> be the average number of links per node.</p>
 <ul>
-<li>Work out <span class="math inline">C_{rand}</span>, its clustering.</li>
-<li>Work out <span class="math inline">L_{rand}</span>, its average distance.</li>
+<li>Calculate <span class="math inline">C_{rand}</span>, that is, its clustering coefficient.</li>
+<li>Calculate <span class="math inline">L_{rand}</span>, that is, its average distance.</li>
 </ul>
-<p>Both on paper, from the definitions. For <span class="math inline">L_{rand}</span> you will have to make an assumption about what the network looks like as you walk outward from one node. <strong>Say what that assumption is</strong>, in one sentence, and say where it stops being true.</p>
+<p>Calculate both on paper based on their definitions. For <span class="math inline">L_{rand}</span>, you must make an assumption about the shape of the network. The assumption is that the network is a tree, where every node has an offspring of <span class="math inline">k-1</span> nodes (1 for parent).</p>
 </section>
 <section id="a-ring" class="level2">
 <h2 class="anchored" data-anchor-id="a-ring">2. A ring</h2>
-<p>Now the opposite: <span class="math inline">n</span> nodes in a circle, each joined to its <span class="math inline">k</span> nearest neighbours, <span class="math inline">k/2</span> on each side. No shortcuts anywhere.</p>
+<p>Now consider the opposite case: <span class="math inline">n</span> nodes are arranged in a circle, and each node is connected to <span class="math inline">k</span> nearest-neighbor nodes—<span class="math inline">k/2</span> to the left and <span class="math inline">k/2</span> to the right. There are no shortcuts.</p>
 <ul>
-<li>Work out <span class="math inline">C_{ring}</span>.</li>
-<li>Work out <span class="math inline">L_{ring}</span>.</li>
+<li>Find <span class="math inline">C_{ring}</span>.</li>
+<li>Find <span class="math inline">L_{ring}</span>.</li>
 </ul>
-<p>One of these does not depend on <span class="math inline">n</span> at all. Which, and why?</p>
+<p>One of these values does not depend on <span class="math inline">n</span> at all. Which one is it, and why?</p>
 </section>
 <section id="grow-it" class="level2">
 <h2 class="anchored" data-anchor-id="grow-it">3. Grow it</h2>
-<p>Hold <span class="math inline">k</span> fixed and let <span class="math inline">n</span> get large.</p>
+<p>Fix <span class="math inline">k</span> and let <span class="math inline">n</span> grow large.</p>
 <ul>
-<li>What happens to <span class="math inline">\sigma</span> for the ring? Work it out as a formula in <span class="math inline">n</span> and <span class="math inline">k</span>, and then say in words what it means.</li>
-<li>Is there a size at which the ring is called a small world? If so, find it. If not, show why not.</li>
+<li>What happens to <span class="math inline">\sigma</span> in the ring? Derive an expression using <span class="math inline">n</span> and <span class="math inline">k</span>, and explain in words what it means.</li>
+<li>Is there a size at which the ring is called a “small-world” network? If so, determine that size. If not, explain why.</li>
 </ul>
-<p>Write your prediction down <strong>before</strong> you run anything.</p>
-<p>Then check it. Build rings of a few sizes, measure them, and see whether the numbers do what your formula said. The lab notebook already has everything you need to build and measure a network; you are not writing anything new.</p>
+<p>Write down your predictions <strong>before</strong> doing anything.</p>
+<p>Then, verify them using code.</p>
+<ol type="1">
+<li>Create a ring network of <span class="math inline">n</span> nodes.</li>
+<li>Compute the small-world index as a function of <span class="math inline">n</span></li>
+<li>Plot both your prediction and actual value.</li>
+</ol>
+<p>Your lab notebook already contains everything you need to build and measure the networks.</p>
 </section>
 <section id="so-what-is-sigma-measuring" class="level2">
 <h2 class="anchored" data-anchor-id="so-what-is-sigma-measuring">4. So what is <span class="math inline">\sigma</span> measuring?</h2>
-<p>You now have a network with <strong>no shortcuts at all</strong> — the least small-world thing that exists — and a formula for what the index says about it.</p>
 <ul>
 <li>Does <span class="math inline">\sigma &gt; 1</span> mean a network is a small world?</li>
 <li>If a paper reports <span class="math inline">\sigma = 4.2</span> for some network, what do you now want to know before you believe it?</li>
-<li>What would you report instead? Propose something, and say what it costs you.</li>
+<li>What would you report instead? Propose something.</li>
 </ul>
-<p><strong>This is the part worth the ninety minutes.</strong> Argue about it, and write down what you settled on and what you did not.</p>
 <hr>
 </section>
 <section id="what-to-hand-in" class="level2">
 <h2 class="anchored" data-anchor-id="what-to-hand-in">What to hand in</h2>
-<p>A short write-up: <strong>text and figures</strong>. Markdown, a PDF, a notebook, a photograph of a whiteboard — anything except Word.</p>
-<p>Put it in a <strong>public GitHub repository</strong> and submit the repository link.</p>
-<p>It should contain, and it does not need to be long:</p>
+<p>Short description: <strong>Text and figures</strong>. Anything other than Word is acceptable, such as Markdown, PDFs, notebooks, or photos of whiteboards.</p>
+<p>Place it in a <strong>public GitHub repository</strong> and submit the repository link.</p>
+<p>The following content must be included, though it does not need to be lengthy:</p>
 <ul>
-<li>your derivations for §1 and §2, and the assumption you named</li>
-<li>your prediction for §3, and whether the numbers agreed with it</li>
-<li>your answer to §4, in your own words, including the thing you could not settle</li>
-<li>the names of everybody on the team</li>
+<li>The derivation process for §1 and §2, as well as the assumptions you identified</li>
+<li>The prediction in §3, and whether the actual numbers matched it</li>
+<li>Your answer to §4 in your own words, including any issues you were unable to resolve</li>
+<li>The names of all team members</li>
 </ul>
 <p><strong>Submit here:</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform" class="uri">https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform</a></p>
 <p>One submission per team.</p>
