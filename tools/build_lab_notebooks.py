@@ -144,21 +144,49 @@ M01 = [
 # Module 2 -- Ringville, the two shortcuts, and the index that lies.
 #
 # The worked copy differs from lab.py by the answers and the title, and by
-# nothing else. Five of those answers are the ✍️-marked lines inside the three
-# functions, one is my_index, and one is the block of pencil answers off the
-# sheet. It used to also carry three notes to the reader -- what the
-# notebook is for, the 1-to-16 versus 0-to-15 warning, and a line saying
-# my_index has many right answers. All three are gone from both copies: the
-# preamble was doing the sheet's job over again, and a student who has the
-# sheet beside them does not need to be told twice.
+# nothing else. Two of those answers are whole function bodies (ring_edges and
+# local_clustering, both blank in lab.py), three are the igraph one-liners of
+# section 3, one is the block of pencil answers off the sheet, and one is
+# igraph's own clustering call on Ringville.
 # ---------------------------------------------------------------------------
 M02 = [
-    # The town, as a rule rather than thirty-two typed pairs. Both loops are
-    # already in lab.py; the answer is the one line inside them.
+    # The town, as a rule rather than thirty-two typed pairs. lab.py gives the
+    # loop over people and the empty list; the body inside it is the answer.
     (
-        """            j = ...  # ✍️ replace the ... — who sits d seats clockwise from i?""",
-        """            j = (i + d) % n  # ONE answer of several; `if j >= n: j -= n` is
-                             # the same thing said longer, and is as good""",
+        """    for i in range(n):  # each person in turn
+        # ✍️ your code here — append the pair (i, j) for each of the `half`
+        #    people who sit clockwise from i.
+        ...""",
+        """    for i in range(n):  # each person in turn
+        # ✍️ your code here — append the pair (i, j) for each of the `half`
+        #    people who sit clockwise from i.
+        for j in range(i + 1, i + 1 + half):
+            _j = j % n  # ONE answer of several; `if _j >= n: _j -= n` is the
+                        # same thing said longer, and is as good
+            edges.append((i, _j))""",
+    ),
+    # Section 3, three cells to play in. Nothing here is marked; the worked
+    # copy carries them so that the answer to "what does it print" is on the
+    # page rather than in the instructor's head.
+    (
+        """    # ✍️ Compute the neighbors of node 3, 5, and 0
+    g.neighbors(3)""",
+        """    # ✍️ Compute the neighbors of node 3, 5, and 0
+    g.neighbors(3), g.neighbors(5), g.neighbors(0)""",
+    ),
+    (
+        """    # ✍️ Construct the graph by igraph.Graph(edges=[(0, 1), (0, 2)]), and check the number of nodes
+    ...""",
+        """    # ✍️ Construct the graph by igraph.Graph(edges=[(0, 1), (0, 2)]), and check the number of nodes
+    g_no_n = igraph.Graph(edges=[(0, 1), (0, 2)])
+    g_no_n.vcount()  # 3, not 7 -- igraph saw three people in those two pairs""",
+    ),
+    (
+        """    # ✍️ Construct the graph by igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)]), and check the number of edges
+    ...""",
+        """    # ✍️ Construct the graph by igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)]), and check the number of edges
+    g_twice = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)])
+    g_twice.ecount()  # 10, not 9 -- both copies of (0, 1) are kept""",
     ),
     # Question 1(c) with igraph, written from nothing. The marking cell holds
     # no answer of its own -- it compares against Q1C in the hidden kit -- so
@@ -177,38 +205,39 @@ M02 = [
     answer_average = sum(counts) / (TOWN_N - 1)  # shared among the other 15
     answer_worst = max(counts)""",
     ),
-    # The fraction of a person's friend-pairs who are friends.
+    # The fraction of a person's friend-pairs who are friends. lab.py hands
+    # the student the docstring and nothing else, so the whole body is the
+    # answer -- including the pairing loop, which the prose no longer gives.
     (
-        """            if ...:  # ✍️ replace the ... — are a and b friends with each other?""",
-        """            if g.are_adjacent(a, b):  # True when a and b are friends""",
-    ),
-    (
-        """    pairs = ...  # ✍️ replace the ... — how many pairs do k friends make?""",
-        """    pairs = k * (k - 1) / 2""",
+        """    # ✍️ Your code here
+    ...
+    return ...""",
+        """    nbrs = g.neighbors(i)  # the list of people i is friends with
+    k = len(nbrs)
+    if k < 2:  # fewer than two friends, so no pairs
+        return 0.0
+
+    links = 0
+    for x in range(k):  # each of i's friends,
+        for y in range(x + 1, k):  # paired with each LATER one, so that
+            a, b = nbrs[x], nbrs[y]  # every pair comes up exactly once
+            if g.are_adjacent(a, b):  # True when a and b are friends
+                links += 1
+
+    return links / (k * (k - 1) / 2)""",
     ),
     # The same quantity, straight out of igraph, on Ringville.
     (
-        """    g_clust = ...  # ✍️ replace the ... — build a graph of Ringville
-    transitivity = ...  # ✍️ replace the ... — its local clustering, per person""",
-        """    g_clust = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+        """    # ✍️ Create Ringville. After finishing 1, put DEMO_EDGES back in.
+    g_clust = ...
+
+    # ✍️ Compute the transitivity
+    transitivity = ...""",
+        """    # ✍️ Create Ringville. After finishing 1, put DEMO_EDGES back in.
+    g_clust = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+
+    # ✍️ Compute the transitivity
     transitivity = g_clust.transitivity_local_undirected(mode="zero")""",
-    ),
-    # A test with a yardstick at both ends of the range.
-    (
-        '''    Return one number. The check below does not inspect your formula. It
-    evaluates it on four networks and tests two properties of the results:
-    that the p = 0.05 network scores highest, and that a shortcut-free ring
-    does not score higher at n = 2000 than at n = 250.
-    """
-    ...''',
-        '''    One of many valid answers: omega (Telesford et al. 2011), negated so
-    that a larger value means more of a small world. omega itself runs from
-    -1 at a lattice to +1 at a random graph, with 0 at a small world, so
-    -|omega| peaks at 0 for a small world and is negative at both ends. It
-    is bounded in n because each term is a ratio of two path lengths or of
-    two clustering coefficients.
-    """
-    return -abs(m.L_rand / m.L - m.C / m.C_latt)''',
     ),
     # Say on the page which copy this is. The title carries it; the paragraph
     # of explanation that used to sit under it was cut, along with the rest of

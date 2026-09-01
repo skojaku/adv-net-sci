@@ -510,15 +510,9 @@ def _(wave):
 
 @app.cell(hide_code=True)
 def _():
-    note(
-        "A person's handshake count is the number of the wave that first "
-        "reaches them. Person 5 is coloured on the fourth wave, so the "
-        "shortest path from person 0 to person 5 has length 4. No person is "
-        "coloured twice, so the first wave to reach someone is also the "
-        "shortest way to reach them, and no search for a shortest path is "
-        "needed. This is breadth-first search.",
-        BLUE,
-    )
+    mo.md(r"""
+    The number of handshakes a person has is equal to the number of steps that reach that person first. Since Person 5 is colored by the fourth steps, the length of the shortest path from Person 0 to Person 5 is 4. Since no one is colored twice, the first step to reach a person is also the shortest path to that person, so there is no need to search for the shortest path. This is a breadth-first search.
+    """)
     return
 
 
@@ -527,15 +521,15 @@ def _():
     mo.md(r"""
     ---
 
-    # 2 · ✍️ Build the town
+    # 2 · ✍️ Building a Town
 
-    Rather than typing thirty-two pairs, state the rule that generates them:
-    in a circle of `n` people, each person is friends with the `half` people (an input variable of a function below) on
-    each side of them.
+    Let’s build Ringville. Instead of entering 32 pairs, we’ll describe the rules for generating them.
 
-    Note that the index $j$ for a node should be between 0 and n-1 (not n, since we count from zero). If it is greater than n-1, you need to offset. For example, Ringville `15 + 2` is `17`, and this town has no person 17.
+    In a circle of `n` people, each person is friends with the `half` people on either side of them (the input variables for the function below).
 
-    So a `j` that has run off the end has to come back to the beginning.
+    Note that the node index $j$ must be between 0 and $n-1$ (since we count starting from 0, it is not $n$). If it is greater than $n-1$, you’ll need to adjust the offset. For example, Ringsville `15 + 2` is `17`, but there is no person with index 17 in this town.
+
+    Therefore, if `j` goes out of bounds, it must return to the beginning.
     """)
     return
 
@@ -552,11 +546,13 @@ def ring_edges(n, half):
     Returns a list of n * half pairs (i, j).
     """
     edges = []
-    for i in range(n):                  # each person in turn
-        for d in range(1, half + 1):    # the seat 1 along, then 2 along, ...
-            j = (i + d) % n  # ONE answer of several; `if j >= n: j -= n` is
-                             # the same thing said longer, and is as good
-            edges.append((i, j))
+    for i in range(n):  # each person in turn
+        # ✍️ your code here — append the pair (i, j) for each of the `half`
+        #    people who sit clockwise from i.
+        for j in range(i + 1, i + 1 + half):
+            _j = j % n  # ONE answer of several; `if _j >= n: _j -= n` is the
+                        # same thing said longer, and is as good
+            edges.append((i, _j))
     return edges
 
 
@@ -568,10 +564,15 @@ def _():
         _e = None
     if _e is None:
         _msg = "Not yet — the cell above still returns nothing."
+    elif not _e:
+        _msg = (
+            "Not yet — <code>ring_edges</code> hands back an empty list, so "
+            "nothing has been appended to <code>edges</code> yet."
+        )
     elif any(e[1] is Ellipsis or e[0] is Ellipsis for e in _e):
         _msg = (
-            "Not yet — <code>j</code> is still <code>...</code>. One line: who "
-            "sits <code>d</code> seats clockwise from <code>i</code>?"
+            "Not yet — one end of a pair is still <code>...</code>. Both ends "
+            "are person numbers between 0 and <code>n - 1</code>."
         )
     elif any(not (0 <= int(e[1]) < TOWN_N) for e in _e):
         _bad = next(e for e in _e if not (0 <= int(e[1]) < TOWN_N))
@@ -591,8 +592,8 @@ def _():
             _msg = (
                 "Not yet — you have people who are friends with themselves, so "
                 "<code>j</code> is coming out equal to <code>i</code>. The "
-                "nearest neighbour is <code>d</code> seats away, and "
-                "<code>d</code> starts at 1."
+                "nearest neighbour sits one seat along, so the closest "
+                "<code>j</code> is <code>i + 1</code>, not <code>i</code>."
             )
         elif not np.all(_deg == 4):
             _bad = int(np.argmax(_deg != 4))
@@ -675,47 +676,39 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    _g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
-    two_col(
-        demo_svg(),
-        f'<div style="font-family:{MONO};font-size:14px;line-height:2.0">'
-        f'<div style="opacity:0.55">g.vcount()</div><b>{_g.vcount()}</b> people'
-        f'<div style="opacity:0.55;margin-top:10px">g.ecount()</div>'
-        f"<b>{_g.ecount()}</b> friendships"
-        f'<div style="opacity:0.55;margin-top:10px">g.neighbors(0)</div>'
-        f"<b>{_g.neighbors(0)}</b></div>",
-        left_basis=220,
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
     mo.md(r"""
-    **Your turn.** The cell below builds `g` from the seven-person network and
-    calls `g.neighbors(3)`. Change either line and re-run — the first exercise
-    changes the call, the other two change the graph:
+    **It's your turn.** The cells below construct `g` from a network of 7 people and call `g.neighbors(3)`.
 
-    1. `g.neighbors(3)` — check what comes back against the drawing above.
-       Then try person 5, and person 0.
-    2. Build `igraph.Graph(edges=[(0, 1), (0, 2)])` with **no** `n=`, and read
-       `g.vcount()`. It is 3, not 7: igraph only knows about people it saw in
-       a pair. Add `n=7` and it becomes 7, with four people who have no
-       friends. That is why `n` is passed everywhere in this notebook.
-    3. `igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)])` — the pair
-       `(0, 1)` is now in the list twice. `g.ecount()` returns 10, not 9:
-       igraph keeps both copies. A graph with no repeated pair and no
-       self-pair is called a *simple graph*, and igraph does not enforce it.
+    1. `g.neighbors(3)` — Compare the result with the figure above. Next, try Person 5 and Person 0.
+    2. Construct `igraph.Graph(edges=[(0, 1), (0, 2)])` without including `n=`, and read the result of `g.vcount()`. It returns 3 instead of 7. `igraph` only recognizes people who appear in the pairs. Adding `n=7` makes the count 7 and includes the 4 people who have no friends. This is why `n` is passed throughout this notebook.
+    3. `igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)])` — The pair `(0, 1)` appears twice in the list. `g.ecount()` returns 10 instead of 9. `igraph` retains both copies. A graph with no duplicate pairs or self-loops is called a *simple graph*, but `igraph` does not enforce this property.
     """)
     return
 
 
 @app.cell
 def _():
-    # ▶ Yours. Nothing here is checked or marked — change it and re-run.
+    # Construct the graph
     g = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
 
-    g.neighbors(3)
+    # ✍️ Compute the neighbors of node 3, 5, and 0
+    g.neighbors(3), g.neighbors(5), g.neighbors(0)
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Construct the graph by igraph.Graph(edges=[(0, 1), (0, 2)]), and check the number of nodes
+    g_no_n = igraph.Graph(edges=[(0, 1), (0, 2)])
+    g_no_n.vcount()  # 3, not 7 -- igraph saw three people in those two pairs
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Construct the graph by igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)]), and check the number of edges
+    g_twice = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES + [(0, 1)])
+    g_twice.ecount()  # 10, not 9 -- both copies of (0, 1) are kept
     return
 
 
@@ -727,10 +720,6 @@ def _():
     ```python
     g.distances(source=0)
     ```
-
-    One gotcha: it returns a list of lists. Each outer list corresponds to the index of the source nodes (where a shortest path start) and target nodes (where the path ends). Since you asked about **one** starting
-    person, you get something like [[0, 1, 2, 3, 1, ...]]. If you specify two nodes as source as a list, e.g., source=[0,1], you get, a list of two lists e.g., [[0, 1, 2, 3, 1], [1, 0, 2, 3, 2]] (numbers are just made up). To get the distances from a specific node, you need to slice the list of lists.
-    ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#distances))
 
     **The next cell is empty of checks and yours to change.** Set `source`,
     run it, and the drawing underneath redraws for whoever you picked. Three
@@ -750,12 +739,22 @@ def _():
 
 @app.cell
 def _():
-    # ▶ Yours. Change source and re-run; the drawing below follows it.
-    source = 0
-
     g_demo = igraph.Graph(n=DEMO_N, edges=DEMO_EDGES)
+
+    # ✍️ Change source and re-run; the drawing below follows it.
+    source = 0
     g_demo.distances(source=source)
     return (source,)
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    It returns a list of lists. Each outer list corresponds to the index of the source nodes (where a shortest path start) and target nodes (where the path ends). Since you asked about **one** starting
+    person, you get something like [[0, 1, 2, 3, 1, ...]]. If you specify two nodes as source as a list, e.g., source=[0,1], you get, a list of two lists e.g., [[0, 1, 2, 3, 1], [1, 0, 2, 3, 2]] (numbers are just made up). To get the distances from a specific node, you need to slice the list of lists.
+    ([docs](https://python.igraph.org/en/stable/api/igraph.GraphBase.html#distances))
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -776,18 +775,6 @@ def _(source):
         f"g.distances(source={_s})[0]</div>"
         f'<table style="border-collapse:collapse">{_cells}</table></div>',
         left_basis=220,
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    note(
-        "Choose a person the drawing places several steps from your source "
-        "and count the edges along a shortest path by hand. The count matches "
-        "the entry igraph returned for that person. The colours are the "
-        "distances the slider showed in section 1, computed the same way.",
-        BLUE,
     )
     return
 
@@ -938,30 +925,18 @@ def _(who):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ The fraction, as a rule
+    Let’s express this mathematically. Person $i$ has $k_i$ friends. Let $T_i$ be the number of pairs among those friends. This is represented by the solid lines in the figure. Divide this by the total number of pairs.
 
-    Let's put it mathematically. Person $i$ has $k_i$ friends. Let $L_i$
-    be the number of pairs among those friends that are themselves friendships
-    — the solid lines in the drawing. Divide it by the number of pairs there
-    are in total:
+    $$C_i \;=\; \frac{T_i}{\binom{k_i}{2}} \;=\; \frac{T_i}{k_i\,(k_i - 1)/2}$$
 
-    $$C_i \;=\; \frac{L_i}{\binom{k_i}{2}} \;=\; \frac{L_i}{k_i\,(k_i - 1)/2}$$
+    $\binom{k_i}{2}$ refers to all the dotted lines in the diagram (regardless of whether they are solid or not).
+    $C_i = 1$ means that all of person $i$’s friends know each other, and $C_i = 0$ means that none of them know each other.
 
-    $\binom{k_i}{2}$ is every dashed line in the picture, solid or not.
-    $C_i = 1$ means all of person $i$'s friends know each other, and
-    $C_i = 0$ means none of them do.
+    Let's compute the clustering coefficient. Given an igraph object `g` and focal node `i` we want to compute $C_i$.
 
-    The two loops over the pairs are written for you. The inner one starts at
-    `x + 1` rather than at 0, which is what makes each pair come up exactly
-    once — one turn of the loop per dashed line in the drawing, and no pair
-    seen twice. **Two lines are yours.**
-
-    The function is handed `g`, an igraph graph, so `g.neighbors(i)` gives the
-    list of `i`'s friends. One more igraph call is all the first blank needs:
-
-    ```python
-    g.are_adjacent(a, b)   # True when a and b are friends
-    ```
+    You'll probably need:
+    - `g.neighbors(i)` returns a list of `i`’s friends
+    - `g.are_adjacent(a, b)` returns True if a and b are friends
     """)
     return
 
@@ -977,20 +952,19 @@ def local_clustering(g, i):
     Returns a float between 0 and 1, and 0.0 when i has fewer than two
     friends.
     """
-    nbrs = g.neighbors(i)              # the list of people i is friends with
+    nbrs = g.neighbors(i)  # the list of people i is friends with
     k = len(nbrs)
-    if k < 2:                          # fewer than two friends, so no pairs
+    if k < 2:  # fewer than two friends, so no pairs
         return 0.0
 
     links = 0
-    for x in range(k):                 # each of i's friends,
-        for y in range(x + 1, k):      # paired with each LATER one, so that
-            a, b = nbrs[x], nbrs[y]    # every pair comes up exactly once
+    for x in range(k):  # each of i's friends,
+        for y in range(x + 1, k):  # paired with each LATER one, so that
+            a, b = nbrs[x], nbrs[y]  # every pair comes up exactly once
             if g.are_adjacent(a, b):  # True when a and b are friends
                 links += 1
 
-    pairs = k * (k - 1) / 2
-    return links / pairs
+    return links / (k * (k - 1) / 2)
 
 
 @app.cell(hide_code=True)
@@ -1007,8 +981,8 @@ def _():
         _msg = "<b>Correct</b> — the same fractions the slider counted."
     elif _got is None:
         _msg = (
-            "Not yet — the two blanks are still <code>...</code>, so the last "
-            "line has nothing to divide."
+            "Not yet — <code>local_clustering</code> still returns "
+            "<code>...</code> rather than a number."
         )
     else:
         _bad = next(i for i in range(DEMO_N) if _got[i] != _want[i])
@@ -1016,10 +990,9 @@ def _():
             f"Not yet — you give person <code>{_bad}</code> "
             f"<b>{_got[_bad]}</b> where the slider counted <b>{_want[_bad]}</b>."
             + (
-                " That is exactly double, so <code>pairs</code> is counting "
-                "each pair twice: the inner loop already starts at "
-                "<code>x + 1</code>, so each one came up once, which is what "
-                "the <code>/ 2</code> is for."
+                " That is exactly double, so every pair of friends is being "
+                "counted twice — once as (a, b) and once as (b, a). Let the "
+                "second friend start after the first one."
                 if _got[_bad] and abs(_got[_bad] - 2 * _want[_bad]) < 1e-6
                 else ""
             )
@@ -1033,8 +1006,7 @@ def _():
     mo.md(r"""
     ### igraph has this one too
 
-    You wrote the loop because the definition of $C_i$ is what Part 3 was
-    about. igraph computes the same quantity directly:
+    Well done! Next time you want to compute the local clustering, you may use igraph's function that computes it:
 
     ```python
     g.transitivity_local_undirected(mode="zero")
@@ -1047,18 +1019,17 @@ def _():
     `mode="zero"` sets the convention for $k_i < 2$. Such a person has no
     pairs of friends, so $\binom{k_i}{2} = 0$ and $C_i$ is undefined. igraph returns
     `nan` for them by default; `mode="zero"` returns 0 instead, which is the
-    convention your own function uses on its `k < 2` line.
+    convention your own function follows for fewer than two friends.
 
-    **Try yourself.** In the cell below, build Ringville and call it on every
-    person at once. Every value comes back **0.5** — which is Question 5(a): a
-    ring lattice gives the same $C_i$ to everybody. Then change 16 to 10000 and
-    watch the values not move.
+    **✍️ Try yourself.**
 
-    Two more things to try afterwards, nothing marked either way:
 
-    1. Put `DEMO_EDGES` back in and check the seven values against the ones
+    1. In the cell below, build Ringville and call it on every person at once. Then change 16 to 10000 and watch the values not move.
+
+    2. Put `DEMO_EDGES` back in and check the seven values against the ones
        your own loop was checked on. They are the same numbers.
-    2. Drop `mode="zero"` on a network where somebody has fewer than two
+
+    3. Drop `mode="zero"` on a network where somebody has fewer than two
        friends — `igraph.Graph(n=3, edges=[(0, 1)])` — and you get `nan`
        instead of 0.
     """)
@@ -1067,8 +1038,10 @@ def _():
 
 @app.cell
 def _():
-    # ▶ Yours. Nothing here is marked.
+    # ✍️ Create Ringville. After finishing 1, put DEMO_EDGES back in.
     g_clust = igraph.Graph(n=TOWN_N, edges=ring_edges(TOWN_N, TOWN_HALF))
+
+    # ✍️ Compute the transitivity
     transitivity = g_clust.transitivity_local_undirected(mode="zero")
 
     transitivity
@@ -1201,9 +1174,7 @@ def _():
     mo.md(r"""
     ---
 
-    # 6 · Finished early? A case where $\sigma$ gives the wrong answer
-
-    Everything below is extra. The lab proper ends above.
+    # 6 · Finished early?
 
     The standard small-world index is
 
@@ -1211,205 +1182,10 @@ def _():
 
     where the *rand* pair are what a **random graph** would give — the same $n$
     people and the same average number of friends, but with the friendships
-    placed uniformly at random instead of round a circle:
+    placed uniformly at random instead of round a circle.
 
-    $$C_{\text{rand}} = \frac{k}{n-1} \approx \frac{k}{n},
-    \qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
-
-    More clustered than a random graph, and no further across, means
-    $\sigma > 1$. Neither of those two is a definition — both are worked out
-    below, and both come out of the model in one step each.
-
-    Below, **your** two functions compute $\sigma$ for a plain ring — one
-    thousand people, four friends each, and **not one shortcut anywhere**. Drag
-    `n` and watch what it says.
-
-    *(n = 16 is too small to distinguish these networks: every network in this
-    module scores about 1.5 there. The sizes below start at 100.)*
+    Compute $C_{\text{rand}}$ and $L_{\text{rand}}$ analytically and compute the small world index for the Ringville. Predict what happens when increasing the size of the network $n$.
     """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.accordion(
-        {
-            "Where $C_{\\text{rand}}$ comes from": mo.md(
-                r"""
-    **The model.** "Placed uniformly at random" has a precise meaning, and
-    everything below follows from it. There are $\binom{n}{2} = n(n-1)/2$
-    pairs of people who *could* be friends. Take each pair in turn and make it a
-    friendship or not, with the same probability every time, and with no pair
-    looking at what any other pair did. Define
-
-    $$p \;=\; \Pr\big[\text{a given pair } (a, b) \text{ is a friendship}\big],$$
-
-    the same $p$ for all $\binom{n}{2}$ pairs, independent across pairs. That is
-    the whole model — it is the Erdős–Rényi random graph, written $G(n, p)$.
-
-    *(This $p$ is not section 5's rewiring dial. Different quantity, same
-    unfortunate letter.)*
-
-    **What $p$ has to be.** We are not free to pick it: the random graph has to
-    have the same average number of friends as the town it is standing in for.
-    Person $i$ has $n-1$ possible friends, each one realised with probability $p$,
-    so the number of friends they end up with averages to
-
-    $$k = p\,(n - 1) \qquad\Longrightarrow\qquad p = \frac{k}{n - 1}.$$
-
-    **Then the clustering.** Take person $i$ and two of their friends, $a$ and
-    $b$. Are $a$ and $b$ friends? Their pair got its own draw, and independence
-    says that draw did not look at the two draws that made $a$ and $b$ friends of
-    $i$. So $(a, b)$ is a friendship with probability $p$, exactly like any pair
-    chosen at random. $C_i$ is the fraction of $i$'s friend-pairs that are
-    friendships; each of those pairs is a friendship with probability $p$, so the
-    expected fraction is $p$:
-
-    $$C_{\text{rand}} = p = \frac{k}{n - 1}.$$
-
-    The `k / (n - 1)` in the kit's `measure()` is that line. Textbooks usually
-    write $k/n$, which is the same number once $n$ is large.
-
-    Worth noticing what it does **not** contain: any mention of who your friends
-    are. Independence is exactly the assumption that removed it, and that is what
-    "no structure" means. And with $k$ held fixed while $n$ grows,
-    $C_{\text{rand}} \to 0$ — a random graph of a million people has essentially
-    no triangles. That limit is what $\sigma$'s denominator depends on.
-    """
-            ),
-            "Where $L_{\\text{rand}}$ comes from": mo.md(
-                r"""
-    This one you have already drawn. It is the tree in Question 7(a) on the sheet.
-
-    Stand on one person. About $k$ people are one handshake away. Each of those has
-    about $k$ friends of their own, so about $k^2$ people are two handshakes away,
-    then $k^3$, and so on:
-
-    $$\text{people within } d \text{ handshakes} \;\approx\; k^{d}.$$
-
-    You have reached the whole town when that tower has covered it. Call the
-    handshake count where that happens $L$:
-
-    $$k^{L} \approx n
-    \qquad\Longrightarrow\qquad L \ln k \approx \ln n
-    \qquad\Longrightarrow\qquad L_{\text{rand}} \approx \frac{\ln n}{\ln k}.$$
-
-    **The assumption is Question 7(b).** Every branch of that tree was assumed to
-    land on somebody nobody has reached yet. In a town with any clustering it does
-    not — friends of your friends are often each other, so branches double back
-    onto people already in the tree. $k^{d}$ therefore overestimates the reach, and
-    $\ln n / \ln k$ underestimates the real distance.
-
-    The *shape* survives the objection, and the shape is the point: distance grows
-    like $\ln n$, not like $n$. Put the numbers in and you get six degrees —
-    eight billion people at $k = 150$ gives $\ln(8 \times 10^{9}) / \ln 150
-    \approx 4.5$. Ringville's $n/8$ is what it looks like when a town has no
-    shortcuts at all.
-    """
-            ),
-        }
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    nslider = mo.ui.slider(
-        steps=[100, 200, 500, 1000, 2000, 4000], value=1000, label="n", show_value=True
-    )
-    nslider
-    return (nslider,)
-
-
-@app.cell(hide_code=True)
-def _(nslider):
-    if not clustering_ready(local_clustering):
-        _out = WAITING
-    else:
-        _n = nslider.value
-        _m = measure(
-            plain_adjacency(kit_ring(_n, 2), _n), local_clustering
-        )
-        _s = sigma(_m)
-        _out = mo.vstack(
-            [
-                mo.Html(
-                    big(f"sigma, plain ring of {_n}", f"{_s:.2f}")
-                    + f'<div style="font-family:{SANS};font-size:16px;color:{INK}">'
-                    f"C = {_m.C:.3f} against C<sub>rand</sub> = {_m.C_rand:.4f}"
-                    "&nbsp;&nbsp;·&nbsp;&nbsp; "
-                    f"L = {_m.L:.1f} against L<sub>rand</sub> = {_m.L_rand:.2f}"
-                    "</div>"
-                ),
-                note(
-                    "This ring has no shortcuts, and &sigma; is above 1, which "
-                    "is the condition the index uses for a small world. "
-                    "Increasing n increases &sigma;. So the index reports a "
-                    "small world for a network that has none, and it does so "
-                    "more strongly at larger n.",
-                    RUST,
-                ),
-            ]
-        )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ### Why — as a formula in `n`
-
-    **Question.** For the ring above there are no shortcuts, and your code
-    still returns $\sigma > 1$. The value also increases with $n$. Show why:
-    write $C$, $L$, $C_{\text{rand}}$ and $L_{\text{rand}}$ as functions of
-    $n$, form the two ratios, and divide.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.accordion(
-        {
-            "Hint 1": mo.md(
-                "Express all four quantities as functions of `n` for a ring "
-                "lattice: `C`, `L`, `C_rand`, `L_rand`. The `n` slider above "
-                "gives their values if you want to check a guess."
-            ),
-            "Hint 2": mo.md(
-                "One of the four is independent of `n`. One grows as "
-                "`ln n`. Identify which is which."
-            ),
-            "Hint 3": mo.md(
-                "Form `C / C_rand` as a function of `n`, then "
-                "`L / L_rand`, then take their quotient."
-            ),
-            "The answer": mo.md(
-                r"""
-    $$C = \tfrac12,\qquad L \approx \tfrac{n}{8},\qquad
-    C_{\text{rand}} = \tfrac{k}{n},\qquad L_{\text{rand}} \approx \tfrac{\ln n}{\ln k}$$
-
-    $$\frac{C}{C_{\text{rand}}} = \frac{n}{8},\qquad
-    \frac{L}{L_{\text{rand}}} = \frac{n}{8}\cdot\frac{\ln k}{\ln n},\qquad
-    \sigma = \frac{n/8}{(n/8)(\ln k / \ln n)} = \frac{\ln n}{\ln k}$$
-
-    The factor $n/8$ appears in both ratios and cancels. A ring exceeds the
-    random graph by $n/8$ in clustering and by $n/8$ in path length, and $\sigma$
-    is one divided by the other, so the size of the town does not reach the answer.
-
-    What is left is $\ln n / \ln k$, and it is greater than 1 whenever $n > k$.
-    It survives because the two $n/8$s are divided against each other while the
-    random graph's own path length, $\ln n / \ln k$, is not.
-
-    The general statement: $\sigma > 1$ for any network whose clustering does not
-    fall towards zero as $n$ grows, whether or not it has shortcuts. A ring has
-    $C = 1/2$ at every $n$. What $\sigma$ detects here is that $C$ is constant,
-    not that shortcuts are present.
-    """
-            ),
-        }
-    )
     return
 
 
@@ -1449,142 +1225,6 @@ def _():
             _ax.tick_params(colors=INK)
         plt.close(_fig)
         _out = _fig
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ### ✍️ Build an index that does not have this failure
-
-    **Question.** Which comparison is missing from $\sigma$? Define an index
-    that includes it.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.accordion(
-        {
-            "Hint": mo.md(
-                r"""
-Look at what $\sigma$ is built from:
-
-$$\sigma = \frac{C / C_{\text{rand}}}{L / L_{\text{rand}}}$$
-
-Both denominators are the random graph. **No part of $\sigma$ refers to a
-lattice.**
-
-But "small world" means a network sitting *between* the two: as clustered as a
-lattice, with paths as short as a random graph. That is two comparisons, and
-$\sigma$ makes only one of them. A ring lattice is as clustered as a lattice —
-because it is one — so it passes the comparison $\sigma$ makes, and there is no
-second comparison to fail.
-
-Your index needs the lattice end as well. `m` already carries it:
-`m.C_latt` and `m.L_latt`, a ring with the same `n` and the same average
-degree.
-"""
-            )
-        }
-    )
-    return
-
-
-@app.function
-def my_index(m):
-    """Your own small-world index. A larger value must mean more of a small
-    world.
-
-    `m` carries six quantities, all computed with your two functions:
-
-        m.C       m.L           the network being tested
-        m.C_rand  m.L_rand      a random graph, same n and same average degree
-        m.C_latt  m.L_latt      a ring lattice, same n and same average degree
-
-    One of many valid answers: omega (Telesford et al. 2011), negated so
-    that a larger value means more of a small world. omega itself runs from
-    -1 at a lattice to +1 at a random graph, with 0 at a small world, so
-    -|omega| peaks at 0 for a small world and is negative at both ends. It
-    is bounded in n because each term is a ratio of two path lengths or of
-    two clustering coefficients.
-    """
-    return -abs(m.L_rand / m.L - m.C / m.C_latt)
-
-
-@app.cell(hide_code=True)
-def _():
-    if not clustering_ready(local_clustering):
-        _out = WAITING
-    else:
-
-        def _score(edges, n):
-            return float(
-                my_index(
-                    measure(
-                        plain_adjacency(edges, n), local_clustering
-                    )
-                )
-            )
-
-        try:
-            _n = 1000
-            _ring = _score(kit_ring(_n, 2), _n)
-            _sw = _score(watts_strogatz(_n, 2, 0.05, seed=5), _n)
-            _rand = _score(watts_strogatz(_n, 2, 1.0, seed=5), _n)
-            _small = _score(kit_ring(250, 2), 250)
-            _large = _score(kit_ring(2000, 2), 2000)
-            _err = None
-        except Exception as _e:  # a blank cell lands here first
-            _err = _e
-
-        if _err is not None:
-            _out = note(
-                "Not yet — <code>my_index</code> returns nothing to compare "
-                f"(<code>{type(_err).__name__}</code>).",
-                RUST,
-            )
-        else:
-            _grows = _large > _small + 1e-9
-            _ranks = _sw > _ring and _sw > _rand
-            _rows = "".join(
-                f'<div style="margin:6px 0;font-family:{SANS};font-size:16px">'
-                f'<span style="opacity:0.6">{_k}</span>&nbsp; '
-                f'<b style="font-family:{MONO};color:{RUST}">{_v:+.3f}</b></div>'
-                for _k, _v in [
-                    ("plain ring, n=1000", _ring),
-                    ("p = 0.05, n=1000", _sw),
-                    ("random graph, n=1000", _rand),
-                    ("plain ring, n=250", _small),
-                    ("plain ring, n=2000", _large),
-                ]
-            )
-            if _grows:
-                _msg = (
-                    "<b>Not yet.</b> Your index scores a shortcut-free ring "
-                    f"<b>{_small:+.3f}</b> at n = 250 and <b>{_large:+.3f}</b> "
-                    "at n = 2000 — it likes the ring <i>more</i> as the ring "
-                    "gets bigger. That is σ's bug, not a repair for it."
-                )
-            elif not _ranks:
-                _msg = (
-                    "<b>Not yet.</b> The town at p = 0.05 has to beat both ends: "
-                    f"it scores <b>{_sw:+.3f}</b> against <b>{_ring:+.3f}</b> "
-                    f"for the plain ring and <b>{_rand:+.3f}</b> for the "
-                    "random graph."
-                )
-            else:
-                _msg = (
-                    "<b>Both conditions hold.</b> The p = 0.05 network scores "
-                    "highest, and the shortcut-free ring does not score higher "
-                    "at n = 2000 than at n = 250. &sigma; satisfies the first "
-                    "condition and fails the second at every n."
-                )
-            _out = mo.vstack(
-                [mo.Html(_rows), note(_msg, BLUE if not _grows and _ranks else RUST)]
-            )
     _out
     return
 
@@ -1641,11 +1281,6 @@ def _():
             )
         }
     )
-    return
-
-
-@app.cell
-def _():
     return
 
 
