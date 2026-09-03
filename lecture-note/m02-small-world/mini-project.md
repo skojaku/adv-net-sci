@@ -13,7 +13,7 @@ Above 1 it says *small world*. Below 1 it says *not*.
 
 1. Form a team of maximum of three persons.
 2. There are three tasks A, B, C. Tasks A and B are for individuals and task C is for the group. Decide who take A or B.
-3. You'll submit your workout on papers 1 and 2, along with the discussion via  [this form](https://forms.gle/8L9Q6336Q4X9zjf26).
+3. You'll submit your workout on papers 1 and 2, along with the discussion via  [this form](https://docs.google.com/forms/d/e/1FAIpQLSfn4BVgYhh449xsIjg2aE__tcQ8Ch6k3jZVyLypp8Flmkf2bg/viewform).
 4. You'll present your results at the end of the class.
 
 ## Task A
@@ -43,6 +43,6 @@ Now, let's consider the small-world index $\sigma$ for the ring network of $n$ n
 A short write-up: **pictures of your write up** for Tasks A and B, and text summary of the discussion (Task C). 
 
 
-**Submit here:** <https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform>
+**Submit here:** <https://docs.google.com/forms/d/e/1FAIpQLSfn4BVgYhh449xsIjg2aE__tcQ8Ch6k3jZVyLypp8Flmkf2bg/viewform>
 
 One submission per team.
