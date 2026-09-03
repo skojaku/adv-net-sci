@@ -680,10 +680,6 @@ window.Quarto = {
   <ul>
   <li><a href="#mini-project-how-small-is-a-small-world" id="toc-mini-project-how-small-is-a-small-world" class="nav-link active" data-scroll-target="#mini-project-how-small-is-a-small-world">Mini Project — How small is a small world?</a>
   <ul class="collapse">
-  <li><a href="#how-to-work" id="toc-how-to-work" class="nav-link" data-scroll-target="#how-to-work">How to work</a></li>
-  <li><a href="#task-a" id="toc-task-a" class="nav-link" data-scroll-target="#task-a">Task A</a></li>
-  <li><a href="#task-b" id="toc-task-b" class="nav-link" data-scroll-target="#task-b">Task B</a></li>
-  <li><a href="#task-c" id="toc-task-c" class="nav-link" data-scroll-target="#task-c">Task C</a></li>
   <li><a href="#submission" id="toc-submission" class="nav-link" data-scroll-target="#submission">Submission</a></li>
   </ul></li>
   </ul>
@@ -725,43 +721,29 @@ window.Quarto = {
 
 <section id="mini-project-how-small-is-a-small-world" class="level1">
 <h1>Mini Project — How small is a small world?</h1>
-<p><strong>Teams of up to three. Ninety minutes, in class. Three minutes to present at the end.</strong></p>
 <p>The small-world index compares a network against a random one of the same size:</p>
 <p><span class="math display">\sigma \;=\; \frac{C / C_{\text{rand}}}{L / L_{\text{rand}}}</span></p>
 <p>Above 1 it says <em>small world</em>. Below 1 it says <em>not</em>.</p>
-<section id="how-to-work" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-work">How to work</h2>
 <ol type="1">
-<li>Form a team of maximum of three persons.</li>
-<li>There are three tasks A, B, C. Tasks A and B are for individuals and task C is for the group. Decide who take A or B.</li>
-<li>You’ll submit your workout on papers 1 and 2, along with the discussion via <a href="https://docs.google.com/forms/d/e/1FAIpQLSfn4BVgYhh449xsIjg2aE__tcQ8Ch6k3jZVyLypp8Flmkf2bg/viewform">this form</a>.</li>
+<li>Form a team of maximum of three persons. There are three tasks A, B, C. Tasks A and B are for individuals and task C is for the group. Decide who take A or B.</li>
+<li>You’ll submit your workout on papers 1 and 2, along with the discussion via <a href="https://go.skojaku.com/m02mini">this form</a>.</li>
 <li>You’ll present your results at the end of the class.</li>
 </ol>
-</section>
-<section id="task-a" class="level2">
-<h2 class="anchored" data-anchor-id="task-a">Task A</h2>
-<p>Consider a random network. It consists of <span class="math inline">n</span> nodes, and each pair of nodes is connected with probability <span class="math inline">p</span>, independently of all other pairs. Let <span class="math inline">k</span> denote the average number of links per node.</p>
-<p>On the paper, write the definition of the clustering coefficient and average path length. Then, derive the clustering coefficient <span class="math inline">C_{\text{rand}}</span> and the average path length <span class="math inline">L_{\text{rand}}</span> for the random graphs by using <span class="math inline">(n,p)</span>. Also derive them using <span class="math inline">(n,k)</span>. Make sure to state all assumptions to derive <span class="math inline">C_{\text{rand}}</span> and <span class="math inline">L_{\text{rand}}</span>.</p>
-</section>
-<section id="task-b" class="level2">
-<h2 class="anchored" data-anchor-id="task-b">Task B</h2>
-<p>Now the opposite: <span class="math inline">n</span> nodes in a circle, each joined to its <span class="math inline">k</span> nearest neighbours, <span class="math inline">k/2</span> on each side. No shortcuts anywhere. Derive <span class="math inline">C_{\text{ring}}</span> and <span class="math inline">L_{\text{ring}}</span>.</p>
-</section>
-<section id="task-c" class="level2">
-<h2 class="anchored" data-anchor-id="task-c">Task C</h2>
-<p>Now, let’s consider the small-world index <span class="math inline">\sigma</span> for the ring network of <span class="math inline">n</span> nodes.</p>
+<ul>
+<li><p><strong>Task A</strong>: Consider a random network. It consists of <span class="math inline">n</span> nodes, and each pair of nodes is connected with probability <span class="math inline">p</span>, independently of all other pairs. Let <span class="math inline">k</span> denote the average number of links per node. On the paper, write the definition of the clustering coefficient and average path length. Then, derive the clustering coefficient <span class="math inline">C_{\text{rand}}</span> and the average path length <span class="math inline">L_{\text{rand}}</span> for the random graphs by using <span class="math inline">(n,p)</span>. Also derive them using <span class="math inline">(n,k)</span>. Make sure to state all assumptions to derive <span class="math inline">C_{\text{rand}}</span> and <span class="math inline">L_{\text{rand}}</span>.</p></li>
+<li><p><strong>Task B</strong>: Consider a ring network of <span class="math inline">n</span> nodes, each joined to its <span class="math inline">k</span> nearest neighbours, <span class="math inline">k/2</span> on each side. No shortcuts. Derive <span class="math inline">C_{\text{ring}}</span> and <span class="math inline">L_{\text{ring}}</span>.</p></li>
+<li><p><strong>Task C</strong>: Let’s consider the small-world index <span class="math inline">\sigma</span> for the ring network of <span class="math inline">n</span> nodes. Then, imagine <span class="math inline">\sigma</span> as a function of <span class="math inline">n</span> for fixed <span class="math inline">k</span>.</p>
 <ol type="1">
-<li><p>Plot <span class="math inline">\sigma</span> as a function of <span class="math inline">n</span> for fixed <span class="math inline">k</span>.</p></li>
-<li><p>Is there a size at which the ring is called a small world? If so, find it. If not, show why not.</p></li>
-<li><p>Does <span class="math inline">\sigma &gt; 1</span> mean a network is a small world?</p></li>
-<li><p>If a paper reports <span class="math inline">\sigma = 4.2</span> for some network, what do you now want to know before you believe it?</p></li>
-<li><p>What would you report instead? Propose something, and say what it costs you.</p></li>
-</ol>
-</section>
+<li>Is there a size at which the ring is called a small world? If so, find it. If not, show why not.</li>
+<li>Does <span class="math inline">\sigma &gt; 1</span> mean a network is a small world?</li>
+<li>If a paper reports <span class="math inline">\sigma = 4.2</span> for some network, what do you now want to know before you believe it?</li>
+<li>What would you report instead? Propose something, and say what it costs you.</li>
+</ol></li>
+</ul>
 <section id="submission" class="level2">
 <h2 class="anchored" data-anchor-id="submission">Submission</h2>
 <p>A short write-up: <strong>pictures of your write up</strong> for Tasks A and B, and text summary of the discussion (Task C).</p>
-<p><strong>Submit here:</strong> <a href="https://docs.google.com/forms/d/e/1FAIpQLSfn4BVgYhh449xsIjg2aE__tcQ8Ch6k3jZVyLypp8Flmkf2bg/viewform" class="uri">https://docs.google.com/forms/d/e/1FAIpQLSfn4BVgYhh449xsIjg2aE__tcQ8Ch6k3jZVyLypp8Flmkf2bg/viewform</a></p>
+<p><strong>Submit here:</strong> <a href="https://go.skojaku.com/m02mini" class="uri">https://go.skojaku.com/m02mini</a></p>
 <p>One submission per team.</p>
 
 
