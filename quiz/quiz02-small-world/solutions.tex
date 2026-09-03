@@ -14,7 +14,7 @@
 \newenvironment{grading}
   {\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
                      sharp corners, boxsep=2pt, left=6pt, right=6pt,
-                     top=4pt, bottom=4pt]\small\textbf{Marking.}\ }
+                     top=4pt, bottom=4pt]\footnotesize\textbf{Marking.}\ }
   {\end{tcolorbox}}
 
 \begin{document}
@@ -93,79 +93,92 @@ number --- full marks. Dividing by $36$ or $21$ (self-pairs included) loses the
 third point only.
 \end{grading}
 
-\newpage
+\vspace{0.6em}
 % ---------------------------------------------------------------------------
 \question{2}{4}{A tempting index.}
 
 For the network above, $S = \dfrac{3/7}{23/15} = \dfrac{45}{161} \approx 0.28$.
 
-\textbf{(a) [3 pts]} \textbf{$S$ has no baseline, and its two halves do not
-live on the same scale.} ``Small world'' is a \emph{comparative} claim: paths
-as short as in a random network of the same size and density, while clustering
-is far higher than that random network's. $S$ compares nothing --- it divides a
-bounded quantity by an unbounded one:
+\textbf{(a) [2 pts]} \emph{A case that ranks the wrong way round.} A
+$1000$-node Watts--Strogatz ring at a small rewiring probability is the
+textbook small world: $C \approx 0.5$, $\langle\ell\rangle \approx 5$, so
+$S \approx 0.1$. The six-node network on the front of this sheet --- a star
+with two extra edges, and no small-world character whatever --- scores
+$S \approx 0.28$. $S$ calls the second one nearly three times the more
+``small-world'' of the two.
 
-\begin{itemize}[leftmargin=1.4em, itemsep=0.15em, topsep=0.2em]
-\item $C \in [0,1]$ always. $\langle \ell \rangle$ grows with the number of
-      nodes, roughly like $\log n / \log \langle k \rangle$. So $S$ falls as a
-      network gets bigger \emph{whatever its structure}, and two networks of
-      different sizes cannot be compared with it at all.
-\item The maximum of $S$ is the complete graph: $C = 1$, $\langle\ell\rangle
-      = 1$, $S = 1$. Nobody calls a clique a small world --- it has no long
-      distances to shorten.
-\end{itemize}
+\emph{What the case exposes.} \textbf{$S$ has no baseline, and its two halves
+do not live on the same scale.} ``Small world'' is a \emph{comparative} claim:
+paths as short as in a random network of the same size and density, while
+clustering is far higher than that random network's. $S$ compares nothing --- it
+divides a bounded quantity by an unbounded one. $C \in [0,1]$ always, while
+$\langle \ell \rangle$ grows with the number of nodes, roughly like
+$\log n / \log \langle k \rangle$. So $S$ falls as a network gets bigger
+\emph{whatever its structure}, and two networks of different sizes cannot be
+compared with it at all.
 
-\emph{A concrete inversion.} A $1000$-node Watts--Strogatz ring at a small
-rewiring probability is the textbook small world: $C \approx 0.5$,
-$\langle\ell\rangle \approx 5$, so $S \approx 0.1$. The six-node network on the
-front of this sheet --- a star with two extra edges, and no small-world
-character whatever --- scores $S \approx 0.28$. $S$ ranks it nearly three times
-the more ``small-world'' of the two.
-
-\emph{Two further breakages, either of which earns the point on its own:} any
-triangle-free network has $C = 0$ and therefore $S = 0$, however short its
-paths; and $\langle\ell\rangle$ is undefined (or infinite) the moment the
-network is disconnected, so $S$ cannot be computed for most real data.
+\emph{Other cases that work just as well.} The complete graph maximises $S$:
+$C = 1$, $\langle\ell\rangle = 1$, $S = 1$, and nobody calls a clique a small
+world --- it has no long distances to shorten. Any triangle-free network has
+$C = 0$ and therefore $S = 0$, however short its paths. And
+$\langle\ell\rangle$ is undefined the moment the network is disconnected, so
+$S$ cannot be computed for most real data at all.
 
 \begin{grading}
-Three points, one each:
-\textbf{(i)} naming the missing baseline --- that small-worldness has to be
-measured \emph{against} something, normally a randomized network with the same
-size and degrees.
-\textbf{(ii)} an argument for \emph{why} the raw ratio cannot work: the size
-dependence above, or that a bounded numerator over an unbounded denominator is
-not a meaningful quantity. ``It is not normalized'' with no reason is not the
-point.
-\textbf{(iii)} a counterexample that actually holds. \emph{Check it} --- a
-student who asserts an inversion without numbers, or whose numbers do not
-invert, earns nothing for this third point. The clique, the two-network
-comparison, the $C = 0$ tree, and the disconnected network are all full credit.
+Two points.
+\textbf{(i) The concrete case}, and \emph{check it} --- the sheet asked for one,
+so an answer that only says ``it is not normalized'' earns nothing here. Any
+of the four above is full credit: the two-network inversion, the clique, a
+triangle-free network, a disconnected one. A student who asserts an inversion
+without numbers, or whose numbers do not actually invert, gets 0 for this
+point; name the failure in the feedback.
+\textbf{(ii) The defect the case exposes} --- the missing baseline, or the
+size dependence, or equivalently that a bounded numerator over an unbounded
+denominator cannot be compared across networks. A case presented with no
+statement of what is wrong keeps (i) only.
 
-A student who instead attacks $S$ for being \emph{unitless but not scale-free},
-or for mixing a per-triple ratio with a per-pair mean, has named the same
-defect in other words --- give (i) and (ii).
+A student who attacks $S$ for \emph{mixing a per-triple ratio with a per-pair
+mean}, or for \emph{rewarding density rather than the small-world trade-off},
+has named the same defect in other words --- award (ii).
 \end{grading}
 
-\textbf{(b) [1 pt]} Normalize each half against a randomized network with the
+\textbf{(b) [2 pts]} Normalize each half against a randomized network with the
 same number of nodes and the same degree sequence (a configuration-model
-rewiring), and average over several draws:
+rewiring), averaged over several draws:
 \[
   \sigma \;=\; \frac{C / C_{\text{rand}}}{\langle\ell\rangle /
   \langle\ell\rangle_{\text{rand}}}, \qquad \sigma \gg 1
   \;\Longrightarrow\; \text{small world.}
 \]
-It compares the network against a version of \emph{itself} with the same size
-and degrees but the edges shuffled, so ``high clustering'' and ``short paths''
-both mean high and short \emph{relative to chance}.
+
+\emph{Why this fixes it.} Both halves are now ratios against the \emph{same}
+network with its edges shuffled, so both are dimensionless multiples of what
+chance alone would give. The growth of $\langle\ell\rangle$ with $n$ appears in
+the numerator and the denominator of $\langle\ell\rangle / \langle\ell\rangle
+_{\text{rand}}$ and cancels: $\sigma$ no longer drifts with size, and two
+networks of different sizes become comparable. It also disposes of the clique,
+which \emph{is} its own randomization and so scores $\sigma = 1$ rather than the
+maximum --- what is left is exactly the Watts--Strogatz statement: much more
+clustering than chance, at no cost in path length.
 
 \begin{grading}
-The one point needs \textbf{both}: a definition that divides through by a
-reference, \emph{and} a sentence saying what the reference is. $\sigma$ is the
+Two points.
+\textbf{(i) The definition}, and it must name its reference. $\sigma$ is the
 model answer; Telesford's
 $\omega = \langle\ell\rangle_{\text{rand}}/\langle\ell\rangle - C/C_{\text{latt}}$
-is equally correct, and so is any home-made index that compares against a
-randomized null. ``Divide by a random graph'' with no statement of which random
-graph earns nothing --- the same-degree constraint is the whole content.
+is equally correct, and so is any home-made index that divides through by a
+randomized null. An Erd\H{o}s--R\'enyi null with the same $n$ and the same
+number of edges is fine and is what $\sigma$ was first defined against.
+\textbf{``Divide by a random graph'' with no statement of which random graph
+earns nothing} --- the same-size, same-degrees constraint is the content.
+A repair that rescales only one half (say $C/C_{\text{rand}}$ with
+$\langle\ell\rangle$ dropped) also earns nothing: it stops measuring short
+paths.
+\textbf{(ii) Why it works.} The point is for connecting the repair back to the
+defect named in (a) --- the size dependence cancels, or both halves now mean
+``relative to chance'', or the student's own counterexample is worked through
+and no longer breaks. A correct $\sigma$ with no explanation, or with
+``because it is normalized'' and nothing more, keeps (i) only.
 \end{grading}
 
 \end{document}

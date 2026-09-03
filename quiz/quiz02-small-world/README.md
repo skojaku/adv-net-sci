@@ -9,11 +9,17 @@ covering the M02 (small-world) module.
    clustering coefficient (3 pts) and the average path length (3 pts).
    Answers: `C = 3/7 ≈ 0.43` and `⟨ℓ⟩ = 23/15 ≈ 1.53`.
 2. **A tempting index** (4 pts). Define small-worldness as `S = C / ⟨ℓ⟩` and
-   ask what is wrong with it. The answer is that it has no baseline, and that
-   its two halves do not scale together: `C ∈ [0,1]` while `⟨ℓ⟩` grows with
-   `n`, so `S` drifts with size, is maximised by the complete graph, and cannot
-   compare two networks at all. The repair is `σ = (C/C_rand)/(⟨ℓ⟩/⟨ℓ⟩_rand)`
-   against a same-`n`, same-degree randomization.
+   ask what is wrong with it — **with a concrete case** (2 pts), then repair it
+   and say why the repair works (2 pts). The defect is that `S` has no baseline
+   and that its two halves do not scale together: `C ∈ [0,1]` while `⟨ℓ⟩` grows
+   with `n`, so `S` drifts with size, is maximised by the complete graph, and
+   cannot compare two networks at all. The repair is
+   `σ = (C/C_rand)/(⟨ℓ⟩/⟨ℓ⟩_rand)` against a same-`n`, same-degree
+   randomization, and it works because the size dependence cancels.
+
+   Both halves are graded on two things each, and in both the second thing is
+   the *reasoning*: a case with no stated defect, or a correct `σ` with no
+   explanation, is half marks.
 
 The formula for the global clustering coefficient is **printed on the sheet**.
 Without it the likely answer is the average *local* coefficient, which for this
@@ -57,9 +63,9 @@ the droplet rather than a reprint.
 | `go.skojaku.com/quiz02` | the question PDF on Drive |
 | `go.skojaku.com/ans-quiz02` | the Google Form, where the photos go |
 
-**Neither exists yet.** Both are `handle` blocks in the `go.skojaku.com` site
-of `/etc/caddy/Caddyfile` on `ssh digitalocean`, copied from the `quiz01` pair
-with the two targets below. After editing, run
+Both are live as of 2026-09-03. They are `handle` blocks in the
+`go.skojaku.com` site of `/etc/caddy/Caddyfile` on `ssh digitalocean`, beside
+the `quiz01` pair. After editing, run
 `caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile`, then
 `systemctl reload caddy`.
 
@@ -91,8 +97,8 @@ gws drive files update --params '{"fileId": "18BJ17P8Pgq6cUAeoekuZXUY3k5F8jqLc"}
 
 ## The Google Form
 
-- **Students:** <https://docs.google.com/forms/d/e/1FAIpQLSd0UZm_8Kk5kLCcUaJuQYu6YKnraycDTSsnXEvnqhTzCRdVTA/viewform>
-  (to become <https://go.skojaku.com/ans-quiz02>)
+- **Students:** <https://go.skojaku.com/ans-quiz02> →
+  <https://docs.google.com/forms/d/e/1FAIpQLSd0UZm_8Kk5kLCcUaJuQYu6YKnraycDTSsnXEvnqhTzCRdVTA/viewform>
 - **Editing and responses:** <https://docs.google.com/forms/d/106JO7K2xBvgDFcr7FeO0vaX8i-VhcHAiU_VgYv8S75I/edit>
 - Form id: `106JO7K2xBvgDFcr7FeO0vaX8i-VhcHAiU_VgYv8S75I`
 - Owned by the Binghamton account (`~/.config/gws-binghamton`).
@@ -160,8 +166,10 @@ missing and grades it, reading the form id out of `session.json`.
 
 ## Still to do before class
 
-- [ ] Add the two file-upload questions in the Forms editor (above).
-- [ ] Add the `quiz02` and `ans-quiz02` handles to the Caddyfile on the droplet.
+- [ ] Add the two file-upload questions in the Forms editor (above). Until
+      this is done, `grader.run check` stops with
+      `form … has no file-upload question titled ['Question 1', 'Question 2']`.
+- [x] The `quiz02` and `ans-quiz02` handles are on the droplet and answer 302.
 - [ ] Print the sheet.
 - [ ] In Brightspace: a grade item named **`m02-0903`**, 10 points
       (*Grades → Manage Grades → New*), and a quiz object named **`Q2`** for
