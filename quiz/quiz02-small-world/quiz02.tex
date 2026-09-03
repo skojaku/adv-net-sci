@@ -1,0 +1,108 @@
+% Quiz 02 --- Small-world networks. Printed, worked in class, 15 minutes.
+%
+% The sheet carries the questions only. No boxes and no ruled lines: students
+% write on the back or on their own paper, and the Google Form takes a photo.
+%
+% Compile with: xelatex -interaction=nonstopmode quiz02.tex   (run twice)
+\documentclass[a4paper, 12pt]{extarticle}
+\input{quizkit}
+
+\tikzset{
+  gnode/.style={circle, draw=pltblue, fill=pltblue!12, line width=0.9pt,
+                minimum size=7mm, inner sep=0pt, font=\small\bfseries},
+  gedge/.style={line width=0.9pt, draw=rulegrey}
+}
+
+\begin{document}
+
+\quizhead{Quiz 2 \; --- \; Small-world networks}
+        {15 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
+         Closed notes, work on your own}
+        {Fall 2026}
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.19\textwidth}
+\begin{center}
+\includegraphics[width=2.2cm]{quiz02-form-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.77\textwidth}
+{\small
+\textbf{You hand in two photos, one per question.} Write each question's answer
+on its own page --- the back of this sheet, or paper of your own. Then
+photograph each page and upload it.
+
+\vspace{0.2em}
+
+Point a camera at the square, or type \formshort\ --- keep your working and
+your labels readable.}
+\end{minipage}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+\question{1}{6}{Measure this network.}
+
+\vspace{-1.1em}
+\begin{center}
+\begin{tikzpicture}[scale=0.78, every node/.style={transform shape}]
+  \node[gnode] (A) at ( 0.00,  0.00) {A};
+  \node[gnode] (B) at ( 0.00,  2.10) {B};
+  \node[gnode] (F) at ( 2.00,  0.65) {F};
+  \node[gnode] (D) at ( 1.23, -1.70) {D};
+  \node[gnode] (E) at (-1.23, -1.70) {E};
+  \node[gnode] (C) at (-2.00,  0.65) {C};
+  \draw[gedge] (A) -- (B);
+  \draw[gedge] (A) -- (C);
+  \draw[gedge] (A) -- (D);
+  \draw[gedge] (A) -- (E);
+  \draw[gedge] (A) -- (F);
+  \draw[gedge] (B) -- (F);
+  \draw[gedge] (C) -- (E);
+\end{tikzpicture}
+\end{center}
+\vspace{-1.1em}
+
+\textbf{(a) [3 pts]} Compute the \textbf{global clustering coefficient}
+\[
+  C \;=\; \frac{3 \times (\text{number of triangles})}
+                {\text{number of connected triples}},
+\]
+where a \emph{connected triple} is a node together with an unordered pair of
+its neighbors. Give the two counts before you give $C$.
+
+\vspace{0.1em}
+
+\textbf{(b) [3 pts]} Compute the \textbf{average path length} $\langle \ell
+\rangle$: the mean shortest-path distance over all $\binom{6}{2}$ unordered
+pairs of distinct nodes. Show how the pairs split by distance before you give
+the average.
+
+% ---------------------------------------------------------------------------
+\question{2}{4}{A tempting index.}
+
+Suppose we define the \emph{small-worldness} of a network as the ratio of the
+two numbers you just computed,
+\[
+  S \;=\; \frac{C}{\langle \ell \rangle}.
+\]
+A network is then called ``more small-world'' the larger $S$ is.
+
+\vspace{0.2em}
+
+\textbf{(a) [3 pts]} This definition is broken. Say what is wrong with it, and
+back your answer with a concrete case --- two networks that $S$ ranks the wrong
+way round, or a network with a large $S$ that no one would call a small world.
+
+\vspace{0.2em}
+
+\textbf{(b) [1 pt]} Repair it. Write down a definition that does not have the
+problem you named, and say in one sentence what your version compares against.
+
+\vfill
+
+{\footnotesize\color{rulegrey}
+Done early? Start the assignment (the pair notebook) handed out before class.}
+
+\end{document}
