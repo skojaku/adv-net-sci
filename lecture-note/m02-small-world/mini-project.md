@@ -1,69 +1,47 @@
 # Mini Project — How small is a small world?
 
-The small-world index compares a network to a random network of the same size.
+**Teams of up to three. Ninety minutes, in class. Three minutes to present at
+the end.**
 
-$$\sigma \;=\; \frac{C / C_{rand}}{L / L_{rand}}$$
+The small-world index compares a network against a random one of the same size:
 
-A value greater than 1 indicates a “small-world” network, while a value less than 1 indicates otherwise. The following discussion focuses on whether we should accept this claim.
+$$\sigma \;=\; \frac{C / C_{\text{rand}}}{L / L_{\text{rand}}}$$
 
----
+Above 1 it says *small world*. Below 1 it says *not*. 
 
-## 1. A random network
+## How to work 
 
-Consider a random network. There are $n$ nodes, and each pair of nodes is connected with probability $p$, independently of all other pairs. Let $k$ be the average number of links per node.
+1. Form a team of maximum of three persons.
+2. There are three tasks A, B, C. Tasks A and B are for individuals and task C is for the group. Decide who take A or B.
+3. You'll submit your workout on papers 1 and 2, along with the discussion via  [this form](https://forms.gle/8L9Q6336Q4X9zjf26).
+4. You'll present your results at the end of the class.
 
-- Calculate $C_{rand}$, that is, its clustering coefficient.
-- Calculate $L_{rand}$, that is, its average distance.
+## Task A
 
-Calculate both on paper based on their definitions. For $L_{rand}$, you must make an assumption about the shape of the network. The assumption is that the network is a tree, where every node has an offspring of $k-1$ nodes (1 for parent). 
+Consider a random network. It consists of $n$ nodes, and each pair of nodes is connected with probability $p$, independently of all other pairs. Let $k$ denote the average number of links per node.
 
-## 2. A ring
+On the paper, write the definition of the clustering coefficient and average path length. Then, derive the clustering coefficient $C_{\text{rand}}$ and 
+the average path length $L_{\text{rand}}$ for the random graphs by using $(n,p)$. Also derive them using $(n,k)$. Make sure to state all assumptions to derive  $C_{\text{rand}}$ and  $L_{\text{rand}}$.
 
-Now consider the opposite case: $n$ nodes are arranged in a circle, and each node is connected to $k$ nearest-neighbor nodes—$k/2$ to the left and $k/2$ to the right. There are no shortcuts.
+## Task B
 
-- Find $C_{ring}$.
-- Find $L_{ring}$.
+Now the opposite: $n$ nodes in a circle, each joined to its $k$ nearest neighbours, $k/2$ on each side. No shortcuts anywhere. Derive $C_{\text{ring}}$ and $L_{\text{ring}}$. 
 
-One of these values does not depend on $n$ at all. Which one is it, and why?
+## Task C
 
-## 3. Grow it
+Now, let's consider the small-world index $\sigma$ for the ring network of $n$ nodes. 
 
-Fix $k$ and let $n$ grow large.
+1. Plot  $\sigma$ as a function of $n$ for fixed $k$.
 
-- What happens to $\sigma$ in the ring? Derive an expression using $n$ and $k$, and explain in words what it means.
-- Is there a size at which the ring is called a “small-world” network? If so, determine that size. If not, explain why.
+2. Is there a size at which the ring is called a small world? If so, find it. If not, show why not.
+3. Does $\sigma > 1$ mean a network is a small world?
+4. If a paper reports $\sigma = 4.2$ for some network, what do you now want to know before you believe it?
+5. What would you report instead? Propose something, and say what it costs you.
 
-Write down your predictions **before** doing anything.
+## Submission 
 
-Then, verify them using code. 
+A short write-up: **pictures of your write up** for Tasks A and B, and text summary of the discussion (Task C). 
 
-1. Create a ring network of $n$ nodes.
-2. Compute the small-world index as a function of $n$
-3. Plot both your prediction and actual value.
-
-Your lab notebook already contains everything you need to build and measure the networks. 
-
-## 4. So what is $\sigma$ measuring?
-
-- Does $\sigma > 1$ mean a network is a small world?
-- If a paper reports $\sigma = 4.2$ for some network, what do you now want to
-  know before you believe it?
-- What would you report instead? Propose something.
-
----
-
-## What to hand in
-
-Short description: **Text and figures**. Anything other than Word is acceptable, such as Markdown, PDFs, notebooks, or photos of whiteboards.
-
-Place it in a **public GitHub repository** and submit the repository link.
-
-The following content must be included, though it does not need to be lengthy:
-
-- The derivation process for §1 and §2, as well as the assumptions you identified
-- The prediction in §3, and whether the actual numbers matched it
-- Your answer to §4 in your own words, including any issues you were unable to resolve
-- The names of all team members
 
 **Submit here:** <https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform>
 
@@ -77,35 +55,22 @@ One submission per team.
 everything up to the submission itself; you press the last button.*
 
 > You are helping a team of students hand in a mini-project for a graduate
-> network science course. The work itself — the derivations, the prediction, the
-> argument in §4 — is theirs. Do not do it for them, and do not invent results
-> they did not get. Your job is to get what they have into a repository and give
-> them a link.
+> network science course. The work itself — the derivations in Tasks A and B,
+> the plot and the argument in Task C — is theirs. Do not do it for them, and do
+> not invent results they did not get.
 >
-> 1. **Ask them what they have.** Their derivations, their numbers, their
->    figures, and their answer to §4. If they have it on paper, ask them to
->    photograph it and tell you the file paths. If a section is missing, say so
->    and stop — do not fill it in.
-> 2. **Make a folder** and write `README.md` in it: their names, then one
->    section per numbered task above, in their words. Keep their phrasing.
->    Reproduce their maths in LaTeX so it renders on GitHub.
-> 3. **Put the figures in the same folder** and reference them from the README
->    with relative paths. If they ran a numerical check, save the script next to
->    it so somebody can re-run it. If their prediction and their measurement
->    disagreed, say so in the README rather than hiding it — a disagreement they
->    explain is worth more than one they smooth over.
-> 4. **Create a public repository and push**, using the GitHub CLI:
->
->    ```bash
->    gh auth status || gh auth login
->    git init && git add -A && git commit -m "M02 mini project"
->    gh repo create <a-name-they-choose> --public --source=. --push
->    ```
->
->    If `gh` is not installed or not logged in, tell them which of the two it is
->    and how to fix it, and stop there.
-> 5. **Check the repository actually opens.** Fetch the URL and confirm the
->    README renders and the images load. A broken image link is the commonest
->    failure and it is invisible locally.
-> 6. **Print the URL and stop.** Tell them to paste it into the form at the link
->    above. **Do not submit the form yourself** — they hand in their own work.
+> 1. **Ask them what they have.** Photographs of their paper for Task A and for
+>    Task B, and their answers to the five points in Task C. If a piece is
+>    missing, say so and stop — do not fill it in.
+> 2. **Check the photographs are readable.** Open each one. The whole sheet in
+>    frame, the right way up, the handwriting legible at full size. An
+>    unreadable photograph is the commonest failure and it is invisible to the
+>    person who took it. If one is bad, say which and ask for it again.
+> 3. **Check Task C is answered, not summarised.** All five points, each with an
+>    actual answer. If they have skipped one, tell them which. Do not write it.
+> 4. **Tidy their text, do not rewrite it.** Fix spelling and broken sentences.
+>    Keep their phrasing, their claims, and their disagreements. If their plot
+>    and their argument contradict each other, point it out and let them decide.
+> 5. **Print the form link and stop.** Tell them to upload the two photographs
+>    and paste their Task C text into the form at the link above. **Do not submit
+>    the form yourself** — they hand in their own work.
