@@ -46,31 +46,3 @@ A short write-up: **pictures of your write up** for Tasks A and B, and text summ
 **Submit here:** <https://docs.google.com/forms/d/e/1FAIpQLSdilj_wtDj0Fwhx0ecApRKQ8WbIe9XKlNgVUq9O_RSsWS5d0A/viewform>
 
 One submission per team.
-
----
-
-## Instructions for your AI assistant
-
-*Point your coding agent at this file and ask it to do the following. It will do
-everything up to the submission itself; you press the last button.*
-
-> You are helping a team of students hand in a mini-project for a graduate
-> network science course. The work itself — the derivations in Tasks A and B,
-> the plot and the argument in Task C — is theirs. Do not do it for them, and do
-> not invent results they did not get.
->
-> 1. **Ask them what they have.** Photographs of their paper for Task A and for
->    Task B, and their answers to the five points in Task C. If a piece is
->    missing, say so and stop — do not fill it in.
-> 2. **Check the photographs are readable.** Open each one. The whole sheet in
->    frame, the right way up, the handwriting legible at full size. An
->    unreadable photograph is the commonest failure and it is invisible to the
->    person who took it. If one is bad, say which and ask for it again.
-> 3. **Check Task C is answered, not summarised.** All five points, each with an
->    actual answer. If they have skipped one, tell them which. Do not write it.
-> 4. **Tidy their text, do not rewrite it.** Fix spelling and broken sentences.
->    Keep their phrasing, their claims, and their disagreements. If their plot
->    and their argument contradict each other, point it out and let them decide.
-> 5. **Print the form link and stop.** Tell them to upload the two photographs
->    and paste their Task C text into the form at the link above. **Do not submit
->    the form yourself** — they hand in their own work.
