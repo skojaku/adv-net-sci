@@ -1,7 +1,7 @@
 # Module 03 — Marp deck
 
-Milgram's small-world experiment, path length and clustering, the σ index, and
-the Watts–Strogatz model. Story plan and lecturer decisions: `plan.md`.
+Borůvka's minimum spanning tree, breaking it, percolation, the Molloy–Reed
+criterion, and robust-yet-fragile. Story plan and lecturer decisions: `plan.md`.
 
 ## Files
 
@@ -18,9 +18,13 @@ often renders blank in preview/HTML. Use PNG/JPG for slide assets.
 
     npm i -g @marp-team/marp-cli
 
-    marp m03-robustness.md --theme network-science.css --allow-local-files -o m03-robustness.html
-    marp m03-robustness.md --theme network-science.css --allow-local-files --pdf
-    marp m03-robustness.md --theme network-science.css --allow-local-files --pptx
+    marp m03-robustness.md --theme network-science.css --allow-local-files --html --no-stdin -o m03-robustness.html
+    marp m03-robustness.md --theme network-science.css --allow-local-files --html --no-stdin --pdf
+    marp m03-robustness.md --theme network-science.css --allow-local-files --html --no-stdin --pptx
+
+`--html` is not optional: without it Marp's default safelist strips the `<script>`
+and `<button>` tags the two animation stages are made of, and the slides print
+their own source to the room instead.
 
 Or in VS Code with the Marp extension, add to settings.json:
 
@@ -51,6 +55,18 @@ Math is KaTeX (`math: katex` in the front matter), so `$...$` and `$$...$$` work
     <div class="formula">      tinted formula panel
     <div class="note">         gray annotation copy
     <!-- ... -->               speaker notes
+
+## Animation stages
+
+Two slides mount the lecture note's animation kit rather than a GIF: `mst-race`
+(Kruskal and Prim on one grid) and `rf-attack` (random failure, then an
+adversary). The scene arrays live in `lecture-note/assets/anim/<stage>.js` and
+the note page mounts the same files, so the two can never drift. The kit's
+slide-sized stylesheet is at the bottom of `network-science.css`.
+
+`<script>window.animStepOnly = true;</script>` runs once, before the first
+`anim.js`, and puts every stage in this deck into step mode: the Pause button is
+removed and nothing advances until the lecturer presses ▶.
 
 Regenerate diagrams:
 

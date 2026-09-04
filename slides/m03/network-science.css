@@ -332,3 +332,477 @@ section::after {
 }
 section.lead::after,
 section.part::after { display: none; }
+
+/*-----------------------------------------------------------------------------
+  ANIMATION STAGE — the slide-sized port of lecture-note/assets/anim.css.
+
+  Same ink, same paper, same class names, so a scene script written for the
+  lecture note runs here unchanged; only the sizes differ, because a slide's
+  body is 30px where the note's is 18px. Drive it with
+  lecture-note/assets/anim.js and a scene file from lecture-note/assets/anim/.
+
+  This deck's theme writes its colours as literals rather than tokens, so the
+  tokens the kit expects are declared here, once, from this deck's palette.
+-----------------------------------------------------------------------------*/
+
+section {
+  --ink: #000000;
+  --ink-soft: #6b6b6b;
+  --ink-faint: #bdbcbf;
+  --accent: #3959A6;
+  --accent-soft: #e7ecf7;
+  --contrast: #B14434;
+  --contrast-soft: #f8e9e5;
+  --rule: #dddddd;
+  --paper: #fffdf8;
+  --hand: 'Caveat', 'Bradley Hand', 'Chalkboard SE', cursive;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+/* ---------- animation stage ---------- */
+/* The slide-sized port of lecture-note/assets/anim.css. Same ink, same paper,
+   same class names, so a scene script written for the note runs here unchanged
+   — only the sizes differ, because a slide's body is 30px where the note's is
+   18px. Drive it with slides/assets/anim.js.
+   Wrap the stage in <div class="stage-wrap"> when you want it centred. */
+
+section .anim-stage {
+  /* short private names, exactly as in the note's kit */
+  --_ink: var(--ink);
+  --_ink-soft: var(--ink-soft);
+  --_ink-faint: var(--ink-faint);
+  --_paper: var(--paper);
+  --_white: #ffffff;
+  --_accent: var(--accent);
+  --_accent-soft: var(--accent-soft);
+  --_amber: var(--contrast);
+  --_amber-soft: var(--contrast-soft);
+  --_rule: var(--rule);
+  --_hand: var(--hand);
+  --_mono: var(--mono);
+  --_shade: rgba(34, 33, 43, 0.18);
+
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 14px 16px 16px;
+  color: var(--_ink);
+  background-color: var(--_paper);
+  background-image:
+    linear-gradient(rgba(57, 89, 166, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 89, 166, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 2px solid var(--_ink);
+  border-radius: 14px 7px 16px 9px / 9px 16px 7px 14px;
+  box-shadow: 4px 5px 0 -1px var(--_shade);
+}
+
+section .anim-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+}
+section .anim-step {
+  font-family: var(--_hand);
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+section .anim-step .anim-num {
+  display: inline-block;
+  min-width: 32px;
+  margin-right: 8px;
+  padding: 0 7px;
+  text-align: center;
+  color: #fff;
+  background: var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+
+section .anim-dots { display: flex; gap: 0; flex: none; }
+section .anim-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+section .anim-dot::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: 1.8px solid var(--_ink);
+  border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+  background: transparent;
+}
+section .anim-dot[aria-current="true"]::before {
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+section .anim-btn {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 5px 11px;
+  color: var(--_ink);
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 14px 6px 14px 6px / 6px 14px 6px 14px;
+  box-shadow: 2px 2px 0 -0.5px rgba(34, 33, 43, 0.35);
+  cursor: pointer;
+  flex: none;
+}
+section .anim-btn:hover { background: var(--_accent-soft); }
+section .anim-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+
+section .anim-grid-2 {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+section .anim-panel {
+  --tilt: 0deg;
+  position: relative;
+  margin: 0 0 10px;
+  padding: 9px 11px 10px;
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  box-shadow: 2px 3px 0 -1px var(--_shade);
+  transform: rotate(var(--tilt));
+}
+section .anim-panel:last-child { margin-bottom: 0; }
+
+/* .anim-stack tilts its panels alternately, like a real pile. */
+section .anim-stack > .anim-panel:nth-child(even) { --tilt: -0.3deg; }
+section .anim-stack > .anim-panel:nth-child(odd) { --tilt: 0.25deg; }
+/* An unpadded window frame with its own chrome; a dark terminal; an empty slot
+   waiting to be filled. The modifiers compose with .anim-panel. */
+section .anim-panel--frame {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-width: 2px;
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  box-shadow: 3px 4px 0 -1px rgba(34, 33, 43, 0.25);
+}
+section .anim-panel--term { background: #221f30; color: #ece9f5; }
+section .anim-panel--dashed {
+  background: #fbf8ff;
+  border: 2.2px dashed var(--_ink);
+  border-radius: 12px 6px 14px 7px / 7px 14px 6px 12px;
+  box-shadow: none;
+}
+section .anim-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: #86c5ff;
+  animation: anim-blink 1s step-end infinite;
+}
+@keyframes anim-blink { 50% { opacity: 0; } }
+
+section .anim-caption {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--_ink-soft);
+  margin-top: 5px;
+}
+section .anim-quote {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.4;
+  padding-left: 10px;
+  border-left: 3px solid var(--_accent);
+}
+/* A row of the drawing's own numbers. The gap is load-bearing: without it the
+   label and its value run together into one word. */
+section .anim-readout {
+  font-family: var(--_mono);
+  font-size: 20px;
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+section .anim-readout b { font-weight: 700; }
+section .anim-readout--tight { gap: 13px; font-size: 18px; }
+section .anim-tally {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--_hand);
+  font-size: 23px;
+  line-height: 1.5;
+  color: var(--_ink);
+}
+section .anim-tally b { font-weight: 700; }
+section .anim-big {
+  font-family: var(--_hand);
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--_ink);
+}
+/* The per-scene prose, and the stage's own account of itself for a reader who
+   cannot see the drawing. Two lines are reserved so the box never jumps. */
+section .anim-note {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--_ink);
+  margin-top: 10px;
+  padding-left: 9px;
+  border-left: 3px solid var(--_accent);
+  /* Three lines, always. The longest note either deck mounts is 286 characters,
+     which wraps to three at this size across a full-width stage; reserving them
+     stops the drawing above jumping as the scenes change. */
+  min-height: calc(3 * 1.3em);
+}
+
+/* SVG ink — identical to the note's, so a scene's own geometry needs no edit.
+   The cap is a variable: set --anim-svg-max on the stage (or on the wrapper
+   holding one wide drawing) rather than re-declaring .anim-svg. */
+section .anim-svg {
+  display: block;
+  width: 100%;
+  max-width: var(--anim-svg-max, 420px);
+  height: auto;
+  margin: 0 auto;
+}
+section .anim-edge {
+  stroke: var(--_ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+}
+section .anim-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.8; }
+section .anim-node-off { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.8; }
+section .anim-accent-stroke { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-accent-fill { fill: var(--_accent); }
+section .anim-amber-stroke { stroke: var(--_amber); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-amber-fill { fill: var(--_amber); }
+section .anim-axis { stroke: var(--_ink); stroke-width: 1.4; }
+section .anim-marker { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+section .anim-marker--accent { stroke: var(--_accent); }
+section .anim-marker--faint { stroke: var(--_ink-faint); }
+section .anim-label { font-family: var(--_hand); font-size: 11px; fill: var(--_ink); }
+section .anim-faint { stroke: var(--_ink-faint); fill: var(--_ink-faint); }
+section .anim-knockout {
+  paint-order: stroke fill;
+  stroke: var(--_paper);
+  stroke-width: var(--anim-knockout-w, 3px);
+  stroke-linejoin: round;
+}
+section .anim-shade { fill: var(--_accent); fill-opacity: 0.16; stroke: none; }
+section .anim-trail {
+  stroke: var(--_amber);
+  stroke-width: 4.5;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+section .anim-token { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* motion primitives — plain add-on classes, so ink and motion stay separable */
+section .anim-draw {
+  stroke-dasharray: var(--dash, 240);
+  stroke-dashoffset: var(--dash, 240);
+  animation: anim-draw 0.4s ease forwards;
+}
+@keyframes anim-draw { to { stroke-dashoffset: 0; } }
+section .anim-fade { opacity: 0; animation: anim-fade 0.3s ease forwards; }
+@keyframes anim-fade { to { opacity: 1; } }
+section .anim-fade-out { animation: anim-fade-out 0.45s ease forwards; }
+@keyframes anim-fade-out { from { opacity: 1; } to { opacity: 0; } }
+section .anim-glide { transition: transform 0.34s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+section .anim-pop { animation: anim-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes anim-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+
+/* the knob — see mountKnob() in slides/assets/anim.js */
+section .anim-range { max-width: 420px; margin: 8px auto 4px; }
+section .anim-track {
+  position: relative;
+  height: 10px;
+  margin: 16px 7px 9px;
+  background: var(--_rule);
+  border: 1.8px solid var(--_ink);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+  touch-action: none;
+  cursor: pointer;
+}
+section .anim-knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background: var(--_accent);
+  border: 1.8px solid var(--_ink);
+  border-radius: 58% 42% 50% 50% / 50% 50% 42% 58%;
+  transition: left 0.12s linear;
+  touch-action: none;
+  cursor: grab;
+}
+section .anim-knob-live { transition: none; cursor: grabbing; }
+
+/* ---------- per-stage rules ---------- */
+/* One block per animation this deck mounts, mirroring the block that sits
+   beside the same stage in the lecture note. Only sizes differ: the note has a
+   520px column and this has a 1120px slide. Every colour, class and coordinate
+   comes from the shared scene file under lecture-note/assets/anim/, which the
+   note page and this deck both mount. */
+
+/* One line of note, not the kit's three. The kit reserves three because in the
+   note the note IS the reader's account of a drawing they cannot see; on a
+   slide the lecturer is that account. */
+section #mst-race .anim-note,
+section #rf-attack .anim-note { font-size: 16px; min-height: 1.3em; }
+
+/* ---- Kruskal and Prim on one grid (m03) ---- */
+section #mst-race .mst-col { text-align: center; transition: opacity 0.35s ease; }
+section #mst-race .mst-wait { opacity: 0.32; }
+section #mst-race .mst-head {
+  font-family: var(--_hand);
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+  min-height: 1.3em;
+}
+section #mst-race .mst-net { max-width: 265px; margin: 0 auto; --anim-svg-max: 265px; }
+section #mst-race .mst-bill { max-width: 240px; margin: 4px auto 0; }
+/* Two lines held open, not the note's four: the running log on a slide is a
+   caption, and the lecturer says the rest. */
+section #mst-race .mst-log {
+  max-width: 380px;
+  margin: 3px auto 0;
+  min-height: 2.6em;
+  text-align: left;
+}
+
+/* the five states a cable can be in */
+section #mst-race .anim-edge { transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.3s ease; }
+section #mst-race .mst-idle  { stroke: var(--_ink-faint); stroke-width: 1.5; }
+section #mst-race .mst-look  { stroke: var(--_amber); stroke-width: 3.6; }
+section #mst-race .mst-take  { stroke: var(--_accent); stroke-width: 3.4; }
+section #mst-race .mst-piece { stroke: var(--_amber); stroke-width: 3.4; }
+section #mst-race .mst-skip  { stroke: var(--_amber); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0.5; }
+section #mst-race .mst-gone  { stroke: var(--_ink-faint); stroke-width: 1.5; opacity: 0; }
+
+/* the price written on each cable, wearing that cable's state. These sizes are
+   viewBox units, so they scale with the drawing and need no slide value. */
+section #mst-race .mst-w { font-size: 10px; font-weight: 700; transition: fill 0.25s ease, opacity 0.3s ease; }
+section #mst-race .mst-w-off  { fill: var(--_ink-faint); }
+section #mst-race .mst-w-look { fill: var(--_amber); }
+section #mst-race .mst-w-on   { fill: var(--_accent); }
+section #mst-race .mst-w-two  { fill: var(--_amber); }
+section #mst-race .mst-w-gone { opacity: 0; }
+section #mst-race .mst-name { font-size: 9px; fill: var(--_ink-soft); }
+/* A town in the far piece after the cut. Deliberately not .anim-node, whose
+   accent fill is what "joined to the rest" means everywhere else here. */
+section #mst-race .mst-node-two { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* ---- Robust yet fragile (m03) ---- */
+/* The note stacks two grids over a chart in one 520px column, which on a 720px
+   frame runs off the bottom. Here the grids take the left half and the chart
+   the right, with the bar and the note spanning both. */
+section #rf-attack {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  column-gap: 22px;
+  align-items: start;
+}
+section #rf-attack .anim-bar { grid-column: 1 / -1; }
+section #rf-attack .anim-note { grid-column: 1 / -1; }
+
+section #rf-attack .rf-col { text-align: center; }
+section #rf-attack .rf-head {
+  font-family: var(--_hand);
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  min-height: 1.25em;
+}
+section #rf-attack .rf-ring .rf-head { color: var(--_amber); }
+section #rf-attack .rf-hubs .rf-head { color: var(--_accent); }
+/* Each grid's towns wear the colour of its own curve, so the chart needs no
+   legend: amber is the ring, accent is the hubs, everywhere. */
+section #rf-attack .rf-ring .anim-node { fill: var(--_amber); }
+section #rf-attack .rf-net { max-width: 175px; margin: 0 auto; --anim-svg-max: 175px; }
+section #rf-attack .rf-tally { text-align: left; max-width: 190px; margin: 4px auto 0; }
+
+/* Sixty cables in a 150-unit box read as felt at the kit's 2.2 width. */
+section #rf-attack .anim-edge { stroke-width: 1.5; transition: opacity 0.25s ease; }
+section #rf-attack .rf-cut { opacity: 0; }
+/* A removed town: still in its place, plainly no longer there. Deliberately
+   NOT .anim-node, so the amber rule above cannot re-fill it. */
+section #rf-attack .rf-out {
+  fill: none;
+  stroke: var(--_ink-faint);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 2.2;
+  opacity: 0.6;
+}
+
+section #rf-attack .rf-chart { margin-top: 0; --anim-svg-max: 420px; }
+section #rf-attack .rf-read { max-width: 600px; margin: 2px auto 0; justify-content: center; }
+/* The kit's caption is 20px, written for the note's narrow column. Here it
+   carries the chart's method line under a 600px chart, and four wrapped lines
+   of it is what pushed the stage through the bottom of the frame. */
+section #rf-attack .rf-cap { max-width: 600px; margin: 0 auto; text-align: center; font-size: 16px; }
+section #rf-attack .rf-verdict { max-width: 600px; margin: 4px auto 0; }
+/* The vertical reference line uses the kit's faint marker, since amber is a
+   data colour here. A curve that has had its turn goes quiet like this: */
+section #rf-attack .rf-ghost { stroke-width: 1.4; opacity: 0.4; stroke-dasharray: 4 3; }
+
+/* who did the removing */
+section #rf-attack .rf-die { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.6; }
+section #rf-attack .rf-pip { fill: var(--_ink); }
+section #rf-attack .rf-cross { fill: none; stroke: var(--_ink); stroke-width: 2; }
+section #rf-attack .rf-drop { animation: rf-drop 0.6s ease-out forwards; }
+@keyframes rf-drop {
+  0%   { transform: translateY(-26px) rotate(-45deg); opacity: 0; }
+  35%  { opacity: 1; }
+  62%  { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+}
+section #rf-attack .rf-snap {
+  animation: rf-snap 0.5s ease-out forwards;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes rf-snap {
+  0%   { transform: scale(2.6); opacity: 0; }
+  45%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* the crossing mark on the dial */
+section #rf-attack .rf-tick {
+  position: absolute;
+  top: -9px;
+  bottom: -9px;
+  left: 7.5%;
+  width: 2px;
+  background: var(--_ink);
+}
+/* The kit's knob wrapper carries `margin: 8px auto 4px`, written for a block
+   container. Inside this grid column those auto side margins beat stretch, the
+   track resolves to its content width — zero — and all that renders is a knob
+   floating in the middle of the card. */
+section #rf-attack .anim-range { max-width: 600px; margin: 6px 0 4px; }
