@@ -72,6 +72,7 @@
   const scenes = [
     {
       label: "Six towns, nine possible cables",
+      short: "Six towns, nine cables with distinct prices, one cheapest tree.",
       note: "A power plant at A, five towns, and nine surveyed stretches of cable; the number on each is what that stretch costs. Any five cables that reach all six towns without closing a loop form a spanning tree. The question is which five are cheapest — and both algorithms work on this same grid.",
       async run(ctx) {
         ctx.build();
@@ -84,6 +85,7 @@
     },
     {
       label: "Kruskal: cheapest cable anywhere",
+      short: "Take cables in price order; refuse any that closes a cycle.",
       note: "Walk down the price list and take each cable unless both of its towns are already joined — then it would buy a route that exists, which is what a loop is. The 3-cable is refused for exactly that reason. Five cables in, all six towns are joined and the bill is 18; the 7, 8 and 9-cables are never even considered.",
       async run(ctx) {
         ctx.wait("right", true);
@@ -104,6 +106,7 @@
     },
     {
       label: "Prim: grow out from the power plant",
+      short: "Grow one component; take its cheapest cable to a town outside.",
       note: "Same grid, opposite discipline. Prim only ever looks at cables with exactly one end inside the grid it has built so far. That is why it walks past the 5-cable while the 5-cable is the cheapest thing left on the map: both of its towns are still outside. Two steps later C is inside, the 5-cable is reachable, and Prim finishes on the same five cables and the same bill of 18.",
       async run(ctx) {
         ctx.wait("left", false);
@@ -128,6 +131,7 @@
     },
     {
       label: "Why greedy could not have gone wrong",
+      short: "Cut the tree in two: the cheapest cable across the cut must be in it.",
       note: "On the left is a different spanning tree of the same towns, reaching the far side by the 9-cable, for 21. Cut that cable. A tree carries no spare route, so it falls into exactly two pieces: A, B, D, E on one side and C, F on the other. The cheapest cable joining those two pieces is the 6-cable. Put it in and everything is connected again with no loop, for 18 — the tree on the right. A tree you can improve by such a swap was never the minimum.",
       async run(ctx) {
         ctx.head("right", "the cheapest tree");

@@ -1027,7 +1027,7 @@ def fig_profile_both():
     s += legend([("accentthree", "", f"random\\\\$R = {float(R_RANDOM):.2f}$"),
                  ("accenttwo", "", f"targeted\\\\$R = {float(R_ATTACK):.2f}$")])
     s += text(X(0.52), Y(0.36),
-              f"{float(R_RANDOM / R_ATTACK):.1f}$\\times$ the damage", color="black")
+              f"$R$ is {float(R_RANDOM / R_ATTACK):.1f}$\\times$ larger", color="black")
     return s
 
 
@@ -1172,7 +1172,7 @@ def _clusters(mask):
     return roots, dict(zip(uniq.tolist(), counts.tolist()))
 
 
-def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
+def lattice_body(p, field, y0, label=None, cell=PUD_CELL):
     rows, cols = field.shape
     mask = field < p
     lab, sizes = _clusters(mask)
@@ -1192,13 +1192,13 @@ def puddle_body(p, field, y0, label=None, cell=PUD_CELL):
     frac = sizes.get(big, 0) / (rows * cols)
     top = y0 + rows * cell + 6
     s += text(x0, top, label or f"$p = {p:.2f}$", color="black", anchor="south west")
-    s += text(x0 + cols * cell - 2, top, "largest puddle " + pct(frac),
+    s += text(x0 + cols * cell - 2, top, "largest cluster " + pct(frac),
               color="accenttwo", anchor="south east")
     return s, frac
 
 
-def fig_puddle_low():
-    return puddle_body(0.40, PUD_FIELD[:22], 66)[0]
+def fig_lattice_low():
+    return lattice_body(0.40, PUD_FIELD[:22], 66)[0]
 
 
 PERC_N = 200
@@ -1228,7 +1228,7 @@ def fig_phase_transition():
 
     def Y(v):
         return Y0 + v * (Y1 - Y0)
-    s = axes(X0, X1, Y0, Y1, "fraction of stones wet, $p$", "largest puddle",
+    s = axes(X0, X1, Y0, Y1, "occupation probability, $p$", "largest cluster",
              [(v, X(v)) for v in (0.3, 0.45, 0.6, 0.75)],
              [(v, Y(v)) for v in (0, 0.5, 1.0)],
              xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
@@ -1238,9 +1238,9 @@ def fig_phase_transition():
               color="annot", anchor="east")
     s += polyline([(X(p), Y(v)) for p, v in zip(PERC_P, PERC_S)],
                   color="accenttwo", w=4.0)
-    s += text(LAB_X, Y(0.72), "one puddle\\\\spans the yard", color="accenttwo",
+    s += text(LAB_X, Y(0.72), "a finite share\\\\of the lattice", color="accenttwo",
               anchor="west")
-    s += text(X(0.36), Y(0.62), "scattered\\\\pools", color="annot")
+    s += text(X(0.36), Y(0.62), "small\\\\clusters", color="annot")
     return s
 
 
@@ -1390,7 +1390,11 @@ def fig_fc_formula():
     the room had just dragged a dial to 0.50 on a network with kappa = 3, and the
     next slide answered with a different threshold on a network it never saw.
     """
-    X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
+    # The y range stops at 2, not 4: with kappa = 3 the line starts at 2, and the
+    # empty upper half cost 60bp of a figure that already binds the slide's
+    # CONTENT_BOTTOM.
+    X0, X1, Y0 = PLOT["x0"], PLOT["x1"], PLOT["y0"]
+    Y1 = PLOT["y0"] + 0.62 * (PLOT["y1"] - PLOT["y0"])
     kappa = float(QK_KAPPA)
     assert kappa == 3
 
@@ -1398,21 +1402,21 @@ def fig_fc_formula():
         return X0 + f * (X1 - X0)
 
     def Y(v):
-        return Y0 + v / 4.0 * (Y1 - Y0)
+        return Y0 + v / 2.0 * (Y1 - Y0)
     fc = 1 - 1 / (kappa - 1)
-    s = axes(X0, X1, Y0, Y1, "fraction removed, $f$", "branches per step",
+    s = axes(X0, X1, Y0, Y1, "fraction removed, $f$", "branching factor",
              [(v, X(v)) for v in (0, 0.25, 0.5, 0.75, 1.0)],
-             [(v, Y(v)) for v in (0, 1, 2, 3, 4)],
+             [(v, Y(v)) for v in (0, 1, 2)],
              xfmt=lambda v: f"{v:g}", yfmt=lambda v: f"{v:g}")
     s += seg((X0, Y(1)), (X1, Y(1)), color="annot", w=2.6, dash=DASH)
     s += polyline([(X(f), Y((1 - f) * (kappa - 1))) for f in (0, 1)],
                   color="accenttwo", w=4.0)
     s += seg((X(fc), Y0), (X(fc), Y(1)), color="accenttwo", w=2.6, dash=DASH)
     s += dot(X(fc), Y(1), "accenttwo", d=20)
-    s += text(X(fc) + 16, Y(1.9), f"$f_c = {fc:.2f}$", color="accenttwo",
+    s += text(X(fc) + 16, Y(1.45), f"$f_c = {fc:.2f}$", color="accenttwo",
               anchor="west")
-    s += text(LAB_X, Y(2.6), f"$\\kappa = {kappa:g}$", color="accenttwo", anchor="west")
-    s += text(LAB_X, Y(0.7), "1 = break-even", color="annot", anchor="west")
+    s += text(LAB_X, Y(1.8), f"$\\kappa = {kappa:g}$", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.95), "1 = break-even", color="annot", anchor="west")
     return s
 
 
@@ -1441,7 +1445,7 @@ def fig_fc_poisson():
     s += dot(X(4), Y(k4), "accenttwo", d=20)
     s += text(X(4) + 20, Y(k4) - 44, f"$\\langle k \\rangle = 4$: {pct(k4)} must go",
               color="accenttwo", anchor="west")
-    s += text(LAB_X, Y(0.86), "denser\\\\is tougher", color="accenttwo", anchor="west")
+    s += text(LAB_X, Y(0.86), "$f_c$ rises\\\\with $\\langle k \\rangle$", color="accenttwo", anchor="west")
     return s
 
 
@@ -1488,9 +1492,9 @@ def fig_robust_fragile():
     s += sim_curve(("er", "targeted"), "accentthree", dash=DASH)
     s += sim_curve(("sf", "random"), "accenttwo")
     s += sim_curve(("sf", "targeted"), "accenttwo", dash=DASH)
-    s += legend([("accenttwo", "", "hubs"),
-                 ("accentthree", "", "random net"),
-                 ("annot", DASH, "attacked")])
+    s += legend([("accenttwo", "", "scale-free"),
+                 ("accentthree", "", "random graph"),
+                 ("annot", DASH, "targeted")])
     return s
 
 
@@ -1586,7 +1590,7 @@ FIGURES = [
     ("mst-blank", fig_mst_blank, "full", FULL_H),
     ("brno-removed", fig_brno_removed, "full", FULL_H),
     ("profile-both", fig_profile_both, "full", 420),
-    ("puddle-low", fig_puddle_low, "full", 440),
+    ("lattice-low", fig_lattice_low, "full", 440),
     ("phase-transition", fig_phase_transition, "full", 420),
     ("kappa-def", fig_kappa_def, "col", 420),
     ("molloy-reed", fig_molloy_reed, "full", 400),

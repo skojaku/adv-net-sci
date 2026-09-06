@@ -64,8 +64,14 @@ Math is KaTeX (`math: katex` in the front matter), so `$...$` and `$$...$$` work
 
 **At most two lines of body text on a slide.** The room gets 1–2 minutes a slide and
 cannot read a paragraph in that time; the title carries the claim, the figcaption carries
-what the drawing does not say, and everything else is spoken. Where a stage exists it
-comes *before* the static figure that freezes its last frame.
+what the drawing does not say, and everything else is spoken. A third line is not a style
+question: it pushed five slides past `check_render`'s CONTENT_BOTTOM here. Where a stage
+exists it comes *before* the static figure that freezes its last frame.
+
+**Every term is defined where it is first used, and used precisely after that.** No
+analogy stands in for a definition — the percolation half is site percolation on a square
+lattice with occupied cells and clusters, and the two removal orders are named random
+failure and targeted attack. No rhetoric, and no sentence that carries no fact.
 
 ## Animation stages
 
@@ -74,11 +80,17 @@ live in `lecture-note/assets/anim/<stage>.js`, so a stage the note page also mou
 never drift from the deck's copy. The kit's slide-sized stylesheet, and one block per
 stage, are at the bottom of `network-science.css`.
 
-    mst-race        Kruskal and Prim on one grid, and the cut property (slide 6)
+    mst-race        Kruskal, Prim, and the cut property (slide 6)
     break-profile   the robustness profile drawn one removal at a time (slide 10)
-    percolation     the puddle yard, with the rain on a dial (slide 15)
-    branch-out      q(k) -> kappa -> kappa-1 -> (1-f)(kappa-1) = 1 (slide 18)
-    rf-attack       the even ring against the hub grid (slide 27)
+    percolation     site percolation on a square lattice, with p on a dial (slide 15)
+    branch-out      edge ends, <k> against kappa, kappa-1, the dial for f (slide 18)
+    rf-attack       random failure and targeted attack on two networks (slide 27)
+
+A scene may carry **two** notes. `note` is the lecture note's account of a drawing its
+reader cannot see and runs to a paragraph; `short` is the one line a slide shows instead.
+`mountScenes` takes `short` whenever `window.animStepOnly` is set, which is every deck, so
+the note page keeps its prose and the room gets a caption. Keep `short` under 80
+characters: the longest on a slide here is 76, and before the field existed it was 446.
 
 `<script>window.animStepOnly = true;</script>` runs once, before the first
 `anim.js`, and puts every stage in this deck into step mode: the Pause button is
@@ -88,7 +100,7 @@ removed and nothing advances until the lecturer presses ▶.
 either pasted in from an offline computation (with the reproduction recipe in the file's
 header comment) or computed in the browser **from the drawing on screen**, so the picture
 and its number cannot disagree. `branch-out` and `figures/kappa-def.png` draw the same ten
-towns at the same positions, and `figures/fc-formula.png` is drawn for that network's
+nodes at the same positions, and `figures/fc-formula.png` is drawn for that network's
 kappa = 3, so the dial the room turns and the line the next slide shows are the same fact.
 
 Regenerate diagrams:

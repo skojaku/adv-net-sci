@@ -39,9 +39,18 @@ included. Every concept slide has a figure. Type floors are the theme's.
 paragraph in that time:
 
 - **At most two lines of body text on any slide.** The title carries the claim; the
-  figcaption carries what the drawing does not say; everything else is spoken.
+  figcaption carries what the drawing does not say; everything else is spoken. Two lines
+  is not a style preference: a third line pushed five slides past CONTENT_BOTTOM here.
 - **Animation first, then the still.** Where a stage exists, it comes *before* the static
-  figure that freezes its last frame — the room watches the mechanism, then reads it.
+  figure that freezes its last frame.
+- **Every term is defined where it is first used, and used precisely afterwards.**
+  spanning tree, minimum spanning tree, connectivity, R-index, random failure, targeted
+  attack, cluster, percolation threshold, phase transition, q(k), kappa, branching factor,
+  f, critical fraction. No analogy stands in for a definition: the percolation half is
+  stated as site percolation on a square lattice with occupied cells and clusters, not as
+  rain on paving stones, and the removal orders are named random failure and targeted
+  attack, not luck and intent.
+- **No rhetoric.** No build-up, no figure of speech, no sentence that carries no fact.
 
 ## The working graph
 
@@ -60,32 +69,32 @@ node-node distance **160 bp**. Same towns, same weights, same MST.
 | 3 | part | **Build it** | — | divider |
 | 4 | — | Moravia, 1926 | boruvka-portrait | a real question to a real mathematician; the MST is born |
 | 5 | — | What you drew on paper has a name | mst-def | connected, no loops, n−1 cables, least total = **minimum spanning tree** |
-| 6 | — | Kruskal and Prim, one grid | **stage mst-race** | two greedy rules that cannot disagree; scene 4 is the cut property |
+| 6 | — | Kruskal and Prim | **stage mst-race** | two greedy rules that return the same tree; scene 4 is the cut property |
 | 7 | part | **Break it** | — | divider |
-| 8 | mid | Which town, gone dark, hurts most? | mst-blank | Q — poll the room |
-| 9 | — | Brno: eight towns become 3, 3 and 1 | brno-removed | A — **connectivity** = largest piece ÷ original |
+| 8 | mid | Which removal costs the most? | mst-blank | Q — poll the room |
+| 9 | — | Removing Brno leaves components of 3, 3 and 1 | brno-removed | A — **connectivity** = largest component / n |
 | 10 | — | Take them one at a time | **stage break-profile** | the profile draws itself; R is its area; order changes it |
-| 11 | — | Bad luck against bad intent | profile-both | R = 0.41 vs 0.17, 2.4× on the same grid; links the live tool |
-| 12 | mid | How much has to fail before it fragments? | — | Q — the cliffhanger into Part 3 |
+| 11 | — | Random failure against targeted attack | profile-both | **R-index** defined; 0.41 against 0.17; links the live tool |
+| 12 | mid | Measured, or computed? | — | Q — the cliffhanger into Part 3 |
 | 13 | part | **Predict it** | — | divider |
-| 14 | mid | The puddle yard | puddle-low | Q — at which p does one puddle span it |
-| 15 | — | Turn the rain up | **stage percolation** | drag p; the giant puddle arrives all at once |
-| 16 | — | It happens all at once | phase-transition | **phase transition** at p_c ≈ 0.59; attack is the same run backwards |
-| 17 | mid | Same size, opposite fates | — | Q — what would you need to know to tell them apart |
-| 18 | — | Follow an edge, not a node | **stage branch-out** | q(k) bias → κ → κ−1 → dilute by (1−f) → the threshold |
-| 19 | — | The number is kappa | kappa-def | κ = ⟨k²⟩/⟨k⟩, large exactly when there are hubs |
-| 20 | — | Molloy–Reed | molloy-reed | a giant component exists exactly when κ > 2 |
-| 21 | — | The critical fraction | fc-formula | (1−f)(κ−1) = 1 ⇒ f_c = 1 − 1/(κ−1), drawn at the stage's own κ = 3 so f_c = 0.50 |
-| 22 | — | A network without hubs | fc-poisson | Poisson: f_c = 1 − 1/⟨k⟩; ⟨k⟩ = 4 → 75% |
-| 23 | mid | And a network with hubs? | — | Q — what happens to ⟨k²⟩ |
-| 24 | — | Kappa blows up, f_c → 1 | fc-scalefree | 2 < γ < 3 ⇒ κ → ∞ |
+| 14 | mid | Site percolation | lattice-low | Q — at which p does the largest cluster span the lattice |
+| 15 | — | Raising the occupation probability | **stage percolation** | drag p across the threshold by hand |
+| 16 | — | The percolation threshold | phase-transition | **phase transition** at p_c ≈ 0.59; attack is the same run backwards |
+| 17 | mid | Same n and m, different thresholds | — | Q — what property of the network decides |
+| 18 | — | The node at the end of a random edge | **stage branch-out** | edge ends → ⟨k⟩ against κ → κ−1 → the dial for f |
+| 19 | — | q(k) and kappa | kappa-def | κ is the mean degree under q, not under p |
+| 20 | — | Molloy–Reed | molloy-reed | **branching factor** κ−1; giant component exactly when κ > 2 |
+| 21 | — | Removing a fraction f | fc-formula | **f** defined here, one slide after the stage that uses it; drawn at κ = 3 so f_c = 0.50 |
+| 22 | — | Poisson degrees | fc-poisson | f_c = 1 − 1/⟨k⟩; ⟨k⟩ = 4 → 75% |
+| 23 | mid | What if the degree distribution has hubs? | — | Q — what happens to ⟨k²⟩ |
+| 24 | — | For 2 < γ < 3, kappa diverges | fc-scalefree | ⟨k²⟩ unbounded ⇒ κ → ∞ and f_c → 1 |
 | 25 | part | **Design it** | — | divider |
-| 26 | mid | So a hub network is indestructible? | — | Q |
-| 27 | — | Thirty towns, sixty cables, two designs | **stage rf-attack** | the dice, then the adversary |
-| 28 | — | The same hubs, both ways | robust-fragile | **robust yet fragile** |
-| 29 | mid | You are the designer | mst-blank-design | Q — two extra cables; where, and what does the money buy |
-| 30 | — | Close the ring in the south | redundant-answer | +136 km: worst loss 3/8 → 6/8, R 0.17 → 0.27 |
-| 31 | — | Module 03 in one picture | recap | built it, lost Brno, ringed the south |
+| 26 | mid | Does f_c → 1 mean the network cannot be broken? | — | Q — f_c was derived for random removal |
+| 27 | — | Two networks with the same degree sum | **stage rf-attack** | random failure, then targeted attack |
+| 28 | — | Robust yet fragile | robust-fragile | the hubs that raise f_c are the first nodes an attack removes |
+| 29 | mid | Two extra edges | mst-blank-design | Q — which two, and what does the network gain |
+| 30 | — | Two edges that close a cycle | redundant-answer | +136 km: worst removal 3/8 → 6/8, R 0.17 → 0.27 |
+| 31 | — | Module 03 summary | recap | 292 km, Brno removed, two edges added |
 | 32 | — | Coming up in Module 04 | m04-teaser | the same q(k) bias, applied to friends |
 
 ## Milestones (S5)
@@ -102,6 +111,27 @@ Act 2 = the same grid broken, slides 8–12.
 Act 3 = the general law, slides 14–24.
 Act 4 = the paradox and the design question, slides 26–30, every beat posed as a question
 before it is answered.
+
+## The five stages
+
+Each carries its own scene notes twice: `note` is the lecture note's account of a drawing
+its reader cannot see, and `short` is the one line a slide shows instead — the kit takes
+`short` whenever `window.animStepOnly` is set, which is every deck. The longest note on a
+slide is now 76 characters; before `short` existed it was 446.
+
+    mst-race        6   Kruskal, Prim, and the cut property
+    break-profile  10   the profile drawn one removal at a time, and its area
+    percolation    15   the lattice, with p on a dial
+    branch-out     18   edge ends, <k> against kappa, kappa-1, and the dial for f
+    rf-attack      27   random failure and targeted attack on two networks
+
+`branch-out` was rebuilt after the first version was found hard to follow. The first two
+scenes looked identical — a node flashed either way — so nothing on screen showed what
+"draw an edge end" meant. It now opens on the twenty edge ends themselves, one column of
+squares per node, and scenes 2 and 3 draw from the ten column heads and from the twenty
+squares respectively, with both running means left side by side at the end: 2.00 and 3.00.
+The branching fan is a real binary tree (children under their parent), and `f` is named on
+screen in scene 5 and defined again on slide 21.
 
 ## The kappa network
 

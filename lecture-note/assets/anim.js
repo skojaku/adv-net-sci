@@ -336,7 +336,14 @@
         stepBox.appendChild(n);
         stepBox.appendChild(document.createTextNode(scenes[i].label || ""));
       }
-      if (noteBox) noteBox.textContent = scenes[i].note || "";
+      /* A scene may carry two notes. `note` is the lecture note's account of a
+         drawing the reader cannot see, and runs to a paragraph. On a slide the
+         lecturer is that account and a paragraph competes with them for the
+         room, so a deck (step mode) takes `short` when the scene defines one. */
+      if (noteBox) {
+        noteBox.textContent =
+          (stepOnly && scenes[i].short) || scenes[i].note || "";
+      }
       dots.forEach(function (d, k) {
         d.setAttribute("aria-current", k === i ? "true" : "false");
       });
