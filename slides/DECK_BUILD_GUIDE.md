@@ -370,6 +370,57 @@ defences:
 - Prefer captions a regrouping cannot stale. The replacement here was "q(k) is a share of hands,
   not a share of girls", which stays true however the hands are arranged.
 
+## When the pen-and-paper sheet runs first
+
+Module 03, 2026-09. The lecturer moved the worksheet to *before* the lecture, and it
+changed what the deck is for more than any editing pass could: the students walk in
+having already built a minimum spanning tree, tabulated the damage from every single
+failure, plotted two removal orders and redesigned the grid. A deck that then derives
+those things is teaching people what they are holding.
+
+So **read the sheet question by question and write down, per question, what the deck no
+longer has to do.** m03's table is at the top of `m03/review/DECK_SPEC.md`; it is what
+took the deck from 76 slides to 32. Two rules fell out of it:
+
+- **Name it, do not derive it.** "What you drew on paper has a name" is a whole slide's
+  worth of work when the drawing is already in their hand. The derivation slides that
+  used to lead up to it are the cut.
+- **Spend the recovered time on what the sheet cannot reach.** m03's sheet stops at
+  measuring the damage; percolation, q(k), kappa, Molloy-Reed and f_c are the half of the
+  module that has to come from the room, and they kept all of their slides.
+
+## The text budget, stated as a number
+
+The lecturer's constraint, in his own terms: *"We can spend only 1-2 minutes per slide.
+We cannot read all text."* At 30px body that is:
+
+> **At most two lines of body text on a slide.** The title carries the claim, the
+> figcaption carries what the drawing does not say, and everything else is spoken.
+
+A third line is not a style preference to argue about — it is the slide overflowing its
+minute. Two m03 slides failed `check_render`'s CONTENT_BOTTOM only because a body line
+wrapped to two, which pushed a 360px figure past y=660; shortening the sentence fixed
+both. Write the line, render, and count the lines on the *rendered* slide, because a
+75-character sentence wraps and a 55-character one does not.
+
+The corollary is the ordering rule: **animation first, then the still.** Where a stage
+exists it goes on the slide *before* the static figure that freezes its last frame — the
+room watches the mechanism, then reads it. m03 runs five stages in 32 slides on exactly
+that pattern.
+
+## Two traps that cost a round each in m03's stages
+
+- **A multi-line string literal followed by `.split()` binds to the last literal only.**
+  784 lattice values pasted as `"a,b,c" + "d,e,f" + ... .split(",").map(Number)` gives you
+  a *string* of characters, silently: `FIELD[i]` is `"1"`, every comparison is nonsense,
+  and the widget renders a plausible-looking wrong picture. Wrap the concatenation in
+  parentheses, and assert the parsed length before you believe anything it prints.
+- **Compute the number from the drawing when you can.** The percolation stage finds its
+  largest cluster with a union-find over the 784 stones actually on screen rather than
+  reading a table, so the red stones and the "largest puddle 24%" cannot disagree. Where
+  a table is unavoidable, check it against the live computation once in a test and say so
+  in the file's header.
+
 ## Keeping this current
 
 Same contract as the other three files: when building a deck teaches something new about
