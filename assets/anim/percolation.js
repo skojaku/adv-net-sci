@@ -128,11 +128,10 @@
     {
       label: "A 28 x 28 square lattice",
       note: "Each cell is occupied with probability p, independently of the others. Occupied cells that share an edge belong to the same cluster.",
-      short: "Each cell is occupied with probability p, independently.",
+      short: "Each cell occupied with probability p.",
       async run(ctx) {
         ctx.build();
         ctx.show(0);
-        ctx.caption("blue: an occupied cell · red: the cells of the largest cluster");
         ctx.verdict("");
         await ctx.sleep(2600);
       }
@@ -140,7 +139,7 @@
     {
       label: "Raising p",
       note: "The number of occupied cells grows steadily with p. The largest cluster does not: it stays small, then within a few hundredths of p it spans the lattice.",
-      short: "Occupied cells grow steadily with p. The largest cluster does not.",
+      short: "The largest cluster does not grow steadily.",
       async run(ctx) {
         ctx.trace(true);
         if (ctx.fast()) { ctx.show(CROSS + 1); return; }
@@ -148,14 +147,14 @@
           ctx.show(d);
           await ctx.sleep(d >= 9 && d <= 14 ? 700 : 320);
         }
-        ctx.verdict("<span>largest cluster</span><b>0.20 to 0.56 in one step of 0.025</b>");
+        ctx.verdict("<span>p 0.575 to 0.600</span><b>cluster 0.20 to 0.56</b>");
         await ctx.sleep(2400);
       }
     },
     {
       label: "Crossing the threshold by hand",
       note: "The dial moves p in steps of 0.025. Between p = 0.575 and p = 0.600 the largest cluster goes from a fifth of the lattice to more than half.",
-      short: "One step of 0.025 across the threshold triples the largest cluster.",
+      short: "One step of 0.025 across the threshold.",
       async run(ctx) {
         ctx.verdict("");
         const knob = ctx.dial();
@@ -228,14 +227,12 @@
         })).textContent = "0.59";
         const trace = layer.appendChild(ctx.svgEl("polyline", { points: "", "class": "pc-trace" }));
         const dot = layer.appendChild(ctx.svgEl("circle", { r: 4, "class": "pc-dot" }));
-        const cap = ctx.el("div", "anim-caption pc-cap");
         const verdict = ctx.el("div", "anim-tally pc-verdict");
         chartBox.appendChild(readSlot);
         chartBox.appendChild(svg);
         chartBox.appendChild(dialSlot);
-        chartBox.appendChild(cap);
         chartBox.appendChild(verdict);
-        S.c = { layer, trace, dot, cap, verdict, readSlot, dialSlot, seen: [] };
+        S.c = { layer, trace, dot, verdict, readSlot, dialSlot, seen: [] };
       }
 
       function build() { drawLattice(); drawChart(); S.tracing = false; }
@@ -265,7 +262,6 @@
       }
 
       function trace(on) { S.tracing = on; S.c.seen = []; }
-      function caption(t) { S.c.cap.textContent = t; }
       function verdict(html) { S.c.verdict.innerHTML = html; }
       function dial() {
         S.c.dialSlot.textContent = "";
@@ -276,7 +272,7 @@
         return knob;
       }
 
-      return { build, show, trace, caption, verdict, dial };
+      return { build, show, trace, verdict, dial };
     }
   });
 });

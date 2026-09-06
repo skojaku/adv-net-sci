@@ -47,8 +47,8 @@
      exactly as many ends as it has edges, so drawing an end at random is not
      the same as drawing a node at random. */
   const COL = DEG.map((_, i) => i).sort((a, b) => DEG[b] - DEG[a] || a - b);
-  const colX = (i) => 24 + i * 28.3;
-  const HEAD_Y = 24, END_Y0 = 54, END_DY = 23;
+  const colX = (i) => 18 + i * 29.3;
+  const HEAD_Y = 25, END_Y0 = 56, END_DY = 23;
 
   /* the fan: five levels, and (kappa-1) = 2 onward edges each */
   const LEV = 5;
@@ -71,53 +71,46 @@
     {
       label: "Ten edges, twenty edge ends",
       note: "Each of the ten edges has two ends, so there are twenty of them. Every end belongs to one node, and a node owns exactly as many ends as it has edges: the degree-5 node owns five of the twenty, and each degree-1 node owns one.",
-      short: "Twenty edge ends, and a node owns one end per edge.",
+      short: "A node owns one end per edge.",
       async run(ctx) {
         ctx.build();
         ctx.stubs();
-        ctx.read("nodes <b>" + N + "</b>", "edges <b>" + E.length + "</b>",
-                 "edge ends <b>" + ENDS + "</b>");
-        ctx.caption("one column per node, one square per edge end");
+        ctx.read("nodes <b>" + N + "</b>", "edge ends <b>" + ENDS + "</b>");
         await ctx.sleep(3000);
       }
     },
     {
       label: "Draw a node at random",
       note: "All ten nodes are equally likely. Over forty draws the mean degree of the node drawn is 2, which is the mean degree of the network.",
-      short: "Ten nodes, each with probability 1/10.",
+      short: "Each node has probability 1/10.",
       async run(ctx) {
         ctx.stubs();
-        ctx.read("nodes <b>" + N + "</b>", "edges <b>" + E.length + "</b>",
-                 "edge ends <b>" + ENDS + "</b>");
-        ctx.caption("each node has probability 1/10");
-        await ctx.sample(NODE_DRAWS, "node", MEAN_K, "mean degree of the node drawn");
+        ctx.read("nodes <b>" + N + "</b>", "edge ends <b>" + ENDS + "</b>");
+        await ctx.sample(NODE_DRAWS, "node", MEAN_K, "node drawn");
         await ctx.sleep(2200);
       }
     },
     {
       label: "Draw an edge end at random",
       note: "All twenty edge ends are equally likely, so a node is reached with probability proportional to its degree. The mean degree of the node an end belongs to is 3, not 2. That number is kappa.",
-      short: "Twenty ends, so a node has probability degree / 20.",
+      short: "A node has probability degree / 20.",
       async run(ctx) {
         ctx.stubs();
         ctx.keepMean();
-        ctx.read("nodes <b>" + N + "</b>", "edges <b>" + E.length + "</b>",
-                 "edge ends <b>" + ENDS + "</b>");
-        ctx.caption("each end has probability 1/20, so a node has probability degree/20");
-        await ctx.sample(END_DRAWS, "end", KAPPA, "mean degree of the node the end belongs to");
-        ctx.verdict("<span>the second number</span><b>is &kappa; = " + KAPPA + "</b>");
+        ctx.read("nodes <b>" + N + "</b>", "edge ends <b>" + ENDS + "</b>");
+        await ctx.sample(END_DRAWS, "end", KAPPA, "edge end drawn");
+        ctx.verdict("<span>this is</span><b>&kappa; = " + KAPPA + "</b>");
         await ctx.sleep(2800);
       }
     },
     {
       label: "One edge in, kappa minus one out",
       note: "A search that arrives at a node along an edge finds kappa edges there on average, and one of them is the edge it arrived on. It continues along kappa - 1 = 2, so the number of nodes it reaches doubles at every step.",
-      short: "One of the kappa edges is the arrival edge, so 2 lead onward.",
+      short: "One edge in, so kappa - 1 = 2 lead onward.",
       async run(ctx) {
         ctx.fan();
         ctx.read("&kappa; <b>" + KAPPA + "</b>", "arrival edge <b>1</b>",
                  "onward <b>&kappa; &minus; 1 = " + BRANCH + "</b>");
-        ctx.caption("nodes reached after 1, 2, 3, 4 steps, printed at the right of each row");
         ctx.verdict("");
         ctx.setF(0);
         if (ctx.fast()) { ctx.grow(LEV); }
@@ -128,11 +121,10 @@
     {
       label: "Remove a fraction f of the nodes",
       note: "f is the fraction of nodes removed at random. An onward edge leads to a node that survives with probability 1 - f, so the branching factor is (1 - f)(kappa - 1). Above 1 the search keeps reaching new nodes; below 1 it stops. It equals 1 at f = 0.5.",
-      short: "f is the fraction of nodes removed. Branching: (1 - f)(kappa - 1).",
+      short: "f = the fraction of nodes removed at random.",
       async run(ctx) {
         ctx.fan();
         ctx.grow(LEV);
-        ctx.caption("f = the fraction of nodes removed at random");
         const dial = ctx.mountKnob(ctx.dial(), {
           min: 0, max: DET - 1, step: 1, value: 0,
           label: "Fraction of nodes removed",
@@ -194,8 +186,7 @@
 
         wrap.appendChild(svg);
         netBox.appendChild(wrap);
-        netBox.appendChild(ctx.el("div", "anim-caption bo-netcap",
-          "the number in each node is its degree"));
+        netBox.appendChild(ctx.el("div", "anim-caption bo-netcap", "node label = degree"));
       }
 
       function drawSide() {
@@ -204,10 +195,9 @@
         const means = ctx.el("div", "bo-means");
         const readSlot = ctx.el("div", "anim-readout bo-read");
         const dialSlot = ctx.el("div", "anim-range");
-        const cap = ctx.el("div", "anim-caption bo-cap");
         const verdict = ctx.el("div", "anim-tally bo-verdict");
-        [means, readSlot, dialSlot, cap, verdict].forEach((n) => sideBox.appendChild(n));
-        S.c = { means, readSlot, dialSlot, cap, verdict, kept: "" };
+        [means, readSlot, dialSlot, verdict].forEach((n) => sideBox.appendChild(n));
+        S.c = { means, readSlot, dialSlot, verdict, kept: "" };
       }
 
       /* The kit empties every [data-anim-clear] before each run, so the cached
@@ -229,7 +219,7 @@
         COL.forEach((n, i) => {
           const x = colX(i);
           heads[n] = gHead.appendChild(ctx.svgEl("circle",
-            { cx: x, cy: HEAD_Y, r: 13.5, "class": "anim-node" }));
+            { cx: x, cy: HEAD_Y, r: 14, "class": "anim-node" }));
           const t = gHead.appendChild(ctx.svgEl("text",
             { x: x, y: HEAD_Y + 5, "class": "bo-headdeg", "text-anchor": "middle" }));
           t.textContent = String(DEG[n]);
@@ -332,10 +322,10 @@
                "1 &minus; f <b>" + (1 - f).toFixed(2) + "</b>",
                "branching <b class=\"bo-hot\">" + b.toFixed(2) + "</b>");
           S.c.verdict.innerHTML = b > 1.001
-            ? "<span>branching above 1</span><b>the search continues</b>"
+            ? "<span>above 1</span><b>the search continues</b>"
             : b < 0.999
-              ? "<span>branching below 1</span><b>the search stops</b>"
-              : "<span>branching exactly 1</span><b>f = f<sub>c</sub> = " + F_C.toFixed(2) + "</b>";
+              ? "<span>below 1</span><b>the search stops</b>"
+              : "<span>exactly 1</span><b>f = f<sub>c</sub> = " + F_C.toFixed(2) + "</b>";
         }
       }
 
@@ -344,7 +334,6 @@
         S.c.readSlot.innerHTML = Array.prototype.map
           .call(arguments, function (t) { return "<span>" + t + "</span>"; }).join("");
       }
-      function caption(t) { S.c.cap.textContent = t; }
       function verdict(html) { S.c.verdict.innerHTML = html; }
       function keepMean() { S.c.kept = S.c.means.innerHTML; }
       function dial() {
@@ -392,8 +381,7 @@
         outM.textContent = exact.toFixed(2);
       }
 
-      return { build, stubs, fan, grow, setF, read, caption, verdict, dial,
-               sample, keepMean };
+      return { build, stubs, fan, grow, setF, read, verdict, dial, sample, keepMean };
     }
   });
 });
