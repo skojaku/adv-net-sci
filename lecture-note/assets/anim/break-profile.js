@@ -39,11 +39,16 @@
      towns, same seven cables, same left-to-right order; only the shape of the
      paper differs. */
   const POS = [
-    [30, 42], [96, 96], [30, 152], [162, 150], [150, 238], [236, 94], [281, 30], [283, 162]
+    [30, 42], [96, 96], [30, 152], [162, 150], [150, 238], [236, 94], [281, 44], [283, 162]
   ];
+  /* At slide type a name is wider than the gap beside its town, so each one is
+     placed clear of its own disc and of every cable, and anchored to the canvas
+     where centring would run it off the edge. Centred labels clipped "Jihlava"
+     to "ihlava" and sat on top of three discs. */
   const LAB = [
-    [30, 22], [96, 78], [30, 176], [162, 132], [150, 258], [236, 76], [281, 14], [283, 184]
+    [6, 16], [96, 70], [6, 188], [162, 124], [172, 244], [196, 68], [305, 18], [305, 198]
   ];
+  const LAB_ANCHOR = ["start", "middle", "start", "middle", "start", "middle", "end", "end"];
   const E = [[0, 1], [1, 2], [1, 3], [3, 5], [5, 6], [5, 7], [3, 4]];
 
   /* Per step: which towns are in the largest surviving piece (g), alive but cut
@@ -79,55 +84,49 @@
     {
       label: "The 292 km grid, whole",
       note: "Connectivity is the number of towns in the largest connected component, divided by the eight the grid started with. Nothing is removed yet, so it is 1.",
-      short: "Connectivity = largest component / 8. Nothing removed: 1.",
+      short: "Connectivity = largest component / 8.",
       async run(ctx) {
         ctx.build();
         ctx.frame(RANDOM[0]);
         ctx.readout('<span>towns removed <b>0</b></span><span>connectivity <b>1.00</b></span>');
-        ctx.caption("connectivity = largest connected component / 8");
         await ctx.sleep(2600);
       }
     },
     {
       label: "Random failure",
       note: "The towns are removed in an order that does not depend on the grid. Connectivity falls roughly in step with the number removed.",
-      short: "Removal order independent of the grid.",
+      short: "Order independent of the grid.",
       async run(ctx) {
-        ctx.head("random failure");
         const pl = ctx.line("bp-random");
         await ctx.sweep("random", RANDOM, pl);
-        ctx.verdict('<span>area under the curve</span><b>R = ' + R.random.toFixed(2) + "</b>");
+        ctx.verdict("<span>random failure</span><b>R = " + R.random.toFixed(2) + "</b>");
         await ctx.sleep(2600);
       }
     },
     {
       label: "Targeted attack",
       note: "Same grid, same eight removals, but each step removes the town with the most cables, recounted after every removal. Brno goes first and the grid is already in thirds.",
-      short: "Each step removes the town with the most cables.",
+      short: "Each step removes the largest town.",
       async run(ctx) {
         ctx.ghost();
-        ctx.head("targeted attack");
         ctx.verdict("");
-        ctx.caption("faint: the random-failure curve · solid: the targeted one");
         const pl = ctx.line("bp-attack");
         await ctx.sweep("attack", ATTACK, pl);
-        ctx.verdict('<span>area under the curve</span><b>R = ' + R.attack.toFixed(2) + "</b>");
+        ctx.verdict("<span>targeted attack</span><b>R = " + R.attack.toFixed(2) + "</b>");
         await ctx.sleep(2800);
       }
     },
     {
       label: "The area under each curve",
       note: "The R-index is the mean of the connectivities after 1 to 7 removals, which is the area under the curve. The same grid and the same number of removals give " + RATIO + " times the loss under attack.",
-      short: "R-index = area under the curve. Attack costs " + RATIO + " times as much.",
+      short: "R-index = area under the curve.",
       async run(ctx) {
         ctx.shade();
-        ctx.head("");
         ctx.frame(ATTACK[1]);
         ctx.readout(
           '<span style="color:var(--_gold)">random failure <b>R = ' + R.random.toFixed(2) + "</b></span>" +
           '<span style="color:var(--_amber)">targeted attack <b>R = ' + R.attack.toFixed(2) + "</b></span>");
-        ctx.caption("above: Brno removed, leaving components of 3, 3 and 1");
-        ctx.verdict("<span>the targeted attack costs</span><b>" + RATIO + " times as much</b>");
+        ctx.verdict("<span>the attack costs</span><b>" + RATIO + "&times; as much</b>");
         await ctx.sleep(3200);
       }
     }
@@ -142,11 +141,10 @@
     helpers(ctx) {
       const netBox = ctx.$("[data-bp-net]");
       const chartBox = ctx.$("[data-bp-chart]");
-      const S = { nodes: [], edges: [], head: null, marks: null, c: null };
+      const S = { nodes: [], edges: [], marks: null, c: null };
 
       function drawNet() {
         netBox.textContent = "";
-        S.head = netBox.appendChild(ctx.el("div", "bp-head"));
         const wrap = ctx.el("div", "bp-net");
         const svg = ctx.svgRoot("0 0 311 268");
         const gEdge = svg.appendChild(ctx.svgEl("g"));
@@ -170,14 +168,15 @@
 
         S.nodes = POS.map((p, i) => {
           const c = ctx.svgEl("circle", {
-            cx: p[0], cy: p[1], r: 14, "class": "anim-node" + (slow ? " anim-fade" : "")
+            cx: p[0], cy: p[1], r: 15.5, "class": "anim-node" + (slow ? " anim-fade" : "")
           });
           if (slow) c.style.animationDelay = (i * 0.06) + "s";
           return gNode.appendChild(c);
         });
 
         LAB.forEach((p, i) => {
-          const t = ctx.svgEl("text", { x: p[0], y: p[1], "class": "bp-name", "text-anchor": "middle" });
+          const t = ctx.svgEl("text", { x: p[0], y: p[1], "class": "bp-name",
+                                        "text-anchor": LAB_ANCHOR[i] });
           t.textContent = SHORT[i];
           gName.appendChild(t);
         });
@@ -200,13 +199,11 @@
           '<text class="anim-label" x="288" y="128" text-anchor="end">all eight gone</text>';
         const shade = svg.appendChild(ctx.svgEl("g"));
         const layer = svg.appendChild(ctx.svgEl("g"));
-        const cap = ctx.el("div", "anim-caption bp-cap");
         const verdict = ctx.el("div", "anim-tally bp-verdict");
         chartBox.appendChild(readSlot);
         chartBox.appendChild(svg);
-        chartBox.appendChild(cap);
         chartBox.appendChild(verdict);
-        S.c = { svg, layer, shade, cap, verdict, readSlot, lines: [] };
+        S.c = { svg, layer, shade, verdict, readSlot, lines: [] };
       }
 
       function build() { drawNet(); drawChart(); }
@@ -258,9 +255,7 @@
       }
 
       function readout(html) { S.c.readSlot.innerHTML = html; return S.c.readSlot; }
-      function caption(t) { S.c.cap.textContent = t; }
       function verdict(html) { S.c.verdict.innerHTML = html; }
-      function head(t) { S.head.textContent = t; }
 
       /* One loop drives the grid, the curve and the readout from the same
          index, so nothing on screen can drift out of step with anything else. */
@@ -283,8 +278,7 @@
         }
       }
 
-      return { build, frame, line, setLine, ghost, shade, readout, caption,
-               verdict, head, sweep };
+      return { build, frame, line, setLine, ghost, shade, readout, verdict, sweep };
     }
   });
 });

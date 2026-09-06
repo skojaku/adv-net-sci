@@ -89,8 +89,24 @@ stage, are at the bottom of `network-science.css`.
 A scene may carry **two** notes. `note` is the lecture note's account of a drawing its
 reader cannot see and runs to a paragraph; `short` is the one line a slide shows instead.
 `mountScenes` takes `short` whenever `window.animStepOnly` is set, which is every deck, so
-the note page keeps its prose and the room gets a caption. Keep `short` under 80
-characters: the longest on a slide here is 76, and before the field existed it was 446.
+the note page keeps its prose and the room gets a caption.
+
+**Type inside a stage is 1.5x the lecture note's**, set once near the top of the per-stage
+block: scene label 39px, note 31px, readout 30px, verdict 34px, and SVG labels 20 viewBox
+units. That size is why each stage carries half the text it used to — a paragraph does not
+fit at 31px, which is the point. Measured on the rendered slides: **1181 -> 634 characters
+of visible text per scene, summed over the five stages**.
+
+Two consequences to keep in mind when editing a stage:
+
+- **A stage has at most four text slots per scene**: the label in the bar, the one-line
+  note, the readout of numbers, and a two-part verdict. There is no caption any more —
+  every caption in the three new stages was either the note said twice or something the
+  drawing already showed. The two shared stages keep theirs for the note page and hide
+  them on the slide (`.rf-cap`, `.mst-log` are `display: none` here).
+- **A verdict is one phrase.** The kit's `.anim-tally` is `space-between`, written for the
+  note's narrow column; on a slide that pushes the two halves to opposite ends of the row
+  and they stop reading as a sentence, so the four verdicts are re-centred here.
 
 `<script>window.animStepOnly = true;</script>` runs once, before the first
 `anim.js`, and puts every stage in this deck into step mode: the Pause button is

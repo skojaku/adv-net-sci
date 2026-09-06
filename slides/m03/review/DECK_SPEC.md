@@ -116,8 +116,12 @@ before it is answered.
 
 Each carries its own scene notes twice: `note` is the lecture note's account of a drawing
 its reader cannot see, and `short` is the one line a slide shows instead — the kit takes
-`short` whenever `window.animStepOnly` is set, which is every deck. The longest note on a
-slide is now 76 characters; before `short` existed it was 446.
+`short` whenever `window.animStepOnly` is set, which is every deck.
+
+Type inside a stage is **1.5x** the note's, and each scene shows **at most four pieces of
+text**: the label in the bar, the one-line note, the readout of numbers, and a two-part
+verdict. No captions. Measured on the rendered slides, the visible text per scene summed
+over the five stages fell from **1181 to 634 characters**.
 
     mst-race        6   Kruskal, Prim, and the cut property
     break-profile  10   the profile drawn one removal at a time, and its area

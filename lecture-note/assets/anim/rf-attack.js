@@ -148,7 +148,7 @@
     hubs: POS.hubs.map((p, i) => (i < 3 ? 8.4 : ((i - 3) % 9 === 4 ? 5.0 : 4.3)))
   };
   const EDGES = { ring: RING_E, hubs: HUBS_E };
-  const TITLE = { ring: "every degree 4", hubs: "three hubs" };
+  const TITLE = { ring: "degree 4", hubs: "three hubs" };
 
   /* chart geometry */
   const CX = (k) => 40 + (k / (N - 1)) * 252;
@@ -158,7 +158,7 @@
   const scenes = [
     {
       label: "Two networks, same size, same edge count",
-      short: "Thirty nodes and sixty edges each. Left: every degree 4. Right: three hubs.",
+      short: "Thirty nodes, sixty edges, two degree sequences.",
       note: "Thirty towns and sixty cables on each side — four cables a town, the same bill. The left grid gives every town the same four neighbours. The right pools them into three hubs. Nothing else differs.",
       async run(ctx) {
         ctx.build();
@@ -171,20 +171,20 @@
     },
     {
       label: "Random failure",
-      short: "Removal order independent of degree. The hub network holds more.",
+      short: "Random removal: the hub network holds more.",
       note: "Storms and worn-out bearings pick nobody in particular. Both grids shed towns at the same rate at first — then the ring starts breaking into pieces and the hub grid does not. A die almost never lands on a hub.",
       async run(ctx) {
         ctx.untally();
         ctx.caption("connectivity, averaged over 4,000 random removal orders. the grids above show one of those orders.");
         const curve = { ring: ctx.line("anim-amber-stroke"), hubs: ctx.line("anim-accent-stroke") };
         await ctx.run(0, RAND_RING, RAND_HUBS, ORDER.randring, ORDER.randhubs, curve, "die", 15);
-        ctx.verdict("<span>same edge count, random removal</span><b>the hub network holds more</b>");
+        ctx.verdict("<span>random removal</span><b>hub network holds more</b>");
         await ctx.sleep(2800);
       }
     },
     {
       label: "Targeted attack",
-      short: "Each step removes the highest-degree node. The hub network is gone in three.",
+      short: "Highest degree first: three removals.",
       note: "Same grids, same removal budget — but now each removal takes the largest town left. The even ring has no largest town, so almost nothing changes. The hub grid is gone in three.",
       async run(ctx) {
         ctx.ghost();
@@ -193,13 +193,13 @@
         ctx.caption("solid: highest degree removed first · faint dashed: removed at random · each curve is a mean over 4,000 orders.");
         const curve = { ring: ctx.line("anim-amber-stroke"), hubs: ctx.line("anim-accent-stroke") };
         await ctx.run(DET - 1, TARG_RING, TARG_HUBS, ORDER.targring, ORDER.targhubs, curve, "cross", 3);
-        ctx.verdict("<span>hub network, three nodes removed</span><b>connectivity 0.03</b>");
+        ctx.verdict("<span>hubs, three removed</span><b>connectivity 0.03</b>");
         await ctx.sleep(3000);
       }
     },
     {
       label: "The share of removals that are targeted",
-      short: "The two networks change places at about one removal in ten being targeted.",
+      short: "They change places at one removal in ten.",
       note: "One dial: what share of the removals are chosen on purpose rather than left to chance. The even ring barely moves. The hub grid slides from the sturdier grid to the ruined one, and the two change places at about one removal in ten.",
       async run(ctx) {
         ctx.wipe();
@@ -212,9 +212,9 @@
         ctx.dialSlot(track);
 
         const read = ctx.readout(
-          '<span>targeted removals <b data-m>0%</b></span>' +
-          '<span style="color:var(--_amber)">R, every degree 4 <b data-r>0.36</b></span>' +
-          '<span style="color:var(--_accent)">R, three hubs <b data-h>0.42</b></span>');
+          '<span>targeted <b data-m>0%</b></span>' +
+          '<span style="color:var(--_amber)">even <b data-r>0.36</b></span>' +
+          '<span style="color:var(--_accent)">hubs <b data-h>0.42</b></span>');
         ctx.caption("curves: the mean over 4,000 removal orders at that setting; the networks above are one such order, six nodes in.");
 
         const guide = ctx.svgEl("line", {
@@ -244,8 +244,8 @@
             ctx.frame("ring", SNAP_RING[d]);
             ctx.frame("hubs", SNAP_HUBS[d]);
             ctx.verdict(d < CROSS
-              ? "<span>the hub network</span><b>still the more robust one</b>"
-              : "<span>the hub network</span><b>now the more fragile one</b>");
+              ? "<span>hub network</span><b>more robust</b>"
+              : "<span>hub network</span><b>more fragile</b>");
           }
         });
 
@@ -345,8 +345,8 @@
           '<text class="anim-label" x="36" y="22" text-anchor="end">1</text>' +
           '<text class="anim-label" x="36" y="111" text-anchor="end">0</text>' +
           '<text class="anim-label" x="13" y="61" text-anchor="middle" transform="rotate(-90 13 61)">connectivity</text>' +
-          '<text class="anim-label" x="40" y="124">none removed</text>' +
-          '<text class="anim-label" x="292" y="124" text-anchor="end">29 of the 30 gone</text>';
+          '<text class="anim-label" x="40" y="126">0 removed</text>' +
+          '<text class="anim-label" x="292" y="126" text-anchor="end">29 of 30</text>';
         const layer = svg.appendChild(ctx.svgEl("g"));
         const cap = ctx.el("div", "anim-caption rf-cap");
         const verdict = ctx.el("div", "anim-tally rf-verdict");
@@ -458,9 +458,9 @@
          else. `det` says which averaged curve this threat corresponds to. */
       async function run(det, frRing, frHubs, ordRing, ordHubs, pl, kind, freeze) {
         const read = readout(
-          '<span>nodes removed <b data-k>0 of 30</b></span>' +
-          '<span style="color:var(--_amber)">every degree 4 <b data-r>100%</b></span>' +
-          '<span style="color:var(--_accent)">three hubs <b data-h>100%</b></span>');
+          '<span>removed <b data-k>0/30</b></span>' +
+          '<span style="color:var(--_amber)">even <b data-r>100%</b></span>' +
+          '<span style="color:var(--_accent)">hubs <b data-h>100%</b></span>');
         const outK = read.querySelector("[data-k]");
         const outR = read.querySelector("[data-r]");
         const outH = read.querySelector("[data-h]");
