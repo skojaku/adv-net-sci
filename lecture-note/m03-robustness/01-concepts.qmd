@@ -181,6 +181,68 @@ Removing one node tells you one thing. Keep going --- remove a second, a third, 
 
 ![The robustness profile of a five-town network, with the surviving network drawn above each point. Read the curve off the panels: five towns linked (connectivity 1), then one removal leaves three still linked (0.6), then two removals leave two still linked (0.4). Once no two towns are still joined by a cable, the curve sits on the floor. The area under the curve is the R-index.](../figs/robustness-profile.jpg){#fig-robustness-profile width=100% fig-alt="A curve of connectivity against the fraction of nodes removed, decreasing from 1 to 0, with the surviving network drawn at each step."}
 
+Below is that curve being drawn. The same eight-town tree is dismantled twice: once in an order that ignores the network, once taking the busiest town left at every step. The last panel fills in the area under each curve, which is the number defined below it.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   The robustness profile, one removal at a time. Only the rules this figure
+   needs: the paper, the buttons, the axes and the motion primitives come from
+   assets/anim.css, and the sequencer from assets/anim.js. Everything is scoped
+   to #break-profile, because three stages share this page.
+   -------------------------------------------------------------------------- */
+#break-profile { --_gold: #DAB167; --anim-svg-max: 460px; }
+#break-profile .bp-net { max-width: 300px; margin: 0 auto; --anim-svg-max: 300px; }
+#break-profile .bp-name { font-size: 13px; fill: var(--_ink-soft); }
+#break-profile .anim-edge { stroke-width: 2.4; transition: opacity 0.25s ease; }
+#break-profile .bp-cut { opacity: 0; }
+/* A removed town: still in its place, plainly no longer there. */
+#break-profile .bp-out {
+  fill: none;
+  stroke: var(--_ink-faint);
+  stroke-width: 1.6;
+  stroke-dasharray: 3 2.6;
+}
+/* The town this step is about to remove. */
+#break-profile .bp-next { fill: var(--_amber); stroke: var(--_ink); stroke-width: 2.2; }
+/* Gold is random failure, red is the targeted attack, in both the curves and
+   the areas they enclose. */
+#break-profile .bp-random { stroke: var(--_gold); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+#break-profile .bp-attack { stroke: var(--_amber); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+#break-profile .bp-fill-random { fill: var(--_gold); fill-opacity: 0.20; stroke: none; }
+#break-profile .bp-fill-attack { fill: var(--_amber); fill-opacity: 0.20; stroke: none; }
+#break-profile .bp-ghost { stroke-width: 1.6; opacity: 0.45; stroke-dasharray: 4 3; }
+#break-profile .bp-read { max-width: 460px; margin: 0.15rem auto 0; justify-content: center; }
+#break-profile .bp-verdict { max-width: 380px; margin: 0.15rem auto 0; justify-content: center; gap: 0.6rem; }
+@media (prefers-reduced-motion: reduce) {
+  #break-profile .anim-edge { transition: none !important; }
+}
+</style>
+
+<figure class="anim-stage" id="break-profile">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-bp-net></div>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-bp-chart></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="/assets/anim/break-profile.js" defer></script>
+```
+
 To compare whole networks with a single number, we take the area under that curve --- the **R-index**:
 
 $$
@@ -191,7 +253,7 @@ where $y_k$ is the connectivity measured after $k$ nodes have been removed, and 
 
 It is worth knowing the scale before you compute one. The best a network can possibly do is lose exactly one node's worth of connectivity per removal, which traces a straight line from $1$ down to $0$; averaging that line gives $R \approx 0.5$. A network that shatters on the first removal gives $R \approx 0$. So $R = 0.35$ is not "35% robust" --- it is seven-tenths of the way to the best any network could do.
 
-One profile on its own is only a shape. It turns into an argument the moment you draw two of them. Below are two grids built for exactly the same money --- thirty towns, sixty cables, four cables a town on both sides --- wired as differently as that budget allows. Let the dice pick which towns fail. Then let somebody pick. Then take the dial and decide for yourself how much of the damage is deliberate.
+Two profiles on one network show how much the removal order matters. Two networks show how much the wiring matters. Below are two grids built for exactly the same money --- thirty towns, sixty cables, four cables a town on both sides --- wired as differently as that budget allows. Let chance pick which towns fail. Then let an adversary pick. Then take the dial and decide for yourself how much of the damage is deliberate.
 
 ```{=html}
 <style>
@@ -343,23 +405,67 @@ These are the same process traversed in opposite directions along the same param
 
 ### Nothing, Nothing, Then Everything at Once
 
-Percolation is easiest to *see* on a square grid, so picture one for a moment: a large sheet of squares, each of which independently becomes a puddle with probability $p$. Neighbouring puddles merge. At small $p$ you get isolated ponds. Raise $p$ a little and you get slightly bigger ponds. Nothing, nothing, nothing --- and then, over a very narrow range of $p$, the ponds join up and one puddle spans the entire sheet. That sudden change is a **phase transition**, and the value of $p$ where it happens is the **critical probability** $p_c$.
+Percolation is easiest to *see* on a square lattice. Each cell is **occupied** with probability $p$, independently of every other cell, and occupied cells that share an edge belong to the same **cluster**. At small $p$ the clusters are small and scattered. Raise $p$ and they grow slowly. Then, over a very narrow range of $p$, they join and a single cluster spans the lattice. That sudden change is a **phase transition**, and the value of $p$ where it happens is the **critical probability** $p_c$.
 
 Two things about that sentence are worth pinning down.
 
-First, *which* squares filled first does not matter, only how many. Fill them in any order you like and the picture at a given $p$ is statistically the same, because each square was chosen with no regard for its surroundings. This is exactly why random failure is easy to analyse and targeted attack is not: an attacker chooses *which*, and then order is the whole story.
+First, *which* cells were occupied first does not matter, only how many. Occupy them in any order you like and the picture at a given $p$ is statistically the same, because each cell was chosen with no regard for its surroundings. This is exactly why random failure is easy to analyse and targeted attack is not: an attacker chooses *which*, and then order is the whole story.
 
-Second, $p_c$ belongs to the object you are studying. For this particular square grid it sits at $p_c \approx 0.593$; a triangular grid has a different one, and a network with hubs has a different one again. The two sections below work out the equivalent threshold for *networks*, and the answer will not look anything like $0.593$ --- do not carry that number across.
+Second, $p_c$ belongs to the object you are studying. For the square lattice it sits at $p_c \approx 0.593$; a triangular lattice has a different one, and a network with hubs has a different one again. The two sections below work out the equivalent threshold for *networks*, and the answer will not look anything like $0.593$ --- do not carry that number across.
 
-<!-- TODO(anim): Percolation grid dial. A 50x50 lattice where each cell is
-     filled with probability p, driven by a p slider (0 to 1). Cells belonging
-     to the largest connected component are drawn in the accent colour, all
-     other filled cells in a muted tone, empty cells white. A readout reports
-     the size of the largest component as a fraction of the grid, so the reader
-     watches the giant component appear as p crosses p_c = 0.593. Pair it with
-     the phase-transition curve: fraction of the grid in the largest component
-     against p, a marker riding the curve at the current p, and a dashed
-     vertical line at p_c. -->
+Below is that lattice with $p$ on a dial. Occupied cells are shaded; the cells of the single largest cluster are picked out in red, and the readout gives its size as a share of the lattice. Turn the dial one notch at a time through $0.575 \to 0.600$ and watch the largest cluster go from a fifth of the lattice to more than half. The chart underneath plots the same measurement against $p$: the faint dashed curve is a lattice sixty times larger, where the transition is sharper still.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Site percolation on a square lattice. Only the rules this figure needs: the
+   paper, the buttons, the knob, the axes and the motion primitives come from
+   assets/anim.css, and the sequencer from assets/anim.js. Everything is scoped
+   to #percolation, because three stages share this page.
+   -------------------------------------------------------------------------- */
+#percolation { --anim-svg-max: 460px; }
+#percolation .pc-lattice { max-width: 320px; margin: 0 auto; --anim-svg-max: 320px; }
+/* 784 cells: empty is paper with a hairline, occupied is accent, and the cells
+   of the largest cluster are the only red in the figure. */
+#percolation .pc-empty { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 0.5; }
+#percolation .pc-occupied { fill: var(--_accent); fill-opacity: 0.55; stroke: none; }
+#percolation .pc-in-largest { fill: var(--_amber); stroke: none; }
+/* the reference measurement on a 220 x 220 lattice */
+#percolation .pc-big { stroke: var(--_ink-faint); stroke-width: 2; fill: none; stroke-dasharray: 5 4; }
+#percolation .pc-trace { stroke: var(--_amber); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+#percolation .pc-dot { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.4; }
+#percolation .pc-pc { fill: var(--_amber); }
+#percolation .pc-read { max-width: 460px; margin: 0.15rem auto 0; justify-content: center; }
+#percolation .pc-verdict { max-width: 380px; margin: 0.15rem auto 0; justify-content: center; gap: 0.6rem; }
+#percolation .anim-range { max-width: 380px; }
+@media (max-width: 820px) {
+  #percolation .pc-lattice { max-width: 280px; --anim-svg-max: 280px; }
+}
+</style>
+
+<figure class="anim-stage" id="percolation">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-pc-lattice></div>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-pc-chart></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="/assets/anim/percolation.js" defer></script>
+```
 
 ### One Number Decides: The Molloy-Reed Criterion
 
@@ -390,6 +496,95 @@ The same idea gives the **critical fraction** $f_c$: the fraction of nodes that 
 $$
 f_c = 1 - \frac{1}{\kappa - 1}.
 $$
+
+That argument has three steps, and the middle one is where it is easiest to lose your footing: the node at the far end of a random edge is not a typical node. Below, the same ten-node network is sampled twice --- once by drawing a node, once by drawing an edge end --- and the two mean degrees come out 2 and 3. The last two panels turn $\kappa$ into a branching factor and then dilute it with the dial for $f$; this network has $\kappa = 3$, so its own threshold is $f_c = 0.5$.
+
+```{=html}
+<style>
+/* --------------------------------------------------------------------------
+   Edge ends, kappa, and the branching factor. Only the rules this figure needs:
+   the paper, the buttons, the knob and the motion primitives come from
+   assets/anim.css, and the sequencer from assets/anim.js. Everything is scoped
+   to #branch-out, because three stages share this page.
+   -------------------------------------------------------------------------- */
+#branch-out .bo-net { max-width: 300px; margin: 0 auto; --anim-svg-max: 300px; }
+#branch-out .bo-netcap { text-align: center; margin-top: 0; }
+#branch-out .bo-deg { font-size: 15px; font-weight: 700; fill: var(--_white); }
+#branch-out .bo-headdeg { font-size: 12px; font-weight: 700; fill: var(--_white); }
+#branch-out .bo-hit { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+#branch-out .anim-node { transition: fill 0.15s ease; }
+
+/* the side panel: the twenty edge ends in scenes 1-3, the branching fan in 4-5 */
+#branch-out .bo-panel { --anim-svg-max: 420px; }
+/* one square per edge end, stacked under the node that owns it */
+#branch-out .bo-end { fill: var(--_accent); fill-opacity: 0.30; stroke: var(--_accent); stroke-width: 1.4; }
+#branch-out .bo-end-hit { fill: var(--_amber); fill-opacity: 1; stroke: var(--_ink); }
+#branch-out .bo-live { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.4; }
+#branch-out .bo-dead { fill: none; stroke: var(--_ink-faint); stroke-width: 1.2; }
+#branch-out .bo-hidden { opacity: 0; }
+#branch-out .bo-link-live { stroke: var(--_accent); stroke-width: 2; fill: none; }
+#branch-out .bo-link-dead { stroke: var(--_ink-faint); stroke-width: 0.9; fill: none; opacity: 0.5; }
+/* The exact expected count, printed because after two steps it stops being a
+   whole number and a row of discs alone would misreport it. */
+#branch-out .bo-count { font-size: 13px; font-weight: 700; fill: var(--_amber); }
+#branch-out .bo-count-dead { fill: var(--_ink-faint); }
+
+/* the running means: one in scene 2, two side by side in scene 3 */
+#branch-out .bo-means { display: flex; gap: 1rem; justify-content: center; margin-top: 0.2rem; }
+#branch-out .bo-mean { flex: 1 1 0; text-align: center; min-width: 0; }
+#branch-out .bo-mean-n {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--_amber);
+}
+#branch-out .bo-mean-l {
+  display: block;
+  font-family: var(--_hand);
+  font-size: 0.74rem;
+  line-height: 1.2;
+  color: var(--_ink-soft);
+}
+#branch-out .bo-read { max-width: 420px; margin: 0.15rem auto 0; justify-content: center; }
+#branch-out .bo-read .bo-hot { color: var(--_amber); }
+#branch-out .bo-verdict { max-width: 340px; margin: 0.15rem auto 0; justify-content: center; gap: 0.6rem; }
+#branch-out .anim-range { max-width: 380px; }
+/* the mark on the dial at f_c, where the branching factor is exactly 1 */
+#branch-out .bo-tick {
+  position: absolute;
+  top: -7px;
+  width: 2px;
+  height: 22px;
+  margin-left: -1px;
+  background: var(--_amber);
+  opacity: 0.75;
+}
+</style>
+
+<figure class="anim-stage" id="branch-out">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-play>⏸ Pause</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-bo-net></div>
+  </div>
+
+  <div data-anim-canvas>
+    <div data-anim-clear data-bo-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="/assets/anim/branch-out.js" defer></script>
+```
 
 A worked case. Take a randomly wired network in which towns have on average 4 cables, with the degrees scattered the way random wiring scatters them (a Poisson distribution, whose variance equals its mean, so $\text{Var}(k) = 4$ too). Then $\kappa = 4 + 4/4 = 5$, and
 

@@ -129,6 +129,12 @@ over the five stages fell from **1181 to 634 characters**.
     branch-out     18   edge ends, <k> against kappa, kappa-1, and the dial for f
     rf-attack      27   random failure and targeted attack on two networks
 
+All five are also mounted in `lecture-note/m03-robustness/01-concepts.qmd`, from the same
+files. `percolation` replaced a `TODO(anim)` the note had been carrying for the lattice
+dial; `break-profile` follows the static robustness-profile figure; `branch-out` follows
+the f_c formula, where the note's own prose says "follow a cable out of a town and arrive
+somewhere" and had nothing to show for it.
+
 `branch-out` was rebuilt after the first version was found hard to follow. The first two
 scenes looked identical — a node flashed either way — so nothing on screen showed what
 "draw an edge end" meant. It now opens on the twenty edge ends themselves, one column of

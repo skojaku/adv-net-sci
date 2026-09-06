@@ -76,9 +76,11 @@ failure and targeted attack. No rhetoric, and no sentence that carries no fact.
 ## Animation stages
 
 Five slides mount the lecture note's animation kit rather than a GIF. The scene arrays
-live in `lecture-note/assets/anim/<stage>.js`, so a stage the note page also mounts can
-never drift from the deck's copy. The kit's slide-sized stylesheet, and one block per
-stage, are at the bottom of `network-science.css`.
+live in `lecture-note/assets/anim/<stage>.js`, and **all five are mounted twice**: here,
+and in `lecture-note/m03-robustness/01-concepts.qmd`. One file, two mounts, so the deck
+and the note can never drift. The kit's slide-sized stylesheet, and one block per stage,
+are at the bottom of `network-science.css`; the note carries its own note-sized block
+beside each figure.
 
     mst-race        Kruskal, Prim, and the cut property (slide 6)
     break-profile   the robustness profile drawn one removal at a time (slide 10)
