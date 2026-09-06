@@ -1,16 +1,16 @@
-/* Site percolation on a paving-stone yard, with the rain in the room's hands.
-   Markup above, scenes below, and nothing in between: the paper, the pen, the
-   motion and the sequencer all come from assets/anim.css + assets/anim.js, and
-   everything a scene calls arrives on `ctx`. The kit is loaded after this file,
-   hence the animReady queue. */
+/* Site percolation on a square lattice, with the occupation probability in the
+   room's hands. Markup above, scenes below, and nothing in between: the paper,
+   the pen, the motion and the sequencer all come from assets/anim.css +
+   assets/anim.js, and everything a scene calls arrives on `ctx`. The kit is
+   loaded after this file, hence the animReady queue. */
 (window.animReady = window.animReady || []).push(function () {
 
   /* ---------------------------------------------------------------- data ---
-     One yard of 28 x 28 = 784 paving stones, fixed once so the picture is the
-     same in every lecture. FIELD[i] is the p at which stone i first holds
-     water, times 1000: the stone is wet exactly when FIELD[i] < 1000p. Nothing
-     is re-rolled when the dial moves, so turning the rain back down un-wets
-     exactly the stones it wet -- which is the whole point of the third scene.
+     One 28 x 28 = 784 cell lattice, fixed once so the picture is the same in
+     every lecture. FIELD[i] is the threshold of cell i times 1000: the cell is
+     occupied exactly when FIELD[i] < 1000p. Nothing is re-drawn when the dial
+     moves, so lowering p vacates exactly the cells that raising it occupied,
+     which is what makes the third scene a demonstration and not a reshuffle.
 
      Reproduce the field and both curves with:
 
@@ -18,18 +18,18 @@
        field = (np.random.default_rng(11).random((28, 28)) * 1000).astype(int)
        # largest 4-connected cluster of (field < 1000p), as a share of 784
 
-     YARD is that share for THIS yard at each of the 23 dial settings -- a
+     LATTICE is that share for THIS lattice at each of the 23 dial settings, a
      deterministic function of FIELD, so the dot on the chart and the number in
-     the readout are the same fact. BIG is the same measurement on a yard 220
-     stones across, averaged over four of them: the transition the room is
-     looking for, drawn without the small yard's lumpiness.
+     the readout are the same fact. BIG is the same measurement on a 220 x 220
+     lattice averaged over four of them: the same transition, without the finite
+     size of a 28 x 28 lattice rounding it off.
 
-       p          0.575   0.600   0.625
-       this yard  0.196   0.561   0.602
-       big yard   0.093   0.289   0.540
+       p              0.575   0.600   0.625
+       28 x 28        0.196   0.561   0.602
+       220 x 220      0.093   0.289   0.540
 
-     p_c = 0.5927 for site percolation on the square lattice (Newman & Ziff
-     2000); the dial's mark sits there.
+     The percolation threshold of the square lattice is p_c = 0.5927 (Newman &
+     Ziff 2000); the dial's mark sits there.
      ------------------------------------------------------------------------ */
 
   const G = 28;
@@ -73,22 +73,23 @@
 
   const P0 = 0.30, DP = 0.025, DET = 23;
   const P_AT = (d) => P0 + d * DP;
-  const YARD = [0.024,0.028,0.028,0.031,0.040,0.052,0.054,0.054,0.061,0.122,0.177,
+  const LATTICE = [0.024,0.028,0.028,0.031,0.040,0.052,0.054,0.054,0.061,0.122,0.177,
                 0.196,0.561,0.602,0.633,0.659,0.688,0.714,0.769,0.787,0.811,0.841,0.858];
   const BIG  = [0.001,0.001,0.001,0.001,0.002,0.003,0.004,0.005,0.007,0.012,0.020,
                 0.093,0.289,0.540,0.609,0.652,0.686,0.716,0.744,0.771,0.797,0.823,0.848];
   const PC = 0.5927;
   const CROSS = 12;              /* the first detent above p_c */
-  const CELL = 10;               /* drawing units per stone */
+  const CELL = 10;               /* drawing units per cell */
 
   /* chart geometry, in the chart's own viewBox units */
   const CX = (p) => 44 + ((p - P0) / (DET - 1) / DP) * 238;
   const CY = (v) => 112 - v * 92;
 
-  /* The largest puddle in the yard on screen, found on the yard on screen.
-     784 stones is nothing to walk, and computing it here rather than reading it
-     off a table is what guarantees the red stones and the number agree. */
-  function puddle(wet) {
+  /* The largest cluster of the lattice on screen, computed from the lattice on
+     screen. 784 cells is nothing to walk, and computing it here rather than
+     reading it off a table is what guarantees that the red cells and the
+     printed number are the same fact. */
+  function largestCluster(occupied) {
     const par = new Int16Array(CELLS);
     for (let i = 0; i < CELLS; i++) par[i] = i;
     const find = (x) => { while (par[x] !== x) { par[x] = par[par[x]]; x = par[x]; } return x; };
@@ -96,48 +97,50 @@
     for (let y = 0; y < G; y++) {
       for (let x = 0; x < G; x++) {
         const i = y * G + x;
-        if (!wet[i]) continue;
-        if (x + 1 < G && wet[i + 1]) uni(i, i + 1);
-        if (y + 1 < G && wet[i + G]) uni(i, i + G);
+        if (!occupied[i]) continue;
+        if (x + 1 < G && occupied[i + 1]) uni(i, i + 1);
+        if (y + 1 < G && occupied[i + G]) uni(i, i + G);
       }
     }
     const size = new Int16Array(CELLS);
     let best = -1, bestN = 0;
     for (let i = 0; i < CELLS; i++) {
-      if (!wet[i]) continue;
+      if (!occupied[i]) continue;
       const r = find(i);
       if (++size[r] > bestN) { bestN = size[r]; best = r; }
     }
     const inBig = new Uint8Array(CELLS);
-    if (best >= 0) for (let i = 0; i < CELLS; i++) if (wet[i] && find(i) === best) inBig[i] = 1;
+    if (best >= 0) for (let i = 0; i < CELLS; i++) if (occupied[i] && find(i) === best) inBig[i] = 1;
     return { inBig, share: bestN / CELLS };
   }
 
-  const STATE = [];              /* one wet/dry/biggest map per dial setting */
+  const STATE = [];              /* one occupied/empty/in-largest map per dial setting */
   for (let d = 0; d < DET; d++) {
     const thr = P_AT(d) * 1000;
-    const wet = new Uint8Array(CELLS);
-    for (let i = 0; i < CELLS; i++) wet[i] = FIELD[i] < thr ? 1 : 0;
-    const { inBig, share } = puddle(wet);
-    STATE.push({ wet, inBig, share });
+    const occupied = new Uint8Array(CELLS);
+    for (let i = 0; i < CELLS; i++) occupied[i] = FIELD[i] < thr ? 1 : 0;
+    const { inBig, share } = largestCluster(occupied);
+    STATE.push({ occupied, inBig, share });
   }
 
   /* --------------------------------------------------------------- scenes */
   const scenes = [
     {
-      label: "A yard of paving stones",
-      note: "Every stone holds water with the same probability p. Touching puddles count as one.",
+      label: "A 28 x 28 square lattice",
+      note: "Each cell is occupied with probability p, independently of the others. Occupied cells that share an edge belong to the same cluster.",
+      short: "Each cell is occupied with probability p, independently.",
       async run(ctx) {
         ctx.build();
         ctx.show(0);
-        ctx.caption("dark: a stone holding water · red: the stones in the single largest puddle.");
+        ctx.caption("blue: an occupied cell · red: the cells of the largest cluster");
         ctx.verdict("");
         await ctx.sleep(2600);
       }
     },
     {
-      label: "Turn the rain up",
-      note: "Watch the largest puddle, not the wet stones: nothing, nothing, nothing, then the yard.",
+      label: "Raising p",
+      note: "The number of occupied cells grows steadily with p. The largest cluster does not: it stays small, then within a few hundredths of p it spans the lattice.",
+      short: "Occupied cells grow steadily with p. The largest cluster does not.",
       async run(ctx) {
         ctx.trace(true);
         if (ctx.fast()) { ctx.show(CROSS + 1); return; }
@@ -145,19 +148,20 @@
           ctx.show(d);
           await ctx.sleep(d >= 9 && d <= 14 ? 700 : 320);
         }
-        ctx.verdict("<span>no ramp, no warning</span><b>a phase transition</b>");
+        ctx.verdict("<span>largest cluster</span><b>0.20 to 0.56 in one step of 0.025</b>");
         await ctx.sleep(2400);
       }
     },
     {
-      label: "Your hand on the rain",
-      note: "Cross p = 0.59 one notch at a time. One notch is the whole difference.",
+      label: "Crossing the threshold by hand",
+      note: "The dial moves p in steps of 0.025. Between p = 0.575 and p = 0.600 the largest cluster goes from a fifth of the lattice to more than half.",
+      short: "One step of 0.025 across the threshold triples the largest cluster.",
       async run(ctx) {
         ctx.verdict("");
         const knob = ctx.dial();
         const dial = ctx.mountKnob(knob, {
           min: 0, max: DET - 1, step: 1, value: CROSS,
-          label: "Share of stones holding water",
+          label: "Occupation probability p",
           format: (d) => "p = " + P_AT(d).toFixed(3),
           onGrab: () => ctx.pause(),
           onInput: (d) => ctx.show(d)
@@ -174,28 +178,28 @@
   ];
 
   mountScenes(document.getElementById("percolation"), scenes, {
-    stepsLabel: "Rain steps",
+    stepsLabel: "Percolation steps",
 
     helpers(ctx) {
-      const yardBox = ctx.$("[data-pc-yard]");
+      const latticeBox = ctx.$("[data-pc-lattice]");
       const chartBox = ctx.$("[data-pc-chart]");
-      const S = { stones: [], c: null, tracing: false };
+      const S = { cells: [], c: null, tracing: false };
 
-      function drawYard() {
-        yardBox.textContent = "";
-        const wrap = ctx.el("div", "pc-yard");
+      function drawLattice() {
+        latticeBox.textContent = "";
+        const wrap = ctx.el("div", "pc-lattice");
         const svg = ctx.svgRoot("0 0 " + G * CELL + " " + G * CELL);
         const g = svg.appendChild(ctx.svgEl("g"));
-        S.stones = [];
+        S.cells = [];
         for (let i = 0; i < CELLS; i++) {
           const r = ctx.svgEl("rect", {
             x: (i % G) * CELL + 0.7, y: Math.floor(i / G) * CELL + 0.7,
             width: CELL - 1.4, height: CELL - 1.4, rx: 1.4, "class": "pc-dry"
           });
-          S.stones.push(g.appendChild(r));
+          S.cells.push(g.appendChild(r));
         }
         wrap.appendChild(svg);
-        yardBox.appendChild(wrap);
+        latticeBox.appendChild(wrap);
       }
 
       function drawChart() {
@@ -208,11 +212,11 @@
           '<line class="anim-axis" x1="44" y1="16" x2="44" y2="112"/>' +
           '<text class="anim-label" x="39" y="24" text-anchor="end">1</text>' +
           '<text class="anim-label" x="39" y="115" text-anchor="end">0</text>' +
-          '<text class="anim-label" x="15" y="64" text-anchor="middle" transform="rotate(-90 15 64)">largest puddle</text>' +
+          '<text class="anim-label" x="15" y="64" text-anchor="middle" transform="rotate(-90 15 64)">largest cluster</text>' +
           '<text class="anim-label" x="44" y="128">p = 0.30</text>' +
           '<text class="anim-label" x="288" y="128" text-anchor="end">p = 0.85</text>';
         const layer = svg.appendChild(ctx.svgEl("g"));
-        /* the reference curve first, so the small yard's own trace sits on top */
+        /* the reference curve first, so this lattice's own trace sits on top */
         let d = "";
         for (let i = 0; i < DET; i++) d += (i ? " " : "") + CX(P_AT(i)) + "," + CY(BIG[i]);
         layer.appendChild(ctx.svgEl("polyline", { points: d, "class": "pc-big" }));
@@ -221,7 +225,7 @@
         }));
         layer.appendChild(ctx.svgEl("text", {
           x: CX(PC) + 4, y: 26, "class": "anim-label pc-pc"
-        })).textContent = "p = 0.59";
+        })).textContent = "0.59";
         const trace = layer.appendChild(ctx.svgEl("polyline", { points: "", "class": "pc-trace" }));
         const dot = layer.appendChild(ctx.svgEl("circle", { r: 4, "class": "pc-dot" }));
         const cap = ctx.el("div", "anim-caption pc-cap");
@@ -234,15 +238,15 @@
         S.c = { layer, trace, dot, cap, verdict, readSlot, dialSlot, seen: [] };
       }
 
-      function build() { drawYard(); drawChart(); S.tracing = false; }
+      function build() { drawLattice(); drawChart(); S.tracing = false; }
 
-      /* One dial setting: the yard, the dot, the trace and the readout, all
+      /* One dial setting: the lattice, the dot, the trace and the readout, all
          driven from the one index. */
       function show(d) {
         const st = STATE[d];
         for (let i = 0; i < CELLS; i++) {
-          S.stones[i].setAttribute("class",
-            st.inBig[i] ? "pc-big-cell" : st.wet[i] ? "pc-wet" : "pc-dry");
+          S.cells[i].setAttribute("class",
+            st.inBig[i] ? "pc-in-largest" : st.occupied[i] ? "pc-occupied" : "pc-empty");
         }
         const p = P_AT(d);
         S.c.dot.setAttribute("cx", CX(p));
@@ -251,12 +255,12 @@
           if (S.c.seen.indexOf(d) < 0) S.c.seen.push(d);
           S.c.seen.sort((a, b) => a - b);
           S.c.trace.setAttribute("points", S.c.seen
-            .map((k) => CX(P_AT(k)) + "," + CY(YARD[k])).join(" "));
+            .map((k) => CX(P_AT(k)) + "," + CY(LATTICE[k])).join(" "));
         }
         S.c.readSlot.innerHTML =
           "<span>p <b>" + p.toFixed(3) + "</b></span>" +
-          "<span>stones wet <b>" + Math.round(p * 100) + "%</b></span>" +
-          '<span style="color:var(--_amber)">largest puddle <b>' +
+          "<span>cells occupied <b>" + Math.round(p * 100) + "%</b></span>" +
+          '<span style="color:var(--_amber)">largest cluster <b>' +
           Math.round(st.share * 100) + "%</b></span>";
       }
 

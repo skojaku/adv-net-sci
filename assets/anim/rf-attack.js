@@ -148,7 +148,7 @@
     hubs: POS.hubs.map((p, i) => (i < 3 ? 8.4 : ((i - 3) % 9 === 4 ? 5.0 : 4.3)))
   };
   const EDGES = { ring: RING_E, hubs: HUBS_E };
-  const TITLE = { ring: "the even ring", hubs: "the hub grid" };
+  const TITLE = { ring: "every degree 4", hubs: "three hubs" };
 
   /* chart geometry */
   const CX = (k) => 40 + (k / (N - 1)) * 252;
@@ -157,45 +157,49 @@
   /* --------------------------------------------------------------- scenes */
   const scenes = [
     {
-      label: "Same money, two ways to spend it",
+      label: "Two networks, same size, same edge count",
+      short: "Thirty nodes and sixty edges each. Left: every degree 4. Right: three hubs.",
       note: "Thirty towns and sixty cables on each side — four cables a town, the same bill. The left grid gives every town the same four neighbours. The right pools them into three hubs. Nothing else differs.",
       async run(ctx) {
         ctx.build();
-        ctx.caption("the axes below stay put for the rest of the figure: connectivity down the side, towns removed along the bottom.");
+        ctx.caption("the axes below hold for the rest of the figure: connectivity up the side, nodes removed along the bottom.");
         await ctx.sleep(2000);
-        ctx.tally("ring", [["towns", "30"], ["cables", "60"], ["busiest town", "4 cables"]]);
-        ctx.tally("hubs", [["towns", "30"], ["cables", "60"], ["busiest town", "21 cables"]]);
+        ctx.tally("ring", [["nodes", "30"], ["edges", "60"], ["largest degree", "4"]]);
+        ctx.tally("hubs", [["nodes", "30"], ["edges", "60"], ["largest degree", "21"]]);
         await ctx.sleep(3000);
       }
     },
     {
-      label: "Random failure: the dice choose",
+      label: "Random failure",
+      short: "Removal order independent of degree. The hub network holds more.",
       note: "Storms and worn-out bearings pick nobody in particular. Both grids shed towns at the same rate at first — then the ring starts breaking into pieces and the hub grid does not. A die almost never lands on a hub.",
       async run(ctx) {
         ctx.untally();
         ctx.caption("connectivity, averaged over 4,000 random removal orders. the grids above show one of those orders.");
         const curve = { ring: ctx.line("anim-amber-stroke"), hubs: ctx.line("anim-accent-stroke") };
         await ctx.run(0, RAND_RING, RAND_HUBS, ORDER.randring, ORDER.randhubs, curve, "die", 15);
-        ctx.verdict("<span>same bill, same dice</span><b>the hub grid holds more</b>");
+        ctx.verdict("<span>same edge count, random removal</span><b>the hub network holds more</b>");
         await ctx.sleep(2800);
       }
     },
     {
-      label: "Targeted attack: a hand chooses",
+      label: "Targeted attack",
+      short: "Each step removes the highest-degree node. The hub network is gone in three.",
       note: "Same grids, same removal budget — but now each removal takes the largest town left. The even ring has no largest town, so almost nothing changes. The hub grid is gone in three.",
       async run(ctx) {
         ctx.ghost();
         ctx.reset();
         ctx.verdict("");
-        ctx.caption("solid: the attacker chooses · faint dashed: the dice chose · every curve an average of 4,000 orders.");
+        ctx.caption("solid: highest degree removed first · faint dashed: removed at random · each curve is a mean over 4,000 orders.");
         const curve = { ring: ctx.line("anim-amber-stroke"), hubs: ctx.line("anim-accent-stroke") };
         await ctx.run(DET - 1, TARG_RING, TARG_HUBS, ORDER.targring, ORDER.targhubs, curve, "cross", 3);
-        ctx.verdict("<span>hub grid: three towns gone</span><b>and it is dust</b>");
+        ctx.verdict("<span>hub network, three nodes removed</span><b>connectivity 0.03</b>");
         await ctx.sleep(3000);
       }
     },
     {
-      label: "Now you choose who gets removed",
+      label: "The share of removals that are targeted",
+      short: "The two networks change places at about one removal in ten being targeted.",
       note: "One dial: what share of the removals are chosen on purpose rather than left to chance. The even ring barely moves. The hub grid slides from the sturdier grid to the ruined one, and the two change places at about one removal in ten.",
       async run(ctx) {
         ctx.wipe();
@@ -208,10 +212,10 @@
         ctx.dialSlot(track);
 
         const read = ctx.readout(
-          '<span>chosen on purpose <b data-m>0%</b></span>' +
-          '<span style="color:var(--_amber)">R even ring <b data-r>0.36</b></span>' +
-          '<span style="color:var(--_accent)">R hub grid <b data-h>0.42</b></span>');
-        ctx.caption("curves: the average of 4,000 removal orders at that setting; the grids above are one such order, six towns in. the mark on the dial is where the two change places.");
+          '<span>targeted removals <b data-m>0%</b></span>' +
+          '<span style="color:var(--_amber)">R, every degree 4 <b data-r>0.36</b></span>' +
+          '<span style="color:var(--_accent)">R, three hubs <b data-h>0.42</b></span>');
+        ctx.caption("curves: the mean over 4,000 removal orders at that setting; the networks above are one such order, six nodes in.");
 
         const guide = ctx.svgEl("line", {
           x1: CX(SNAP_AT), y1: 16, x2: CX(SNAP_AT), y2: 110, "class": "anim-marker anim-marker--faint"
@@ -228,8 +232,8 @@
            onInput, and grabbing it pauses the sequence so the dial is yours. */
         const dial = ctx.mountKnob(knob, {
           min: 0, max: DET - 1, step: 1, value: 0,
-          label: "Share of removals chosen on purpose",
-          format: (d) => (d * 5) + "% chosen on purpose",
+          label: "Share of removals that are targeted",
+          format: (d) => (d * 5) + "% targeted",
           onGrab: () => ctx.pause(),
           onInput: (d) => {
             outM.textContent = (d * 5) + "%";
@@ -240,8 +244,8 @@
             ctx.frame("ring", SNAP_RING[d]);
             ctx.frame("hubs", SNAP_HUBS[d]);
             ctx.verdict(d < CROSS
-              ? "<span>the hub grid</span><b>still the sturdier one</b>"
-              : "<span>the hub grid</span><b>now the fragile one</b>");
+              ? "<span>the hub network</span><b>still the more robust one</b>"
+              : "<span>the hub network</span><b>now the more fragile one</b>");
           }
         });
 
@@ -454,9 +458,9 @@
          else. `det` says which averaged curve this threat corresponds to. */
       async function run(det, frRing, frHubs, ordRing, ordHubs, pl, kind, freeze) {
         const read = readout(
-          '<span>towns removed <b data-k>0 of 30</b></span>' +
-          '<span style="color:var(--_amber)">even ring <b data-r>100%</b></span>' +
-          '<span style="color:var(--_accent)">hub grid <b data-h>100%</b></span>');
+          '<span>nodes removed <b data-k>0 of 30</b></span>' +
+          '<span style="color:var(--_amber)">every degree 4 <b data-r>100%</b></span>' +
+          '<span style="color:var(--_accent)">three hubs <b data-h>100%</b></span>');
         const outK = read.querySelector("[data-k]");
         const outR = read.querySelector("[data-r]");
         const outH = read.querySelector("[data-h]");

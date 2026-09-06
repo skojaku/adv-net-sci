@@ -20,7 +20,7 @@
      which is the deck's own R-index: the mean of the seven intermediate
      connectivities, exactly as figures/make_figures.py computes it.
 
-       chance   Zlin, Znojmo, Jihlava, Hodonin, Prostejov, Trebic, Olomouc, Brno
+       random   Zlin, Znojmo, Jihlava, Hodonin, Prostejov, Trebic, Olomouc, Brno
                 connectivity 8 7 6 5 4 2 1 1 0  (of 8)      R = 13/32 = 0.41
        attack   Brno, Prostejov, Trebic, Hodonin, Jihlava, Olomouc, Zlin, Znojmo
                 connectivity 8 3 3 1 1 1 1 1 0  (of 8)      R = 11/64 = 0.17
@@ -29,7 +29,6 @@
      takes the largest town left, which is why it takes Prostejov second.
      ------------------------------------------------------------------------ */
 
-  const NAME = ["Jihlava", "Trebic", "Znojmo", "Brno", "Hodonin", "Prostejov", "Olomouc", "Zlin"];
   const SHORT = ["Jihlava", "Třebíč", "Znojmo", "Brno", "Hodonín", "Prostějov", "Olomouc", "Zlín"];
   const N = 8;
 
@@ -49,11 +48,11 @@
 
   /* Per step: which towns are in the largest surviving piece (g), alive but cut
      off (o), or gone (x), recovered from the tree, not typed by hand. */
-  const CHANCE = ["gggggggg", "gggggggx", "ggxggggx", "xgxggggx", "xgxgxggx",
+  const RANDOM = ["gggggggg", "gggggggx", "ggxggggx", "xgxggggx", "xgxgxggx",
                   "xgxgxxox", "xxxgxxox", "xxxgxxxx", "xxxxxxxx"];
   const ATTACK = ["gggggggg", "gggxoooo", "gggxoxoo", "gxoxoxoo", "gxoxxxoo",
                   "xxgxxxoo", "xxgxxxxo", "xxgxxxxx", "xxxxxxxx"];
-  const ORDER = { chance: [7, 2, 0, 4, 5, 1, 6, 3], attack: [3, 5, 1, 4, 0, 6, 7, 2] };
+  const ORDER = { random: [7, 2, 0, 4, 5, 1, 6, 3], attack: [3, 5, 1, 4, 0, 6, 7, 2] };
 
   /* Connectivity read straight off the frames above, so the curve and the
      picture are the same fact stored once. */
@@ -62,14 +61,14 @@
     for (let i = 0; i < N; i++) if (f[i] === "g") g++;
     return g / N;
   });
-  const Y = { chance: conn(CHANCE), attack: conn(ATTACK) };
+  const Y = { random: conn(RANDOM), attack: conn(ATTACK) };
   const rindex = (a) => {
     let s = 0;
     for (let k = 1; k <= 7; k++) s += a[k];
     return s / 8;
   };
-  const R = { chance: rindex(Y.chance), attack: rindex(Y.attack) };
-  const RATIO = (R.chance / R.attack).toFixed(1);
+  const R = { random: rindex(Y.random), attack: rindex(Y.attack) };
+  const RATIO = (R.random / R.attack).toFixed(1);
 
   /* chart geometry, in the chart's own viewBox units */
   const CX = (k) => 44 + (k / N) * 236;
@@ -79,53 +78,56 @@
   const scenes = [
     {
       label: "The 292 km grid, whole",
-      note: "Eight towns, seven cables, connectivity 1: the largest piece is still everything.",
+      note: "Connectivity is the number of towns in the largest connected component, divided by the eight the grid started with. Nothing is removed yet, so it is 1.",
+      short: "Connectivity = largest component / 8. Nothing removed: 1.",
       async run(ctx) {
         ctx.build();
-        ctx.frame(CHANCE[0]);
+        ctx.frame(RANDOM[0]);
         ctx.readout('<span>towns removed <b>0</b></span><span>connectivity <b>1.00</b></span>');
-        ctx.caption("connectivity = the largest surviving piece, over the eight towns you started with.");
+        ctx.caption("connectivity = largest connected component / 8");
         await ctx.sleep(2600);
       }
     },
     {
-      label: "Bad luck takes them in any order",
-      note: "A storm picks nobody in particular. Seven towns go before the grid is halved.",
+      label: "Random failure",
+      note: "The towns are removed in an order that does not depend on the grid. Connectivity falls roughly in step with the number removed.",
+      short: "Removal order independent of the grid.",
       async run(ctx) {
-        ctx.head("bad luck");
-        const pl = ctx.line("bp-luck");
-        await ctx.sweep("chance", CHANCE, pl, "die");
-        ctx.verdict('<span>area under the curve</span><b>R = ' + R.chance.toFixed(2) + "</b>");
+        ctx.head("random failure");
+        const pl = ctx.line("bp-random");
+        await ctx.sweep("random", RANDOM, pl);
+        ctx.verdict('<span>area under the curve</span><b>R = ' + R.random.toFixed(2) + "</b>");
         await ctx.sleep(2600);
       }
     },
     {
-      label: "Bad intent takes the busiest first",
-      note: "Same grid, same eight removals, but Brno goes first, and the grid is thirds already.",
+      label: "Targeted attack",
+      note: "Same grid, same eight removals, but each step removes the town with the most cables, recounted after every removal. Brno goes first and the grid is already in thirds.",
+      short: "Each step removes the town with the most cables.",
       async run(ctx) {
         ctx.ghost();
-        ctx.head("bad intent");
+        ctx.head("targeted attack");
         ctx.verdict("");
-        ctx.caption("faint: the storm's curve · solid: an attacker who can see the map and recounts after every removal.");
+        ctx.caption("faint: the random-failure curve · solid: the targeted one");
         const pl = ctx.line("bp-attack");
-        await ctx.sweep("attack", ATTACK, pl, "cross");
+        await ctx.sweep("attack", ATTACK, pl);
         ctx.verdict('<span>area under the curve</span><b>R = ' + R.attack.toFixed(2) + "</b>");
         await ctx.sleep(2800);
       }
     },
     {
-      label: "One curve, one number",
-      note: "The area under each curve is its R-index. Same grid, same budget, " + RATIO + " times the damage.",
+      label: "The area under each curve",
+      note: "The R-index is the mean of the connectivities after 1 to 7 removals, which is the area under the curve. The same grid and the same number of removals give " + RATIO + " times the loss under attack.",
+      short: "R-index = area under the curve. Attack costs " + RATIO + " times as much.",
       async run(ctx) {
         ctx.shade();
         ctx.head("");
         ctx.frame(ATTACK[1]);
         ctx.readout(
-          '<span style="color:var(--_gold)">bad luck <b>R = ' + R.chance.toFixed(2) + "</b></span>" +
-          '<span style="color:var(--_amber)">bad intent <b>R = ' + R.attack.toFixed(2) + "</b></span>" +
-          "<span>ratio <b>" + RATIO + "&times;</b></span>");
-        ctx.caption("the grid above is one removal in: Brno gone leaves two pieces of three and a lone town.");
-        ctx.verdict("<span>who is doing the damage</span><b>matters more than how much</b>");
+          '<span style="color:var(--_gold)">random failure <b>R = ' + R.random.toFixed(2) + "</b></span>" +
+          '<span style="color:var(--_amber)">targeted attack <b>R = ' + R.attack.toFixed(2) + "</b></span>");
+        ctx.caption("above: Brno removed, leaving components of 3, 3 and 1");
+        ctx.verdict("<span>the targeted attack costs</span><b>" + RATIO + " times as much</b>");
         await ctx.sleep(3200);
       }
     }
@@ -168,7 +170,7 @@
 
         S.nodes = POS.map((p, i) => {
           const c = ctx.svgEl("circle", {
-            cx: p[0], cy: p[1], r: 12.5, "class": "anim-node" + (slow ? " anim-fade" : "")
+            cx: p[0], cy: p[1], r: 14, "class": "anim-node" + (slow ? " anim-fade" : "")
           });
           if (slow) c.style.animationDelay = (i * 0.06) + "s";
           return gNode.appendChild(c);
@@ -223,28 +225,11 @@
         });
       }
 
-      /* The die that falls on a random town, the crosshair that closes on a
-         chosen one. Decoration, so neither runs while we are catching up. */
-      function mark(i, kind) {
+      /* The town this step is about to remove, marked on the drawing before it
+         goes, so the room can see which one the order picked. */
+      function mark(i) {
         if (ctx.fast() || ctx.reduced || i < 0) return;
-        const p = POS[i];
-        const g = ctx.svgEl("g");
-        g.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
-        const inner = ctx.svgEl("g", { "class": kind === "die" ? "bp-drop" : "bp-snap" });
-        if (kind === "die") {
-          inner.appendChild(ctx.svgEl("rect",
-            { x: -9, y: -9, width: 18, height: 18, rx: 4, "class": "bp-die" }));
-          [[-4.4, -4.4], [0, 0], [4.4, 4.4]].forEach((q) => {
-            inner.appendChild(ctx.svgEl("circle", { cx: q[0], cy: q[1], r: 1.9, "class": "bp-pip" }));
-          });
-        } else {
-          inner.appendChild(ctx.svgEl("circle", { r: 17, "class": "bp-cross" }));
-          inner.appendChild(ctx.svgEl("path",
-            { d: "M -25 0 H -12 M 12 0 H 25 M 0 -25 V -12 M 0 12 V 25", "class": "bp-cross" }));
-        }
-        g.appendChild(inner);
-        S.marks.appendChild(g);
-        setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 950);
+        S.nodes[i].setAttribute("class", "bp-next");
       }
 
       function line(cls) {
@@ -264,7 +249,7 @@
       /* The R-index is an area, so at the end it is drawn as one. */
       function shade() {
         S.c.shade.textContent = "";
-        [["chance", "bp-fill-luck"], ["attack", "bp-fill-attack"]].forEach(([k, cls]) => {
+        [["random", "bp-fill-random"], ["attack", "bp-fill-attack"]].forEach(([k, cls]) => {
           let d = "M " + CX(0) + " " + CY(0);
           for (let i = 0; i <= N; i++) d += " L " + CX(i) + " " + CY(Y[k][i]);
           d += " L " + CX(N) + " " + CY(0) + " Z";
@@ -279,23 +264,20 @@
 
       /* One loop drives the grid, the curve and the readout from the same
          index, so nothing on screen can drift out of step with anything else. */
-      async function sweep(key, frames, pl, kind) {
+      async function sweep(key, frames, pl) {
         const read = readout(
-          '<span>towns removed <b data-k>0</b></span>' +
-          '<span>largest piece <b data-g>8 of 8</b></span>' +
+          '<span>towns removed <b data-k>0 of 8</b></span>' +
           '<span>connectivity <b data-c>1.00</b></span>');
         const outK = read.querySelector("[data-k]");
-        const outG = read.querySelector("[data-g]");
         const outC = read.querySelector("[data-c]");
         frame(frames[0]);
         setLine(pl, Y[key], 0);
         for (let k = 1; k <= N; k++) {
-          mark(ORDER[key][k - 1], kind);
+          mark(ORDER[key][k - 1]);
           await ctx.sleep(340);
           frame(frames[k]);
           setLine(pl, Y[key], k);
-          outK.textContent = String(k);
-          outG.textContent = Math.round(Y[key][k] * N) + " of 8";
+          outK.textContent = k + " of 8";
           outC.textContent = Y[key][k].toFixed(2);
           await ctx.sleep(360);
         }
