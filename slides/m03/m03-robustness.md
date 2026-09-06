@@ -18,7 +18,7 @@ math: katex
 <div class="credit">Sadamori Kojaku · Binghamton University</div>
 
 <!--
-Open with Moravia, not with definitions. The whole module is one story told three times: build the cheapest grid, break it, work out the law that governs the breaking.
+They come in having already built a grid, broken it and rebuilt it on paper. This hour names what they did and then goes past it.
 -->
 
 ---
@@ -35,79 +35,34 @@ How much of a network can you destroy before it falls apart, and does it matter 
 
 </div>
 
-Hold a guess. A number, out loud, before we start.
+Hold a number. We check it against a formula in Part Three.
 
 <!--
-Do not answer this. Part Five answers it with one formula; Part Six shows the answer depends entirely on who is doing the damage.
+Do not answer this. Part Three answers the first half; Part Four answers the second and reverses it.
 -->
-
----
-
-## Roadmap for today
-
-<hr>
-
-<div class="steps-list">
-
-<div><div class="i">01</div><div>The cheapest grid: Moravia, 1926, and the minimum spanning tree</div></div>
-<div><div class="i">02</div><div>Greedy: Kruskal, Prim, and why the obvious rule wins here</div></div>
-<div><div class="i">03</div><div>Break it: one town goes dark, and the grid splits</div></div>
-<div><div class="i">04</div><div>Percolation: puddles, and a transition that arrives all at once</div></div>
-<div><div class="i">05</div><div>The formula: kappa, branching, and the critical fraction</div></div>
-<div><div class="i">06</div><div>Robust yet fragile: what you would build instead</div></div>
-<div><div class="i">07</div><div>Edge cases: the graphs that test the law</div></div>
-
-</div>
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part One</span><span class="count">01 / 07</span></div>
+<div class="band"><span>Part One</span><span class="count">01 / 04</span></div>
 
-## The cheapest grid
+## Build it
 
-Post-war Moravia has no electricity and no money
+Moravia, 1926, and the cheapest grid anyone had drawn
 
 ---
 
-## Moravia, 1919
+## Moravia, 1926
 
 <hr>
 
 <div class="cols">
 <div>
 
-A one-year-old republic, its eastern lands dark, and every crown of cable a crown not spent on a hospital.
+A one-year-old republic, eight dark towns, and not a spare crown of cable.
 
-* Eight towns in **Moravia** need connecting, and the republic cannot afford a spare metre.
-
-</div>
-<div class="fig">
-
-![w:520](figures/moravia-dark.png)
-<figcaption>the eight towns, where they actually are</figcaption>
-
-</div>
-</div>
-
-<!--
-Real place, real date. The engineers at the West Moravian Power Company have to connect all of these towns and cannot afford a metre of spare cable.
--->
-
----
-
-## The problem reaches a mathematician
-
-<hr>
-
-<div class="cols">
-<div>
-
-A friend at the West Moravian Power Company carries the question to **Otakar Borůvka**.
-
-* His 1926 paper *O jistém problému minimálním* is the first solution, and the birth of the **minimum spanning tree**.
-* *We come back to how he solved it at the end of Part Two.*
+* A friend at the West Moravian Power Company carries the question to **Otakar Borůvka**, who answers it in 1926 and invents the **minimum spanning tree**.
 
 </div>
 <div class="fig">
@@ -118,218 +73,36 @@ A friend at the West Moravian Power Company carries the question to **Otakar Bor
 </div>
 </div>
 
----
-
-## Each route has a price
-
-<hr>
-
-Eight dots, thirteen plausible routes, kilometres on each: a **weighted network**.
-
-<div class="fig">
-
-![w:1100](figures/abstract-3.png)
-<figcaption>the border, the rivers and the mountains, all gone</figcaption>
-
-</div>
-
----
-
-## Your turn
-
-<hr>
-
-Five minutes. Connect all eight towns for the least total kilometres, and keep your number.
-
-<div class="fig">
-
-![w:1100](figures/moravia-graph.png)
-<figcaption>your grid, your total</figcaption>
-
-</div>
-
 <!--
-Collect a few totals on the board without judging them. The spread is the point: some will be near 292, some far above.
+Real place, real date, real paper: O jistem problemu minimalnim. His own method was neither Kruskal's nor Prim's: every piece of the grid picks its own cheapest way out at the same moment. Mention it, do not spend a slide on it.
 -->
 
 ---
 
-## What everyone notices first
+## What you drew on paper has a name
 
 <hr>
 
-<div class="cols">
-<div>
-
-If your cables ever form a **loop**, one of them is doing nothing: cut it and every town is still connected.
-
-So the cheapest answer has no loops.
-
-</div>
-<div class="fig">
-
-![w:520](figures/loop-waste.png)
-<figcaption>cut it, still connected</figcaption>
-
-</div>
-</div>
-
----
-
-## A tree
-
-<hr>
-
-<div class="cols">
-<div>
-
-A **tree** is a network that is connected and has no cycle.
-
-Between any two nodes there is exactly one route, no choices, no spares.
-
-</div>
-<div class="fig">
-
-![w:520](figures/tree-def.png)
-<figcaption>one route between any two</figcaption>
-
-</div>
-</div>
-
----
-
-## Seven cables, always
-
-<hr>
-
-A **spanning tree** touches every node, and for $n$ towns it has exactly $n - 1$ cables.
-
-<div class="fig">
-
-![w:1100](figures/spanning-count.png)
-<figcaption>8 towns, 7 cables: the count is forced</figcaption>
-
-</div>
-
-<!--
-The number of cables is not a design choice. Only WHICH seven is.
--->
-
----
-
-## Minimum spanning tree
-
-<hr>
-
-The spanning tree of least total weight is the **minimum spanning tree**.
+No loops, seven cables for eight towns, nothing cheaper: a **minimum spanning tree**, 292 km.
 
 <div class="fig">
 
 ![w:1100](figures/mst-def.png)
-<figcaption>the cheapest way to keep everyone connected</figcaption>
-
-</div>
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part Two</span><span class="count">02 / 07</span></div>
-
-## Greedy
-
-Take the cheapest thing that is not stupid, and repeat
-
----
-
-## Kruskal's rule
-
-<hr>
-
-Take the cables cheapest first, and skip any that would close a loop. *Joseph Kruskal, 1956.*
-
-<div class="fig">
-
-![w:1100](figures/kruskal-rule.png)
-<figcaption>thirteen routes, cheapest first</figcaption>
-
-</div>
-
----
-
-## The one it refuses
-
-<hr>
-
-Olomouc–Zlín is 51 km and next on the list, but both ends are already connected, so it would buy nothing.
-
-<div class="fig">
-
-![w:1100](figures/kruskal-skip.png)
-<figcaption>the loop it would have closed</figcaption>
+<figcaption>the nine stations on your sheet were this same question, with a cost table</figcaption>
 
 </div>
 
 <!--
-This single skip IS the algorithm. Everything else is "take the cheapest".
+The count is forced: n towns always take n-1 cables. Only WHICH seven is a design choice, and that is the only thing the algorithms decide.
 -->
 
 ---
 
-## Your turn
+## Kruskal and Prim, one grid
 
 <hr>
 
-Run Kruskal by hand: the order you take the cables, the one you refuse, the total.
-
-<div class="fig">
-
-![w:1100](figures/kruskal-worksheet.png)
-<figcaption>your list, in order</figcaption>
-
-</div>
-
----
-
-## The order, and the answer to the question
-
-<hr>
-
-17, 29, 42, 48, 49, skip 51, 53, 54, seven cables, 292 km, and nothing cheaper exists.
-
-<div class="fig">
-
-![w:1100](figures/kruskal-answer.png)
-<figcaption>the order it was built in</figcaption>
-
-</div>
-
----
-
-## Prim's rule
-
-<hr>
-
-Start at the Brno plant; buy the cheapest cable reaching one new town. *Jarník 1930 · Prim 1957.*
-
-<div class="fig">
-
-![w:1100](figures/prim-rule.png)
-<figcaption>six ways out of Brno; take the cheapest</figcaption>
-
-</div>
-
-<!--
-Jarník was also Czech, and published this in 1930 after reading Boruvka. Prim rediscovered it in 1957.
--->
-
----
-
-## Kruskal and Prim, side by side
-
-<hr>
-
-Six towns, nine cables, one grid each. Step it forward yourself.
+Two greedy rules that cannot disagree. Step them yourself.
 
 <figure class="anim-stage" id="mst-race">
   <div class="anim-bar">
@@ -355,161 +128,18 @@ Six towns, nine cables, one grid each. Step it forward yourself.
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Four steps: the grid, Kruskal, Prim, and the swap that proves neither could have gone wrong. Stop on step 2 and ask why the 3-cable is refused; stop on step 3 and ask why Prim walks past the 5-cable. Nothing moves until you press it.
--->
-
----
-
-## Your turn
-
-<hr>
-
-Run Prim from Brno. Write the order they enter in, then compare with your Kruskal list.
-
-<div class="fig">
-
-![w:1100](figures/prim-worksheet.png)
-<figcaption>start at Brno</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Greedy is usually wrong
-
-<hr>
-
-The cheapest thing available is a bad answer to almost every problem: packing a bag, planning a trip, scheduling a factory.
-
-<div class="formula">
-
-So why can it not be beaten here?
-
-</div>
-
-Thirty seconds. Argue it with the person next to you.
-
-<!--
-Let them argue before you say anything. The answer they usually reach, 'because the cheapest edge can't hurt', is nearly the cut property; take it and sharpen it on the next slide.
--->
-
----
-
-## Here it cannot be beaten
-
-<hr>
-
-<div class="cols">
-<div>
-
-Cut the towns into any two groups. The cheapest cable across that cut must be in the tree: swap it in, and any tree without it gets cheaper.
-
-* Both rules only ever take such a cable. That is the whole proof.
-
-</div>
-<div class="fig">
-
-![w:520](figures/cut-property.png)
-<figcaption>the cheapest cable across any cut is safe</figcaption>
-
-</div>
-</div>
-
----
-
-<!-- _class: mid -->
-
-## What if two cables cost the same?
-
-<hr>
-
-Suppose the survey comes back and Olomouc–Zlín is 49 km, exactly the same as Prostějov–Zlín.
-
-<div class="formula">
-
-Is there still one cheapest grid?
-
-</div>
-
-<div class="fig">
-
-![w:1100](figures/tie-graph.png)
-
-</div>
-
-<!--
-Ask for a show of hands: one grid, or more than one? Most say one. Do not resolve it here.
--->
-
----
-
-## Two cheapest grids
-
-<hr>
-
-Six cables in both, then the tie: take either, 292 km either way. Which one you get is the tie-break.
-
-<div class="fig">
-
-![w:1100](figures/tie-two-trees.png)
-<figcaption>six shared cables, then a coin toss</figcaption>
-
-</div>
-
-<!--
-All weights distinct implies a unique MST; ties imply several optima of equal cost. Both algorithms return one of them.
--->
-
----
-
-<!-- _class: mid -->
-
-## And Borůvka himself?
-
-<hr>
-
-Neither of these is his. 1926: no computer, no sorted list, no notion of an “algorithm” to lean on.
-
-<div class="formula">
-
-What would you do, with eight towns and a pencil?
-
-</div>
-
-<!--
-Give this a full minute. Someone usually proposes 'every town picks its own cheapest cable', which is exactly Borůvka. Name whoever says it.
--->
-
----
-
-## Every town at once
-
-<hr>
-
-Every piece takes its own cheapest way out at the same moment, and the pieces merge. Six cables in round one, the last in round two.
-
-<div class="fig">
-
-![w:1100](figures/boruvka.gif)
-<figcaption>no ordering, no queue, no waiting: two rounds, not seven steps</figcaption>
-
-</div>
-
-<!--
-Run the loop and count the cables that appear in round one: six, at the same time. That simultaneity is the whole idea.
+Four steps: the grid, Kruskal, Prim, and the swap that proves neither could have gone wrong. Step 2 is where you ask why the 3-cable is refused; step 4 is the cut property, and it is the whole proof. On paper they compared their build order with a neighbour and got the same total; this is why.
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Three</span><span class="count">03 / 07</span></div>
+<div class="band"><span>Part Two</span><span class="count">02 / 04</span></div>
 
 ## Break it
 
-The bill is paid, the grid is up, and now things start to fail
+The bill is paid, the grid is up, and now things fail
 
 ---
 
@@ -519,11 +149,9 @@ The bill is paid, the grid is up, and now things start to fail
 
 <hr>
 
-A transformer fails and one town drops off the grid, taking its cables with it.
-
 <div class="formula">
 
-Pick the town you would least like to lose. Hands up for yours.
+A transformer fails and one town drops off the grid, taking its cables with it. Point at the one you would least like to lose.
 
 </div>
 
@@ -534,218 +162,109 @@ Pick the town you would least like to lose. Hands up for yours.
 </div>
 
 <!--
-Run this as a real poll. Count hands town by town and write the tally on the board before turning the page.
+Run this as a real poll and write the tally on the board before turning the page.
 -->
 
 ---
 
-## Brno
+## Brno: eight towns become 3, 3 and 1
 
 <hr>
 
-Lose Brno and eight towns become three, three and one.
+Largest piece over original size is the **connectivity**. Brno scores $3/8$, a leaf $7/8$.
 
 <div class="fig">
 
 ![w:1100](figures/brno-removed.png)
-<figcaption>Jihlava's half, Olomouc's half, and Hodonín alone</figcaption>
-
-</div>
-
----
-
-## Every cable is a bridge
-
-<hr>
-
-One route between any two towns, so no cable has a spare. Not bad luck, but what “cheapest” bought.
-
-<div class="fig">
-
-![w:1100](figures/tree-bridges.png)
-<figcaption>Jihlava to Zlín: one route, no spare; real grids are meshed instead</figcaption>
-
-</div>
-
----
-
-## Measuring the damage
-
-<hr>
-
-**Connectivity** = largest surviving piece ÷ original size. Brno scores $3/8 = 0.375$; a leaf scores $7/8$.
-
-<div class="fig">
-
-![w:1100](figures/connectivity-def.png)
-<figcaption>one number for how bad it is</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Keep going
-
-<hr>
-
-Do not stop at one town. Remove them one at a time, measuring the connectivity after each.
-
-<div class="formula">
-
-Sketch the curve before we draw it. Does it slide, or does it fall off a cliff?
+<figcaption>Jihlava's half, Olomouc's half, and Hodonín on its own</figcaption>
 
 </div>
 
 <!--
-Have them sketch the curve on paper before you show it. The common guess is a straight slide down; the first removal costing more than the next four is the surprise.
+This is the middle column of Question 4 on their sheet, on a different grid. Ask whose worst station was the one with the most lines.
 -->
 
 ---
 
-## The robustness profile
+## Take them one at a time
 
 <hr>
 
-Damage is a **curve**, not a number, one point per town lost.
+<figure class="anim-stage" id="break-profile">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
 
-<div class="fig">
+  <div data-anim-canvas>
+    <div data-anim-clear data-bp-net></div>
+  </div>
 
-![w:1100](figures/profile-build.gif)
-<figcaption>connectivity against the fraction removed</figcaption>
+  <div data-anim-canvas>
+    <div data-anim-clear data-bp-chart></div>
+  </div>
 
-</div>
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/break-profile.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Pause on the first two frames: the first removal costs more than the next four put together.
+Step 2 is their Order R, step 3 their Order T, step 4 the area they estimated in Question 8. Stop on step 3 after the first removal: one town costs more than the next four did under chance.
 -->
 
 ---
 
-## One curve, one number
+## Bad luck against bad intent
 
 <hr>
 
-The **R-index** is the area under the profile, $R = \frac{1}{N}\sum_k y_k$. This attack scores 0.17.
-
-<div class="fig">
-
-![w:1100](figures/r-index.png)
-<figcaption>the whole curve, compressed to one comparable number</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Does the order matter?
-
-<hr>
-
-Same grid. Same number of towns removed. Only the *order* is different.
-
-<div class="formula">
-
-How far apart can two curves on the same network be?
-
-</div>
-
-Guess a factor before we look.
-
-<!--
-Collect a factor out loud, most say 1.5 or 2. The measured answer is 2.4, so nobody is wildly wrong, and that is the point: order matters more than they expect.
--->
-
----
-
-## Random failure
-
-<hr>
-
-Earthquakes and broken transformers do not read the map. They take leaves as often as hubs: $R = 0.41$.
-
-<div class="fig">
-
-![w:1100](figures/profile-random.png)
-<figcaption>unlucky, but not targeted</figcaption>
-
-</div>
-
----
-
-## Targeted attack
-
-<hr>
-
-An adversary who can see the map takes Brno first. Same grid, same removals, $R = 0.17$, 2.4 times the damage.
+Same grid, same eight removals, 2.4 times the damage. You drew these two curves on paper.
 
 <div class="fig">
 
 ![w:1100](figures/profile-both.png)
-<figcaption>the gap between bad luck and bad intent</figcaption>
+<figcaption>break one yourself: <a href="https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html">network-robustness.html</a></figcaption>
 
-</div>
-
----
-
-## Take it apart yourself
-
-<hr>
-
-<div class="cols">
-<div>
-
-Live: build a network, choose a removal strategy, and watch the profile draw itself.
-
-* [network-robustness.html](https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html)
-* Then on paper: *Build it, Break it, Build it back*.
-
-</div>
-<div class="fig">
-
-![w:520](figures/demo-still.png)
-<figcaption>pick a target, watch the curve</figcaption>
-
-</div>
 </div>
 
 <!--
-Do the live demo first, then hand out the paper exercise. The demo takes five minutes; the exercise is the rest of the session.
+Their own two areas come out near 0.5 and near 0.23 on the nine-station grid, so the ratio they measured is the ratio here. Collect a couple of their numbers before showing this.
 -->
 
 ---
 
 <!-- _class: mid -->
 
-## Before next time
+## How much has to fail before it fragments?
 
 <hr>
 
-You can now *measure* how badly a network breaks. You cannot yet predict it.
+You can now measure the damage. You cannot yet predict it.
 
 <div class="formula">
 
-What fraction of a network has to fail before it fragments?
+What fraction of a network has to go before it stops being one network?
 
 </div>
 
-Next session: one formula answers this, for any network, from its degrees alone.
-
 <!--
-End the first day here. Do not answer it. The formula arrives at the top of Part Five.
+Do not answer it. The formula arrives four slides from here, and it needs only the degrees.
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Four</span><span class="count">04 / 07</span></div>
+<div class="band"><span>Part Three</span><span class="count">03 / 04</span></div>
 
-## Percolation
+## Predict it
 
-Before networks, a paved yard in the rain
+One number, from the degrees alone
 
 ---
 
@@ -755,11 +274,9 @@ Before networks, a paved yard in the rain
 
 <hr>
 
-Each paving stone holds water with probability $p$; touching puddles join up.
-
 <div class="formula">
 
-At which $p$ does one puddle first span the whole yard?
+Each paving stone holds water with probability $p$, and touching puddles count as one. At which $p$ does a single puddle first span the yard?
 
 </div>
 
@@ -770,24 +287,40 @@ At which $p$ does one puddle first span the whole yard?
 </div>
 
 <!--
-Ask for a number. Guesses cluster around 0.5, well below the real 0.59, which is what makes the sweep worth watching.
+Ask for a number out loud before you move on.
 -->
 
 ---
 
-## Turning $p$ up
+## Turn the rain up
 
 <hr>
 
-<div class="fig">
+<figure class="anim-stage" id="percolation">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
 
-![w:1100](figures/puddle-sweep.gif)
-<figcaption>watch for the moment the pools join</figcaption>
+  <div data-anim-canvas>
+    <div data-anim-clear data-pc-yard></div>
+  </div>
 
-</div>
+  <div data-anim-canvas>
+    <div data-anim-clear data-pc-chart></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<script src="../../lecture-note/assets/anim/percolation.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Ask them to call out when it happens. The room will call it within a few hundredths of each other.
+Step 3 is the one that matters: hand the dial over and make somebody cross 0.59 one notch at a time. The yard goes from a fifth to more than half on a single notch.
 -->
 
 ---
@@ -796,84 +329,28 @@ Ask them to call out when it happens. The room will call it within a few hundred
 
 <hr>
 
-Below $p_c \approx 0.59$, scattered pools; above it, one puddle owns the yard. No ramp, a **phase transition**.
+Below $p_c \approx 0.59$, scattered pools; above it, one puddle owns the yard. No ramp: a **phase transition**.
 
 <div class="fig">
 
 ![w:1100](figures/phase-transition.png)
-<figcaption>the largest puddle, measured</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Does the order matter here?
-
-<hr>
-
-The stones do not all wet at once, the rain fills them one by one, in whatever order it likes.
-
-<div class="formula">
-
-Does a different order change when the giant puddle arrives?
+<figcaption>removing nodes from a network is this same transition, run backwards</figcaption>
 
 </div>
 
 <!--
-Thirty seconds. The instinct is that order must matter; it does not, and that is why the whole problem reduces to one parameter.
+Adding stones builds a giant cluster; removing nodes destroys one. Same axis, opposite directions, and that is why the rest of this part is about networks again.
 -->
-
----
-
-## Only the fraction
-
-<hr>
-
-Different yard, different stones, same fraction wet, and the same answer.
-
-<div class="fig">
-
-![w:1100](figures/order-irrelevant.png)
-<figcaption>two yards, one threshold</figcaption>
-
-</div>
-
----
-
-## Attack is percolation, backwards
-
-<hr>
-
-One axis, two directions: adding nodes builds the giant component, removing them destroys it.
-
-<div class="fig">
-
-![w:1100](figures/reverse-percolation.png)
-<figcaption>the same transition, approached from the other side</figcaption>
-
-</div>
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part Five</span><span class="count">05 / 07</span></div>
-
-## The formula
-
-One number, from the degrees alone
 
 ---
 
 <!-- _class: mid -->
 
-## What number decides it?
+## Same size, opposite fates
 
 <hr>
 
-Two networks, same nodes, same edges. One shatters at a fifth removed; the other survives losing four-fifths.
+Two networks, the same nodes and the same edges. One shatters at a fifth removed; the other survives losing four-fifths.
 
 <div class="formula">
 
@@ -882,65 +359,52 @@ What would you have to know about a network to tell them apart?
 </div>
 
 <!--
-Do not let them answer 'the number of edges', both networks have the same. Push until someone says something about how the edges are spread.
+Do not let them settle for 'the number of edges': both have the same. Push until somebody says something about how the edges are spread.
 -->
 
 ---
-
-<!-- _class: mid -->
 
 ## Follow an edge, not a node
 
 <hr>
 
-<div class="cols">
-<div>
+<figure class="anim-stage" id="branch-out">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
 
-Pick an **edge** at random, not a node, and walk to the node at its far end.
+  <div data-anim-canvas>
+    <div data-anim-clear data-bo-net></div>
+  </div>
 
-<div class="formula">
+  <div data-anim-canvas>
+    <div data-anim-clear data-bo-side></div>
+  </div>
 
-Is the node you arrive at a typical member of the network?
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
 
-</div>
-
-</div>
-<div class="fig">
-
-![w:520](figures/follow-edge.png)
-
-</div>
-</div>
+<script src="../../lecture-note/assets/anim/branch-out.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-This is the pivot of the whole module. Make sure they see that picking an edge is not the same as picking a node before you turn the page.
+This is the pivot of the module. Stop after step 2 and make sure they see that picking an edge is not the same as picking a node. Step 4 is the whole threshold argument in one dial; the mark on it is f_c.
 -->
 
 ---
 
-## No, it is biased toward hubs
-
-<hr>
-
-Twice the degree, twice the chance of being the one you land on: $q(k) = k\,p(k) / \langle k \rangle$.
-
-<div class="fig">
-
-![w:1100](figures/qk-bias.png)
-<figcaption>draw an end at random, not a node</figcaption>
-
-</div>
-
----
-
-## How connected is the node you land on?
+## The number is $\kappa$
 
 <hr>
 
 <div class="cols">
 <div>
 
-Average the degree over $q(k)$ rather than over $p(k)$, and you get
+Average the degree over the node you *land on*, not the node you *pick*:
 
 <div class="formula">
 
@@ -948,31 +412,20 @@ $$ \kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} $$
 
 </div>
 
-* $\kappa$ is large exactly when the network has hubs.
+* Large exactly when the network has hubs.
 
 </div>
 <div class="fig">
 
 ![w:520](figures/kappa-def.png)
-<figcaption>land here, count its links</figcaption>
+<figcaption>ten towns, twenty cable ends: mean degree 2, kappa 3</figcaption>
 
 </div>
 </div>
 
----
-
-## Subtract the way you came in
-
-<hr>
-
-One of the $\kappa$ links is the edge you arrived on, so the search fans out by $\kappa - 1$: the **branching factor**.
-
-<div class="fig">
-
-![w:1100](figures/branching.png)
-<figcaption>one edge in, kappa minus one out</figcaption>
-
-</div>
+<!--
+This is the network from the animation, at the same positions.
+-->
 
 ---
 
@@ -980,61 +433,12 @@ One of the $\kappa$ links is the edge you arrived on, so the search fans out by 
 
 <hr>
 
-Branching above 1 and the search never dies. A **giant component** exists exactly when $\kappa > 2$. *Molloy & Reed, 1995.*
+One link is the way you came in, so a search fans out by $\kappa - 1$. Above 1 it never dies.
 
 <div class="fig">
 
 ![w:1100](figures/molloy-reed.png)
-<figcaption>below 1 it dies; above 1 it never stops</figcaption>
-
-</div>
-
-<!--
-Left panel dies, right panel never stops. The whole criterion is which side of 1 the branching factor falls on.
--->
-
----
-
-## Your turn
-
-<hr>
-
-Three small networks. Average $k$ and $k^2$ over the nodes, then take $\kappa = \langle k^2 \rangle / \langle k \rangle$.
-
-<div class="fig">
-
-![w:1100](figures/kappa-worksheet.png)
-<figcaption>which of these has a giant component?</figcaption>
-
-</div>
-
----
-
-## $\kappa = 2$, 3 and 1.75
-
-<hr>
-
-The star is above the threshold, the path below it. The ring sits exactly at $\kappa = 2$.
-
-<div class="fig">
-
-![w:1100](figures/kappa-answer.png)
-<figcaption>the ring lives on the line</figcaption>
-
-</div>
-
----
-
-## Now break it
-
-<hr>
-
-Remove a fraction $f$ at random: of each neighbour's $\kappa - 1$ onward links, only $(1-f)$ still lead anywhere.
-
-<div class="fig">
-
-![w:1100](figures/dilution.png)
-<figcaption>failure just rescales the branching factor</figcaption>
+<figcaption>a giant component exists exactly when kappa exceeds 2 · Molloy &amp; Reed, 1995</figcaption>
 
 </div>
 
@@ -1049,12 +453,12 @@ Set the branching to 1: $(1-f)(\kappa-1) = 1$, so $f_c = 1 - 1/(\kappa - 1)$.
 <div class="fig">
 
 ![w:1100](figures/fc-formula.png)
-<figcaption>past the crossing the search dies, and so does the network</figcaption>
+<figcaption>the argument assumes no triangles, so measured thresholds sit a little lower</figcaption>
 
 </div>
 
 <!--
-The exact binomial dilution is in the appendix and gives the same threshold; the heuristic is enough for the whole module.
+The exact binomial dilution is in the appendix and gives the same threshold. A triangle sends the search back where it came from, so the real fan-out is below kappa minus one; that is the assumption to name if anyone asks.
 -->
 
 ---
@@ -1063,11 +467,12 @@ The exact binomial dilution is in the appendix and gives the same threshold; the
 
 <hr>
 
-Poisson degrees give $\kappa = \langle k \rangle + 1$, so $f_c = 1 - 1/\langle k \rangle$: the average degree alone.
+Poisson degrees give $\kappa = \langle k \rangle + 1$, so $f_c = 1 - 1/\langle k \rangle$.
 
 <div class="fig">
 
 ![w:1100](figures/fc-poisson.png)
+<figcaption>at mean degree 1 this gives kappa 2: Module 02's giant component, rediscovered</figcaption>
 
 </div>
 
@@ -1088,7 +493,7 @@ What happens to $\kappa = \langle k^2 \rangle / \langle k \rangle$?
 </div>
 
 <!--
-They have met scale-free degree distributions in Module 02. Ask what happens to the average of the SQUARES when one node is enormous.
+They met these in Module 02. Ask what happens to the average of the SQUARES when one node is enormous.
 -->
 
 ---
@@ -1097,26 +502,22 @@ They have met scale-free degree distributions in Module 02. Ask what happens to 
 
 <hr>
 
-For $2 < \gamma < 3$ the second moment diverges, so $\kappa \to \infty$ and $f_c \to 1$.
+For $2 < \gamma < 3$ the second moment diverges, so $\kappa \to \infty$.
 
 <div class="fig">
 
 ![w:1100](figures/fc-scalefree.png)
-<figcaption>bigger hubs, higher threshold</figcaption>
+<figcaption>Cohen, Erez, ben-Avraham &amp; Havlin, 2000: why the Internet shrugs off router failures</figcaption>
 
 </div>
-
-<!--
-Cohen, Erez, ben-Avraham and Havlin, PRL 2000: this is why the Internet shrugs off random router failures.
--->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Six</span><span class="count">06 / 07</span></div>
+<div class="band"><span>Part Four</span><span class="count">04 / 04</span></div>
 
-## Robust yet fragile
+## Design it
 
 The strength and the weakness turn out to be the same thing
 
@@ -1128,7 +529,7 @@ The strength and the weakness turn out to be the same thing
 
 <hr>
 
-$f_c \to 1$ says random failure cannot kill it. The Internet, the airline map, the cell all inherit that.
+$f_c \to 1$ says random failure cannot kill it. The Internet, the airline map and the cell all inherit that.
 
 <div class="formula">
 
@@ -1137,12 +538,12 @@ Is that the whole story?
 </div>
 
 <!--
-Let someone say yes. The next three slides are more fun if the room has committed.
+Let somebody say yes. The next two slides are more fun if the room has committed.
 -->
 
 ---
 
-## Same money, two ways to spend it
+## Thirty towns, sixty cables, two designs
 
 <hr>
 
@@ -1171,7 +572,7 @@ Let someone say yes. The next three slides are more fun if the room has committe
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Step 2 is the dice, step 3 is the adversary, step 4 hands you a dial for how much of the damage is deliberate. Run 2 and 3 before touching the dial. The two random curves nearly coincide; the two targeted ones do not.
+Step 2 is the dice, step 3 the adversary, step 4 a dial for how much of the damage is deliberate. Run 2 and 3 before touching the dial: the two random curves nearly coincide, the two targeted ones do not.
 -->
 
 ---
@@ -1180,18 +581,14 @@ Step 2 is the dice, step 3 is the adversary, step 4 hands you a dial for how muc
 
 <hr>
 
-The hubs that made random failure harmless are what an attacker aims at: **robust yet fragile**. *Albert, Jeong & Barabási, Nature, 2000.*
+What made random failure harmless is what an attacker aims at: **robust yet fragile**. *Albert &amp; Barabási, 2000.*
 
 <div class="fig">
 
 ![w:1100](figures/robust-fragile.png)
-<figcaption>one network, two fates</figcaption>
+<figcaption>the two solid curves nearly coincide; the dashed pair is the story</figcaption>
 
 </div>
-
-<!--
-The two solid curves nearly coincide; the dashed pair is where the story is. Point at the gap.
--->
 
 ---
 
@@ -1201,11 +598,9 @@ The two solid curves nearly coincide; the dashed pair is where the story is. Poi
 
 <hr>
 
-Back to Moravia. The board will fund two extra cables beyond the 292 km tree.
-
 <div class="formula">
 
-Where do you put them, and what exactly does the money buy?
+The board will fund two cables beyond the 292 km tree. Where do you put them, and what exactly does the money buy?
 
 </div>
 
@@ -1216,7 +611,7 @@ Where do you put them, and what exactly does the money buy?
 </div>
 
 <!--
-Take three proposals before revealing. Push for the second question: "what does it buy" is the one they skip.
+Take three proposals before turning the page. Push on the second question: 'what does it buy' is the one they skip. This is Question 10 on their sheet with a budget instead of a free hand.
 -->
 
 ---
@@ -1225,7 +620,7 @@ Take three proposals before revealing. Push for the second question: "what does 
 
 <hr>
 
-Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst loss $3/8 \to 6/8$, and $R$ 0.17 → 0.27.
+Two cables close a southern ring. +136 km: worst loss $3/8 \to 6/8$, $R$ from 0.17 to 0.27.
 
 <div class="fig">
 
@@ -1235,198 +630,7 @@ Zlín–Hodonín and Znojmo–Hodonín close a ring. +136 km (+47%): worst loss 
 </div>
 
 <!--
-Come back to whatever the room proposed on the previous slide before showing this. If someone proposed the southern ring, say so.
--->
-
----
-
-## Design principles
-
-<hr>
-
-<div class="cols">
-<div>
-
-Hubs are the cheap way to connect everything, and the cheap thing to attack.
-
-* **Even out the degrees**, fewer towns on a single cable
-* **Redundant routes**, two ways to reach anywhere
-* **Protect the hubs** you cannot design away
-* **Reconfigure** when an attack is detected
-
-</div>
-<div class="fig">
-
-![w:520](figures/design-principles.png)
-<figcaption>cables per town, before (gray) and after (gold)</figcaption>
-
-</div>
-</div>
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part Seven</span><span class="count">07 / 07</span></div>
-
-## Edge cases
-
-Three networks that test the law
-
----
-
-<!-- _class: mid -->
-
-## A random network with $\langle k \rangle = 1$
-
-<hr>
-
-<div class="cols">
-<div>
-
-Poisson degrees, one edge per node on average.
-
-<div class="formula">
-
-What does $\kappa = \langle k \rangle + 1$ say about it?
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:520](figures/er1-q.png)
-
-</div>
-</div>
-
-<!--
-They derived this threshold in Module 02 by a completely different route. Do not remind them yet.
--->
-
----
-
-## The same threshold, from the other side
-
-<hr>
-
-<div class="cols">
-<div>
-
-$\kappa = 2$, exactly the Molloy–Reed boundary.
-
-* And $\langle k \rangle = 1$ is precisely where Module 02's giant component was born.
-* Two different arguments, one number.
-
-</div>
-<div class="fig">
-
-![w:520](figures/er1-a.png)
-<figcaption>the birth of m02's giant component, rediscovered</figcaption>
-
-</div>
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Attack by betweenness, not degree?
-
-<hr>
-
-Rank nodes by how many shortest routes run **through** them, not by how many links they have.
-
-<div class="formula">
-
-Would that do more damage? What would it cost?
-
-</div>
-
-<div class="fig">
-
-![w:1100](figures/betweenness-q.png)
-
-</div>
-
-<!--
-Ask them to point at the node they would cut. Many will point at a hub; the answer is the small node in the middle.
--->
-
----
-
-## More damage, more computation
-
-<hr>
-
-The degree-2 node carries every route between the halves. Degree misses it; betweenness finds it, at a far higher price.
-
-<div class="fig">
-
-![w:1100](figures/betweenness-a.png)
-<figcaption>the cheapest node to cut is not the biggest</figcaption>
-
-</div>
-
-<!--
-Module 06 defines betweenness properly. Flag it here so the definition arrives with a reason attached.
--->
-
----
-
-<!-- _class: mid -->
-
-## Real grids are full of triangles
-
-<hr>
-
-<div class="cols">
-<div>
-
-Real networks are heavily clustered: your neighbours are each other's neighbours (Module 02).
-
-<div class="formula">
-
-Does $f_c = 1 - 1/(\kappa - 1)$ still hold there?
-
-</div>
-
-</div>
-<div class="fig">
-
-![w:520](figures/triangles-q.png)
-
-</div>
-</div>
-
-<!--
-This is the slide that says the formula has assumptions. Ask what the branching argument quietly assumed.
--->
-
----
-
-## Not exactly, and here is why
-
-<hr>
-
-<div class="cols">
-<div>
-
-The branching argument assumed every step reaches a new node. A triangle sends the search back where it came from, so the real fan-out is below $\kappa - 1$.
-
-* Real thresholds sit below the prediction.
-
-</div>
-<div class="fig">
-
-![w:520](figures/triangles-a.png)
-<figcaption>the search comes back on itself</figcaption>
-
-</div>
-</div>
-
-<!--
-The point is not that the formula is wrong. It is that you should always know which assumption you are standing on.
+Come back to whatever the room proposed before showing this, and name anyone who proposed the southern ring. The general rules behind it: even out the degrees, add a second route, and protect the hubs you cannot design away.
 -->
 
 ---
@@ -1435,7 +639,7 @@ The point is not that the formula is wrong. It is that you should always know wh
 
 <hr>
 
-Build it, break it, build it back, and the line that predicted the breaking.
+292 km bought the grid, losing Brno left 3 of 8, and +136 km buys 6 of 8 back.
 
 <div class="fig">
 
@@ -1445,7 +649,7 @@ Build it, break it, build it back, and the line that predicted the breaking.
 </div>
 
 <!--
-Three numbers, one grid: what it cost, what one town cost, what the ring cost. The formula that predicted it is on the board from Part Five.
+Three numbers, one grid. The formula that predicts the third one is still on the board from Part Three.
 -->
 
 ---
@@ -1457,9 +661,9 @@ Three numbers, one grid: what it cost, what one town cost, what the ring cost. T
 <div class="cols">
 <div>
 
-$q(k)$ said the node at the far end of a random edge is biased toward hubs.
+Landing on a hub was likelier than landing on anyone else. That bias was $q(k)$.
 
-* Apply that to friendship and you get something uncomfortable: **your friends have more friends than you do.**
+* Apply it to friendship and you get something uncomfortable: **your friends have more friends than you do.**
 
 </div>
 <div class="fig">

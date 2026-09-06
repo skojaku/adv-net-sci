@@ -22,7 +22,6 @@ table in review/DECK_SPEC.md.  Nothing is typed in twice.
 """
 
 import itertools
-import json
 import math
 import re
 import subprocess
@@ -42,7 +41,6 @@ ACCENT = "3959A6"     # the object under discussion
 ACCENT2 = "B14434"    # what THIS slide is about
 ACCENT3 = "DAB167"    # the secondary / comparison object
 GRAY = "6b6b6b"       # annotation only
-INK = "000000"
 
 # --------------------------------------------------------------------------- geometry
 DPI = 288
@@ -65,7 +63,6 @@ DOT = 14
 # asserts the same quantity the checker reads.
 FONT = 36          # pt; x-height ~= 15.8 px on the slide
 XHEIGHT_RATIO = 0.431
-CAP_RATIO = 0.683
 EDGE_W = 2.6
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
@@ -295,11 +292,6 @@ def pct(x, d=0):
     return f"{q}\\%"
 
 
-def fill_poly(pts, color="accenttwo", opacity=0.25):
-    return "\\fill[%s,opacity=%s] %s -- cycle;\n" % (
-        color, opacity, " -- ".join("(%.1f,%.1f)" % p for p in pts))
-
-
 def clearance_bad(edges, pos, r=NODE / 2 + 3):
     """No straight edge may pass through a disc it does not end at."""
     bad = []
@@ -459,9 +451,16 @@ def place_labels(names, pos, edges, blockers=(), bounds=None, gap=0.0):
         return False
 
     if not solve(0):
+        # Which name is impossible *on its own* is the only useful thing to say:
+        # a solver that just reports failure sends you node-hunting at random.
+        chosen.clear()
+        boxes.clear()
+        free = {n: sum(1 for s in SIDES if ok(n, s)) for n in order}
         raise SystemExit(
             "label placement failed — no collision-free side assignment exists.\n"
-            "Move a node, shorten a name, or widen the canvas; do not shrink the type.")
+            + "\n".join(f"  {n:<10} {c} free side(s)" for n, c in sorted(free.items()))
+            + "\nMove a node, shorten a name, or widen the canvas; "
+              "do not shrink the type.")
     return chosen, boxes
 
 
@@ -577,10 +576,6 @@ NAME = {"Znojmo": "Znojmo", "Trebic": "T\\v{r}eb\\'{\\i}\\v{c}",
         "Zlin": "Zl\\'{\\i}n", "Prostejov": "Prost\\v{e}jov", "Olomouc": "Olomouc"}
 PLAIN = {k: k for k in NAME}          # for the width estimate
 
-_lat0 = sum(v[0] for v in TOWNS_LATLON.values()) / 8
-_lon0 = sum(v[1] for v in TOWNS_LATLON.values()) / 8
-KM = {n: ((lo - _lon0) * 111.32 * math.cos(math.radians(_lat0)),
-          (la - _lat0) * 110.574) for n, (la, lo) in TOWNS_LATLON.items()}
 
 CABLES = {
     ("Prostejov", "Olomouc"): 17, ("Jihlava", "Trebic"): 29,
@@ -601,25 +596,47 @@ assert G.number_of_nodes() == 8 and G.number_of_edges() == 13
 
 # --- canvas placement -------------------------------------------------------
 FULL_H = 470
-# The map is deliberately shorter than the canvas: town names stick out top and
-# bottom, and the *cropped* drawing must stay under 373bp or the height binds the
-# deck's scale and every Moravian figure shrinks.  Numbers that a slide claims are
-# annotated in the empty lower-left corner (NOTE_AT); prose captions live in the
-# deck's <figcaption>, not in the drawing.
-_X0, _X1, _Y0, _Y1 = 190, 930, 130, 322
-NOTE_AT = (24, 72)
+# Numbers that a slide claims are annotated in the empty lower-left corner
+# (NOTE_AT); prose captions live in the deck's <figcaption>, not in the drawing.
+NOTE_AT = (24, 350)
 # Vertical budget for the solver: the cropped drawing must stay under
 # 1100 * 380 / 1120 = 373bp, pad included, or the height binds the scale.
 LABEL_BAND = (25, 374)
-_xs = [p[0] for p in KM.values()]
-_ys = [p[1] for p in KM.values()]
-_sx = (_X1 - _X0) / (max(_xs) - min(_xs))
-_sy = (_Y1 - _Y0) / (max(_ys) - min(_ys))
-POS = {n: (round(_X0 + (x - min(_xs)) * _sx, 1), round(_Y0 + (y - min(_ys)) * _sy, 1))
-       for n, (x, y) in KM.items()}
+
+# Positions are DESIGNED, not geographic -- the lecturer's call, 2026-09.
+#
+# The true lat/lon (still in KM above, and still what fig_moravia_dark draws)
+# projected onto this canvas put Prostejov and Olomouc **59bp apart** while
+# Jihlava and Znojmo sat 400bp apart, and squeezed all eight towns into
+# 740 x 192bp of a 1100bp-wide page.  Three weight labels then had to share the
+# top-right corner and Olomouc's name needed a leader line to escape.  Nothing
+# about the lesson depends on where the towns really are.
+#
+# So: the same eight towns, the same thirteen cables, the same 292km tree, laid
+# out as what the graph actually is -- a fan of six spokes around Brno, with
+# Jihlava/Trebic/Znojmo on the left arc and Hodonin/Zlin/Prostejov on the right,
+# and Olomouc hung outside the Prostejov-Zlin rim.  Planar, no crossings, and the
+# closest two towns are 160bp apart instead of 59.  The assertions below are the
+# gate: keep them passing and the drawing stays readable from the back row.
+POS = {
+    "Jihlava":   (216, 300),
+    "Trebic":    (92, 100),
+    "Znojmo":    (341, 100),
+    "Brno":      (467, 300),
+    "Hodonin":   (592, 100),
+    "Prostejov": (720, 300),
+    "Olomouc":   (1008, 292),
+    "Zlin":      (865, 103),
+}
 
 assert not crossings(list(CABLES), POS), crossings(list(CABLES), POS)
 assert not clearance_bad(list(CABLES), POS), clearance_bad(list(CABLES), POS)
+
+_MINSEP = min(math.dist(POS[a], POS[b]) for a, b in itertools.combinations(POS, 2))
+assert _MINSEP >= 150, f"towns crowd at {_MINSEP:.0f}bp -- spread the layout"
+assert max(y for _, y in POS.values()) - min(y for _, y in POS.values()) <= 250, (
+    "the town band is too tall: names above the top row and below the bottom one "
+    "will not fit inside LABEL_BAND")
 
 # (the name placement is solved further down, once the MST is known)
 
@@ -725,9 +742,6 @@ CHIP_AT = place_chips(CABLES, POS, blockers=list(LABEL_BOX.values()),
 
 _TREE_SET = {frozenset((a, b)) for a, b, _ in MST_EDGES}
 
-KRUSKAL_STEP = {frozenset((a, b)): i for i, (a, b, _, act)
-                in enumerate([t for t in KRUSKAL if t[3] == "add"], 1)}
-PRIM_STEP = {frozenset((u, v)): i for i, (u, v, _) in enumerate(PRIM, 1)}
 SKIPPED = next((a, b, w) for a, b, w, act in KRUSKAL if act == "skip")
 assert SKIPPED[2] == 51
 
@@ -913,11 +927,6 @@ assert len([e for e in ALL_CABLES if not is_tree_edge(e)]) == 6, \
     "the unused-cable set is wrong -- MST_PAIRS orientation again"
 
 
-def km(e):
-    """The length of a route, whichever way round its endpoints are given."""
-    a, b = e
-    return CABLES[(a, b)] if (a, b) in CABLES else CABLES[(b, a)]
-
 MST_PAIRS = [(a, b) for a, b, _ in MST_EDGES]
 
 
@@ -939,300 +948,11 @@ def note(s, color="accenttwo", anchor="west", at=None, size=FONT):
     return text(x, y, s, color=color, anchor=anchor, size=size)
 
 
-# --- the real map ----------------------------------------------------------
-# Natural Earth 1:10m admin-0 outlines, simplified to ~1.3 km with Douglas-Peucker
-# and committed as figures/cz-outline.json so the build needs no network.
-# 1919 Czechoslovakia is approximated by Czechia + Slovakia: Carpathian Ruthenia,
-# then its far-eastern province, is not in either and is not drawn. The caption
-# says "the Czech and Slovak lands" rather than claiming the 1919 border.
-_OUTLINE = json.loads((OUT / "cz-outline.json").read_text())
-assert set(_OUTLINE) == {"Czechia", "Slovakia"}
-
-_olons = [x for r in _OUTLINE.values() for x, _ in r]
-_olats = [y for r in _OUTLINE.values() for _, y in r]
-_OLAT0 = (min(_olats) + max(_olats)) / 2
-_KMDEG = 111.32 * math.cos(math.radians(_OLAT0))
-
-
-def _map_km(lon, lat):
-    return (lon - min(_olons)) * _KMDEG, (lat - min(_olats)) * 110.574
-
-
-_MAP_W = (max(_olons) - min(_olons)) * _KMDEG
-_MAP_H = (max(_olats) - min(_olats)) * 110.574
-# ISOTROPIC: one scale for both axes, or a real coastline comes out sheared. The
-# eight-town diagram elsewhere in the deck is deliberately stretched to fill its
-# frame; a map may not be.
-MAP_SCALE = min(500 / _MAP_W, 300 / _MAP_H)
-MAP_OX, MAP_OY = 10, 46
-
-
-def _map_xy(lon, lat):
-    kx, ky = _map_km(lon, lat)
-    return MAP_OX + kx * MAP_SCALE, MAP_OY + ky * MAP_SCALE
-
-
-def fig_moravia_dark():
-    """A real map: Natural Earth outlines, the towns as square pins inside Moravia.
-
-    The first version drew three freehand strokes and called them rivers and a
-    border. This one is the actual shape of the Czech and Slovak lands, projected
-    isotropically, with the eight towns where they really are.
-    """
-    s = ""
-    for name, ring in _OUTLINE.items():
-        pts = [_map_xy(lon, lat) for lon, lat in ring]
-        s += "\\draw[line width=2.0bp,draw=annot] %s -- cycle;\n" % (
-            " -- ".join("(%.1f,%.1f)" % q for q in pts))
-    # the eight towns, as SQUARES: these are map pins, not graph nodes
-    xs, ys = [], []
-    for n, (lat, lon) in TOWNS_LATLON.items():
-        x, y = _map_xy(lon, lat)
-        xs.append(x)
-        ys.append(y)
-        s += square(x, y, fill="accenttwo", size=11)
-    # to the LEFT of the cluster, in the empty interior of Bohemia: placed above it
-    # the word sat on the Czech-Slovak border line.
-    s += text(min(xs) - 16, sum(ys) / 8, "Moravia", color="accenttwo", anchor="east")
-    s += text(MAP_OX + 4, MAP_OY + _MAP_H * MAP_SCALE + 22,
-              "the Czech and Slovak lands", color="annot", anchor="west")
-    return s
-
-
-def fig_abstract_1():
-    return moravia()
-
-
-def fig_abstract_2():
-    return moravia(faint=ALL_CABLES)
-
-
-def fig_abstract_3():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
-                   heavy={("Brno", "Prostejov"): "accenttwo"},
-                   )
-
-
-def fig_moravia_graph():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES)
-
-
-def fig_loop_waste():
-    p = {"a": (55, 250), "b": (465, 250), "c": (465, 90), "d": (55, 90)}
-    e = [("a", "b"), ("b", "c"), ("c", "d"), ("d", "a")]
-    s = ""
-    for x, y in e[:-1]:
-        s += seg(p[x], p[y], w=EDGE_W + 1.2)
-    s += seg(p["d"], p["a"], color="accenttwo", w=HEAVY_W, dash=DASH)
-    mx, my = (p["d"][0] + p["a"][0]) / 2, (p["d"][1] + p["a"][1]) / 2
-    s += seg((mx - 15, my - 15), (mx + 15, my + 15), color="accenttwo", w=4.0)
-    s += seg((mx - 15, my + 15), (mx + 15, my - 15), color="accenttwo", w=4.0)
-    for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent")
-    return s
-
-
-def fig_tree_def():
-    p = {"r": (235, 280), "a": (110, 190), "b": (360, 190),
-         "c": (40, 90), "d": (180, 90), "e": (430, 90)}
-    e = [("r", "a"), ("r", "b"), ("a", "c"), ("a", "d"), ("b", "e")]
-    s = "".join(seg(p[x], p[y], w=EDGE_W + 1.2) for x, y in e)
-    for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent")
-    return s
-
-
-def fig_spanning_count():
-    return moravia(edges=MST_PAIRS,
-                   badge={frozenset(e): str(i) for e, i in KRUSKAL_STEP.items()},
-                   extra_text=note(f"8 towns\\\\{MST.number_of_edges()} cables"))
-
-
 def fig_mst_def():
     return moravia(faint=[e for e in ALL_CABLES if not is_tree_edge(e)],
                    edges=MST_PAIRS,
                    heavy={e: "accenttwo" for e in MST_PAIRS},
                    weights=MST_PAIRS)
-
-
-# ===========================================================================
-#                                Part 2
-# ===========================================================================
-SORTED_CABLES = sorted(CABLES.items(), key=lambda kv: kv[1])
-
-
-def fig_kruskal_rule():
-    """The thirteen routes laid out cheapest-first: the rule, before the run.
-
-    Drawn as outlined chips, not numbers on a rule: the first version set white
-    discs behind the numbers, which is invisible on a white page, so the row read
-    as one run-on string with a stray dash at the front.
-    """
-    n = len(SORTED_CABLES)
-    x0, x1, y = 70, 1030, 200
-    step = (x1 - x0) / (n - 1)
-    r = 32
-    s = ""
-    for i, ((a, b), w) in enumerate(SORTED_CABLES):
-        x = x0 + i * step
-        col = "accenttwo" if i == 0 else "annot"
-        s += (f"\\draw[line width={3.0 if i == 0 else 2.0}bp,draw={col},fill=white] "
-              f"({x:.1f},{y}) circle ({r}bp);\n")
-        s += text(x, y, str(w), color="accenttwo" if i == 0 else "black")
-    s += seg((x0 - r - 10, y - r - 26), (x1 + r + 10, y - r - 26), color="annot",
-             w=2.4, arrow="-{Stealth[length=15bp,width=12bp]}")
-    s += text(x0 - r - 10, y - r - 44, "cheapest", color="accenttwo",
-              anchor="north west")
-    s += text(x1 + r + 10, y - r - 44, "dearest", color="annot", anchor="north east")
-    return s
-
-
-def _kruskal_state(step):
-    """Edges present after `step` decisions of Kruskal's trace."""
-    added = [(a, b) for a, b, _, act in KRUSKAL[:step] if act == "add"]
-    return added
-
-
-def fig_kruskal_skip():
-    added = _kruskal_state(5)
-    a, b, w = SKIPPED
-    cycle = [("Prostejov", "Olomouc"), ("Prostejov", "Zlin")]
-    return moravia(
-        faint=[e for e in ALL_CABLES if e not in added and e != (a, b)],
-        edges=added,
-        heavy={**{e: "accentthree" for e in cycle}, (a, b): "accenttwo"},
-        struck=[(a, b)],
-        weights=[(a, b)] + cycle,
-        extra_text=note(f"{w} km"))
-
-
-def fig_kruskal_worksheet():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES)
-
-
-def fig_kruskal_answer():
-    a, b, _ = SKIPPED
-    return moravia(faint=[(a, b)], edges=MST_PAIRS,
-                   heavy={(a, b): "accenttwo"}, struck=[(a, b)],
-                   badge={tuple(e): str(i) for e, i in KRUSKAL_STEP.items()},
-                   extra_text=note(f"{MST_TOTAL} km"))
-
-
-def fig_prim_rule():
-    out = [(u, v) for u, v in ALL_CABLES if "Brno" in (u, v)]
-    cheapest = min(out, key=lambda e: CABLES[e])
-    return moravia(faint=[e for e in ALL_CABLES if e not in out],
-                   heavy={**{e: "annot" for e in out}, cheapest: "accenttwo"},
-                   weights=out, rings={"Brno": "accenttwo"},
-                   )
-
-
-def fig_prim_worksheet():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES, rings={"Brno": "accenttwo"})
-
-
-def fig_prim_vs_kruskal():
-    """Same seven cables, two orders — shown as two rows, not two graphs."""
-    kr = [w for _, _, w, act in KRUSKAL if act == "add"]
-    pr = [w for _, _, w in PRIM]
-    assert sorted(kr) == sorted(pr) and sum(kr) == sum(pr) == MST_TOTAL
-    x0, x1 = 250, 1020
-    step = (x1 - x0) / (len(kr) - 1)
-    ytop, ybot = 250, 90
-    s = ""
-    for i, w in enumerate(kr):
-        s += seg((x0 + i * step, ytop - 28),
-                 (x0 + pr.index(w) * step, ybot + 28), color="annot", w=1.8)
-    for row, (vals, col, lab) in enumerate(((kr, "annot", "Kruskal"),
-                                            (pr, "accenttwo", "Prim"))):
-        y = (ytop, ybot)[row]
-        s += text(x0 - 60, y, lab, color=col, anchor="east")
-        for i, w in enumerate(vals):
-            x = x0 + i * step
-            s += disc(x, y, "", fill="white", size=SMALLNODE + 22)
-            s += text(x, y, str(w), color=col)
-    return s
-
-
-def fig_cut_property():
-    p = {"a": (40, 255), "b": (40, 85), "c": (480, 255), "d": (480, 85),
-         "e": (260, 170)}
-    s = seg(p["a"], p["b"], w=EDGE_W + 1.2) + seg(p["c"], p["d"], w=EDGE_W + 1.2)
-    s += seg(p["a"], p["e"], color="annot", w=EDGE_W + 1.2)
-    s += seg(p["b"], p["e"], color="annot", w=EDGE_W + 1.2)
-    s += seg(p["e"], p["c"], color="accenttwo", w=HEAVY_W)
-    s += seg(p["e"], p["d"], color="annot", w=EDGE_W + 1.2)
-    s += seg((370, 290), (370, 30), color="annot", w=2.4, dash=DASH_LONG)
-    for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent")
-    s += text(370, 300, "any cut", color="annot", anchor="south")
-    return s
-
-
-TIE_EDGE = ("Olomouc", "Zlin")
-TIE_WEIGHT = 49
-TIE_RIVAL = ("Prostejov", "Zlin")
-assert CABLES[TIE_RIVAL] == TIE_WEIGHT
-
-
-def _tie_optima():
-    """With the tie in place, brute-force every optimal spanning tree."""
-    w = dict(CABLES)
-    w[TIE_EDGE] = TIE_WEIGHT
-    best, opts = None, []
-    for combo in itertools.combinations(w.items(), 7):
-        h = nx.Graph()
-        h.add_nodes_from(G)
-        h.add_edges_from(e for e, _ in combo)
-        if not nx.is_connected(h):
-            continue
-        tot = sum(v for _, v in combo)
-        if best is None or tot < best:
-            best, opts = tot, [frozenset(e for e, _ in combo)]
-        elif tot == best:
-            opts.append(frozenset(e for e, _ in combo))
-    return best, opts
-
-
-TIE_TOTAL, TIE_OPTIMA = _tie_optima()
-assert TIE_TOTAL == MST_TOTAL and len(TIE_OPTIMA) == 2, (TIE_TOTAL, len(TIE_OPTIMA))
-TIE_SHARED = set.intersection(*(set(o) for o in TIE_OPTIMA))
-TIE_DIFFER = sorted(set.union(*(set(o) for o in TIE_OPTIMA)) - TIE_SHARED)
-assert len(TIE_SHARED) == 6 and set(TIE_DIFFER) == {TIE_EDGE, TIE_RIVAL}
-
-
-def fig_tie_graph():
-    return moravia(faint=ALL_CABLES, weights=ALL_CABLES,
-                   weight_override={TIE_EDGE: TIE_WEIGHT},
-                   heavy={TIE_EDGE: "accenttwo", TIE_RIVAL: "accenttwo"},
-                   )
-
-
-def fig_tie_two_trees():
-    return moravia(faint=[e for e in ALL_CABLES if e not in TIE_SHARED
-                          and e not in TIE_DIFFER],
-                   edges=sorted(TIE_SHARED),
-                   heavy={TIE_DIFFER[0]: "accenttwo", TIE_DIFFER[1]: "accentthree"},
-                   weights=TIE_DIFFER,
-                   weight_override={TIE_EDGE: TIE_WEIGHT},
-                   extra_text=note(f"both {TIE_TOTAL} km"))
-
-
-def fig_boruvka_rounds():
-    r1 = [(a, b) for a, b, _ in BORUVKA_ROUNDS[0]]
-    r2 = [(a, b) for a, b, _ in BORUVKA_ROUNDS[1]]
-    return moravia(edges=MST_PAIRS,
-                   heavy={**{e: "accenttwo" for e in r1},
-                          **{e: "accentthree" for e in r2}},
-                   )
-
-
-# ===========================================================================
-#                                Part 3
-# ===========================================================================
-def fig_mst_alone():
-    return moravia(edges=MST_PAIRS, weights=MST_PAIRS,
-                   extra_text=note(f"{MST_TOTAL} km"))
 
 
 def fig_mst_blank():
@@ -1247,53 +967,6 @@ def fig_brno_removed():
     fill = {n: cols[i] for i, p in enumerate(pieces) for n in p}
     return moravia(edges=MST_PAIRS, removed=["Brno"], node_fill=fill,
                    )
-
-
-def fig_tree_bridges():
-    route = nx.shortest_path(MST, "Jihlava", "Zlin")
-    pairs = list(zip(route, route[1:]))
-    return moravia(edges=MST_PAIRS,
-                   heavy={p: "accenttwo" for p in pairs},
-                   )
-
-
-def fig_real_grid_mesh():
-    """A drawn meshed grid: two independent routes between the same pair."""
-    cols_, rows = 7, 3
-    x0, y0, dx, dy = 110, 90, 145, 95
-    p = {(i, j): (x0 + i * dx, y0 + j * dy) for i in range(cols_) for j in range(rows)}
-    e = [((i, j), (i + 1, j)) for i in range(cols_ - 1) for j in range(rows)]
-    e += [((i, j), (i, j + 1)) for i in range(cols_) for j in range(rows - 1)]
-    s = "".join(seg(p[a], p[b], color="black", w=EDGE_W) for a, b in e)
-    top = [(0, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (6, 1)]
-    bot = [(0, 1), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (6, 1)]
-    for path, col in ((top, "accenttwo"), (bot, "accentthree")):
-        s += "".join(seg(p[a], p[b], color=col, w=HEAVY_W)
-                     for a, b in zip(path, path[1:]))
-    for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent")
-    for k in ((0, 1), (6, 1)):
-        s += ring(p[k][0], p[k][1], color="accenttwo")
-    return s
-
-
-def fig_connectivity_def():
-    """Both largest pieces are highlighted, because they are TIED.
-
-    Removing Brno leaves 3 + 3 + 1. Ringing only one of the two 3-node pieces --
-    whichever `max` happened to return -- told the room that piece was bigger.
-    """
-    pieces = sorted(nx.connected_components(
-        nx.subgraph_view(MST, filter_node=lambda n: n != "Brno")), key=len, reverse=True)
-    top = max(len(p) for p in pieces)
-    biggest = [p for p in pieces if len(p) == top]
-    assert len(biggest) == 2 and top == 3, [len(p) for p in pieces]
-    marked = set().union(*biggest)
-    return moravia(edges=MST_PAIRS, removed=["Brno"],
-                   heavy={(a, b): "accenttwo" for a, b in MST_PAIRS
-                          if a in marked and b in marked},
-                   rings={n: "accenttwo" for n in marked},
-                   extra_text=note(f"{top} / 8"))
 
 
 # --- curve plotting ---------------------------------------------------------
@@ -1341,30 +1014,6 @@ def profile_points(prof):
     for k, v in enumerate(prof, 1):
         pts.append((X(k / 8), Y(float(v))))
     return pts
-
-
-def fig_r_index():
-    X, Y = _XY()
-    pts = profile_points(ATTACK_PROFILE)
-    s = fill_poly([(pts[0][0], Y(0))] + pts + [(pts[-1][0], Y(0))],
-                  color="accenttwo", opacity=0.22)
-    s += profile_axes()
-    s += polyline(pts, color="accenttwo", w=4.0)
-    s += "".join(dot(x, y, "accenttwo") for x, y in pts)
-    s += legend([("accenttwo", "", f"targeted\\\\$R = {float(R_ATTACK):.2f}$")],
-                y0=Y(0.60))
-    return s
-
-
-def fig_profile_random():
-    s = profile_axes()
-    pts = profile_points(RANDOM_PROFILE)
-    s += polyline(pts, color="accentthree", w=4.0)
-    s += "".join(dot(x, y, "accentthree") for x, y in pts)
-    X, Y = _XY()
-    s += legend([("accentthree", "", f"random\\\\$R = {float(R_RANDOM):.2f}$")],
-                y0=Y(0.60))
-    return s
 
 
 def fig_profile_both():
@@ -1485,33 +1134,6 @@ def sim_curve(key, col, w=4.0, dash=""):
     return polyline([(X(x), Y(y)) for x, y in zip(xs, ys)], color=col, w=w, dash=dash)
 
 
-def fig_fixed_vs_adaptive():
-    X, Y = _XY()
-    s = sim_axes()
-    s += sim_curve(("er", "fixed"), "accentthree")
-    s += sim_curve(("er", "targeted"), "accenttwo")
-    s += legend([("accentthree", "", "fixed list\\\\" + pct(ER_FIXED_C) + " gone"),
-                 ("accenttwo", "", "re-ranked\\\\" + pct(ER_TARG_C) + " gone")])
-    return s
-
-
-def fig_demo_still():
-    """A drawn stand-in for the web demo, captioned as such on the slide."""
-    p = {0: (70, 250), 1: (150, 170), 2: (70, 90), 3: (220, 250), 4: (220, 90),
-         5: (150, 320)}
-    e = [(0, 1), (1, 2), (1, 3), (1, 4), (3, 4), (0, 5), (5, 1)]
-    s = "".join(seg(p[a], p[b], w=EDGE_W) for a, b in e)
-    for k, (x, y) in p.items():
-        s += disc(x, y, fill="accent", size=SMALLNODE)
-    s += ring(p[1][0], p[1][1], size=SMALLNODE, color="accenttwo")
-    x0, x1, y0, y1 = 320, 470, 110, 300
-    s += seg((x0, y0), (x1, y0), color="annot", w=2.0)
-    s += seg((x0, y0), (x0, y1), color="annot", w=2.0)
-    s += polyline([(x0, y1), (x0 + 40, y1 - 90), (x0 + 80, y0 + 40), (x1, y0 + 6)],
-                  color="accenttwo", w=3.4)
-    return s
-
-
 # ===========================================================================
 #                                Part 4
 # ===========================================================================
@@ -1579,35 +1201,6 @@ def fig_puddle_low():
     return puddle_body(0.40, PUD_FIELD[:22], 66)[0]
 
 
-def fig_puddle_widget():
-    s, _ = puddle_body(0.65, PUD_FIELD[:16], 108)
-    x0, x1, y = 300, 800, 44
-    s += seg((x0, y), (x1, y), color="annot", w=3.0)
-    s += dot(x0 + 0.60 * (x1 - x0), y, "accenttwo", d=28)
-    s += text(x1 + 20, y, "drag $p$", color="accenttwo", anchor="west")
-    return s
-
-
-_SMALL = (9, PUD_COLS)
-FIELD_A = np.random.default_rng(5).random(_SMALL)
-FIELD_B = np.random.default_rng(23).random(_SMALL)
-
-
-def fig_order_irrelevant():
-    """Two different yards, the same fraction wet -- the same answer.
-
-    At p = 0.65 on the old small yards this drew 24% beside 17% under the words
-    "the same answer", and the assertion (< 0.20) was loose enough to allow it.
-    Well above the threshold the two agree to ~2 points, which is the claim; near
-    p_c the finite-size scatter is real and this slide must not stand there.
-    """
-    p = 0.75
-    a, fa = puddle_body(p, FIELD_A, 206, label="one yard", cell=10)
-    b, fb = puddle_body(p, FIELD_B, 40, label="another yard", cell=10)
-    assert abs(fa - fb) < 0.08, f"the two yards disagree: {fa:.0%} vs {fb:.0%}"
-    return a + b
-
-
 PERC_N = 200
 _PERC_FIELD = np.random.default_rng(9).random((PERC_N, PERC_N))
 
@@ -1651,34 +1244,32 @@ def fig_phase_transition():
     return s
 
 
-def fig_reverse_percolation():
-    y = 200
-    s = seg((150, y), (950, y), color="annot", w=3.0)
-    for v, lab in ((150, "empty"), (950, "full")):
-        s += seg((v, y - 12), (v, y + 12), color="annot", w=2.6)
-        s += text(v, y - 24, lab, color="annot", anchor="north")
-    s += seg((300, y + 60), (830, y + 60), color="accent", w=4.0,
-             arrow="-{Stealth[length=15bp,width=12bp]}")
-    s += text(565, y + 74, "add nodes: the giant component appears",
-              color="accent", anchor="south")
-    s += seg((830, y - 90), (300, y - 90), color="accenttwo", w=4.0,
-             arrow="-{Stealth[length=15bp,width=12bp]}")
-    s += text(565, y - 104, "remove nodes: the giant component dies",
-              color="accenttwo", anchor="north")
-    return s
-
-
 # ===========================================================================
 #                                Part 5
 # ===========================================================================
 # A small network used for q(k): degrees 4, 3, 2, 1, 1, 1 -- printed, not typed.
-QK_POS = {"h": (250, 225), "a": (70, 330), "b": (70, 120), "c": (430, 330),
-          "e": (250, 120), "d": (430, 120)}
-QK_EDGES = [("h", "a"), ("h", "b"), ("h", "c"), ("h", "e"), ("c", "d"), ("a", "b")]
+# The network the kappa slides argue over -- and the one the `branch-out` stage
+# hands the room, at the same positions, so the drawing the room played with is
+# the drawing the next slide freezes.
+#
+# Ten towns, ten cables, and every number the slides print comes out whole:
+#   degrees 5 4 3 2 1 1 1 1 1 1   ->  <k> = 2, <k^2> = 6, kappa = 3,
+#   kappa - 1 = 2 (the search doubles), f_c = 1 - 1/2 = 0.5 exactly.
+# Its one cycle is four towns long, so there is no triangle and the branching
+# argument's own assumption holds on the picture it is argued over.
+QK_POS = {"h": (205, 215), "p": (325, 298), "q": (325, 125), "a": (430, 212),
+          "l1": (70, 318), "l2": (62, 208), "l3": (85, 97),
+          "l4": (265, 360), "l5": (410, 351), "l6": (235, 60)}
+QK_EDGES = [("h", "p"), ("p", "a"), ("a", "q"), ("q", "h"),
+            ("h", "l1"), ("h", "l2"), ("h", "l3"),
+            ("p", "l4"), ("p", "l5"), ("q", "l6")]
 QK_G = nx.Graph(QK_EDGES)
 QK_DEG = dict(QK_G.degree())
 QK_KAPPA = kappa_of(QK_DEG.values())
-assert QK_DEG["h"] == 4 and sum(QK_DEG.values()) == 2 * len(QK_EDGES)
+assert sorted(QK_DEG.values(), reverse=True) == [5, 4, 3, 2, 1, 1, 1, 1, 1, 1]
+assert sum(QK_DEG.values()) == 2 * len(QK_EDGES) == 20
+assert QK_KAPPA == 3 and sum(QK_DEG.values()) / len(QK_DEG) == 2
+assert nx.girth(QK_G) == 4, "the branching argument assumes no triangles"
 assert not clearance_bad(QK_EDGES, QK_POS)
 assert not crossings(QK_EDGES, QK_POS), crossings(QK_EDGES, QK_POS)
 
@@ -1690,42 +1281,6 @@ def qk_graph(highlight=None, show_deg=False):
                 for a, b in QK_EDGES)
     for n, (x, y) in QK_POS.items():
         s += disc(x, y, str(QK_DEG[n]) if show_deg else "", fill="accent")
-    return s
-
-
-def fig_follow_edge():
-    """The arrowhead sits ON the highlighted edge, ending at the far node's border.
-
-    Offsetting it by 34bp drew a second red mark parallel to the edge, starting and
-    ending in white space and touching neither node -- a ghost edge with nothing on
-    the slide to explain it.
-    """
-    s = qk_graph(highlight=("h", "c"))
-    (x1, y1), (x2, y2) = QK_POS["h"], QK_POS["c"]
-    L = math.hypot(x2 - x1, y2 - y1)
-    ux, uy = (x2 - x1) / L, (y2 - y1) / L
-    s += seg((x1 + ux * (NODE / 2 + 2), y1 + uy * (NODE / 2 + 2)),
-             (x2 - ux * (NODE / 2 + 4), y2 - uy * (NODE / 2 + 4)),
-             color="accenttwo", w=HEAVY_W,
-             arrow="-{Stealth[length=16bp,width=13bp]}")
-    return s
-
-
-def fig_qk_bias():
-    """Every edge contributes two ends; a hub owns more of the pile."""
-    order = ["h", "c", "a", "b", "d", "e"]
-    x0, step, ytop = 210, 148, 300
-    s = ""
-    for i, n in enumerate(order):
-        x = x0 + i * step
-        s += disc(x, ytop, "", fill="accent")
-        s += text(x, ytop + 34, f"$k = {QK_DEG[n]}$", color="black", anchor="south")
-        for j in range(QK_DEG[n]):
-            s += dot(x, ytop - 66 - j * 38, "accenttwo", d=28)
-    s += text(150, ytop - 62, "edge", color="accenttwo", anchor="east")
-    s += text(150, ytop - 96, "ends", color="accenttwo", anchor="east")
-    s += text(620, 40, f"the hub owns 4 of the {2 * len(QK_EDGES)} ends",
-              color="accenttwo")
     return s
 
 
@@ -1780,22 +1335,6 @@ def _arrival(x, y, label=True):
     return s
 
 
-def fig_branching():
-    s = _arrival(230, 200)
-    body, lvl = fan_tree(230, 300, 200, 200)
-    s += body
-    s += text(880, 60, "$\\kappa - 1$ onward", color="accenttwo")
-    return s
-
-
-def fig_dilution():
-    s = _arrival(230, 200)
-    body, lvl = fan_tree(230, 300, 200, 200, dead={(1, 1), (2, 0)})
-    s += body
-    s += text(880, 60, "$(1-f)(\\kappa-1)$ survive", color="accenttwo")
-    return s
-
-
 def fig_molloy_reed():
     """Two panels: a search that dies, and one that never does.
 
@@ -1815,18 +1354,6 @@ def fig_molloy_reed():
     s += body
     s += text(880, 70, "$\\kappa - 1 > 1$", color="accenttwo")
     return s
-
-
-def small_graph(pos, edges, at, scale=1.0, labels=None, col="accent",
-                node=SMALLNODE, highlight=()):
-    dx, dy = at
-    P = {k: (dx + x * scale, dy + y * scale) for k, (x, y) in pos.items()}
-    s = "".join(seg(P[a], P[b],
-                    color="accenttwo" if (a, b) in highlight or (b, a) in highlight
-                    else "black", w=EDGE_W + 1.0) for a, b in edges)
-    for k, (x, y) in P.items():
-        s += disc(x, y, (labels or {}).get(k, ""), fill=col, size=node)
-    return s, P
 
 
 def ring_pos(n, r=1.0, ry=None, start=math.pi / 2):
@@ -1855,35 +1382,17 @@ for _nm, (_p, _e), _s in KAPPA_CASES:
 assert KAPPA_VALUES == [Fraction(2), Fraction(3), Fraction(7, 4)], KAPPA_VALUES
 
 
-def _kappa_row(show):
-    s = ""
-    for i, ((nm, (p, e), sc), kv) in enumerate(zip(KAPPA_CASES, KAPPA_VALUES)):
-        cx = 190 + i * 340
-        degs = dict(nx.Graph(e).degree())
-        body, _ = small_graph(p, e, (cx, 230), scale=sc,
-                              labels={k: str(degs[k]) for k in p}, node=NODE)
-        s += body
-        s += text(cx, 90, nm, color="black")
-        # only the threshold case is accent-2; the deck's text says why, and an
-        # extra sentence here pushed the drawing past the height budget
-        col = ("accenttwo" if kv == 2 else "black") if show else "annot"
-        val = f"{float(kv):g}" if kv.denominator != 1 else str(kv)
-        s += text(cx, 40, f"$\\kappa = {val}$" if show else "$\\kappa = \\;?$",
-                  color=col)
-    return s
-
-
-def fig_kappa_worksheet():
-    return _kappa_row(False)
-
-
-def fig_kappa_answer():
-    return _kappa_row(True)
-
-
 def fig_fc_formula():
+    """The dilution line, drawn for the SAME kappa the branch-out stage hands the
+    room one slide earlier: kappa = 3, so branching 2 and f_c = 0.50 exactly.
+
+    It used to be drawn for kappa = 5. Nothing was wrong with the picture, but
+    the room had just dragged a dial to 0.50 on a network with kappa = 3, and the
+    next slide answered with a different threshold on a network it never saw.
+    """
     X0, X1, Y0, Y1 = PLOT["x0"], PLOT["x1"], PLOT["y0"], PLOT["y1"]
-    kappa = 5.0
+    kappa = float(QK_KAPPA)
+    assert kappa == 3
 
     def X(f):
         return X0 + f * (X1 - X0)
@@ -1972,29 +1481,6 @@ def fig_fc_scalefree():
     return s
 
 
-# ===========================================================================
-#                                Part 6
-# ===========================================================================
-def fig_sim_random():
-    X, Y = _XY()
-    s = sim_axes()
-    s += sim_curve(("er", "random"), "accentthree")
-    s += sim_curve(("sf", "random"), "accenttwo")
-    s += legend([("accenttwo", "", "hubs\\\\" + pct(SF_RAND_C) + " gone"),
-                 ("accentthree", "", "random net\\\\" + pct(ER_RAND_C) + " gone")])
-    return s
-
-
-def fig_sim_targeted():
-    X, Y = _XY()
-    s = sim_axes()
-    s += sim_curve(("er", "targeted"), "accentthree")
-    s += sim_curve(("sf", "targeted"), "accenttwo")
-    s += legend([("accenttwo", "", "hubs\\\\" + pct(SF_TARG_C) + " gone"),
-                 ("accentthree", "", "random net\\\\" + pct(ER_TARG_C) + " gone")])
-    return s
-
-
 def fig_robust_fragile():
     X, Y = _XY()
     s = sim_axes()
@@ -2005,20 +1491,6 @@ def fig_robust_fragile():
     s += legend([("accenttwo", "", "hubs"),
                  ("accentthree", "", "random net"),
                  ("annot", DASH, "attacked")])
-    return s
-
-
-def fig_efficiency_security():
-    star_p = {0: (0, 0), **{i: p for i, p in enumerate(ring_pos(6).values(), 1)}}
-    star_e = [(0, i) for i in range(1, 7)]
-    s, P = small_graph(star_p, star_e, (250, 220), scale=115, node=NODE)
-    s += ring(P[0][0], P[0][1], color="accenttwo")
-    s += text(250, 40, "one node holds it up", color="accenttwo")
-    mesh_p = ring_pos(7)
-    mesh_e = [(i, (i + 1) % 7) for i in range(7)] + [(i, (i + 2) % 7) for i in range(7)]
-    s2, _ = small_graph(mesh_p, mesh_e, (830, 220), scale=115, node=NODE)
-    s += s2
-    s += text(830, 40, "no single point", color="black")
     return s
 
 
@@ -2036,90 +1508,7 @@ def fig_redundant_answer():
                    )
 
 
-def fig_design_principles():
-    """Degrees before and after the two extra cables, as a dot plot.
-
-    Authored for the `cols` column so it can sit beside the five principles. The
-    Moravian map is a full-width figure; putting it in a column rendered it at 48%
-    and dropped its discs to 19px.
-    """
-    before = dict(MST.degree())
-    after = dict(MST2.degree())
-    towns = sorted(before, key=lambda n: (before[n], after[n], n))
-    # "Even out the degrees" is a claim, so check it. The *range* does not move
-    # (3 and 1 both survive); what improves is the spread and the number of towns
-    # left on a single cable, which is what the dot plot actually shows.
-    var = lambda d: float(np.var(list(d.values())))
-    leaves = lambda d: sum(1 for v in d.values() if v == 1)
-    assert var(after) < var(before), (var(before), var(after))
-    assert leaves(after) < leaves(before), (leaves(before), leaves(after))
-
-    y0, dy = 100, 34
-    xs = {k: 280 + (k - 1) * 90 for k in range(1, 4)}
-    s = seg((xs[1] - 40, 70), (xs[3] + 40, 70), color="annot", w=2.2)
-    for k, x in xs.items():
-        s += seg((x, 62), (x, 78), color="annot", w=2.0)
-        s += text(x, 54, str(k), color="annot", anchor="north")
-    for i, n in enumerate(towns):
-        y = y0 + i * dy
-        s += text(200, y, NAME[n], color="black", anchor="east")
-        b, a = before[n], after[n]
-        if a != b:
-            s += seg((xs[b], y), (xs[a], y), color="annot", w=2.0, dash=DASH)
-        s += dot(xs[b], y, "annot", d=20)
-        s += dot(xs[a], y, "accentthree", d=26)
-    return s
-
-
-def fig_build_it_back():
-    new = [(a, b) for a, b, _ in REDUNDANT]
-    return moravia(edges=MST_PAIRS,
-                   heavy={e: "accentthree" for e in new},
-                   extra_text=note("1926\\\\today", color="black"))
-
-
-# ===========================================================================
-#                                Part 7
-# ===========================================================================
-def _ring_case(show, cut=False):
-    p = ring_pos(6, r=1.0, ry=0.82, start=0.0)
-    e = [(i, (i + 1) % 6) for i in range(6)]
-    gone = 3 if cut else None
-    s = "".join(seg((260 + p[a][0] * 196, 190 + p[a][1] * 196),
-                    (260 + p[b][0] * 196, 190 + p[b][1] * 196),
-                    color="black", w=EDGE_W + 1.0)
-                for a, b in e if gone not in (a, b))
-    for i, (x, y) in p.items():
-        X, Y = 260 + x * 196, 190 + y * 196
-        if i == gone:
-            s += opendisc(X, Y, "accenttwo")
-            s += seg((X - 12, Y - 12), (X + 12, Y + 12), color="accenttwo", w=3.6)
-            s += seg((X - 12, Y + 12), (X + 12, Y - 12), color="accenttwo", w=3.6)
-        else:
-            s += disc(X, Y, "" if cut else "2", fill="accent")
-    s += text(260, 190, f"$\\kappa = {KAPPA_VALUES[0]}$" if show else "$\\kappa = \\;?$",
-              color="accenttwo" if show else "annot")
-    return s
-
-
-def fig_ring_q():
-    return _ring_case(False)
-
-
-def fig_ring_a():
-    """The INTACT ring, because kappa = 2 is a fact about the intact ring.
-
-    Drawing the ring after the cut and printing kappa = 2 on it put the wrong
-    number on the graph: the cut leaves a 5-node chain with degrees 1,2,2,2,1 and
-    kappa = 7/4 -- this deck's own value for "a path", three slides earlier. What
-    one cut does is in the body text, where it does not have to be drawn wrong.
-    """
-    return _ring_case(True)
-
-
 ER1 = nx.gnm_random_graph(14, 7, seed=4)
-ER1_KAPPA = Fraction(sum(d * d for _, d in ER1.degree()),
-                     sum(d for _, d in ER1.degree()))
 
 
 # The graph is a FOREST -- three small components and four isolated nodes -- so it
@@ -2133,24 +1522,6 @@ ER1_POS = {1: (110, 290), 0: (45, 245), 2: (110, 215), 11: (175, 245),
 assert set(ER1_POS) == set(ER1)
 assert not crossings(list(ER1.edges()), ER1_POS), crossings(list(ER1.edges()), ER1_POS)
 assert not clearance_bad(list(ER1.edges()), ER1_POS, r=SMALLNODE / 2 + 3)
-
-
-def _er1_case(show):
-    s = "".join(seg(ER1_POS[a], ER1_POS[b], color="black", w=EDGE_W + 1.0)
-                for a, b in ER1.edges())
-    for n, (x, y) in ER1_POS.items():
-        s += disc(x, y, "", fill="accent", size=SMALLNODE)
-    s += text(260, 30, "$\\langle k \\rangle = 1$" if not show else "$\\kappa = 2$",
-              color="annot" if not show else "accenttwo")
-    return s
-
-
-def fig_er1_q():
-    return _er1_case(False)
-
-
-def fig_er1_a():
-    return _er1_case(True)
 
 
 BW_BRIDGE = 6
@@ -2171,91 +1542,24 @@ assert [n for n, d in BW_G.degree() if d == 2] == [BW_BRIDGE], \
     "more than one degree-2 node: the slide's phrase is ambiguous"
 
 
-def _bw(removed=(), note_text=None, degrees=True, ring_bridge=True):
-    """Degrees are printed inside the discs: no external label, no spare height."""
-    s = "".join(seg(BW_POS[a], BW_POS[b], color="black", w=EDGE_W)
-                for a, b in BW_EDGES if a not in removed and b not in removed)
-    for n, (x, y) in BW_POS.items():
-        if n in removed:
-            s += opendisc(x, y, "accenttwo")
-            s += seg((x - 12, y - 12), (x + 12, y + 12), color="accenttwo", w=3.6)
-            s += seg((x - 12, y + 12), (x + 12, y - 12), color="accenttwo", w=3.6)
-        else:
-            s += disc(x, y, str(BW_G.degree(n)) if degrees else "", fill="accent")
-    if ring_bridge:
-        s += ring(BW_POS[BW_BRIDGE][0], BW_POS[BW_BRIDGE][1], color="accenttwo")
-    if note_text:
-        s += text(550, 30, note_text, color="accenttwo")
-    return s
-
-
-def fig_betweenness_q():
-    """No ring. The ringed node was the answer to the NEXT slide."""
-    return _bw(ring_bridge=False)
-
-
-def fig_betweenness_a():
-    """The bridge removed, and the two halves it was holding together.
-
-    The first version printed a degree in every disc and claimed the hub result in
-    a caption while drawing the bridge result -- so the slide showed one scenario
-    and asserted two, and the removed node's neighbour read as "the degree-2 node".
-    """
-    parts = sorted(nx.connected_components(
-        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_BRIDGE)), key=len,
-        reverse=True)
-    after_hub = len(max(nx.connected_components(
-        nx.subgraph_view(BW_G, filter_node=lambda n: n != BW_HUB)), key=len))
-    assert len(parts) == 2 and len(parts[0]) < after_hub, (parts, after_hub)
-    s = _bw(removed=[BW_BRIDGE], degrees=False)
-    for part in parts:
-        xs = [BW_POS[n][0] for n in part]
-        s += text(sum(xs) / len(xs), 30, str(len(part)), color="accenttwo")
-    return s
-
-
-TRI_POS = {i: p for i, p in enumerate(
-    [(0, 0), (1.1, 0.55), (2.2, 0), (1.1, -0.55), (3.3, 0.55), (3.3, -0.55)])}
-TRI_EDGES = [(0, 1), (1, 2), (2, 3), (3, 0), (0, 2), (2, 4), (4, 5), (5, 2), (1, 4)]
-
-
-def _tri(show):
-    s, P = small_graph(TRI_POS, TRI_EDGES, (70, 190), scale=110, node=NODE)
-    if show:
-        loop = [(0, 1), (1, 2), (2, 0)]
-        s += "".join(seg(P[a], P[b], color="accenttwo", w=HEAVY_W) for a, b in loop)
-        s += text(280, 30, "back where it started", color="accenttwo")
-    else:
-        s += text(280, 30, "triangles everywhere", color="annot")
-    return s
-
-
-def fig_triangles_q():
-    return _tri(False)
-
-
-def fig_triangles_a():
-    return _tri(True)
-
-
 # ===========================================================================
 #                              Wrap-up
 # ===========================================================================
 def fig_recap():
-    """One drawing, three numbers where they happened -- not four bordered cells.
+    """One drawing: what was bought, what was lost, what was added back.
 
     The first version was a row of four boxed header/value pairs: a 2x4 table, which
-    L2 makes a Blocker, on a slide titled "Module 03 in one picture".
+    L2 makes a Blocker, on a slide titled "Module 03 in one picture".  The second
+    put three numbers along the bottom of the map.
+    Once the towns were spread to fill the canvas there was no free band left for a
+    row of numbers, so the three numbers moved to the slide's own line. The drawing
+    keeps what only a drawing can say: which cables were bought, which town is gone,
+    and which two cables close the ring.
     """
     new = [(a, b) for a, b, _ in REDUNDANT]
-    worst = connectivity(MST, ["Brno"])
-    s = moravia(edges=MST_PAIRS,
-                heavy={e: "accentthree" for e in new},
-                removed=["Brno"])
-    s += note(f"{MST_TOTAL} km", color="accent", at=(24, 72))
-    s += note(f"{int(worst * 8)}/8", color="accenttwo", at=(470, 72))
-    s += note(f"$+{EXTRA_KM}$ km", color="black", at=(850, 72))
-    return s
+    return moravia(edges=MST_PAIRS,
+                   heavy={e: "accentthree" for e in new},
+                   removed=["Brno"])
 
 
 def fig_m04_teaser():
@@ -2265,82 +1569,33 @@ def fig_m04_teaser():
     slide, under the 26px floor, which the node-size gate could not see until it
     was taught to find discs by colour rather than by darkness.
     """
-    order = ["h", "c", "a", "b", "e", "d"]
-    x0, step, ytop = 175, 62, 320
+    order = sorted(QK_DEG, key=lambda n: (-QK_DEG[n], n))
+    x0, step, ytop = 165, 35, 300
     s = text(150, ytop, "people", color="accent", anchor="east")
     s += text(150, ytop - 96, "friend-\\\\ships", color="accenttwo", anchor="east")
     for i, n in enumerate(order):
         x = x0 + i * step
-        s += disc(x, ytop, "", fill="accent")
+        s += disc(x, ytop, "", fill="accent", size=34)
         for j in range(QK_DEG[n]):
-            s += dot(x, ytop - 52 - j * 36, "accenttwo", d=28)
+            s += dot(x, ytop - 44 - j * 34, "accenttwo", d=28)
     return s
 
 
 FIGURES = [
-    ("moravia-dark", fig_moravia_dark, "col", 360),
-    ("abstract-1", fig_abstract_1, "full", FULL_H),
-    ("abstract-2", fig_abstract_2, "full", FULL_H),
-    ("abstract-3", fig_abstract_3, "full", FULL_H),
-    ("moravia-graph", fig_moravia_graph, "full", FULL_H),
-    ("loop-waste", fig_loop_waste, "col", 320),
-    ("tree-def", fig_tree_def, "col", 330),
-    ("spanning-count", fig_spanning_count, "full", FULL_H),
     ("mst-def", fig_mst_def, "full", FULL_H),
-    ("kruskal-rule", fig_kruskal_rule, "full", 300),
-    ("kruskal-skip", fig_kruskal_skip, "full", FULL_H),
-    ("kruskal-worksheet", fig_kruskal_worksheet, "full", FULL_H),
-    ("kruskal-answer", fig_kruskal_answer, "full", FULL_H),
-    ("prim-rule", fig_prim_rule, "full", FULL_H),
-    ("prim-worksheet", fig_prim_worksheet, "full", FULL_H),
-    ("prim-vs-kruskal", fig_prim_vs_kruskal, "full", 380),
-    ("cut-property", fig_cut_property, "col", 350),
-    ("tie-graph", fig_tie_graph, "full", FULL_H),
-    ("tie-two-trees", fig_tie_two_trees, "full", FULL_H),
-    ("boruvka-rounds", fig_boruvka_rounds, "full", FULL_H),
-    ("mst-alone", fig_mst_alone, "full", FULL_H),
     ("mst-blank", fig_mst_blank, "full", FULL_H),
     ("brno-removed", fig_brno_removed, "full", FULL_H),
-    ("tree-bridges", fig_tree_bridges, "full", FULL_H),
-    ("real-grid-mesh", fig_real_grid_mesh, "full", 400),
-    ("connectivity-def", fig_connectivity_def, "full", FULL_H),
-    ("r-index", fig_r_index, "full", 420),
-    ("profile-random", fig_profile_random, "full", 420),
     ("profile-both", fig_profile_both, "full", 420),
-    ("fixed-vs-adaptive", fig_fixed_vs_adaptive, "full", 420),
-    ("demo-still", fig_demo_still, "col", 360),
     ("puddle-low", fig_puddle_low, "full", 440),
-    ("puddle-widget", fig_puddle_widget, "full", 460),
-    ("order-irrelevant", fig_order_irrelevant, "full", 420),
     ("phase-transition", fig_phase_transition, "full", 420),
-    ("reverse-percolation", fig_reverse_percolation, "full", 380),
-    ("follow-edge", fig_follow_edge, "col", 420),
-    ("qk-bias", fig_qk_bias, "full", 400),
     ("kappa-def", fig_kappa_def, "col", 420),
-    ("branching", fig_branching, "full", 400),
     ("molloy-reed", fig_molloy_reed, "full", 400),
-    ("kappa-worksheet", fig_kappa_worksheet, "full", 380),
-    ("kappa-answer", fig_kappa_answer, "full", 420),
-    ("dilution", fig_dilution, "full", 400),
     ("fc-formula", fig_fc_formula, "full", 420),
     ("fc-poisson", fig_fc_poisson, "full", 420),
     ("fc-scalefree", fig_fc_scalefree, "full", 420),
-    ("sim-random", fig_sim_random, "full", 420),
-    ("sim-targeted", fig_sim_targeted, "full", 420),
     ("robust-fragile", fig_robust_fragile, "full", 420),
-    ("efficiency-security", fig_efficiency_security, "full", 400),
     ("mst-blank-design", fig_mst_blank_design, "full", FULL_H),
     ("redundant-answer", fig_redundant_answer, "full", FULL_H),
-    ("design-principles", fig_design_principles, "col", 400),
-    ("build-it-back", fig_build_it_back, "full", FULL_H),
-    ("ring-q", fig_ring_q, "col", 420),
-    ("ring-a", fig_ring_a, "col", 420),
-    ("er1-q", fig_er1_q, "col", 420),
-    ("er1-a", fig_er1_a, "col", 420),
-    ("betweenness-q", fig_betweenness_q, "full", 400),
-    ("betweenness-a", fig_betweenness_a, "full", 420),
-    ("triangles-q", fig_triangles_q, "col", 380),
-    ("triangles-a", fig_triangles_a, "col", 380),
     ("recap", fig_recap, "full", 360),
     ("m04-teaser", fig_m04_teaser, "col", 380),
 ]

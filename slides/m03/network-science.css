@@ -672,7 +672,10 @@ section .anim-knob-live { transition: none; cursor: grabbing; }
    note the note IS the reader's account of a drawing they cannot see; on a
    slide the lecturer is that account. */
 section #mst-race .anim-note,
-section #rf-attack .anim-note { font-size: 16px; min-height: 1.3em; }
+section #rf-attack .anim-note,
+section #break-profile .anim-note,
+section #percolation .anim-note,
+section #branch-out .anim-note { font-size: 16px; min-height: 1.3em; }
 
 /* ---- Kruskal and Prim on one grid (m03) ---- */
 section #mst-race .mst-col { text-align: center; transition: opacity 0.35s ease; }
@@ -806,3 +809,155 @@ section #rf-attack .rf-tick {
    track resolves to its content width — zero — and all that renders is a knob
    floating in the middle of the card. */
 section #rf-attack .anim-range { max-width: 600px; margin: 6px 0 4px; }
+
+/* ---- The robustness profile, one removal at a time (m03) ---- */
+/* The deck's map of Moravia is three times as wide as it is tall, which is what
+   makes it legible across a slide and useless inside a stage that also has to
+   hold a chart. break-profile.js therefore carries a square drawing of the same
+   seven cables; only the shape of the paper differs. */
+section #break-profile {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  column-gap: 22px;
+  align-items: start;
+}
+section #break-profile .anim-bar,
+section #break-profile .anim-note { grid-column: 1 / -1; }
+
+section #break-profile .bp-head {
+  font-family: var(--_hand);
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  min-height: 1.25em;
+  text-align: center;
+  color: var(--_amber);
+}
+section #break-profile .bp-net { max-width: 378px; margin: 0 auto; --anim-svg-max: 378px; }
+section #break-profile .bp-name { font-size: 13px; fill: var(--_ink-soft); }
+section #break-profile .anim-edge { stroke-width: 2.4; transition: opacity 0.25s ease; }
+section #break-profile .bp-cut { opacity: 0; }
+/* A removed town: still in its place, plainly no longer there. */
+section #break-profile .bp-out {
+  fill: none;
+  stroke: var(--_ink-faint);
+  stroke-width: 1.6;
+  stroke-dasharray: 3 2.6;
+}
+/* The gold of the deck's own third accent, for the storm's curve; the stage's
+   red is the attacker's, exactly as in profile-both.png. */
+section #break-profile { --_gold: #DAB167; }
+section #break-profile .bp-luck { stroke: var(--_gold); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+section #break-profile .bp-attack { stroke: var(--_amber); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+section #break-profile .bp-fill-luck { fill: var(--_gold); fill-opacity: 0.20; stroke: none; }
+section #break-profile .bp-fill-attack { fill: var(--_amber); fill-opacity: 0.20; stroke: none; }
+section #break-profile .bp-ghost { stroke-width: 1.6; opacity: 0.45; stroke-dasharray: 4 3; }
+section #break-profile { --anim-svg-max: 520px; }
+section #break-profile .bp-read { max-width: 100%; justify-content: center; margin: 2px auto 0; }
+section #break-profile .bp-cap { text-align: center; font-size: 16px; margin: 2px auto 0; }
+section #break-profile .bp-verdict { max-width: 430px; margin: 4px auto 0; }
+section #break-profile .bp-die { fill: var(--_white); stroke: var(--_ink); stroke-width: 1.8; }
+section #break-profile .bp-pip { fill: var(--_ink); }
+section #break-profile .bp-cross { fill: none; stroke: var(--_ink); stroke-width: 2.2; }
+section #break-profile .bp-drop { animation: bp-drop 0.6s ease-out forwards; }
+@keyframes bp-drop {
+  from { opacity: 0; transform: translateY(-26px) rotate(-24deg); }
+  60%  { opacity: 1; transform: translateY(0) rotate(4deg); }
+  to   { opacity: 0; transform: translateY(0) rotate(0deg); }
+}
+section #break-profile .bp-snap { animation: bp-snap 0.5s ease-out forwards; }
+@keyframes bp-snap {
+  from { opacity: 0; transform: scale(2.1); }
+  55%  { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1); }
+}
+
+/* ---- The puddle yard (m03) ---- */
+section #percolation {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  column-gap: 22px;
+  align-items: start;
+}
+section #percolation .anim-bar,
+section #percolation .anim-note { grid-column: 1 / -1; }
+section #percolation .pc-yard { max-width: 340px; margin: 0 auto; --anim-svg-max: 340px; }
+/* 784 stones: a dry one is paper with a hairline, a wet one is ink, and the
+   ones in the single largest puddle are the only red on the slide. */
+section #percolation .pc-dry { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 0.5; }
+section #percolation .pc-wet { fill: var(--_accent); fill-opacity: 0.58; stroke: none; }
+section #percolation .pc-big-cell { fill: var(--_amber); stroke: none; }
+section #percolation .pc-big { stroke: var(--_ink-faint); stroke-width: 2; fill: none; stroke-dasharray: 5 4; }
+section #percolation .pc-trace { stroke: var(--_amber); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+section #percolation .pc-dot { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.4; }
+section #percolation .pc-pc { fill: var(--_amber); }
+section #percolation { --anim-svg-max: 500px; }
+section #percolation .pc-read { max-width: 100%; justify-content: center; margin: 2px auto 0; }
+section #percolation .pc-cap { text-align: center; font-size: 16px; margin: 2px auto 0; }
+section #percolation .pc-verdict { max-width: 400px; margin: 4px auto 0; }
+section #percolation .anim-range { max-width: 100%; margin: 6px 0 4px; }
+
+/* ---- Follow an edge, then subtract the way you came in (m03) ---- */
+section #branch-out {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 22px;
+  align-items: start;
+}
+section #branch-out .anim-bar,
+section #branch-out .anim-note { grid-column: 1 / -1; }
+section #branch-out .bo-net { max-width: 344px; margin: 0 auto; --anim-svg-max: 344px; }
+section #branch-out .bo-deg { font-size: 14px; font-weight: 700; fill: var(--_white); }
+section #branch-out .bo-badge { font-size: 14px; font-weight: 700; fill: var(--_amber); }
+section #branch-out .bo-hit { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+section #branch-out .bo-along { stroke: var(--_amber); stroke-width: 4; }
+section #branch-out .anim-node { transition: fill 0.18s ease; }
+section #branch-out .anim-edge { transition: stroke 0.18s ease, stroke-width 0.18s ease; }
+
+/* the side panel: the running tally in scenes 1-2, the fan in 3-4 */
+section #branch-out .bo-panel { min-height: 192px; }
+section #branch-out .bo-panel--fan { --anim-svg-max: 330px; }
+section #branch-out .bo-live { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.4; }
+section #branch-out .bo-dead { fill: none; stroke: var(--_ink-faint); stroke-width: 1.2; }
+section #branch-out .bo-hidden { opacity: 0; }
+section #branch-out .bo-link-live { stroke: var(--_accent); stroke-width: 1.8; fill: none; }
+section #branch-out .bo-link-dead { stroke: var(--_ink-faint); stroke-width: 0.9; fill: none; opacity: 0.5; }
+/* The exact expected frontier, printed because after two levels it stops being
+   a whole number and a row of dots alone would lie about it. */
+section #branch-out .bo-count { font-size: 13px; font-weight: 700; fill: var(--_amber); }
+section #branch-out .bo-count-dead { fill: var(--_ink-faint); }
+section #branch-out .bo-big { text-align: center; padding: 34px 0 0; }
+section #branch-out .bo-big-n {
+  display: block;
+  font-size: 74px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--_amber);
+}
+section #branch-out .bo-big-l {
+  display: block;
+  font-family: var(--_hand);
+  font-size: 24px;
+  color: var(--_ink-soft);
+}
+section #branch-out .bo-tail {
+  text-align: center;
+  font-size: 16px;
+  color: var(--_ink-soft);
+  min-height: 1.3em;
+  margin-top: 6px;
+}
+section #branch-out .bo-read { max-width: 100%; justify-content: center; margin: 2px auto 0; }
+section #branch-out .bo-cap { text-align: center; font-size: 16px; margin: 2px auto 0; }
+section #branch-out .bo-verdict { max-width: 400px; margin: 4px auto 0; }
+section #branch-out .anim-range { max-width: 100%; margin: 6px 0 4px; }
+/* the mark on the dial at f_c, where the branching is exactly 1 */
+section #branch-out .bo-tick {
+  position: absolute;
+  top: -7px;
+  width: 2px;
+  height: 22px;
+  margin-left: -1px;
+  background: var(--_amber);
+  opacity: 0.75;
+}
