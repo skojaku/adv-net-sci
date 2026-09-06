@@ -831,7 +831,7 @@ modules:
         level: core
         statement: "Newly formed Czechoslovakia had to electrify Moravia with minimum cable; the question reached Boruvka, whose 1926 answer created the minimum spanning tree problem."
         prereq: []
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c02
         name: "Weighted network"
@@ -839,7 +839,7 @@ modules:
         level: core
         statement: "Edges carry weights - here cable cost or length - so that structures can be compared by total weight."
         prereq: [m01.c03]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c03
         name: "Tree and spanning tree"
@@ -847,7 +847,7 @@ modules:
         level: core
         statement: "A tree is connected and acyclic; a spanning tree is a tree that touches every node, and always has exactly n-1 edges."
         prereq: [m01.c13, m01.c14]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c04
         name: "Minimum spanning tree"
@@ -855,7 +855,7 @@ modules:
         level: core
         statement: "The spanning tree of least total weight - the cheapest way to keep every node connected."
         prereq: [m03.c02, m03.c03]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c05
         name: "Kruskal's algorithm"
@@ -863,7 +863,7 @@ modules:
         level: core
         statement: "Sort all edges by weight and add them cheapest-first, skipping any edge that would close a cycle, until the network is connected."
         prereq: [m03.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c06
         name: "Prim's algorithm"
@@ -871,7 +871,7 @@ modules:
         level: core
         statement: "Start from any node and repeatedly add the cheapest edge that brings one new node into the growing tree."
         prereq: [m03.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c07
         name: "Greedy choice yields the global optimum"
@@ -879,7 +879,7 @@ modules:
         level: core
         statement: "Both algorithms are locally greedy yet provably optimal - a rare and instructive case where the obvious heuristic cannot be beaten."
         prereq: [m03.c05, m03.c06]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c08
         name: "Uniqueness and ties"
@@ -887,7 +887,7 @@ modules:
         level: core
         statement: "With all weights distinct the MST is unique and both algorithms return it; with ties there are several optima and Prim's answer depends on the starting node."
         prereq: [m03.c07]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c09
         name: "Why the MST is not enough"
@@ -895,7 +895,7 @@ modules:
         level: core
         statement: "A tree has no redundant path, so losing a single node - especially one near the center - disconnects the grid. Cost efficiency and resilience pull in opposite directions."
         prereq: [m03.c03, m03.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c10
         name: "Redundancy"
@@ -903,7 +903,7 @@ modules:
         level: core
         statement: "Extra edges beyond the spanning tree buy alternative routes; the design question is how much redundancy is worth its cost."
         prereq: [m03.c09]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c11
         name: "Connectivity as a damage metric"
@@ -911,7 +911,7 @@ modules:
         level: core
         statement: "Connectivity = (size of the largest component after removal) / (original number of nodes) - a purely topological measure of how much network survives."
         prereq: [m01.c16]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c12
         name: "Robustness profile"
@@ -919,7 +919,7 @@ modules:
         level: core
         statement: "The curve of connectivity against the fraction of nodes removed; its shape depends entirely on the removal order."
         prereq: [m03.c11]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c13
         name: "R-index"
@@ -927,7 +927,7 @@ modules:
         level: core
         statement: "R = (1/N) sum_k y_k, the area under the robustness profile, compressing the whole curve into one comparable number; higher is more robust."
         prereq: [m03.c12]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c14
         name: "Random failure"
@@ -935,7 +935,7 @@ modules:
         level: core
         statement: "Nodes fail independently and unpredictably - earthquakes, equipment faults, random server crashes."
         prereq: [m03.c12]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c15
         name: "Targeted attack"
@@ -943,7 +943,7 @@ modules:
         level: core
         statement: "An adversary who knows the structure removes nodes in a chosen order, most naturally highest degree first - like shutting the busiest airports."
         prereq: [m03.c12, m01.c05]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c16
         name: "Recomputed vs fixed attack order"
@@ -1044,7 +1044,7 @@ modules:
         level: core
         statement: "The same hubs that make scale-free networks nearly immune to random failure make them collapse when a tiny fraction of hubs is deliberately removed."
         prereq: [m03.c24, m03.c26]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c28
         name: "Design principles for robust networks"
@@ -1052,7 +1052,7 @@ modules:
         level: core
         statement: "Balance the degree distribution, provide redundant pathways, protect critical hubs, use hierarchical local-plus-backbone structure, and allow adaptive reconfiguration."
         prereq: [m03.c27, m03.c10]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m03.c29
         name: "Boruvka's algorithm"
@@ -1076,7 +1076,7 @@ modules:
         level: core
         statement: "No single structure is optimal against all failure types: efficiency favors hubs for cheap distribution, security demands redundancy and distributed connectivity."
         prereq: [m03.c27, m03.c09]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m03-robustness/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
 # =============================================================================
 # M04: Node Degree and the Friendship Paradox

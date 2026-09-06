@@ -1,30 +1,99 @@
-\documentclass[a4paper, 17pt]{extarticle}
-\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+% Standard pen-and-paper worksheet preamble, in the form m01 and m02 use.
+% Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+%
+% 14pt, not 12pt: the sheet is read with a pencil in hand. There are no blanks
+% and no ruled answer gaps anywhere on it -- questions are asked in words and
+% answered on the back -- so the paper those would have cost goes to the text
+% and to the drawings.
+\documentclass[a4paper, 14pt]{extarticle}
+\usepackage[top=0.75in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{array}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
 \usepackage{tikz}
 \usepackage{fontspec}
-%\usetikzlibrary{decorations.pathmorphing}
-\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
-% Handwriting font, resolved once into \ppfont and \ppfontname.
-%
-% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
-% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
-% the one face that is always present; Latin Modern is the last resort.
+
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
 %
 % Naming a font that is not installed is a hard error, not a fallback, which is
-% why this is a chain and not a line: seven sheets used to name one outright
-% and stopped building the day it was uninstalled.
-\def\ppfontname{Latin Modern Roman}
-\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
-  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
-    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
-\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
-\tikzset{every picture/.style={/utils/exec={\ppfont}}}
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
 
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
 \makeatletter
 \pgfset{
   /pgf/decoration/randomness/.initial=2,
@@ -47,82 +116,139 @@
 \tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
 \makeatother
 
-\usepackage{etoolbox}
-\AtBeginEnvironment{tabular}{\ppfont}
-
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.5em}
-\usepackage{fancyhdr}
-\usepackage{geometry}
-\usepackage{adjustbox}
-\usepackage{titling}
+\input{gridkit.tex}
 
 \begin{document}
 
-\subsection*{Build it, Break it, and Build it back!}
+\parthead{1}{Nine stations and no money}
 
-
-\begin{minipage}{0.6\textwidth}
+\begin{minipage}{0.52\textwidth}
     {\bf Question 1}:
     Let us design a small power grid network with nine stations A--I (nodes).
     Initially, these stations are isolated.
     The cost associated with each connection is provided in the table.
     Minimize the total cost of the lines to build a single connected network.
+
+    Draw your lines on the nine stations below.
 \end{minipage}
 \hfill
-\begin{minipage}{0.4\textwidth}
+\begin{minipage}{0.46\textwidth}
 \begin{center}
-    \scalebox{0.65}{
-        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
-            \hline
-               & A  & B  & C  & D  & E  & F  & G  & H  & I  \\ \hline
-            A  & 0  & 2  & 8  & 12 & 4  & 10 & 14 & 6  & 16 \\ \hline
-            B  & -  & 0  & 3  & 2  & 1  & 5  & 11 & 15 & 7  \\ \hline
-            C  & -  & -  & 0  & 4  & 10 & 14 & 6  & 12 & 16 \\ \hline
-            D  & -  & -  & -  & 0  & 5  & 11 & 15 & 7  & 13 \\ \hline
-            E  & -  & -  & -  & -  & 0  & 6  & 12 & 16 & 8  \\ \hline
-            F  & -  & -  & -  & -  & -  & 0  & 7  & 13 & 9  \\ \hline
-            G  & -  & -  & -  & -  & -  & -  & 0  & 8  & 10 \\ \hline
-            H  & -  & -  & -  & -  & -  & -  & -  & 0  & 11 \\ \hline
-            I  & -  & -  & -  & -  & -  & -  & -  & -  & 0  \\ \hline
-            \end{tabular}
-}
+    \costtable{0.82}
 \end{center}
 \end{minipage}
 
-\ \\
-
-\begin{tikzpicture}[scale=0.9]
-  \node[xkcd,draw, circle, inner sep=0.1cm] at (0.5, 1) {I};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (D) at (3, 1) {D};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (C) at (4.2, -0.2) {C};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (B) at (2, -0.5) {B};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (E) at (0.5, -1.6) {E};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (A) at (3, -2.5) {A};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (F) at (-0.5, -0.5) {F};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (H) at (1, -3) {H};
-  \node[xkcd,draw, circle, inner sep=0.1cm] (G) at (4.5, -2) {G};
-\end{tikzpicture}
-\ \\
+\begin{center}
+  \gridnodes{2.55}
+\end{center}
 
 {\bf Question 2}:
-Consider the scenario where a single station fails and disconnects from the network. On average, how many stations remain connected? Enumerate all possible cases, compute the size of the largest connected component in each case, and then compute the average.
-
-\clearpage
+Compare your grid with your neighbour's.
+In what order did each of you add the lines?
+Did the two of you end up paying the same total cost?
 
 {\bf Question 3}:
-A power-grid network is subjected to a \textit{targeted attack} that breaks the network by removing one node. The attacker targets a single station whose removal minimizes the size of the largest connected component in the resulting network.
-Which station is most susceptible to this attack?
+Pick any two stations in your grid.
+How many different routes run between them?
 
+\parthead{2}{Break it}
+
+\begin{minipage}{\textwidth}
 {\bf Question 4}:
-Redesign the network so that it is as strong as possible against targeted attacks.
-To simplify, ignore the cost of the lines but keep the number of connections the same. You can change the pre-existing lines completely. The attacker can remove only one station.
+Consider the scenario where a single station fails and disconnects from the network.
+Enumerate all possible cases, and compute the size of the largest connected component in each case.
+Write the sizes in the middle column.
 
-\clearpage
+\begin{center}
+\begin{tabular}{|C{3.6cm}|C{4.6cm}|C{4.2cm}|}
+\hline
+Station that fails & Size of the largest connected component & That size divided by 9 \\ \hline
+A & & \\[0.76cm] \hline
+B & & \\[0.76cm] \hline
+C & & \\[0.76cm] \hline
+D & & \\[0.76cm] \hline
+E & & \\[0.76cm] \hline
+F & & \\[0.76cm] \hline
+G & & \\[0.76cm] \hline
+H & & \\[0.76cm] \hline
+I & & \\[0.76cm] \hline
+\end{tabular}
+\end{center}
+\end{minipage}
 
 {\bf Question 5}:
+Divide each of those sizes by 9 and write the result in the last column.
+That fraction is called the \textbf{connectivity} of the damaged grid.
+On average, how much connectivity remains?
+
+\needroom{5\baselineskip}
+
+{\bf Question 6}:
+A power-grid network is subjected to a \textit{targeted attack} that breaks the network by removing one node.
+The attacker targets a single station whose removal minimizes the size of the largest connected component in the resulting network.
+Which station is most susceptible to this attack?
+
+\parthead{3}{One at a time}
+
+\begin{minipage}{\textwidth}
+{\bf Question 7}:
+Now the stations go one after another, and two orders are printed below.
+Take your grid from Question 1, remove the stations in the given order, and after every removal write the connectivity into the table.
+
+\vspace{0.2em}
+\begin{tabular}{@{}ll@{}}
+\textbf{Order R} (an accident): & I, C, H, E, A, G, D, F, B \\[0.2em]
+\textbf{Order T} (the attacker): & B, A, C, D, E, F, G, H, I \\
+\end{tabular}
+\vspace{0.3em}
+
+\begin{center}
+\small
+\begin{tabular}{|l|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|C{1.0cm}|}
+\hline
+stations removed & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+Order R & 1 & & & & & & & & \\[0.3cm] \hline
+Order T & 1 & & & & & & & & \\[0.3cm] \hline
+\end{tabular}
+\end{center}
+
+Then plot both rows on the grid, and join each one into a curve.
+
+\begin{center}
+  \profilegrid
+\end{center}
+\end{minipage}
+
+{\bf Question 8}:
+The area under a curve is a single number for how much of the grid survived the whole sequence.
+Estimate that area for each of your two curves.
+
+{\bf Question 9}:
+The same grid holds up under one of those two orders and falls apart under the other.
+Say, in your own words, what makes it strong against one and weak against the other.
+
+\parthead{4}{Build it back}
+
+\begin{minipage}{\textwidth}
+{\bf Question 10}:
+Redesign the network so that it is as strong as possible against targeted attacks.
+To simplify, ignore the cost of the lines but keep the same number of lines as your grid in Question 1.
+You can change the pre-existing lines completely.
+The attacker can remove only one station.
+
+\begin{center}
+  \gridnodes{1.8}
+\end{center}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+{\bf Question 11}:
 Now the attacker can remove two stations at once, and you have additional budget to add four extra lines to protect the network.
 Design a network of \underline{\textbf{12}} edges so that it is as strong as possible against the targeted attacks.
 
+\begin{center}
+  \gridnodes{1.8}
+\end{center}
+\end{minipage}
 
 \end{document}

@@ -28,24 +28,19 @@ Sources:
 
 ---
 
-## Pattern 1 — Compare two nearly identical objects, then name the difference
+## Pattern 1 — Compare two nearly identical objects
 
-The dominant discovery device. Two groups of the same size differ by two or
-three edges. The student counts something in each, and only then is told the
-label.
+Two groups of the same size differ by two or three edges. The student counts
+something in each, and the difference between the two counts is the point.
 
-> Compare these two groups of 5 students: [Group A (Perfect Clique)] [Group B (1-plex)]
+> Compare these two groups of 5 students: [Group A] [Group B]
 >
-> 1. How many friends does each student have in Group A? \_\_\_\_
+> 1. How many friends does each student have in Group A?
 > 2. In Group B, how many students is each person **not** friends with?
-> 3. Which group represents a perfect clique? \_\_\_\_
-> 4. Group B is called a 1-plex. Based on your observations, **what do you think
->    defines a k-plex?**
+> 3. Which group is more tightly knit?
 
-Note the order: count → count the complement → identify → generalize. The label
-("1-plex") appears in the *last* question, never in the first. m05 repeats this
-exact template five times (k-plex, k-core, ρ-dense, n-clique, k-truss), so the
-student learns the *family* of definitions by feeling the family resemblance.
+Count → count the complement → compare. m05 repeats this template five times,
+so the student learns the *family* by feeling the family resemblance.
 
 Reuse this whenever the concept is a definition with a tunable parameter.
 
@@ -216,7 +211,6 @@ interesting rather than obvious.
 ## Question wording bank
 
 - "Without doing any calculations, ..." — for guesses.
-- "Based on your observations, what do you think defines a k-...?" — the discovery ask.
 - "What might be a problem with always choosing ...?" — for limitations.
 - "How would this affect your answers to the previous questions?" — for bookends.
 - "Explain why you chose to cut where you did." — for justification.
@@ -225,8 +219,7 @@ interesting rather than obvious.
 - "Trace the chain on the drawing. How many handshakes does it take?" — for an
   answer that belongs on the figure.
 - "Say, in your own words, what those two new friendships did that thirty-two
-  ordinary ones could not." — for the discovery ask when the object has no name
-  yet.
+  ordinary ones could not." — for asking what a structure bought.
 - "Put Question 5 beside 7(a) and 7(b). What does it buy, and what does it
   cost?" — for making the student assemble three of their own answers.
 - "Is X the same claim as Y? Which of the two did the experiment test?" — for

@@ -76,19 +76,14 @@ Standard arc, 5-10 questions, **four pages maximum**:
    the arithmetic is bounded and mechanical. Scaffolding is a table with its
    columns already named, or a box beside every node — not a blank at the end
    of a sentence.
-4. **The discovery question.** After the student has measured two or three
-   cases, name the object and ask them to state the rule:
-   "Group B is called a 1-plex. Based on your observations, what do you think
-   defines a k-plex?"
-5. **Break it / stress it.** Change the data, add an adversary, add a budget
+4. **Break it / stress it.** Change the data, add an adversary, add a budget
    constraint, and ask them to redo the reasoning. This is where the limitation
    concepts live.
-6. **Lift to the general case.** Last question asks for the procedure, not the
+5. **Lift to the general case.** Last question asks for the procedure, not the
    number: "You don't need to do the calculation, just describe the process
    using matrix multiplication."
 
-Not every sheet needs all six, but a sheet with no step 4 is not a pen-and-paper
-sheet.
+Not every sheet needs all five.
 
 ## Hard rules
 
@@ -417,7 +412,6 @@ every geometry change rather than at the end.
 - [ ] Could a student who has never heard the term still answer Question 1?
 - [ ] Would a first-year reading English as a second language get every question
       on one pass? Is any question three questions in one paragraph?
-- [ ] Is there a question that hands them a name and asks them to state the rule?
 - [ ] Is every computation doable in under two minutes by hand?
 - [ ] Does the sheet break or stress the idea, not just apply it?
 - [ ] Is the last question about the general procedure, not a number?
