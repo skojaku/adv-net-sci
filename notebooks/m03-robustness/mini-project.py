@@ -140,6 +140,12 @@ with app.setup(hide_code=True):
         for name, g in NETWORKS.items()
     }
 
+    # G1 .. G5, for pointing at one town without writing its name out
+    LABEL = {
+        name: "G" + "\u2081\u2082\u2083\u2084\u2085"[i]
+        for i, name in enumerate(TOWNS)
+    }
+
     def budget_for(name, share):
         return int(round(share * NETWORKS[name].vcount()))
 
@@ -355,11 +361,11 @@ with app.setup(hide_code=True):
         )
 
     def per_town(rows, other=None):
-        head = ["network", "n", "budget", "your score"]
+        head = ["", "network", "n", "budget", "your score"]
         if other:
             head.append("benchmark")
         cells = "".join(
-            f'<th style="text-align:{"left" if i == 0 else "right"};'
+            f'<th style="text-align:{"left" if i < 2 else "right"};'
             f'padding:4px 18px 6px 0;font-family:{SANS};font-size:12px;'
             f'color:{MUTED};font-weight:700">{h}</th>'
             for i, h in enumerate(head)
@@ -367,6 +373,7 @@ with app.setup(hide_code=True):
         body = ""
         for name, r in rows.items():
             vals = [
+                LABEL[name],
                 name,
                 str(NETWORKS[name].vcount()),
                 str(r["budget"]),
@@ -375,10 +382,11 @@ with app.setup(hide_code=True):
             if other:
                 vals.append(f"{other[name]['infected']:.3f}")
             body += "<tr>" + "".join(
-                f'<td style="text-align:{"left" if i == 0 else "right"};'
+                f'<td style="text-align:{"left" if i < 2 else "right"};'
                 f'padding:5px 18px 5px 0;border-top:1px solid {RULE};'
-                f'font-family:{MONO if i else SANS};font-size:14px;'
-                f'color:{RUST if i == 3 else INK}">{v}</td>'
+                f'font-family:{MONO if i > 1 else SANS};font-size:14px;'
+                f'color:{MUTED if i == 0 else RUST if i == 4 else INK}">'
+                f"{v}</td>"
                 for i, v in enumerate(vals)
             ) + "</tr>"
         return mo.Html(
@@ -494,6 +502,7 @@ def _():
         _d = np.array(_g.degree())
         _rows.append(
             (
+                LABEL[_name],
                 _name,
                 str(_g.vcount()),
                 str(_g.ecount()),
@@ -503,9 +512,9 @@ def _():
                 str(budget_for(_name, QUARANTINE_SHARE)),
             )
         )
-    _head = ["network", "people", "links", "mean k", "max k", "doses", "beds"]
+    _head = ["", "network", "people", "links", "mean k", "max k", "doses", "beds"]
     _cells = "".join(
-        f'<th style="text-align:{"left" if _i == 0 else "right"};'
+        f'<th style="text-align:{"left" if _i < 2 else "right"};'
         f'padding:4px 16px 6px 0;font-family:{SANS};font-size:12px;'
         f'color:{MUTED};font-weight:700">{_h}</th>'
         for _i, _h in enumerate(_head)
@@ -513,10 +522,10 @@ def _():
     _body = "".join(
         "<tr>"
         + "".join(
-            f'<td style="text-align:{"left" if _i == 0 else "right"};'
+            f'<td style="text-align:{"left" if _i < 2 else "right"};'
             f'padding:5px 16px 5px 0;border-top:1px solid {RULE};'
-            f'font-family:{MONO if _i else SANS};font-size:14px;color:{INK}">'
-            f"{_c}</td>"
+            f'font-family:{MONO if _i > 1 else SANS};font-size:14px;'
+            f'color:{MUTED if _i == 0 else INK}">{_c}</td>'
             for _i, _c in enumerate(_r)
         )
         + "</tr>"
