@@ -1,114 +1,91 @@
-# Mini Project: Build a Network That Survives an Attack You Cannot See
+# Mini Project: Build a Network That Holds Up Under All Three Attacks
 
-Your team gets 100 nodes and a budget of 200 edges. That is the same budget the
-lecture note spends on its three wirings of Moravia, so you already know what
-two of the obvious answers look like.
+Teams of at most three. One session, and the second half of it is you at the
+front of the room.
 
-Wire the 100 nodes however you like and hand in the edge list. After the session
-every submitted network is attacked, and each attack is scored by the R-index:
+## The task
 
-$$R = \frac{1}{N} \sum_{k=1}^{N-1} y_k, \qquad y_k = \frac{\text{nodes in the largest connected component after } k \text{ removals}}{N}$$
+Write one function.
 
-Your network's score is the **lowest** R it gets over the whole set of attacks.
-You know some of the attacks in that set. At least one of them you do not.
+```python
+def build_network(n: int, m: int) -> list[tuple[int, int]]:
+    """Return the edges of a connected network on n nodes with exactly m edges."""
+```
 
-For scale: $R = 0.5$ is the unreachable ceiling, reached only in the limit by a
-network in which every removal costs exactly one node and nothing else. A
-network that shatters on the first removal scores near 0.
+It is scored at $n = 100$ and at $n = 500$, both with $m = 2n$, so the mean
+degree is 4 either way. That is the budget the lecture note spends on its three
+wirings of Moravia, so you already know what two of the obvious answers look
+like. The same function has to serve both sizes, which is why you are handing in
+a rule rather than a network.
 
-## The rules of the contest
+Each network is attacked three times. Every attack is **sequential**: rank the
+surviving nodes, remove the top one, recompute the ranking on what is left,
+repeat.
 
-1. Exactly 100 nodes and exactly 200 edges. Undirected, no self-loops, no
-   repeated edges, and the whole thing connected.
-2. Node labels carry no meaning. The attacker is handed an unlabelled network,
-   so a clever numbering buys you nothing.
-3. **The attacks you know**: random failure averaged over many runs, the degree
-   attack ranked once on the intact network, and the adaptive degree attack
-   that recomputes every degree after every removal.
-4. **The attack you do not know** ranks the surviving nodes by some quantity
-   computed from the structure alone, removes the top one, recomputes, and
-   repeats until nothing is left. It runs in polynomial time, and it cannot see
-   your code, your notes or your random seed.
-5. Rule 4 is a real restriction, and it is there on purpose. An attacker free to
-   search every possible removal set would flatten every design in the room, and
-   the ranking would then measure nothing at all. Any contest of this shape
-   needs a declared adversary. Say so out loud when you read a paper that
-   reports a robustness number without one.
+1. **Random failure**, averaged over ten runs.
+2. **Degree**: remove the survivor with the most remaining edges.
+3. **Betweenness**: remove the survivor carrying the most shortest paths.
 
-## How to work
+Each attack gives an R-index. **Your score is the minimum of the three**, and
+the minimum is the whole design problem: a network that is superb against two
+attacks and dreadful against the third is dreadful. The notebook computes all
+three for you, so none of the 40 minutes goes on plumbing.
 
-Form a team of at most three people. Tasks A and B are individual, task C is the
-group. Decide who takes A and who takes B before anyone opens a laptop.
+For scale, $R = 0.5$ is the unreachable ceiling and a network that shatters on
+the first removal scores near 0.
 
-### Task A: paper, before you write a line of code
+**The rules.** Exactly $m$ edges on exactly $n$ nodes, connected, no self-loops,
+no repeated edges, or the size scores zero. No hard-coded edge lists. One call
+gets 60 seconds at $n = 500$.
 
-The lecture note wires these same 100 nodes and 200 edges three ways and reads
-off the random-failure threshold $f_c$ for each: 0.67 when every node has 4
-edges, 0.75 for random wiring, 0.92 for ten hubs of degree 22.
-
-1. Reproduce $\kappa$ and $f_c$ for the ten-hub row. Then invent a fourth degree
-   sequence on the same budget with a higher $f_c$ still. How far can you push
-   it, and what happens to the network as you do?
-2. Now let the attacker see the network. For your fourth sequence, delete its
-   hubs on paper and count the edges that leave with them. How many nodes have
-   to go before the rest is dust?
-3. Write down which of the four you would submit, and why, before you have a
-   single measured number. Keep the page. Task C asks whether you were right.
-
-### Task B: build the instrument, not the network
-
-1. A function that takes a network and a removal order and returns the profile
-   $y_1, \dots, y_{N-1}$ and the R-index. Removing nodes one at a time and
-   recomputing the components is perfectly fine at this size. If you want it
-   fast, add the nodes back in reverse order and merge them with a union-find.
-2. The three attacks of rule 3. Random failure has to be averaged, so report how
-   many runs you used and how much R moves between runs.
-3. Score the note's three wirings, plus one of your own, under all three
-   attacks. One table: a row per wiring, a column per attack.
-4. One sentence per wiring: does the ranking by R agree with the ranking by
-   $f_c$? Wherever it does not, say what $f_c$ was not being asked about.
-
-### Task C: the group, and the part that is actually graded
-
-1. Submit one network, and say in two sentences what you built it against.
-2. **Attack your own design.** Invent an attack that is not in rule 3,
-   implement it, and report what it does to your R. A team that reports a
-   weakness it found itself does better here than a team that reports none.
-3. Your score is the worst case over attacks. Name one concrete thing you would
-   build differently if the score were the average instead.
-4. Two networks can have nearly the same R and fail in completely different
-   ways. Build such a pair, plot both profiles on one axis, and say which one
-   you would rather operate. This question is about what R throws away.
-5. What is the highest R you believe is reachable with 100 nodes and 200 edges
-   against the adaptive degree attack? Give a number and an argument. An
-   argument with a hand-waving step is fine as long as you say which step it is.
-
-## What you hand in
-
-- `edges.csv`: two columns, one edge per line, node ids 0 to 99.
-- A short write-up, text and figures, with the Task B table, the Task C answers,
-  and the two profile plots. Any format except Word.
-- Task A's page. A photograph of the paper is fine.
-
-Submit one per team: <https://go.skojaku.com/m03mini>
-
-## How it is scored
+## The clock
 
 | | |
 |---|---|
-| The instrument (Task B) | Does your R-index reproduce known cases, and is the random attack averaged? |
-| The design | Scored against a fixed baseline, a random network in which every node has exactly 4 edges. Beat the baseline and the design marks are yours. |
-| The reasoning (Task C) | The largest share. Questions 2 and 4 carry the most. |
+| 0:00 to 0:05 | Rules, and each team writes down one prediction: which of the three attacks will decide your score? |
+| 0:05 to 0:45 | Build. This is the whole of your group work. |
+| 0:45 to 1:10 | Three minutes per team at the front. |
+| 1:10 to 1:30 | Discussion. |
 
-There are no extra points for beating another team. A contest whose prize goes
-to whoever ran the longest optimisation measures compute, not understanding.
+Inside the 40 minutes, do it in this order.
 
-## One warning before you start
+- **First 10 minutes.** Get *any* valid network scored at both sizes. A ring, a
+  random wiring, whatever you can type fastest. Write the six numbers down. You
+  now have a baseline and you cannot run out of time with nothing.
+- **Next 20 minutes.** Improve it, one change at a time, keeping the score of
+  every attempt. A change you cannot explain is not worth keeping even if the
+  number goes up.
+- **Last 10 minutes.** Try to break your own network, and get your three minutes
+  ready.
 
-The natural move is to tune your network against the adaptive degree attack
-until R stops climbing, and then stop. That is precisely how you produce a
-network that is excellent against the three attacks you were handed and ordinary
-against the fourth.
+## Your three minutes
 
-The R of your design under an attack you designed against is not evidence. The
-only evidence is what happens under an attack you did not.
+1. Your rule, in one sentence.
+2. Your six numbers: three attacks, two sizes.
+3. The weakness you found in your own design. A team that reports one does
+   better here than a team that reports none.
+
+## Then, as a room
+
+- Which attack decided your score? Was it the same one for everybody?
+- Did anyone's rule get worse going from $n = 100$ to $n = 500$? What broke?
+- The best score in the room: is it the degree sequence doing the work, or the
+  wiring? How would we tell?
+- Two teams with nearly the same R: are those networks alike? What does one
+  number for a whole curve throw away?
+- If a fourth attack were added tomorrow, whose design would you bet on, and why?
+
+## What you hand in
+
+`design.py` with your `build_network`, your table of six numbers, and one
+paragraph saying what the rule is and where it is weak. Any format except Word.
+
+Submit one per team: <https://go.skojaku.com/m03mini>
+
+## One warning
+
+The natural move is to tune against the degree attack until R stops climbing,
+and then stop. It is the cheapest of the three to think about and the easiest to
+defeat, and a network that defeats it can still be taken apart by the
+betweenness attack. Your score is the minimum, so the attack you did not think
+about is the only one that counts.

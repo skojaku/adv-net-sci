@@ -1,34 +1,18 @@
-"""Build a network that survives an attack it was not designed against.
+"""Build a network that holds up under all three attacks.
 
 Reference implementation for the M03 group mini-project
 (see ``mini-project.md`` next to this folder).
 
-Given a node count ``n`` and an edge budget ``m``, :func:`design_network`
-returns a simple connected graph on exactly those resources whose R-index is
-as high as we can push it against a *set* of attacks rather than against one.
-The method is the edge-swap hill climb of Schneider et al. (2011, PNAS
-108:3838): start from a randomised near-regular graph, propose a
-degree-preserving double edge swap, keep it only if the objective improves.
-The objective is the worst R-index over the whole attack ensemble rather than
-the average, because the attack that grades a submission is not disclosed. The
-average is kept only as a tie-break, to give the climb somewhere to go on the
-flat stretches where one swap leaves the worst attack exactly where it was.
+The mini-project asks each team for a rule, ``build_network(n, m)``, which is
+run at n = 100 and n = 500 with m = 2n. Every network is then attacked three
+times, each attack sequential: rank the survivors, remove the top one,
+recompute, repeat. The attacks are random failure (averaged), degree, and
+betweenness, and a network scores the *minimum* of the three R-indices.
 
-Everything is standard library only. At n = 100, m = 200 a design run takes
-two or three minutes, or ten seconds with --fast.
-
-Worst case over the five attacks below, measured here on n = 100, m = 200:
-
-    ten hubs of degree 22             0.08
-    preferential attachment            0.10
-    Erdos-Renyi                        0.19
-    ring plus random chords            0.25
-    random 4-regular                   0.26
-    this designer, from the 4-regular  0.28
-
-Note how little the hill climb adds once the starting point is near-regular,
-and how much the choice of starting point is worth. Most of the robustness on
-this budget is bought by the degree sequence, not by the wiring.
+:func:`design_network` is the reference answer. It starts from a randomised
+near-regular graph and hill-climbs with degree-preserving double edge swaps,
+keeping a swap only when it raises the minimum, which is the method of
+Schneider et al. (2011, PNAS 108:3838).
 
 Definitions follow the lecture note. After k nodes have been removed,
 connectivity is
@@ -46,18 +30,46 @@ Command line
 ------------
     python robust_design.py design --nodes 100 --edges 200 --out edges.csv
     python robust_design.py score  --edges edges.csv
+    python robust_design.py grade  --module a_team/design.py
     python robust_design.py selftest
+
+Everything is standard library only, which is what makes the betweenness
+attack the expensive part: 0.16 s per run at n = 100 and 20 s at n = 500,
+against milliseconds for the other two. Scoring one submission at both sizes
+therefore takes under a minute, but a hill climb that includes betweenness in
+its objective is only affordable below n = 150 (see BETWEENNESS_IN_LOOP_UP_TO).
+
+Scores measured here, m = 2n, score being the minimum of the three attacks:
+
+                                     n = 100   n = 500
+    ten hubs                            0.06      0.06
+    preferential attachment             0.13      0.09
+    Erdos-Renyi                         0.19      0.18
+    circulant ring, offsets 1 and 2     0.10      0.03
+    random 4-regular                    0.26      0.26
+    this designer                       0.28      0.26
+
+Two things to read off it. Almost all of the score is bought by the degree
+sequence: anything with hubs is finished, and a random regular graph is already
+within a few percent of the best we can do. And the hill climb only pays where
+the betweenness attack is inside its objective, which at n = 500 it cannot
+afford to be within the 60 seconds a call is allowed, so at that size what
+comes out is within noise of its own starting point.
+The betweenness attack is the one that binds in every row.
 
 NOTE FOR THE INSTRUCTOR: this file is a worked solution and it lives in a
 public repository. Move it out of the student-facing tree before the session
-if the mini-project is meant to be a blind design contest.
+if the teams are meant to arrive without one.
 """
 
 from __future__ import annotations
 
 import argparse
+import heapq
+import importlib.util
 import random
 import sys
+import time
 from typing import Callable, Dict, Iterable, List, Sequence, Set, Tuple
 
 Edge = Tuple[int, int]
@@ -208,15 +220,31 @@ def _adaptive(adj: Adjacency, rng: random.Random, score: Callable[[Adjacency, Li
 
 
 def attack_degree_adaptive(adj: Adjacency, rng: random.Random) -> List[int]:
-    """Hubs first, with the degrees recomputed after every removal."""
+    """Hubs first, with every degree recomputed after every removal.
 
-    def degrees(adj: Adjacency, alive: List[bool]) -> List[float]:
-        return [
-            float(sum(1 for w in adj[v] if alive[w])) if alive[v] else 0.0
-            for v in range(len(adj))
-        ]
+    A lazy heap rather than a rescan of all n nodes per step: at n = 500 the
+    rescan costs about a tenth of a second per attack, which is the difference
+    between a design run of minutes and one of hours.
+    """
+    n = len(adj)
+    degree = [len(adj[v]) for v in range(n)]
+    tie = [rng.random() for _ in range(n)]  # tie-break, drawn once per run
+    alive = [True] * n
+    heap = [(-degree[v], tie[v], v) for v in range(n)]
+    heapq.heapify(heap)
 
-    return _adaptive(adj, rng, degrees)
+    order: List[int] = []
+    while len(order) < n:
+        neg_degree, _, v = heapq.heappop(heap)
+        if not alive[v] or -neg_degree != degree[v]:
+            continue  # a stale entry, superseded by a later push
+        alive[v] = False
+        order.append(v)
+        for w in adj[v]:
+            if alive[w]:
+                degree[w] -= 1
+                heapq.heappush(heap, (-degree[w], tie[w], w))
+    return order
 
 
 def _betweenness(adj: Adjacency, alive: Sequence[bool]) -> List[float]:
@@ -291,31 +319,38 @@ ATTACKS: Dict[str, Callable[[Adjacency, random.Random], List[int]]] = {
     "greedy_lcc": attack_greedy_lcc,
 }
 
-# Ordered cheapest attack first. The hill climb walks the list and stops at
-# the first attack that already sinks the proposal, so the dear ones are only
-# paid for by the proposals that survived the cheap ones.
-FULL_ENSEMBLE = (
-    "random",
-    "degree_static",
-    "degree_adaptive",
-    "greedy_lcc",
-    "betweenness_adaptive",
-)
-# Dropping the betweenness attack makes a design run about fifteen times
-# faster and the result measurably worse: on n = 100, m = 200 over two seeds,
-# climbing without it reached a blind worst case of 0.260 and 0.261, and
-# climbing with it reached 0.280. Optimising against four attacks does not
-# protect you from the fifth, which is the whole point of the mini-project.
-FAST_ENSEMBLE = ("random", "degree_static", "degree_adaptive", "greedy_lcc")
+# The three attacks a submission is graded on. Each runs sequentially: remove
+# the top-ranked survivor, recompute the ranking on what is left, repeat. The
+# score is the *minimum* of the three R-indices, so a network has to hold up
+# under all three at once.
+GRADED_ATTACKS = ("random", "degree_adaptive", "betweenness_adaptive")
+
+# What the hill climb optimises against, cheapest attack first so that a
+# proposal already sunk by a cheap attack never pays for a dear one. The
+# betweenness attack is the dear one: about 1.3 s per evaluation at n = 200
+# and 20 s at n = 500, against a millisecond for the other two. Below the
+# cut-off it is worth it (at n = 100 it lifted the final score from 0.26 to
+# 0.28), above it the climb would take hours, so it is scored only at the end.
+BETWEENNESS_IN_LOOP_UP_TO = 150
+
+
+def loop_ensemble(n: int) -> Tuple[str, ...]:
+    if n <= BETWEENNESS_IN_LOOP_UP_TO:
+        return ("random", "degree_adaptive", "betweenness_adaptive")
+    return ("random", "degree_adaptive")
 
 
 def score_network(
     adj: Adjacency,
-    attacks: Sequence[str] = tuple(ATTACKS),
-    random_repeats: int = 20,
+    attacks: Sequence[str] = GRADED_ATTACKS,
+    random_repeats: int = 10,
     seed: int = 0,
 ) -> Dict[str, float]:
-    """R-index under each named attack. Random failure is averaged."""
+    """R-index under each attack, plus ``score``, the minimum of them.
+
+    Random failure is averaged over ``random_repeats`` orders. The other two
+    are deterministic up to tie-breaks, so they are run once.
+    """
     out: Dict[str, float] = {}
     for name in attacks:
         attack = ATTACKS[name]
@@ -325,7 +360,7 @@ def score_network(
             rng = random.Random(f"{seed}:{name}:{rep}")
             total += r_index(adj, attack(adj, rng))
         out[name] = total / repeats
-    out["worst_case"] = min(v for k, v in out.items() if k != "worst_case")
+    out["score"] = min(out.values())
     return out
 
 
@@ -450,18 +485,26 @@ def design_network(
     n: int,
     m: int,
     iterations: int = 600,
-    attacks: Sequence[str] = FULL_ENSEMBLE,
+    attacks: Sequence[str] | None = None,
     seed: int = 0,
     verbose: bool = False,
+    budget_seconds: float = 55.0,
 ) -> List[Edge]:
     """Return the edges of a connected simple graph on n nodes and m edges,
-    hill-climbed so that its worst-case R-index over ``attacks`` is high.
+    hill-climbed so that the minimum of its R-indices over ``attacks`` is high.
 
-    Two things do the work. The near-regular starting point removes the hubs
-    a degree attack feeds on, and the swaps then buy the rest: they pull the
-    graph towards the layered "onion" that Schneider et al. found, in which a
+    ``attacks`` defaults to :func:`loop_ensemble` for this n. The climb stops
+    at ``iterations`` proposals or ``budget_seconds`` of wall clock, whichever
+    comes first, because the mini-project gives one call 60 seconds and a
+    reference answer that breaks its own rule is not a reference answer.
+
+    Two things do the work, and they are worth very different amounts. The
+    near-regular starting point denies the degree attack the hubs it feeds on,
+    and that is most of the score. The swaps then buy a few more percent: they
+    pull the graph towards the layered "onion" of Schneider et al., in which a
     node's neighbours have degrees close to its own.
     """
+    attacks = tuple(attacks) if attacks is not None else loop_ensemble(n)
     rng = random.Random(seed)
     adj = adjacency(n, circulant(n, m))
     randomize(adj, steps=10 * m, rng=rng)
@@ -470,10 +513,16 @@ def design_network(
 
     best = _objective(adj, attacks, seed, floor=float("-inf"))
     if verbose:
-        print(f"start:  worst-case R = {best[0]:.4f}", file=sys.stderr)
+        print(f"start:  score = {best[0]:.4f} (against {', '.join(attacks)})", file=sys.stderr)
 
     accepted = 0
+    started = time.time()
+    report_every = max(1, iterations // 4)
     for step in range(iterations):
+        if time.time() - started > budget_seconds:
+            if verbose:
+                print(f"stopped at step {step} on the time budget", file=sys.stderr)
+            break
         edges = edge_list(adj)
         a, b = _random_edge(edges, rng)
         c, d = _random_edge(edges, rng)
@@ -486,13 +535,19 @@ def design_network(
         else:
             restored = _swap(adj, a, c, b, d)  # put the two edges back
             assert restored, "failed to undo a swap"
-        if verbose and (step + 1) % 250 == 0:
+        if verbose and (step + 1) % report_every == 0:
             print(
-                f"step {step + 1:5d}: worst-case R = {best[0]:.4f} "
+                f"step {step + 1:5d}: score = {best[0]:.4f} "
                 f"(mean {best[1]:.4f}, {accepted} swaps kept)",
                 file=sys.stderr,
             )
     return edge_list(adj)
+
+
+def build_network(n: int, m: int) -> List[Edge]:
+    """The interface a submission has to provide: nodes and an edge budget in,
+    an edge list out. This one is the reference answer."""
+    return design_network(n, m)
 
 
 # ---------------------------------------------------------------------------
@@ -591,6 +646,13 @@ def selftest() -> None:
     assert validate(n, edges, expect_nodes=n, expect_edges=40) == []
     assert validate(n, edges + [edges[0]], expect_edges=40) != []
 
+    scores = score_network(adjacency(n, edges), seed=0)
+    assert set(scores) == set(GRADED_ATTACKS) | {"score"}
+    assert scores["score"] == min(scores[name] for name in GRADED_ATTACKS)
+
+    built = build_network(30, 60)  # the interface a submission must provide
+    assert validate(30, built, expect_nodes=30, expect_edges=60) == []
+
     print("selftest: all checks passed")
 
 
@@ -599,12 +661,50 @@ def selftest() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _report(adj: Adjacency, seed: int) -> None:
-    scores = score_network(adj, seed=seed)
+def _report(adj: Adjacency, seed: int, extra: Sequence[str] = ()) -> Dict[str, float]:
+    scores = score_network(adj, attacks=tuple(GRADED_ATTACKS) + tuple(extra), seed=seed)
     width = max(len(k) for k in scores)
     for name, value in scores.items():
-        marker = "  <- this is what a blind contest grades" if name == "worst_case" else ""
+        marker = "  <- the minimum of the three, which is the score" if name == "score" else ""
         print(f"  {name:<{width}}  R = {value:.4f}{marker}")
+    return scores
+
+
+def _load_builder(path: str) -> Callable[[int, int], List[Edge]]:
+    """Import ``build_network`` from a submitted file."""
+    spec = importlib.util.spec_from_file_location("submission", path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"cannot import {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    builder = getattr(module, "build_network", None)
+    if builder is None:
+        raise ValueError(f"{path} defines no build_network(n, m)")
+    return builder
+
+
+def grade(builder: Callable[[int, int], List[Edge]], sizes: Sequence[int], ratio: int, seed: int) -> float:
+    """Run a builder over the contest sizes. Returns the mean of the per-size
+    scores, and prints one line per size. An invalid network scores zero."""
+    total = 0.0
+    for n in sizes:
+        m = ratio * n
+        started = time.time()
+        edges = [undirected(int(u), int(v)) for u, v in builder(n, m)]
+        problems = validate(n, edges, expect_nodes=n, expect_edges=m)
+        if problems:
+            print(f"n = {n:4d}  m = {m:5d}  rejected: {'; '.join(problems)}")
+            continue
+        scores = score_network(adjacency(n, edges), seed=seed)
+        total += scores["score"]
+        print(
+            f"n = {n:4d}  m = {m:5d}  "
+            + "  ".join(f"{name}={scores[name]:.4f}" for name in GRADED_ATTACKS)
+            + f"  score={scores['score']:.4f}  ({time.time() - started:.0f}s)"
+        )
+    mean = total / len(sizes)
+    print(f"mean score over {len(sizes)} sizes: {mean:.4f}")
+    return mean
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -619,8 +719,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     build.add_argument(
         "--fast",
         action="store_true",
-        help="leave the betweenness attack out of the climb: much quicker, "
-        "and the network that comes out is measurably easier to break",
+        help="leave the betweenness attack out of the climb whatever the size: "
+        "much quicker, and the network that comes out is easier to break",
     )
     build.add_argument("--out", default="edges.csv")
     build.add_argument("--quiet", action="store_true")
@@ -630,6 +730,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     check.add_argument("--seed", type=int, default=0)
     check.add_argument("--expect-nodes", type=int, default=None)
     check.add_argument("--expect-edges", type=int, default=None)
+
+    run = sub.add_parser("grade", help="run a submitted build_network(n, m) over the contest sizes")
+    run.add_argument("--module", required=True, help="path to a file defining build_network(n, m)")
+    run.add_argument("--sizes", default="100,500")
+    run.add_argument("--ratio", type=int, default=2, help="edges per node, so m = ratio * n")
+    run.add_argument("--seed", type=int, default=0)
 
     sub.add_parser("selftest", help="check the R-index code against known cases")
 
@@ -644,13 +750,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.nodes,
             args.edges,
             iterations=args.iterations,
-            attacks=FAST_ENSEMBLE if args.fast else FULL_ENSEMBLE,
+            attacks=("random", "degree_adaptive") if args.fast else None,
             seed=args.seed,
             verbose=not args.quiet,
         )
         write_edges(args.out, edges)
         print(f"{args.nodes} nodes, {len(edges)} edges written to {args.out}")
         _report(adjacency(args.nodes, edges), args.seed)
+        return 0
+
+    if args.command == "grade":
+        sizes = [int(part) for part in args.sizes.split(",")]
+        grade(_load_builder(args.module), sizes, args.ratio, args.seed)
         return 0
 
     n, edges = read_edges(args.edges)
