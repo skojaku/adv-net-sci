@@ -558,16 +558,12 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ A1. What your algorithm does, in English
+    ### ✍️ A1. Your vaccination algorithm, in English
 
-    Write it so that somebody who has never seen your code could carry it out
-    with a pencil. Name the quantity you compute for each person, say how you
-    break ties, and say whether you recompute anything after removing
-    somebody. Four to ten sentences.
+    Write it so somebody who has never seen your code could carry it out with
+    a pencil. Four to ten sentences.
 
-    **This cell is the one that is graded.** The next cell is allowed to be
-    written by your coding agent from what you put here, and if the agent
-    builds the wrong thing, that is evidence about this cell.
+    **This cell is what is graded.** Your coding agent writes A2 from it.
     """)
     return
 
@@ -587,12 +583,7 @@ def _(PLAN_A):
     if PLAN_A.strip().strip(".") == "":
         _out = waiting("A1")
     elif _words < 40:
-        _out = note(
-            f"{_words} words. That is shorter than any algorithm worth "
-            f"describing. An agent reading it will guess, and you will be "
-            f"graded on the guess.",
-            RUST,
-        )
+        _out = note(f"{_words} words. Too short to hand to anybody.", RUST)
     else:
         _out = mo.vstack(
             [note(f"{_words} words.", GREEN), mo.md(PLAN_A)]
@@ -604,20 +595,16 @@ def _(PLAN_A):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ A2. The same thing, as code
+    ### ✍️ A2. The same algorithm, as code
 
     ```python
     def choose_vaccination(g, budget):
         ...
     ```
 
-    `g` is an `igraph.Graph`. It is a private copy, so you may delete vertices
-    from it, and `g.degree()`, `g.betweenness()`, `g.connected_components()`
-    and the rest of `igraph` are all yours. Return **at most `budget` vertex
-    ids** as a list of whole numbers. Repeats, ids out of range and anything
-    over budget are dropped, and the notebook says so.
-
-    You get 20 seconds per town. No `networkx`.
+    `g` is an `igraph.Graph`, a private copy you may destroy. Return at most
+    `budget` vertex ids as a list of `int`. `igraph` and `numpy` only, 20
+    seconds per network.
     """)
     return
 
@@ -653,29 +640,17 @@ def _(choose_vaccination):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The **benchmark** is one line of code and it is not told to you. Landing on
-    it exactly means you thought of the same thing. Getting under it means you
-    thought of something better, and the per-town table is where you find out
-    which town you beat it on.
-
     ---
 
     ## Task B. The outbreak is already running
 
-    Nobody vaccinated anybody. The disease has been spreading unnoticed and by
-    the time it is found **10% of the town has it**. Now you get one day of
-    contact tracing and enough isolation beds for 5% of the town.
+    Nobody was vaccinated. The outbreak is found once **10% of the town is
+    infected**, and you get isolation beds for 5%.
 
-    **What you are given is not the network.** It is what a health department
-    actually holds after a day on the phone:
-
-    - every known **case**,
-    - every person a case named as a contact,
-    - every link that **touches a case**.
-
-    Two contacts who know each other but were never asked about each other are
-    not connected in your copy. Neither is anybody standing two steps beyond
-    the cases. You are looking at the outbreak through a keyhole.
+    **You do not see the network.** You see every known **case**, every person
+    a case named as a contact, and every link that **touches a case**. Two
+    contacts who were never asked about each other are not connected in your
+    copy.
     """)
     return
 
@@ -705,18 +680,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    > **Thirty seconds, with your team.** You have half as many beds as you
-    > have cases. Do you spend them on the sick, or on the healthy people
-    > standing next to the sick? Take a position now, before the scoreboard
-    > tells you.
+    ### ✍️ B1. Your quarantine algorithm, in English
 
-    ### ✍️ B1. What your algorithm does, in English
+    Same as A1, for the traced graph. Four to ten sentences.
 
-    Same deal as A1. What do you compute for each person in the traced graph,
-    how do you rank them, and what do you do when the beds run out. Say
-    explicitly which of the two groups above you spend beds on, and why.
-
-    Four to ten sentences, and again **this is the cell that is graded**.
+    **This cell is what is graded.** Your coding agent writes B2 from it.
     """)
     return
 
@@ -736,10 +704,7 @@ def _(PLAN_B):
     if PLAN_B.strip().strip(".") == "":
         _out = waiting("B1")
     elif _words < 40:
-        _out = note(
-            f"{_words} words. Too short to hand to anybody, agent or human.",
-            RUST,
-        )
+        _out = note(f"{_words} words. Too short to hand to anybody.", RUST)
     else:
         _out = mo.vstack([note(f"{_words} words.", GREEN), mo.md(PLAN_B)])
     _out
@@ -749,27 +714,20 @@ def _(PLAN_B):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ B2. The same thing, as code
+    ### ✍️ B2. The same algorithm, as code
 
     ```python
     def choose_quarantine(known, budget):
         ...
     ```
 
-    `known` is an `igraph.Graph` on the traced people only, and it carries one
-    vertex attribute:
+    `known` is an `igraph.Graph` on the traced people, carrying one vertex
+    attribute, `known.vs["case"]`, which is `True` for a case and `False` for
+    a contact. Return at most `budget` vertex ids **of `known`**, not of the
+    real network.
 
-    ```python
-    known.vs["case"]   # True if this person is a known case, False if a contact
-    ```
-
-    Return **at most `budget` vertex ids of `known`**, not of the real
-    network. You never see the real network and you never see its ids. A
-    quarantined person stops infecting and stops being infected from the
-    moment you name them.
-
-    Quarantining somebody who is already a case is allowed and is often the
-    right call. So is spending a bed on somebody perfectly healthy.
+    A quarantined person stops infecting and stops being infected. Cases and
+    healthy contacts are both allowed.
     """)
     return
 
@@ -812,26 +770,12 @@ def _():
     mo.md(r"""
     ---
 
-    ## What to hand in
+    ## Submit
 
-    One submission per team, at **<https://go.skojaku.com/m03mini>**.
-
-    The form asks for your Binghamton email addresses, your two scores, the
-    text of A1 and B1, and the notebook file itself. Save the notebook before
-    you upload it, because marimo writes your cells straight back into this
-    `.py`.
-
-    **The two English cells are worth more than the two scores.** A team that
-    describes a strategy precisely, implements it, and finds it loses to the
-    benchmark has done the assignment. A team with a good score and a vague
-    paragraph has not.
-
-    ### One last question, and it is the one worth arguing about
-
-    Task A knows everything and spends 10%. Task B knows almost nothing and
-    spends 5%, but it also knows **where the disease actually is**. Which of
-    those two advantages bought you more, and does your answer change from one
-    town to the next? Put two or three sentences in the form.
+    One submission per team, at **<https://go.skojaku.com/m03mini>**. The form
+    asks for your Binghamton email addresses, your two scores, the text of A1
+    and B1, and this notebook file. Save the notebook first, because marimo
+    writes your cells back into this `.py`.
     """)
     return
 
@@ -843,45 +787,22 @@ def _():
 
     ## For your coding agent
 
-    Paste everything below into your agent, in this repository, with this file
-    open.
-
-    > You are helping a student team on a network science assignment. The file
-    > is a marimo notebook, `mini-project.py`.
+    > You are helping a student team on a marimo notebook, `mini-project.py`.
     >
-    > **What you may edit.** Only the two cells marked `# ✍️ A2` and
-    > `# ✍️ B2`. Nothing else. The setup cell at the top of the file is the
-    > grading harness, and editing it invalidates the submission. Do not edit
-    > `PLAN_A` or `PLAN_B` either. Those are the students' own words and they
-    > are the graded part.
+    > Edit **only** the cells marked `# ✍️ A2` and `# ✍️ B2`. Do not touch the
+    > setup cell, `PLAN_A` or `PLAN_B`.
     >
-    > **What to build.** Read `PLAN_A` and implement exactly that as
-    > `choose_vaccination(g, budget)`. Read `PLAN_B` and implement exactly
-    > that as `choose_quarantine(known, budget)`. Implement what is written,
-    > not what you would have written. If you can think of something better,
-    > say so to the students and let them decide whether to change their plan,
-    > and if they do, they rewrite the plan cell themselves before you touch
-    > the code.
+    > Implement `PLAN_A` as `choose_vaccination(g, budget)` and `PLAN_B` as
+    > `choose_quarantine(known, budget)`. Implement what is written, not what
+    > you would have written. If a plan is ambiguous, stop and ask the
+    > students rather than guessing.
     >
-    > **If the plan is ambiguous, stop and ask.** Do not guess a tie-break, do
-    > not guess whether a score is recomputed after each removal, and do not
-    > silently add a step the plan does not mention. An ambiguity you resolve
-    > by yourself is the exact information the assignment is trying to get out
-    > of the students.
+    > `igraph` and `numpy` only. Return a list of `int`, at most `budget` of
+    > them, indexing `known` in B2. Do not read anything from the setup cell
+    > inside the two functions and do not special-case a network.
     >
-    > **Rules the code has to keep.** `igraph` and `numpy` only, no
-    > `networkx`. Return a list of `int`. At most `budget` of them. For
-    > `choose_quarantine` the ids index `known`, not the real network, and the
-    > only attribute that exists is `known.vs["case"]`. Under 20 seconds per
-    > network. Do not read `NETWORKS`, `ADJACENCY`, `TOWNS` or anything else
-    > from the setup cell inside the two functions, and do not special-case a
-    > network by its size or its name. The function has to work on a network
-    > it has never seen.
-    >
-    > **Then run it and report back.** Say what each task scored, which of the
-    > five networks it did worst on, and whether that matches what the plan
-    > predicted. If the score is worse than the benchmark, say so plainly
-    > rather than tuning the code until it is not.
+    > Then run it and report both scores. If a plan loses to the benchmark,
+    > say so rather than tuning the code until it does not.
     """)
     return
 
