@@ -1,6 +1,8 @@
 """Spend a fixed number of vaccines on a network, and see who is left exposed.
 
-Companion to ``robust_design.py``, and the same problem read backwards. The
+Reference implementation for the M03 group mini-project (see
+``mini-project.md`` one directory up), and the same problem as
+``robust_design.py`` read backwards. The
 attacker removes nodes to shatter a network; the public health officer removes
 nodes, by making them immune, to shatter the network the disease travels on.
 One picks removals to make the R-index small, the other picks removals to make
@@ -34,31 +36,33 @@ The interface a submission provides
 What the plans are worth
 ------------------------
 Expected outbreak, as a fraction of the population, on n = 500 people with
-1000 contacts and 150 vaccines (30 per cent of them). Lower is better, and
-1.00 is what happens if nobody is vaccinated.
+1000 contacts and 100 vaccines, which is the mini-project's own setting. Lower
+is better, and 1.00 is what happens if nobody is vaccinated.
 
     plan                        even contacts   random contacts   hub-heavy
-    vaccinate at random                  0.48              0.43        0.43
+    vaccinate at random                 0.638             0.583       0.606
     a random contact of a
-      random person                      0.48              0.35        0.04
-    most contacts, ranked once           0.48              0.12       0.002
-    most contacts, recomputed            0.44             0.014       0.002
+      random person                     0.637             0.533       0.274
+    most contacts, ranked once          0.637             0.487       0.006
+    most contacts, recomputed           0.624             0.411       0.005
+    smallest outbreak left behind       0.596             0.339       0.004
     most shortest paths,
-      recomputed                         0.17             0.007       0.002
-    smallest outbreak left behind        0.33              0.12       0.002
+      recomputed                        0.471             0.262       0.004
 
 Three things worth saying out loud to a class. Vaccinating at random is
 hopeless everywhere, and it is what you get if you simply open a clinic.
 Knowing who the hubs are is worth almost everything in the hub-heavy
 population and almost nothing in the even one, which is the robust-yet-fragile
 paradox arriving from the other side. And the acquaintance rule, which asks
-nobody to know the network at all, recovers most of that advantage where it
-matters: 0.04 against 0.43 for random, a tenth of the outbreak, from a rule you
-could run with a clipboard.
+nobody to know the network at all, recovers a good part of that advantage
+where it matters: 0.27 against 0.61, from a rule you could run with a
+clipboard.
 
-At a tighter budget the gaps widen rather than close. With 50 vaccines instead
-of 150, the hub-heavy population goes 0.80 under random vaccination, 0.36 by
-degree, 0.11 by betweenness.
+The budget decides which of those lessons the numbers will teach. At 50
+vaccines only the hub-heavy column moves at all (0.80 at random, 0.36 by
+degree, 0.11 by betweenness). At 150 the hub-heavy column is finished by every
+targeted rule alike, all of them at 0.002, and the interesting contrast has
+moved to the even one (0.48 at random against 0.17 by betweenness).
 
 No single rule wins everywhere: cutting bridges is worth most where contacts
 are spread evenly, chasing hubs is worth most where they are not. A rule that
@@ -598,7 +602,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     show = sub.add_parser("compare", help="every strategy on the example networks")
     show.add_argument("--nodes", type=int, default=500)
     show.add_argument("--edges", type=int, default=None, help="default is 2 * nodes")
-    show.add_argument("--budget", type=int, default=None, help="default is 10% of nodes")
+    show.add_argument("--budget", type=int, default=None, help="default is a fifth of the nodes")
     show.add_argument("--seed", type=int, default=0)
 
     run = sub.add_parser("grade", help="run a submitted vaccinate(edges, n, budget)")
@@ -631,7 +635,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     m = args.edges if args.edges is not None else 2 * args.nodes
-    budget = args.budget if args.budget is not None else max(1, args.nodes // 10)
+    budget = args.budget if args.budget is not None else max(1, args.nodes // 5)
 
     if args.command == "compare":
         compare(args.nodes, m, budget, args.seed)

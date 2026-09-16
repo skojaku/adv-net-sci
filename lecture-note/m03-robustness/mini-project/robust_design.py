@@ -1,15 +1,18 @@
-"""Build a network that holds up under all three attacks.
+"""Break a network, and build one that does not break easily.
 
-Reference implementation for the M03 group mini-project
-(see ``mini-project.md`` next to this folder).
+The attack side of M03, and the machinery the group mini-project runs on. The
+mini-project itself is the other half, in ``vaccination.py``: the same removals
+with the opposite intention. This file holds the R-index, the attacks, and the
+network generators, and ``vaccination.py`` imports all three.
 
-The mini-project asks each team for a rule, ``build_network(n, m)``, which is
-run at n = 100 and n = 500 with m = 2n. Every network is then attacked three
-times, each attack sequential: rank the survivors, remove the top one,
-recompute, repeat. The attacks are random failure (averaged), degree, and
-betweenness, and a network scores the *minimum* of the three R-indices.
+A network is attacked three times, each attack sequential: rank the survivors,
+remove the top one, recompute the ranking, repeat. The attacks are random
+failure (averaged), degree, and betweenness, and a network scores the *minimum*
+of the three R-indices, since a network that holds up under two of them and
+falls to the third has fallen.
 
-:func:`design_network` is the reference answer. It starts from a randomised
+:func:`design_network` answers the other direction: given n nodes and m edges,
+build the network that survives longest. It starts from a randomised
 near-regular graph and hill-climbs with degree-preserving double edge swaps,
 keeping a swap only when it raises the minimum, which is the method of
 Schneider et al. (2011, PNAS 108:3838).
