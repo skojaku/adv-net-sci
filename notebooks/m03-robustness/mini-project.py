@@ -426,32 +426,24 @@ def _():
     mo.md(r"""
     # Who gets the vaccine, and who gets the phone call?
 
-    **Module 3 Mini-Project.** Team size: up to 3. Time limit: 90 minutes.
+    Module 3 mini-project. Teams of up to 3. Ninety minutes.
 
-    An outbreak is threatening five towns, and your public health department
-    is critically low on resources.
+    Five towns. One disease. Not enough of anything.
 
-    You will make two strategic interventions:
+    - **Task A.** You see the whole network. No cases yet. Pick who gets the shot.
+    - **Task B.** The disease is already spreading. You see the cases and the
+      people they named. Pick who gets locked up.
 
-    - **Phase 1: Pre-Outbreak Allocation.** You have the complete network map,
-      but no active cases yet. Decide where to deploy preventative vaccines to
-      blunt transmission.
-    - **Phase 2: Active Contact Tracing.** The disease is actively spreading.
-      Armed only with a roster of positive cases and their self-reported
-      contacts, decide whom to call and isolate.
+    Four cells to fill.
 
-    ## Submission Requirements
+    | | | |
+    |---|---|---|
+    | **A1** | English | your vaccination plan |
+    | **A2** | Python | the same plan |
+    | **B1** | English | your isolation plan |
+    | **B2** | Python | the same plan |
 
-    Submit exactly four notebook cells:
-
-    - **A1 (Markdown / English):** Strategy and rationale for vaccine
-      allocation.
-    - **A2 (Python):** Implementation code for the vaccination strategy.
-    - **B1 (Markdown / English):** Strategy and rationale for contact tracing.
-    - **B2 (Python):** Implementation code for the tracing intervention.
-
-    **Grading focuses primarily on your written English explanations in A1 and
-    B1.**
+    The English cells are what is graded.
     """)
     return
 
@@ -459,23 +451,16 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Rules & Parameters
+    ## Rules
 
-    **Disease Dynamics (SI Model).** Individuals exist in one of two states:
-    Susceptible (S) or Infected (I). There is no recovery. Each day, an
-    infected node transmits the pathogen to each susceptible neighbor with
-    probability $\beta = 0.04$. Each simulation run initializes with three
-    randomly selected "patient zeroes."
-
-    **Evaluation Metric.** The final attack rate (proportion of the population
-    infected by the end of the simulation), averaged across 40 runs and across
-    all five town networks. **Lower is better.** Random seeds are strictly
-    fixed, so identical code produces deterministic results, and the number
-    you see here is the number we see when we read your submission.
-
-    **Integrity Constraint.** Do not alter any part of the test harness in the
-    hidden setup cell. Modifying the harness will invalidate your output and
-    disqualify your score.
+    - Two states. Susceptible, infected. Nobody recovers.
+    - Each day, each infected neighbour infects you with probability $\beta =
+      0.04$.
+    - Every run starts from three random people.
+    - Score: how much of the town is infected at the end. 40 runs, five towns,
+      averaged. **Lower is better.**
+    - Seeds are fixed. Same code, same number, every time.
+    - Do not touch the setup cell.
     """)
     return
 
@@ -485,12 +470,8 @@ def _():
     mo.md(r"""
     ### The five towns
 
-    Let the five towns be represented by graphs $G_1, \dots, G_5$.
-
-    None correspond to real places. Each reflects a distinct theoretical model
-    of social connectivity with its own graph topology. Because their network
-    properties differ significantly, a strategy optimized for one graph $G_i$
-    may perform poorly on another $G_j$.
+    $G_1, \dots, G_5$. None of them is real. Each one wires people up a different
+    way, so a plan that wins on one can lose on another.
     """)
     return
 
@@ -541,16 +522,15 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    **Doses** is 10% of the town and **beds** is 5%. In task B the outbreak is
-    found once 10% of the town already has it.
+    **Doses** are 10% of the town. **Beds** are 5%. In task B the outbreak is
+    found once 10% is infected.
 
     ---
 
-    ## Task A. The vaccine arrives before the disease does
+    ## Task A. Vaccine first, disease later
 
-    You have the whole network in front of you and enough doses for 10% of the
-    town. A vaccinated person cannot catch it and cannot pass it on, so for
-    the purposes of the epidemic they are simply gone.
+    You see the whole network. Doses for 10%. A vaccinated person cannot catch it
+    and cannot pass it on.
     """)
     return
 
@@ -558,12 +538,12 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ A1. Your vaccination algorithm, in English
+    ### ✍️ A1. Your vaccination plan, in English
 
-    Write it so somebody who has never seen your code could carry it out with
-    a pencil. Four to ten sentences.
+    Plain words. Somebody with a pencil should be able to follow it. Four to ten
+    sentences.
 
-    **This cell is what is graded.** Your coding agent writes A2 from it.
+    Graded. Your agent writes A2 from it.
     """)
     return
 
@@ -595,16 +575,16 @@ def _(PLAN_A):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ A2. The same algorithm, as code
+    ### ✍️ A2. The same plan, as code
 
     ```python
     def choose_vaccination(g, budget):
         ...
     ```
 
-    `g` is an `igraph.Graph`, a private copy you may destroy. Return at most
-    `budget` vertex ids as a list of `int`. `igraph` and `numpy` only, 20
-    seconds per network.
+    `g` is an `igraph.Graph`. Your own copy, break it if you like. Return at most
+    `budget` vertex ids, as `int`. `igraph` and `numpy` only. Twenty seconds per
+    town.
     """)
     return
 
@@ -642,15 +622,12 @@ def _():
     mo.md(r"""
     ---
 
-    ## Task B. The outbreak is already running
+    ## Task B. The disease is already running
 
-    Nobody was vaccinated. The outbreak is found once **10% of the town is
-    infected**, and you get isolation beds for 5%.
+    Nobody was vaccinated. Found once 10% is infected. Beds for 5%.
 
-    **You do not see the network.** You see every known **case**, every person
-    a case named as a contact, and every link that **touches a case**. Two
-    contacts who were never asked about each other are not connected in your
-    copy.
+    You do not see the network. You see every **case**, everyone a case **named**,
+    and every link **touching a case**. Nothing else.
     """)
     return
 
@@ -680,11 +657,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ B1. Your quarantine algorithm, in English
+    ### ✍️ B1. Your isolation plan, in English
 
-    Same as A1, for the traced graph. Four to ten sentences.
+    Same as A1. Four to ten sentences.
 
-    **This cell is what is graded.** Your coding agent writes B2 from it.
+    Graded. Your agent writes B2 from it.
     """)
     return
 
@@ -714,20 +691,16 @@ def _(PLAN_B):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ B2. The same algorithm, as code
+    ### ✍️ B2. The same plan, as code
 
     ```python
     def choose_quarantine(known, budget):
         ...
     ```
 
-    `known` is an `igraph.Graph` on the traced people, carrying one vertex
-    attribute, `known.vs["case"]`, which is `True` for a case and `False` for
-    a contact. Return at most `budget` vertex ids **of `known`**, not of the
-    real network.
-
-    A quarantined person stops infecting and stops being infected. Cases and
-    healthy contacts are both allowed.
+    `known` is an `igraph.Graph` of the traced people. `known.vs["case"]` is
+    `True` for a case and `False` for a contact. Return at most `budget` ids **of
+    `known`**. An isolated person stops infecting and stops catching.
     """)
     return
 
@@ -772,10 +745,9 @@ def _():
 
     ## Submit
 
-    One submission per team, at **<https://go.skojaku.com/m03mini>**. The form
-    asks for your Binghamton email addresses, your two scores, the text of A1
-    and B1, and this notebook file. Save the notebook first, because marimo
-    writes your cells back into this `.py`.
+    One per team: **<https://go.skojaku.com/m03mini>**
+
+    Your emails, both scores, A1, B1, and this file. Save the notebook first.
     """)
     return
 
@@ -787,22 +759,19 @@ def _():
 
     ## For your coding agent
 
-    > You are helping a student team on a marimo notebook, `mini-project.py`.
+    > A marimo notebook, `mini-project.py`.
     >
-    > Edit **only** the cells marked `# ✍️ A2` and `# ✍️ B2`. Do not touch the
-    > setup cell, `PLAN_A` or `PLAN_B`.
-    >
-    > Implement `PLAN_A` as `choose_vaccination(g, budget)` and `PLAN_B` as
-    > `choose_quarantine(known, budget)`. Implement what is written, not what
-    > you would have written. If a plan is ambiguous, stop and ask the
-    > students rather than guessing.
-    >
-    > `igraph` and `numpy` only. Return a list of `int`, at most `budget` of
-    > them, indexing `known` in B2. Do not read anything from the setup cell
-    > inside the two functions and do not special-case a network.
-    >
-    > Then run it and report both scores. If a plan loses to the benchmark,
-    > say so rather than tuning the code until it does not.
+    > - Edit `# ✍️ A2` and `# ✍️ B2`. Nothing else. Not `PLAN_A`, not `PLAN_B`,
+    >   not the setup cell.
+    > - Build `PLAN_A` as `choose_vaccination(g, budget)`. Build `PLAN_B` as
+    >   `choose_quarantine(known, budget)`.
+    > - Build what is written, not what you would have written.
+    > - Plan unclear? Stop. Ask the students.
+    > - `igraph` and `numpy` only. Return `list[int]`, at most `budget`. In B2 the
+    >   ids index `known`.
+    > - Do not read the setup cell inside the functions. Do not special-case a
+    >   town.
+    > - Run it. Report both scores. If a plan loses to the benchmark, say so.
     """)
     return
 
