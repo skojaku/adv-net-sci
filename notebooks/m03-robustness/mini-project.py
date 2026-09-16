@@ -477,9 +477,12 @@ def _():
     mo.md(r"""
     ### The five towns
 
-    None of them is a real place. Each one is a different theory of how people
-    know each other, and a strategy that wins on one can lose badly on
-    another.
+    Let the five towns be represented by graphs $G_1, \dots, G_5$.
+
+    None correspond to real places. Each reflects a distinct theoretical model
+    of social connectivity with its own graph topology. Because their network
+    properties differ significantly, a strategy optimized for one graph $G_i$
+    may perform poorly on another $G_j$.
     """)
     return
 
