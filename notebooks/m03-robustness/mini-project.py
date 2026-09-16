@@ -451,21 +451,23 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## The rules
+    ## Rules & Parameters
 
-    **The disease.** SI. Everybody is either susceptible or infected, nobody
-    recovers, and on each day an infected person infects each susceptible
-    neighbour with probability `BETA = 0.04`. Every outbreak starts from three
-    people picked at random.
+    **Disease Dynamics (SI Model).** Individuals exist in one of two states:
+    Susceptible (S) or Infected (I). There is no recovery. Each day, an
+    infected node transmits the pathogen to each susceptible neighbor with
+    probability $\beta = 0.04$. Each simulation run initializes with three
+    randomly selected "patient zeroes."
 
-    **The score.** The share of the town that has been infected when the clock
-    stops, averaged over 40 outbreaks, averaged over the five networks.
-    **Lower is better.** The seeds are fixed, so the same code always gives the
-    same number, and the number you see is the number we see.
+    **Evaluation Metric.** The final attack rate (proportion of the population
+    infected by the end of the simulation), averaged across 40 runs and across
+    all five town networks. **Lower is better.** Random seeds are strictly
+    fixed, so identical code produces deterministic results, and the number
+    you see here is the number we see when we read your submission.
 
-    **Not a single line of the harness is yours to change.** It is in the
-    hidden setup cell at the top. Changing it changes your score and nothing
-    else.
+    **Integrity Constraint.** Do not alter any part of the test harness in the
+    hidden setup cell. Modifying the harness will invalidate your output and
+    disqualify your score.
     """)
     return
 
