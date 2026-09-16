@@ -541,11 +541,8 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Look at the two rightmost columns before you write anything. **Doses** is
-    10% of the town and **beds** is 5%. In task B the outbreak is found when
-    10% of the town already has it, so there are always about twice as many
-    cases as beds. You cannot isolate everybody who is sick. That is the
-    problem.
+    **Doses** is 10% of the town and **beds** is 5%. In task B the outbreak is
+    found once 10% of the town already has it.
 
     ---
 
@@ -554,11 +551,6 @@ def _():
     You have the whole network in front of you and enough doses for 10% of the
     town. A vaccinated person cannot catch it and cannot pass it on, so for
     the purposes of the epidemic they are simply gone.
-
-    > **Thirty seconds, with your team, before you write anything.** Your
-    > first instinct is almost certainly "the most connected people". Name one
-    > of the five towns above where that instinct will do close to nothing,
-    > and say why.
     """)
     return
 
