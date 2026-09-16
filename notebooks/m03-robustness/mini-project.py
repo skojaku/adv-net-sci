@@ -418,18 +418,32 @@ def _():
     mo.md(r"""
     # Who gets the vaccine, and who gets the phone call?
 
-    **Module 3 mini project.** Teams of up to three. Ninety minutes.
+    **Module 3 Mini-Project.** Team size: up to 3. Time limit: 90 minutes.
 
-    A disease is loose in five towns. You are the health department, and you
-    are short of everything.
+    An outbreak is threatening five towns, and your public health department
+    is critically low on resources.
 
-    Twice you have to decide who to protect. The first time you have the whole
-    map and no outbreak yet. The second time the outbreak is already running,
-    and all you have is a list of cases and the phone numbers they gave you.
+    You will make two strategic interventions:
 
-    **What you hand in is four cells.** Two of them are written in English,
-    two of them are Python. The English ones come first, and they are what is
-    graded.
+    - **Phase 1: Pre-Outbreak Allocation.** You have the complete network map,
+      but no active cases yet. Decide where to deploy preventative vaccines to
+      blunt transmission.
+    - **Phase 2: Active Contact Tracing.** The disease is actively spreading.
+      Armed only with a roster of positive cases and their self-reported
+      contacts, decide whom to call and isolate.
+
+    ## Submission Requirements
+
+    Submit exactly four notebook cells:
+
+    - **A1 (Markdown / English):** Strategy and rationale for vaccine
+      allocation.
+    - **A2 (Python):** Implementation code for the vaccination strategy.
+    - **B1 (Markdown / English):** Strategy and rationale for contact tracing.
+    - **B2 (Python):** Implementation code for the tracing intervention.
+
+    **Grading focuses primarily on your written English explanations in A1 and
+    B1.**
     """)
     return
 
