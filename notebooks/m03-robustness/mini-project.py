@@ -487,17 +487,47 @@ def _():
     - The seed is fixed. It is the same code, the same numbers every time.
     - Do not modify the setup cell.
 
-    ## Feel free to use AI for coding but don't let it generate ideas.
+    ## Use AI for the code, not for the idea
 
-    You can use `pi` agents to help you code based on the description of your intervention strategy. Don't use it to generate the strategy itself.
+    Write A1 and B1 before you open an agent. Those two cells are what is graded.
 
-    You can use so-called a *pair agent* that directly edits the marimo notebook. The tutor has this feature built-in, so all you need to do is to tell the agent which notebook you are working on. Copy & paste the following prompt:
+    Your `pi` agent then writes A2 and B2 from them, in this notebook while you watch: it edits the cell, the cell re-runs, and the scoreboard under it moves. Start it in your team's repository folder, with no arguments:
 
-    ```markdown
-
+    ```bash
+    pi
     ```
 
-    This connects your pi agent to the marimo notebook. You can talk to it and turn your ideas into code.
+    It opens this notebook itself. If you already have `marimo edit` running on this file, close that first — two kernels on one file write over each other.
+
+    Paste this once, at the start of the session:
+
+    ```markdown
+    You are our coding partner on the marimo notebook that is already open beside
+    this terminal. Work in the live notebook with your nb_* tools. Never edit the
+    file on disk: marimo saves over it.
+
+    Edit exactly two cells, with nb_edit_cell, under these names:
+      *choose_vaccination   cell A2, choose_vaccination(nodes, edges, budget)
+      *choose_quarantine    cell B2, choose_quarantine(nodes, edges, cases, budget)
+    Keep the `# ✍️` comment line at the top of each one.
+
+    Change nothing else: not the setup cell, not the scoreboard, and not PLAN_A or
+    PLAN_B. Those two are ours.
+
+    Read PLAN_A and PLAN_B with nb_read and build what they say. What is written,
+    not what you would have written. Where a plan does not say what to do, stop and
+    ask us.
+
+    numpy and igraph only. Return at most `budget` ids from `nodes`, as int. Use
+    only the arguments you are given — never the networks or the scoring functions
+    from the setup cell — and do not special-case one town. Each call gets 20
+    seconds per network.
+
+    After each edit, tell us our score and the benchmark's, and say plainly when
+    ours is worse.
+    ```
+
+    If the plan is vague, the agent builds the wrong thing and the score says so. That is the exercise.
     """)
     return
 
@@ -691,7 +721,7 @@ def _():
 
     ## Task B. The disease is already running
 
-    Nobody was vaccinated. Found once 10% is infected. Quaranteen 5% of people in the network. You do not see the network. You see every **case**, everyone a case **named**, and every link **touching a case**. Nothing else.
+    Nobody was vaccinated. Found once 10% is infected. Quarantine 5% of the people in the network. You do not see the network. You see every **case**, everyone a case **named**, and every link **touching a case**. Nothing else.
 
     Everything in light grey is invisible to you -- it exists, but nobody
     told the health department about it. Red is a confirmed case. Blue is
@@ -836,21 +866,16 @@ def _():
     mo.md(r"""
     ---
 
-    ## For your coding agent
+    ## If your agent edits the file instead
 
-    > A marimo notebook, `mini-project.py`.
-    >
-    > - Edit `# ✍️ A2` and `# ✍️ B2`. Nothing else. Not `PLAN_A`, not `PLAN_B`,
-    >   not the setup cell.
-    > - Build `PLAN_A` as `choose_vaccination(nodes, edges, budget)`. Build
-    >   `PLAN_B` as `choose_quarantine(nodes, edges, cases, budget)`.
-    > - Build what is written, not what you would have written.
-    > - Plan unclear? Stop. Ask the students.
-    > - `igraph` and `numpy` only. Return `list[int]`, at most `budget`, in
-    >   both cases ids from `nodes`.
-    > - Do not read the setup cell inside the functions. Do not special-case a
-    >   town.
-    > - Run it. Report both scores. If a plan loses to the benchmark, say so.
+    Claude Code, Codex and the rest work on `mini-project.py` on disk, not in the
+    running notebook. Close `marimo edit` before you let one write, and reopen it
+    after — marimo saves this notebook from its own memory, and it will undo
+    anything that changed underneath it.
+
+    The brief in **Rules** still holds, with two changes: your agent edits the
+    cells marked `# ✍️ A2` and `# ✍️ B2` in the file, and it has no `nb_read`, so
+    paste `PLAN_A` and `PLAN_B` to it yourself.
     """)
     return
 
