@@ -9,7 +9,7 @@
 #
 # Mini project M03 -- Who gets the vaccine, and who gets the phone call?
 #
-# The notebook travels alone. Everything it needs -- the five networks, the
+# The notebook travels alone. Everything it needs -- the two networks, the
 # epidemic, the scoreboard -- is generated inside this file, so a student can
 # curl it and run it with no data and no repository.
 #
@@ -20,13 +20,15 @@
 # description, which is the whole point of the exercise: if the description is
 # vague, the agent builds the wrong thing and the score says so.
 #
-# Reference numbers for the five networks are in
-# adv-net-sci-ops/mini-project/m03-robustness/DESIGN.md. Nothing in this file
-# quotes a number that was not measured by calibrate.py in that folder.
+# EDGE_P and the per-town day horizons were calibrated by simulation, not
+# guessed: EDGE_P is comfortably above the bond-percolation threshold of
+# every town (the grid needs the highest, so it sets the floor), and each
+# day horizon is the day an unprotected outbreak's mean size first passes
+# 85% of that town, with the quarantine horizon fixed at 40% of it.
 
 import marimo
 
-__generated_with = "0.24.0"
+__generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 with app.setup(hide_code=True):
@@ -39,20 +41,20 @@ with app.setup(hide_code=True):
 
     # ---------------------------------------------------------------- style
     INK, MUTED, RULE = "#1a1a1a", "#6b6b6b", "#d8d4cc"
-    RUST, BLUE, GREEN = "#b5482f", "#2f5d8a", "#3f7a4e"
+    RUST, BLUE = "#b5482f", "#2f5d8a"
     SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif"
     MONO = "'SF Mono', Menlo, monospace"
 
     # ------------------------------------------------------------ the rules
-    BETA = 0.04  # chance one infected neighbour infects you on one day
+    EDGE_P = 0.6  # chance one link ever carries the disease -- decided once
     SEEDS_PER_OUTBREAK = 3  # people who start every outbreak
     OUTBREAKS = 40  # outbreaks averaged per network
     VACCINE_SHARE = 0.10  # doses, as a share of the population
-    QUARANTINE_SHARE = 0.05  # isolation beds, as a share of the population
+    QUARANTINE_SHARE = 0.05  # isolation rooms, as a share of the population
     DETECT_AT = 0.10  # the outbreak is noticed at this prevalence
     TIME_BUDGET = 20.0  # seconds one picker gets on one network
 
-    # ------------------------------------------------------- the five towns
+    # ------------------------------------------------------- the two towns
     def _largest_piece(n, edges):
         h = igraph.Graph(n, sorted({tuple(sorted(e)) for e in edges}))
         comp = h.connected_components()
@@ -60,12 +62,6 @@ with app.setup(hide_code=True):
         return h.induced_subgraph(
             [v for v in range(n) if comp.membership[v] == big]
         )
-
-    def _erdos_renyi(n, k, seed):
-        r = np.random.default_rng(seed)
-        iu = np.triu_indices(n, 1)
-        pick = r.choice(len(iu[0]), int(round(n * k / 2)), replace=False)
-        return _largest_piece(n, zip(iu[0][pick].tolist(), iu[1][pick].tolist()))
 
     def _grid(rows, cols):
         e = []
@@ -77,25 +73,6 @@ with app.setup(hide_code=True):
                 if i + 1 < rows:
                     e.append((v, v + cols))
         return _largest_piece(rows * cols, e)
-
-    def _barabasi_albert(n, m, seed):
-        r = np.random.default_rng(seed)
-        targets, repeated, e = list(range(m)), [], []
-        for v in range(m, n):
-            for t in set(targets):
-                e.append((v, t))
-            repeated += targets + [v] * m
-            targets = [int(x) for x in r.choice(repeated, m, replace=False)]
-        return _largest_piece(n, e)
-
-    def _block_model(n, blocks, p_in, p_out, seed):
-        r = np.random.default_rng(seed)
-        b = np.repeat(np.arange(blocks), n // blocks)
-        n = len(b)
-        P = np.where(b[:, None] == b[None, :], p_in, p_out)
-        iu = np.triu_indices(n, 1)
-        d = r.random(len(iu[0])) < P[iu]
-        return _largest_piece(n, zip(iu[0][d].tolist(), iu[1][d].tolist()))
 
     def _degree_corrected_block_model(n, blocks, gamma, kbar, mix, seed):
         """Same blocks, but people inside a block differ wildly in how many
@@ -117,18 +94,16 @@ with app.setup(hide_code=True):
 
     # name -> (builder, days the vaccination run lasts, days the quarantine
     # run lasts). Both horizons were calibrated, not guessed: the vaccination
-    # horizon is where an unprotected outbreak passes 85% of the town, and the
-    # quarantine horizon is 40% of that, because quarantine is judged on the
-    # weeks right after the outbreak is found, not on the end of the world.
+    # horizon is where an unprotected outbreak passes 85% of the town under
+    # EDGE_P-bond percolation, and the quarantine horizon is 40% of that,
+    # because quarantine is judged on the weeks right after the outbreak is
+    # found, not on the end of the world.
     TOWNS = {
-        "random": (lambda: _erdos_renyi(300, 5.0, 11), 45, 18),
-        "grid": (lambda: _grid(18, 18), 155, 62),
-        "scale-free": (lambda: _barabasi_albert(300, 2, 12), 55, 22),
-        "blocks": (lambda: _block_model(320, 4, 0.065, 0.0006, 13), 50, 20),
+        "grid": (lambda: _grid(18, 18), 30, 12),
         "blocks+hubs": (
             lambda: _degree_corrected_block_model(500, 4, 2.6, 6.0, 0.02, 14),
-            50,
-            20,
+            10,
+            4,
         ),
     }
 
@@ -140,36 +115,56 @@ with app.setup(hide_code=True):
         for name, g in NETWORKS.items()
     }
 
-    # G1 .. G5, for pointing at one town without writing its name out
+    # G1, G2, for pointing at one town without writing its name out
     LABEL = {
-        name: "G" + "\u2081\u2082\u2083\u2084\u2085"[i]
+        name: "G" + "\u2081\u2082"[i]
         for i, name in enumerate(TOWNS)
     }
 
     def budget_for(name, share):
         return int(round(share * NETWORKS[name].vcount()))
 
+    def layout_for(name, g):
+        """Node positions for drawing. The grid keeps its actual rows and
+        columns -- a force layout twists a lattice into something that no
+        longer reads as one."""
+        if name == "grid":
+            cols = round(g.vcount() ** 0.5)
+            return {v: (v % cols, v // cols) for v in range(g.vcount())}
+        return {v: tuple(p) for v, p in enumerate(g.layout("fr"))}
+
     # ------------------------------------------------------- the SI epidemic
-    def si_step(A, infected, alive, rng):
-        """One day of it. A susceptible person who is still in the population
-        catches it from each infected neighbour with probability BETA, and the
-        neighbours act independently, so with m infected neighbours the chance
-        of staying clean is (1 - BETA)**m. Nobody ever recovers. This is SI."""
-        exposure = A @ infected.astype(np.float64)
-        caught = rng.random(infected.shape) < 1.0 - (1.0 - BETA) ** exposure
-        return infected | (~infected & alive & caught)
+    def percolate(A, p, rng):
+        """Which links can ever carry the disease, decided once per outbreak
+        -- not redrawn every day. Each link is open with probability p,
+        independently of every other link. This is bond percolation: the
+        outbreak is then just whoever the seeds can reach through open
+        links."""
+        n = A.shape[0]
+        iu = np.triu_indices(n, 1)
+        open_edges = np.zeros_like(A)
+        open_edges[iu] = (A[iu] > 0) & (rng.random(len(iu[0])) < p)
+        return open_edges + open_edges.T
+
+    def si_step(A_open, infected, alive):
+        """One day of it. A susceptible, living person catches it today if an
+        open link reaches them from someone already infected. Nobody ever
+        recovers. This is SI, run over the percolated network."""
+        exposure = A_open[:, infected].sum(axis=1)
+        return infected | (~infected & alive & (exposure > 0))
 
     def _run_many(A, alive, starts, days, rng):
-        """OUTBREAKS outbreaks at once. Columns are outbreaks."""
-        n = A.shape[0]
-        infected = np.zeros((n, starts.shape[1]), bool)
+        """OUTBREAKS outbreaks, each on its own percolated network. Columns
+        are outbreaks."""
+        cols = []
         for c in range(starts.shape[1]):
-            infected[starts[:, c], c] = True
-        for _ in range(days):
-            exposure = A @ infected.astype(np.float64)
-            caught = rng.random(infected.shape) < 1.0 - (1.0 - BETA) ** exposure
-            infected |= ~infected & alive[:, None] & caught
-        return infected
+            A_open = percolate(A, EDGE_P, rng)
+            infected = np.zeros(A.shape[0], bool)
+            infected[starts[:, c]] = True
+            for _ in range(days):
+                infected = si_step(A_open, infected, alive)
+            cols.append(infected)
+        return np.stack(cols, axis=1)
 
     def _outbreak_starts(alive, rng):
         pool = np.flatnonzero(alive)
@@ -216,7 +211,7 @@ with app.setup(hide_code=True):
         for name, g in NETWORKS.items():
             budget = budget_for(name, VACCINE_SHARE)
             clock = time.perf_counter()
-            picked = picker(g.copy(), budget)
+            picked = picker(list(range(g.vcount())), g.get_edgelist(), budget)
             spent = time.perf_counter() - clock
             vaccinated, notes = _clean(picked, g.vcount(), budget, "choose_vaccination")
             alive = np.ones(g.vcount(), bool)
@@ -265,14 +260,21 @@ with app.setup(hide_code=True):
             totals, spent, notes = [], 0.0, []
             for run in range(OUTBREAKS):
                 rng = np.random.default_rng(2000 + run)
+                A_open = percolate(A, EDGE_P, rng)
                 infected = np.zeros(n, bool)
                 infected[rng.choice(n, SEEDS_PER_OUTBREAK, replace=False)] = True
                 everyone = np.ones(n, bool)
                 while infected.sum() / n < DETECT_AT:
-                    infected = si_step(A, infected, everyone, rng)
+                    grown = si_step(A_open, infected, everyone)
+                    if (grown == infected).all():
+                        break  # stalled below detection on its own -- a
+                        # sub-critical outbreak, the way percolation goes
+                    infected = grown
                 known, people = contact_trace(g, infected)
+                _nodes = list(range(known.vcount()))
+                _cases = [v for v in _nodes if known.vs[v]["case"]]
                 clock = time.perf_counter()
-                picked = picker(known.copy(), budget)
+                picked = picker(_nodes, known.get_edgelist(), _cases, budget)
                 spent += time.perf_counter() - clock
                 local, note = _clean(
                     picked, known.vcount(), budget, "choose_quarantine"
@@ -283,7 +285,7 @@ with app.setup(hide_code=True):
                 alive[[people[i] for i in local]] = False
                 still_out = infected & alive
                 for _ in range(QUARANTINE_DAYS[name]):
-                    still_out = si_step(A, still_out, alive, rng)
+                    still_out = si_step(A_open, still_out, alive)
                 totals.append((still_out | infected).sum() / n)
             rows[name] = {
                 "infected": float(np.mean(totals)),
@@ -298,37 +300,44 @@ with app.setup(hide_code=True):
         return float(np.mean([r["infected"] for r in rows.values()]))
 
     # ------------------------------------------------- the anonymous rivals
-    def rival_nobody(g, budget):
+    def rival_nobody(*args):
         return []
 
-    def rival_random_people(g, budget):
-        return list(
-            np.random.default_rng(7).choice(g.vcount(), budget, replace=False)
-        )
+    def rival_random_people(nodes, edges, budget):
+        return list(np.random.default_rng(7).choice(nodes, budget, replace=False))
 
-    def rival_random_known(known, budget):
+    def rival_random_known(nodes, edges, cases, budget):
         return list(
             np.random.default_rng(7).choice(
-                known.vcount(), min(budget, known.vcount()), replace=False
+                nodes, min(budget, len(nodes)), replace=False
             )
         )
 
-    def benchmark_a(g, budget):
+    def _degrees(nodes, edges):
+        deg = {v: 0 for v in nodes}
+        for u, v in edges:
+            deg[u] += 1
+            deg[v] += 1
+        return deg
+
+    def benchmark_a(nodes, edges, budget):
         """Deliberately not named in the notebook. Beating it is the game."""
-        h = g.copy()
-        h.vs["origin"] = list(range(g.vcount()))
+        neighbors = {v: set() for v in nodes}
+        for u, v in edges:
+            neighbors[u].add(v)
+            neighbors[v].add(u)
         out = []
         for _ in range(budget):
-            v = int(np.argmax(h.degree()))
-            out.append(h.vs[v]["origin"])
-            h.delete_vertices(v)
+            v = max(neighbors, key=lambda x: len(neighbors[x]))
+            out.append(v)
+            for u in neighbors.pop(v):
+                neighbors[u].discard(v)
         return out
 
-    def benchmark_b(known, budget):
+    def benchmark_b(nodes, edges, cases, budget):
         """Also not named."""
-        cases = [i for i in range(known.vcount()) if known.vs[i]["case"]]
-        cases.sort(key=lambda i: -known.degree(i))
-        return cases[:budget]
+        deg = _degrees(nodes, edges)
+        return sorted(cases, key=lambda i: -deg[i])[:budget]
 
     # ------------------------------------------------------------- drawing
     def _bar_row(label, value, worst, tone, bold=False):
@@ -394,18 +403,45 @@ with app.setup(hide_code=True):
             f"<tr>{cells}</tr>{body}</table>"
         )
 
+    def svg_network(nodes, edges, pos, colors, edge_colors=None, size=460):
+        """A bare node-link drawing. `nodes` is a list of ids, `edges` a list
+        of (u, v) id pairs, `pos` and `colors` dicts (or lists) keyed by
+        those same ids. No igraph, no matplotlib -- just SVG, so any graph
+        source works."""
+        xs = [pos[v][0] for v in nodes]
+        ys = [pos[v][1] for v in nodes]
+        lo_x, hi_x = min(xs), max(xs)
+        lo_y, hi_y = min(ys), max(ys)
+        pad = 16
+
+        def sx(x):
+            return pad + (x - lo_x) / (hi_x - lo_x + 1e-9) * (size - 2 * pad)
+
+        def sy(y):
+            return pad + (y - lo_y) / (hi_y - lo_y + 1e-9) * (size - 2 * pad)
+
+        lines = "".join(
+            f'<line x1="{sx(pos[u][0]):.1f}" y1="{sy(pos[u][1]):.1f}" '
+            f'x2="{sx(pos[v][0]):.1f}" y2="{sy(pos[v][1]):.1f}" '
+            f'stroke="{edge_colors[i] if edge_colors else RULE}" stroke-width="1.2"/>'
+            for i, (u, v) in enumerate(edges)
+        )
+        dots = "".join(
+            f'<circle cx="{sx(pos[v][0]):.1f}" cy="{sy(pos[v][1]):.1f}" r="4.5" '
+            f'fill="{colors[v]}" stroke="white" stroke-width="0.8"/>'
+            for v in nodes
+        )
+        return mo.Html(
+            f'<svg width="{size}" height="{size}" viewBox="0 0 {size} {size}" '
+            f'style="background:#ffffff;border:1px solid {RULE};border-radius:4px">'
+            f"{lines}{dots}</svg>"
+        )
+
     def note(text, tone=BLUE):
         return mo.Html(
             f'<div style="border-left:3px solid {tone};padding:2px 0 2px 14px;'
             f'margin:14px 0;font-family:{SANS};font-size:16px;color:{INK}">'
             f"{text}</div>"
-        )
-
-    def waiting(what):
-        return mo.Html(
-            f'<div style="font-family:{SANS};font-size:15px;color:{MUTED};'
-            f'border:1.5px dashed {RULE};border-radius:4px;padding:10px 14px;'
-            f'display:inline-block">Waiting on {what}.</div>'
         )
 
     def complaints(rows):
@@ -424,26 +460,17 @@ with app.setup(hide_code=True):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    # Who gets the vaccine, and who gets the phone call?
+    # Mini project m03
 
-    Module 3 mini-project. Teams of up to 3. Ninety minutes.
+    ## Task
 
-    Five towns. One disease. Not enough of anything.
+    Your goal is to design a pre-outbreak vaccination strategy (Task A) and an active-outbreak isolation strategy (Task B).
+
+    Complete cells A1–B2 with written English explanations and matching Python code.
 
     - **Task A.** You see the whole network. No cases yet. Pick who gets the shot.
     - **Task B.** The disease is already spreading. You see the cases and the
-      people they named. Pick who gets locked up.
-
-    Four cells to fill.
-
-    | | | |
-    |---|---|---|
-    | **A1** | English | your vaccination plan |
-    | **A2** | Python | the same plan |
-    | **B1** | English | your isolation plan |
-    | **B2** | Python | the same plan |
-
-    The English cells are what is graded.
+      people they named (contact traced). Pick who should be locked up to contain the epidemics.
     """)
     return
 
@@ -453,14 +480,24 @@ def _():
     mo.md(r"""
     ## Rules
 
-    - Two states. Susceptible, infected. Nobody recovers.
-    - Each day, each infected neighbour infects you with probability $\beta =
-      0.04$.
-    - Every run starts from three random people.
-    - Score: how much of the town is infected at the end. 40 runs, five towns,
-      averaged. **Lower is better.**
-    - Seeds are fixed. Same code, same number, every time.
-    - Do not touch the setup cell.
+    - There are two states: susceptible and infected. No one recovers.
+    - Every link is open with probability $p = 0.6$, determined once per outbreak and not redrawn daily. This is bond percolation: a day is one step outward through open links from whoever is already infected.
+    - Every run begins with three randomly chosen individuals.
+    - The score is the final fraction of the town infected, averaged over 40 runs across two towns. **Lower is better.**
+    - The seed is fixed. It is the same code, the same numbers every time.
+    - Do not modify the setup cell.
+
+    ## Feel free to use AI for coding but don't let it generate ideas.
+
+    You can use `pi` agents to help you code based on the description of your intervention strategy. Don't use it to generate the strategy itself.
+
+    You can use so-called a *pair agent* that directly edits the marimo notebook. The tutor has this feature built-in, so all you need to do is to tell the agent which notebook you are working on. Copy & paste the following prompt:
+
+    ```markdown
+
+    ```
+
+    This connects your pi agent to the marimo notebook. You can talk to it and turn your ideas into code.
     """)
     return
 
@@ -468,10 +505,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### The five towns
+    ## Networks
 
-    $G_1, \dots, G_5$. None of them is real. Each one wires people up a different
-    way, so a plan that wins on one can lose on another.
+    We have two networks $G_1, G_2$. Each one represents a different social network. Find a prevention and control strategy that is effective for both.
     """)
     return
 
@@ -493,7 +529,7 @@ def _():
                 str(budget_for(_name, QUARANTINE_SHARE)),
             )
         )
-    _head = ["", "network", "people", "links", "mean k", "max k", "doses", "beds"]
+    _head = ["", "network", "people", "links", "mean k", "max k", "doses", "rooms"]
     _cells = "".join(
         f'<th style="text-align:{"left" if _i < 2 else "right"};'
         f'padding:4px 16px 6px 0;font-family:{SANS};font-size:12px;'
@@ -522,16 +558,61 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    **Doses** are 10% of the town. **Beds** are 5%. In task B the outbreak is
-    found once 10% is infected.
-
     ---
 
     ## Task A. Vaccine first, disease later
 
     You see the whole network. Doses for 10%. A vaccinated person cannot catch it
     and cannot pass it on.
+
+    ### Watch it spread
+
+    Nobody vaccinated. Pick a town, drag the day slider, and watch how far
+    the disease gets -- blue links are open, meaning they can carry it; grey
+    links can't. The button picks new starting people without changing
+    which links are open.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    demo_radio = mo.ui.radio(
+        options=list(NETWORKS.keys()), value="grid", label="town"
+    )
+    reseed_button = mo.ui.button(
+        value=0, on_click=lambda v: v + 1, label="pick new starting people"
+    )
+    day_slider = mo.ui.slider(0, 40, value=0, label="day", show_value=True)
+    mo.hstack([demo_radio, reseed_button, day_slider], justify="start", gap=2)
+    return day_slider, demo_radio, reseed_button
+
+
+@app.cell(hide_code=True)
+def _(
+    day_slider,
+    demo_days,
+    demo_edges,
+    demo_nodes,
+    demo_open_edges,
+    demo_pos,
+):
+    _inf = demo_days[day_slider.value]
+    _colors = {v: (RUST if _inf[v] else INK) for v in demo_nodes}
+    _edge_colors = [
+        BLUE if (u, v) in demo_open_edges else "#e5e1d8" for u, v in demo_edges
+    ]
+    mo.vstack(
+        [
+            note(
+                f"Day {day_slider.value}: <b>{int(_inf.sum())}</b> of "
+                f"{len(demo_nodes)} infected "
+                f"({100 * _inf.sum() / len(demo_nodes):.0f}%).",
+                BLUE,
+            ),
+            svg_network(demo_nodes, demo_edges, demo_pos, _colors, _edge_colors),
+        ]
+    )
     return
 
 
@@ -554,21 +635,6 @@ def _():
     PLAN_A = """
     ...
     """
-    return (PLAN_A,)
-
-
-@app.cell(hide_code=True)
-def _(PLAN_A):
-    _words = len(PLAN_A.replace(".", " ").split())
-    if PLAN_A.strip().strip(".") == "":
-        _out = waiting("A1")
-    elif _words < 40:
-        _out = note(f"{_words} words. Too short to hand to anybody.", RUST)
-    else:
-        _out = mo.vstack(
-            [note(f"{_words} words.", GREEN), mo.md(PLAN_A)]
-        )
-    _out
     return
 
 
@@ -577,28 +643,21 @@ def _():
     mo.md(r"""
     ### ✍️ A2. The same plan, as code
 
-    ```python
-    def choose_vaccination(g, budget):
-        ...
-    ```
-
-    `g` is an `igraph.Graph`. Your own copy, break it if you like. Return at most
-    `budget` vertex ids, as `int`. `igraph` and `numpy` only. Twenty seconds per
-    town.
+    `nodes` is a list of ids. `edges` is a list of `(u, v)` id pairs. Return
+    at most `budget` ids from `nodes`, as `int`.
     """)
     return
 
 
-@app.cell
-def _():
-    # ✍️ A2 — implement the algorithm you described in A1.
-    def choose_vaccination(g, budget):
-        return []
-    return (choose_vaccination,)
+@app.function
+# ✍️ A2 — implement the algorithm you described in A1.
+def choose_vaccination(nodes, edges, budget):
+    """Return at most `budget` ids from `nodes` to vaccinate, e.g. [3, 17, 42]."""
+    return []
 
 
 @app.cell(hide_code=True)
-def _(choose_vaccination):
+def _():
     _mine = score_vaccination(choose_vaccination)
     _bench = score_vaccination(benchmark_a)
     _lines = [
@@ -620,36 +679,74 @@ def _(choose_vaccination):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ---
-
-    ## Task B. The disease is already running
-
-    Nobody was vaccinated. Found once 10% is infected. Beds for 5%.
-
-    You do not see the network. You see every **case**, everyone a case **named**,
-    and every link **touching a case**. Nothing else.
+ 
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    _g = NETWORKS["blocks+hubs"]
-    _rng = np.random.default_rng(2000)
-    _inf = np.zeros(_g.vcount(), bool)
-    _inf[_rng.choice(_g.vcount(), SEEDS_PER_OUTBREAK, replace=False)] = True
-    _all = np.ones(_g.vcount(), bool)
-    while _inf.sum() / _g.vcount() < DETECT_AT:
-        _inf = si_step(ADJACENCY["blocks+hubs"], _inf, _all, _rng)
-    _known, _ = contact_trace(_g, _inf)
-    _cases = sum(_known.vs["case"])
-    note(
-        f"One outbreak on <b>blocks+hubs</b>, for scale. The town has "
-        f"{_g.vcount()} people and {_g.ecount()} links. When it is found there "
-        f"are <b>{_cases} cases</b>, the tracing turns up "
-        f"<b>{_known.vcount() - _cases} contacts</b>, and you hold "
-        f"<b>{_known.ecount()} links</b> out of the {_g.ecount()} that exist. "
-        f"You have <b>{budget_for('blocks+hubs', QUARANTINE_SHARE)} beds</b>."
+    mo.md(r"""
+    ---
+
+    ## Task B. The disease is already running
+
+    Nobody was vaccinated. Found once 10% is infected. Quaranteen 5% of people in the network. You do not see the network. You see every **case**, everyone a case **named**, and every link **touching a case**. Nothing else.
+
+    Everything in light grey is invisible to you -- it exists, but nobody
+    told the health department about it. Red is a confirmed case. Blue is
+    someone a case named.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    demoB_radio = mo.ui.radio(
+        options=list(NETWORKS.keys()), value="blocks+hubs", label="town"
+    )
+    demoB_button = mo.ui.button(
+        value=0, on_click=lambda v: v + 1, label="new outbreak"
+    )
+    mo.hstack([demoB_radio, demoB_button], justify="start", gap=2)
+    return demoB_button, demoB_radio
+
+
+@app.cell(hide_code=True)
+def _(
+    demoB_edges,
+    demoB_infected,
+    demoB_nodes,
+    demoB_observed_edges,
+    demoB_observed_nodes,
+    demoB_pos,
+):
+    _unseen = "#ece9e2"
+    _colors = {
+        v: (
+            RUST
+            if demoB_infected[v]
+            else BLUE
+            if v in demoB_observed_nodes
+            else _unseen
+        )
+        for v in demoB_nodes
+    }
+    _edge_colors = [
+        INK if tuple(sorted((u, v))) in demoB_observed_edges else _unseen
+        for u, v in demoB_edges
+    ]
+    _cases = int(demoB_infected.sum())
+    _contacts = len(demoB_observed_nodes) - _cases
+    mo.vstack(
+        [
+            note(
+                f"<b>{_cases}</b> case(s), <b>{_contacts}</b> named contact(s). "
+                f"Everything in light grey never reaches the health department.",
+                BLUE,
+            ),
+            svg_network(demoB_nodes, demoB_edges, demoB_pos, _colors, _edge_colors),
+        ]
     )
     return
 
@@ -672,19 +769,6 @@ def _():
     PLAN_B = """
     ...
     """
-    return (PLAN_B,)
-
-
-@app.cell(hide_code=True)
-def _(PLAN_B):
-    _words = len(PLAN_B.replace(".", " ").split())
-    if PLAN_B.strip().strip(".") == "":
-        _out = waiting("B1")
-    elif _words < 40:
-        _out = note(f"{_words} words. Too short to hand to anybody.", RUST)
-    else:
-        _out = mo.vstack([note(f"{_words} words.", GREEN), mo.md(PLAN_B)])
-    _out
     return
 
 
@@ -693,28 +777,23 @@ def _():
     mo.md(r"""
     ### ✍️ B2. The same plan, as code
 
-    ```python
-    def choose_quarantine(known, budget):
-        ...
-    ```
-
-    `known` is an `igraph.Graph` of the traced people. `known.vs["case"]` is
-    `True` for a case and `False` for a contact. Return at most `budget` ids **of
-    `known`**. An isolated person stops infecting and stops catching.
+    `nodes` is a list of the traced people's ids. `edges` is a list of
+    `(u, v)` id pairs among them. `cases` is the subset of `nodes` that are
+    confirmed, the rest are contacts. Return at most `budget` ids **from
+    `nodes`**. An isolated person stops infecting and stops catching.
     """)
     return
 
 
-@app.cell
-def _():
-    # ✍️ B2 — implement the algorithm you described in B1.
-    def choose_quarantine(known, budget):
-        return []
-    return (choose_quarantine,)
+@app.function
+# ✍️ B2 — implement the algorithm you described in B1.
+def choose_quarantine(nodes, edges, cases, budget):
+    """Return at most `budget` ids from `nodes` to isolate, e.g. [0, 5]."""
+    return []
 
 
 @app.cell(hide_code=True)
-def _(choose_quarantine):
+def _():
     _mine_b = score_quarantine(choose_quarantine)
     _bench_b = score_quarantine(benchmark_b)
     _lines_b = [
@@ -763,17 +842,74 @@ def _():
     >
     > - Edit `# ✍️ A2` and `# ✍️ B2`. Nothing else. Not `PLAN_A`, not `PLAN_B`,
     >   not the setup cell.
-    > - Build `PLAN_A` as `choose_vaccination(g, budget)`. Build `PLAN_B` as
-    >   `choose_quarantine(known, budget)`.
+    > - Build `PLAN_A` as `choose_vaccination(nodes, edges, budget)`. Build
+    >   `PLAN_B` as `choose_quarantine(nodes, edges, cases, budget)`.
     > - Build what is written, not what you would have written.
     > - Plan unclear? Stop. Ask the students.
-    > - `igraph` and `numpy` only. Return `list[int]`, at most `budget`. In B2 the
-    >   ids index `known`.
+    > - `igraph` and `numpy` only. Return `list[int]`, at most `budget`, in
+    >   both cases ids from `nodes`.
     > - Do not read the setup cell inside the functions. Do not special-case a
     >   town.
     > - Run it. Report both scores. If a plan loses to the benchmark, say so.
     """)
     return
+
+
+@app.cell(hide_code=True)
+def _(demo_radio):
+    _demo_g = NETWORKS[demo_radio.value]
+    demo_nodes = list(range(_demo_g.vcount()))
+    demo_edges = _demo_g.get_edgelist()
+    demo_pos = layout_for(demo_radio.value, _demo_g)
+    demo_open = percolate(ADJACENCY[demo_radio.value], EDGE_P, np.random.default_rng(2))
+    demo_open_edges = {(u, v) for u, v in demo_edges if demo_open[u, v] > 0}
+    return demo_edges, demo_nodes, demo_open, demo_open_edges, demo_pos
+
+
+@app.cell(hide_code=True)
+def _(demo_nodes, demo_open, reseed_button):
+    _rng = np.random.default_rng(100 + reseed_button.value)
+    _infected = np.zeros(len(demo_nodes), bool)
+    _infected[_rng.choice(len(demo_nodes), SEEDS_PER_OUTBREAK, replace=False)] = True
+    _alive = np.ones(len(demo_nodes), bool)
+    demo_days = [_infected]
+    for _ in range(40):
+        _infected = si_step(demo_open, _infected, _alive)
+        demo_days.append(_infected)
+    return (demo_days,)
+
+
+@app.cell(hide_code=True)
+def _(demoB_button, demoB_radio):
+    _g = NETWORKS[demoB_radio.value]
+    _A = ADJACENCY[demoB_radio.value]
+    _rng = np.random.default_rng(300 + demoB_button.value)
+    _open = percolate(_A, EDGE_P, _rng)
+    _infected = np.zeros(_g.vcount(), bool)
+    _infected[_rng.choice(_g.vcount(), SEEDS_PER_OUTBREAK, replace=False)] = True
+    _everyone = np.ones(_g.vcount(), bool)
+    while _infected.sum() / _g.vcount() < DETECT_AT:
+        _grown = si_step(_open, _infected, _everyone)
+        if (_grown == _infected).all():
+            break  # stalled below detection on its own
+        _infected = _grown
+    _known, _people = contact_trace(_g, _infected)
+    demoB_infected = _infected
+    demoB_nodes = list(range(_g.vcount()))
+    demoB_edges = _g.get_edgelist()
+    demoB_pos = layout_for(demoB_radio.value, _g)
+    demoB_observed_nodes = set(_people)
+    demoB_observed_edges = {
+        tuple(sorted((_people[u], _people[v]))) for u, v in _known.get_edgelist()
+    }
+    return (
+        demoB_edges,
+        demoB_infected,
+        demoB_nodes,
+        demoB_observed_edges,
+        demoB_observed_nodes,
+        demoB_pos,
+    )
 
 
 if __name__ == "__main__":
