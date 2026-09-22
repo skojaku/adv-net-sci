@@ -35,7 +35,7 @@
 \hfill
 \begin{minipage}[c]{0.77\textwidth}
 {\small
-\textbf{You hand in two photos, one per question.} Write each question's
+You hand in two photos, one per question. Write each question's
 answer on its own page, photograph each page, and upload it. Point a camera at
 the square, or type \formshort.
 }
@@ -47,7 +47,7 @@ the square, or type \formshort.
                   sharp corners, boxsep=2pt, left=6pt, right=6pt,
                   top=4pt, bottom=4pt]
 {\small
-\textbf{Notation.}
+Notation.
 $G$ is a finite, simple, undirected network with $N$ nodes and $M \ge 1$ edges.
 Node $i$ has degree $k_i$ and neighbor set $\mathcal{N}(i)$. The degree
 distribution $p(k)$ is the fraction of nodes of degree exactly $k$, and
@@ -66,40 +66,40 @@ distribution $p(k)$ is the fraction of nodes of degree exactly $k$, and
 % ---------------------------------------------------------------------------
 \question{1}{5}{Your friends have more friends than you.}
 
-The \textbf{average degree of a friend} is the friend's degree averaged over
+The average degree of a friend is the friend's degree averaged over
 every (person, friend) pair in $G$ --- that is, over all $2M$ edge endpoints:
 \[
   \langle k_f \rangle
   \;\equiv\; \frac{1}{2M} \sum_{i} \sum_{j \in \mathcal{N}(i)} k_j .
 \]
 
-\textbf{(a) [3 pts]} Prove that $\langle k \rangle \le \langle k_f \rangle$ in
+(a) [3 pts] Prove that $\langle k \rangle \le \langle k_f \rangle$ in
 every such network.
 
 \vspace{0.1em}
 
-\textbf{(b) [2 pts]} State exactly when equality holds, and prove it.
+(b) [2 pts] State exactly when equality holds, and prove it.
 
 % ---------------------------------------------------------------------------
 \question{2}{5}{How much can you delete before it falls apart?}
 
-Let $G$ be a \textbf{configuration model} network: $N$ nodes are given degrees
+Let $G$ be a configuration model network: $N$ nodes are given degrees
 from $p(k)$, each is cut into that many half-edges, and the half-edges are
 paired uniformly at random. Assume $N$ is large and the network is
-\textbf{locally tree-like}. A \textbf{giant component} holds a non-vanishing
+locally tree-like. A giant component holds a non-vanishing
 fraction of the $N$ nodes as $N \to \infty$.
 
 Now delete every node independently with probability $f$.
 
 \vspace{0.2em}
 
-\textbf{(a) [3 pts]} Derive the \textbf{critical fraction} $f_c$ at which the
+(a) [3 pts] Derive the critical fraction $f_c$ at which the
 giant component disappears. Give $f_c$ in terms of $\kappa$.
 
 \vspace{0.1em}
 
-\textbf{(b) [2 pts]} Evaluate $f_c$ for \textbf{(i)} a Poisson $p(k)$ of mean
-$\langle k \rangle$, and \textbf{(ii)} $p(k) \sim k^{-\gamma}$ with
+(b) [2 pts] Evaluate $f_c$ for (i) a Poisson $p(k)$ of mean
+$\langle k \rangle$, and (ii) $p(k) \sim k^{-\gamma}$ with
 $2 < \gamma < 3$ as $N \to \infty$. Say in one sentence what (ii) means for
 such a network.
 
