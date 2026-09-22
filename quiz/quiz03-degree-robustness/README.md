@@ -87,93 +87,13 @@ is the same step the `quiz02` README documents in full.
       Validated and reloaded; both answer 302.
 - [x] **`quiz03.pdf` on Drive**, in the course folder, read-only to the
       `binghamton.edu` domain, link-only. `go.skojaku.com/quiz03` points at it.
-- [ ] **Print the sheet.**
-- [ ] **In Brightspace**, and neither can be done from here:
-      a grade item named **`m04-0922`**, 10 points
-      (*Grades → Manage Grades → New* — nothing in `bscli blocks` creates a
-      bare grade item), and a quiz object named **`m04-0922`** (`quiz.create`
-      makes the shell, but the bscli session was dead on 2026-09-22 and only a
-      human at the GUI can refresh it). Then add the `m04-0922` row under
-      `quizzes:` in `tools/brightspace/course/deadlines.yaml` with its start,
-      end and due — `sync-deadlines` errors on a name Brightspace does not
-      have, so the row comes after the object, not before. The session's
-      `deadline_key` already points at that row.
-
-## The question PDF on Drive
-
-`quiz03.pdf` is in the Drive course folder and shared **read-only with the
-`binghamton.edu` domain** — link-only, not searchable. Students are signed in
-to that account anyway, because the form demands it.
-
-- File id: `1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW`
-- <https://drive.google.com/file/d/1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW/view>
-
-Re-upload after any edit to the sheet, or the link serves a stale quiz:
-
-```sh
-GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
-gws drive files update --params '{"fileId": "1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW"}' \
-    --upload quiz03.pdf --upload-content-type application/pdf
-```
-
-## Two short links
-
-The QR square and the printed address are the course's own short links, not
-Google's. Paper outlives any one form or file, so swapping either is a line on
-the droplet rather than a reprint.
-
-| Link | Goes to |
-|---|---|
-| `go.skojaku.com/quiz03` | the question PDF on Drive |
-| `go.skojaku.com/ans-quiz03` | the Google Form, where the photos go |
-
-Both went live 2026-09-22 as `handle` blocks in the `go.skojaku.com` site of
-`/etc/caddy/Caddyfile` on `ssh digitalocean`, beside the `quiz02` pair. The
-file before that edit is `Caddyfile.bak-20260922-pre-quiz03` next to it.
-After editing, run
-`caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile`, then
-`systemctl reload caddy`.
-
-## The Google Form
-
-- **Students:** <https://go.skojaku.com/ans-quiz03> →
-  <https://docs.google.com/forms/d/e/1FAIpQLSf7TsLd9cfD5olSf483XhbkR5j-xbn4OuShiS8i3XhKvTXUdg/viewform>
-- **Editing and responses:**
-  <https://docs.google.com/forms/d/1ap27Cku9mpn06gwJrt84i7nRgFFs_WnB8O6puCfOero/edit>
-- Form id: `1ap27Cku9mpn06gwJrt84i7nRgFFs_WnB8O6puCfOero`
-- Owned by the Binghamton account (`~/.config/gws-binghamton`).
-
-The form is a drop box, not a copy of the quiz. It links to the PDF and takes
-one photo per question; nothing in it has to stay in step with the sheet, and
-there is no typing for the student to do.
-
-Email collection is `VERIFIED`, so respondents sign in with their
-`@binghamton.edu` account — which is what maps an uploaded photo back to a
-student.
-
-`python3 build_form.py --sync` rewrites the live form from the script. It
-deletes every item first, so run it only before responses arrive, and it
-refuses while the hand-made upload questions exist unless you pass `--force`.
-
-## Where the photos go
-
-Unchanged from Quiz 2 — the convention lives in
-`adv-net-sci-ops/tools/quiz-photos/README.md`. Uploads land in the form owner's
-Drive; `gforms_download.py` files them under a per-session folder in the Drive
-folder `adv-net-sci-ops` (`1m4ZTV0Lgf7LYXU8mn-l3DHZV96hKU-El`), one subfolder
-per student email:
-
-```
-adv-net-sci-ops/M04-2026-09-22-DegreeRobustness/
-  student@binghamton.edu/
-    q1-IMG_1234.jpg
-    q2-IMG_1235.jpg
-```
-
-That session folder exists — `gforms_download.py mkdir`, 2026-09-22, folder id
-`1nET4wsXMIXMJkXIL464yxeXYQmBHGp1Z`.
-
-The form's own file-responses folder is a different thing and Google puts it in
-the Drive root: `advnetsci-quiz03-degree-robustness (File responses)`, moved on
-2026-09-22 into `SSIE 641 Advanced Topics in Network Science/Submission/` where
-quiz01's sits. Quiz 2's is still in the root, if you are tidying.
+- [ ] **Print the sheet.** The last one.
+- [x] **Brightspace**, 2026-09-22. Quiz `m04-0922` (id 92607) feeding grade
+      item `m04-0922` (id 657786), 10 points, category Quiz, unlimited
+      attempts, no time limit, open 09-22 09:40 to 10-04 23:59. Both were made
+      in the browser — the grade item because it has to be (`POST /grades/`
+      answers 403), the quiz because it came with it — and both were renamed
+      from `" m04-0922"`: the leading space would have broken the mark upload,
+      which finds the item by the name in `session.json`. The
+      `tools/brightspace/course/deadlines.yaml` row is in and
+      `sync-deadlines` plans clean.
