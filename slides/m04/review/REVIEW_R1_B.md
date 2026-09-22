@@ -6,7 +6,7 @@
 **Milestones in range** (S5)
 - Part Two (ends at 024) — demo: yes, slide 019 "Try to build this" (two-minute construction task).
 - Part Three, 025–036 — demo: yes, slides 035/036, the star-and-ring worksheet, predict-before-you-count.
-- Part Four, 037–045 — demo: yes, `vaccination-game.html` in slide 045's speaker note — but run from a
+- Part Four, 037–045 — demo: yes, `who-do-you-vaccinate.html` in slide 045's speaker note — but run from a
   slide that already prints both outcomes (Major 3).
 
 Corrections to the brief, from the render: the star-and-ring worksheet is slide **035**, its answer **036**;

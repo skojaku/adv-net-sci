@@ -916,7 +916,7 @@ Vaccine for one node in ten. Picking people at random, or asking each of them to
 Hands up for random, hands up for nominated. Then two of you play it.
 
 <!--
-Live demo: lecture-note/assets/vis/vaccination-game.html. Let two students play random against nomination on the same network before showing the curves. Make the room commit to a margin out loud first.
+Live demo: lecture-note/assets/vis/who-do-you-vaccinate.html. Let two students play random against nomination on the same network before showing the curves. Make the room commit to a margin out loud first.
 -->
 
 ---

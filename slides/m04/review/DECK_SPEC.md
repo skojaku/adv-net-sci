@@ -297,7 +297,7 @@ must show the two sampling procedures, not just the two numbers.
 | 42 | Everything tilts **[A]** | edge-following over-samples hubs and under-samples the edge of the network (**c11**) | `sampling-bias.png` |
 | 43 | Find the hubs without the map? **[Q]** | callback to m03's targeted attack, which needed the whole network | — (`mid`) |
 | 44 | Name a friend **[A]** | acquaintance immunization: random person → name one friend → vaccinate the friend (**c09**) | `acquaintance.png` |
-| 45 | Live demo **[M]** | `vaccination-game.html`; at 10% immunised, random leaves 88% connected, naming a friend leaves 2% (**c10**) — then the cliffhanger | `immunization-curves.png` |
+| 45 | Live demo **[M]** | `who-do-you-vaccinate.html`; at 10% immunised, random leaves 88% connected, naming a friend leaves 2% (**c10**) — then the cliffhanger | `immunization-curves.png` |
 
 Slide 45 closes day 1 with: *the gap is the variance. So how big is the variance in a real
 network?* That is the bridge into Part 5.
@@ -392,13 +392,13 @@ so the loop hands off to the still.
 | 1 | Your turn: compute one girl's friend-mean; the room reproduces 5 vs 2 | 10 |
 | 2 | Build a network with exactly three odd-degree nodes (nobody can) | 19 |
 | 3 | Your turn: predict the star's and ring's gap from Var/⟨k⟩ | 35 |
-| 4 | Live demo — `vaccination-game.html` | 45 |
+| 4 | Live demo — `who-do-you-vaccinate.html` | 45 |
 | 5 | Your turn: slope −1.3 → γ; then the *Data Visualization* paper exercise | 60, 62 |
 | 6 | Tell-them-apart quiz: preferential against uniform growth | 72 |
 | 7 | `friendship-paradox-game.html` — build a network with no paradox | 77 |
 | 8 | Show of hands: do you believe that line? | 85 |
 
-Demo files live at `lecture-note/assets/vis/vaccination-game.html` and
+Demo files live at `lecture-note/assets/vis/who-do-you-vaccinate.html` and
 `friendship-paradox-game.html`.
 
 ## Concept coverage — all 27

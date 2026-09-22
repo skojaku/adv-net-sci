@@ -24,7 +24,7 @@
 | 2つの平均 | Part 3 で1枚使って区別する。3.0 = 友人関係20本についての平均 = $\langle k^2\rangle/\langle k\rangle$(定理はこちらだけを主張する)、2.99 = 8人それぞれの平均を人単位で平均したもの。この区別が Part 7「あなた個人にも成り立つ?」の伏線 |
 | 146人データ | Part 1 末に入れる。「8人はたまたまでは?」に同じ学校の同じデータで答える |
 | 実データ | **arXiv 共著網**(SNAP ca-HepTh または ca-AstroPh)を Part 4/5/6 で貫く。`figures/data/` に同梱して再現可能に。尾が素直な直線にならないなら、それ自体を Part 8 の伏線として使う |
-| 演習 | 1日目末 = vaccination-game.html / 2日目 = ペーパー演習「Data Visualization」を Part 5 直後に一括 / friendship-paradox-game.html は Part 7「消える網」で |
+| 演習 | 1日目末 = who-do-you-vaccinate.html / 2日目 = ペーパー演習「Data Visualization」を Part 5 直後に一括 / friendship-paradox-game.html は Part 7「消える網」で |
 | 2日目の入り | m03 と同じ作法。リキャップなし、パート扉から直接再開 |
 | 結び | Coming up in Module 05: assortativity が「誰と誰が繋がるか」を問い始めた → ではその塊(コミュニティ)とは何か |
 
@@ -87,7 +87,7 @@ Lead + 今日の問い + Roadmap(3枚)のあと:
 5. 答え: 歪む。辺をたどるサンプリングはハブを過剰に、周辺を過少に拾う(**c11**)
 6. 問い: 「では、網の地図を一切持たずにハブを見つけられる?」(m03 の狙い撃ち攻撃の回収)
 7. 答え: 知人免疫 — ランダムに選ぶ → 友人を1人挙げてもらう → 挙がった人に打つ(**c09**)
-8. **ライブデモ: vaccination-game.html**(マイルストーン)+ クリフハンガー「ギャップ = 分散。実際の網の分散は?」
+8. **ライブデモ: who-do-you-vaccinate.html**(マイルストーン)+ クリフハンガー「ギャップ = 分散。実際の網の分散は?」
 
 ### Part 5: Reading the distribution(第3幕前半、約14枚、2日目開始)
 
@@ -145,7 +145,7 @@ Lead + 今日の問い + Roadmap(3枚)のあと:
 - **P1**: Your turn — Feld 網で1人担当し友人の友人平均を計算、教室で 5 対 2 を再現
 - **P2**: 問い — 「奇数次数がちょうど3人の網は作れる?」(握手補題の発見)
 - **P3**: Your turn — 星グラフとリングでギャップを予言してから検算
-- **P4**: ライブデモ vaccination-game.html
+- **P4**: ライブデモ who-do-you-vaccinate.html
 - **P5**: Your turn — 傾き $-1.3$ から $\gamma$ を出す + ペーパー演習「Data Visualization」一括実施
 - **P6**: 見分けクイズ — 優先的選択 vs 一様接続の成長
 - **P7**: friendship-paradox-game.html でパラドックスが消える網を作る + 各エッジケースが問い
