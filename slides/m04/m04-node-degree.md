@@ -104,8 +104,6 @@ It is not a curiosity. It is a tool
 
 <hr>
 
-You built your dataset by crawling — start somewhere, follow the links, keep going. What did you collect?
-
 <div class="fig">
 
 ![w:1080](figures/sampling-bias.png)
@@ -116,7 +114,7 @@ You built your dataset by crawling — start somewhere, follow the links, keep g
 Follow edges and you oversample hubs — so your average degree, your clustering, your everything comes out wrong.
 
 <!--
-This is why "we crawled 100,000 users" is not the same as "we sampled 100,000 users". It biases in a known direction, which is at least something.
+Ask it before you show the figure: you built your dataset by crawling — start somewhere, follow the links, keep going — so what did you collect? This is why "we crawled 100,000 users" is not the same as "we sampled 100,000 users". It biases in a known direction, which is at least something.
 -->
 
 ---
@@ -307,11 +305,10 @@ Out in the tail most bins hold one author, or none, which is where the scatter c
 
 </div>
 
-* Widen the bins and the scatter cleans up, because each bucket holds more nodes — divide by the width and the heights stay comparable.
-* The fitted slope moves with the width. Out in the tail the apparent shape is a choice you made, and neither choice is wrong.
+* Wider bins, less scatter, a different fitted slope. The shape out in the tail is a choice you made.
 
 <!--
-Bin width alone moves this network across the gamma = 3 boundary. None of the widths is wrong, and that is what makes it a problem.
+Each bucket holds more nodes, so dividing by the width keeps the heights comparable — and bin width alone moves this network across the gamma = 3 boundary. None of the widths is wrong, and that is what makes it a problem.
 -->
 
 ---
@@ -527,19 +524,19 @@ Each one breaks something we just said
 
 <hr>
 
-*Hands up if your friends have more friends than you do.* If you are a hub it runs the other way: Sue and Alice beat theirs.
+*Hands up if your friends have more friends than you do.* If you are a hub, no.
 
 <div class="fig">
 
 ![w:1080](figures/individual-vs-average.png)
-<figcaption>the theorem is about the average, and Sue is not the average</figcaption>
+<figcaption>the theorem is about the average, and a hub is not the average</figcaption>
 
 </div>
 
-* It also matters whether you score yourself against your friends' **mean** or their **median**: on Facebook, 92.7% are below the mean and 83.6% below the median — 66 million people sit between the two.
+* Facebook: 92.7% sit below their friends' **mean**, 83.6% below the **median**.
 
 <!--
-The theorem is a statement about the average, not about any one person. The two above the line are the two with four friends each — name them. Ugander et al. 2011, 721 million users: one hub in your friend list drags the mean up and leaves the median alone.
+The theorem is a statement about the average, not about any one person; the two above the line are the two with four neighbours each. Ugander et al. 2011, 721 million users: one hub in your friend list drags the mean up and leaves the median alone, and 66 million people sit between the two numbers.
 -->
 
 ---
@@ -640,7 +637,7 @@ The two exponents are the point of the fragment, so be ready for "which one is r
 
 </div>
 
-One observation about eight girls, pushed until it became a distribution — and whatever we call that tail, how heavy it is drives robustness, distance and speed.
+One node's degree, pushed until it became a distribution — and whatever we call that tail, how heavy it is drives robustness, distance and speed.
 
 <!--
 Walk it: the observation, the mechanism, the identity, the distribution, the doubt. Module 03's critical fraction, Module 02's small-world distances, and spreading speed all came out of the second moment.
