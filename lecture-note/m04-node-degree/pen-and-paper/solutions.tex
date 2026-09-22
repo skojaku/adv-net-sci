@@ -162,36 +162,29 @@
 
 \parthead{1}{Guessing by eye}
 
-{\bf Question 1(a)}: For each of the four pairs, how many times bigger is the
-big one? Length for the lines, area for the square and the circle, volume for
-the cube.
+{\bf Question 1(a)}: Estimate the ratio of the big shape to the small one in
+each pair --- length, area, area, volume.
 
-\arrow \ans{4, 4, 4, and 8.} The line is four times as long. The big square has
-twice the side, so \ans{four times the area}. The big circle has twice the
-radius, so \ans{four times the area}. The big cube has twice the edge, so
-\ans{eight times the volume}.
+\arrow \ans{4, 4, 4, 8.} Twice the side or radius gives four times the area;
+twice the edge gives eight times the volume.
 
-Most people get the line right and underestimate the other three. Typical
-guesses are about 2.5 for the two areas and about 3.5 for the cube.
+Typical guesses are about 2.5 for the two areas and 3.5 for the cube. Only the
+length pair is usually estimated correctly.
 
-{\bf Question 1(b)}: On which pair were you and your neighbour furthest apart,
-and why that pair?
+{\bf Question 1(b)}: Which pair did you and your neighbour disagree on most?
 
-\arrow \ans{The cube.} Guesses get worse as the number of directions a shape
-grows in goes up.
+\arrow \ans{The cube.} The error grows with the number of dimensions.
 
-\parthead{2}{Twenty people and Game of Thrones}
+\parthead{2}{Twenty viewers}
 
-The twenty answers, smallest first:
+The twenty values, sorted:
 
 \begin{center}\gotdata\end{center}
 
-{\bf Question 2}: Count the twenty people into five bins, each five hours wide,
-and darken a bar for each.
+{\bf Question 2}: Bin the values into five equal bins of width 5.
 
-\arrow \ans{16, 3, 0, 0, 1}, drawn below left. Sixteen people watched five
-hours or less. The second bar is 6, 7 and 10. The last bar is the person who
-watched 24 hours.
+\arrow \ans{16, 3, 0, 0, 1} (below left). The second bar is 6, 7, 10; the last
+is 24.
 
 \begin{center}
 \begin{tabular}{@{}c@{\hspace{0.8cm}}c@{}}
@@ -202,141 +195,112 @@ watched 24 hours.
 \end{tabular}
 \end{center}
 
-{\bf Question 3}: Put your thumb over the tallest bar. What can you still say
-about the four people who watched more than five hours? And what does a
-newspaper reader take away in two seconds?
+{\bf Question 3}: What can you read about the four values above 5? What does
+the chart fail to show?
 
-\arrow \ans{Very little.} What is left is 3, 0, 0, 1. You cannot see that three
-of the four watched between 6 and 10 hours, and the last bar is one person
-high.
-
-The reader concludes \ans{``nearly everybody watches under five hours''}. That
-is true, and it is the least useful fact in the data. The chart does not show
-the person who watched 24 hours.
+\arrow \ans{Almost nothing.} The remaining bars are 3, 0, 0, 1. The chart does
+not show that three of the four lie between 6 and 10, and a bar of height 1 is
+hard to tell from 0. \ans{80\% of the data sits in one bin}, so the chart
+resolves the bulk and not the tail.
 
 \parthead{3}{Bins that double}
 
-{\bf Question 4}: The same twenty numbers, counted into six bins, each twice as
-wide as the one before.
+{\bf Question 4}: Bin the same values into six bins, each twice as wide as the
+one before.
 
-\arrow \ans{4, 8, 4, 2, 1, 1}, drawn above right. The eight people on exactly
-2 hours go in the 1--2 bin, by the sheet's boundary rule. The total is still
-twenty; only the bins changed.
+\arrow \ans{4, 8, 4, 2, 1, 1} (above right). The eight values of 2 go in the
+1--2 bin by the boundary rule. The total is still 20.
 
-{\bf Question 5}: In Part 2 sixteen of the twenty sat in one bar. What is the
-biggest bar now, and what did the doubling bins do?
+{\bf Question 5}: Largest bar, and a comparison of the two charts.
 
-\arrow The biggest bar is \ans{8}, the 1--2 bin. \ans{All six bars are
-visible.} After the peak, \ans{each bar is about half the one before} --- 8, 4,
-2, 1. Part 2's chart holds the same halving but has no room to show it.
+\arrow \ans{8}, the 1--2 bin, and \ans{all six bars are resolved}. After the
+peak \ans{each bar is half the one before}: 8, 4, 2, 1. The same halving is
+present in Part 2's data but not resolvable at width 5.
 
-{\bf Question 6(a)}: Mark where 5 goes on each ruler.
+{\bf Question 6(a)}: Mark 5 on each ruler.
 
-\arrow Below. On Ruler A, 5 sits just past 4, about one sixth of the way along.
-On Ruler B it sits between 4 and 8, slightly \ans{left} of the middle of that
-gap: the middle of a doubling step is about 5.7, not 6.
+\arrow Below. Ruler A: at $5/32$ of its length. Ruler B: between 4 and 8 and
+\ans{left of the midpoint}, since the midpoint of a doubling step is
+$4\sqrt{2} \approx 5.7$.
 
 \begin{center}
-\resizebox{0.88\textwidth}{!}{\rulers{\fivemarks}}
+\resizebox{\textwidth}{!}{\rulers{\fivemarks}}
 \end{center}
 
-{\bf Question 6(b)}: Sixteen of your twenty watched between 1 and 4 hours. How
-much of Ruler A do they get? How much of Ruler B? And why can Ruler B never be
-given a 0?
+{\bf Question 6(b)}: What fraction of each ruler spans 1 to 4? Why can Ruler B
+have no 0?
 
-\arrow On Ruler A, 1 to 4 is three units out of thirty-two ---
-\ans{about a tenth} of the ruler, for 80\% of the people. On Ruler B it is two
-steps out of five, \ans{40\%}. \ans{Ruler B is the x-axis of the doubling-bin
-chart in Question 4}, and a chart drawn on it is called a \ans{log plot}.
+\arrow Ruler A: $3/32$, \ans{about 9\%}, for 80\% of the data. Ruler B: two
+steps out of five, \ans{40\%}. Ruler B is the $x$-axis of the Question 4
+chart, and a plot drawn on it is a \ans{log plot}.
 
-Ruler B has no 0 because its left end is reached by halving: 1, $\tfrac12$,
-$\tfrac14$, and so on. \ans{Zero is infinitely far to the left.} A value that
-can be zero or negative cannot go on a log axis.
+Its left end is reached by repeated halving, so \ans{0 lies at $-\infty$}.
+Zero and negative values cannot be plotted on a log axis.
 
-\parthead{4}{Counting without bins}
+{\bf Question 7}: Effect of one added value of 12, then of 2.
 
-{\bf Question 7}: One more person watched 12 hours --- which bar of Part 3
-changes, and by what fraction of itself? Then one more who watched 2 hours
-instead. Which bars would you trust?
+\arrow 12 falls in the 8--16 bin: $1 \to 2$, \ans{+100\%}. 2 falls in the
+1--2 bin: $8 \to 9$, \ans{+12.5\%}.
 
-\arrow The 12-hour person falls in the 8--16 bin, which goes from 1 to 2:
-\ans{+100\%}. The 2-hour person falls in the 1--2 bin, which goes from 8 to 9:
-\ans{+12.5\%}.
+\ans{The left bars are stable, the right bars are not}, and the right bars
+carry the tail. Wider bins cut the variance and the resolution together;
+narrower bins put single counts back in the tail. \ans{No bin width removes the
+trade-off.}
 
-So \ans{the tall bars on the left are stable and the short bars on the right
-are not}. The right-hand bars are the ones you want, because they hold the
-heavy watchers. Wider bins cut the noise but lose the detail; narrower bins put
-one person back in each tail bar. \ans{No bin width fixes this}, which is why
-Part 4 stops choosing one.
+{\bf Question 8}: For each $k$, the number of values greater than $k$.
 
-{\bf Question 8}: For each $k$, how many of the twenty watched more than $k$
-hours?
-
-\arrow Count from the right-hand end of the sorted list:
+\arrow Counted from the upper end of the sorted list:
 
 \begin{center}
 {\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.3}
 \begin{tabular}{|l|C{1.6cm}|C{1.6cm}|C{1.6cm}|C{1.6cm}|C{1.6cm}|}
 \hline
-$k$ hours & 1 & 2 & 4 & 8 & 16 \\
+$k$ & 1 & 2 & 4 & 8 & 16 \\
 \hline
-people watching more & 16 & \ans{8} & \ans{4} & \ans{2} & \ans{1} \\
+count above $k$ & 16 & \ans{8} & \ans{4} & \ans{2} & \ans{1} \\
 \hline
-as a fraction of 20 & 0.80 & \ans{0.40} & \ans{0.20} & \ans{0.10} & \ans{0.05} \\
+fraction of 20 & 0.80 & \ans{0.40} & \ans{0.20} & \ans{0.10} & \ans{0.05} \\
 \hline
 \end{tabular}}
 \end{center}
 
-{\bf Question 9(a)}: Plot the five fractions on two doubling rulers. What do
-the points do?
+{\bf Question 9(a)}: Plot the five fractions on doubling axes.
 
-\arrow \ans{They fall on a straight line.}
+\arrow \ans{A straight line.} Each doubling of $k$ halves the count: 16, 8, 4,
+2, 1, and on log--log axes halving one variable as the other doubles is a line
+of \ans{slope $-1$}.
+
+This count is the \ans{CCDF}, $P(X > k)$. It needs no bins.
 
 \begin{center}
-\resizebox{0.66\textwidth}{!}{\ccdfgrid{\ccdfsol}}
+\resizebox{0.85\textwidth}{!}{\ccdfgrid{\ccdfsol}}
 \end{center}
 
-Each time $k$ doubles, \ans{the count halves}: 16, 8, 4, 2, 1. On two doubling
-rulers, one quantity halving as the other doubles is a straight line at 45
-degrees.
+{\bf Question 9(b)}: The fraction of values at most $k$: 0.80, 0.90, 0.95.
 
-This count is the \ans{CCDF}, the fraction of the data above $k$. It needs no
-bins.
+\arrow They \ans{rise towards 1 and flatten}, and cannot exceed it. Both counts
+carry the same data, since one is 1 minus the other, but this one compresses
+the whole tail into $[0.95, 1]$.
 
-{\bf Question 9(b)}: Someone counts the other way round: the fraction watching
-$k$ hours \emph{or fewer}, which is 0.80 at $k = 4$, 0.90 at $k = 8$, 0.95 at
-$k = 16$. What are those numbers doing, and which count shows you the 24-hour
-person?
+\ans{The CCDF shows the value 24}, as its rightmost point. The ``at most $k$''
+count is the \ans{CDF}: use it for the bulk and the CCDF for the tail.
 
-\arrow They \ans{rise towards 1 and flatten}, and cannot pass it. The two
-counts hold the same twenty numbers, since one is 1 minus the other. This one
-puts every heavy watcher between 0.95 and 1, where the differences are too
-small to read.
+{\bf Question 10}: Procedure for $10^6$ nodes, and which plot to publish.
 
-\ans{The ``more than'' count shows the 24-hour person}, as the last point on
-the right. The ``or fewer'' count is the \ans{CDF}. Use the CDF for the typical
-case and the CCDF for the tail.
+\arrow \ans{For each $k$, count the nodes of degree greater than $k$, divide by
+$n$, and plot against $k$ on log--log axes.} One pass over the degrees, no bin
+width, no empty bins, and every node contributes to every point.
 
-{\bf Question 10}: The twenty people are now twenty nodes and each number is
-how many friends that node has. How would you draw Question 9(a)'s picture for
-a million nodes? And which of today's three pictures would you print?
+\ans{Publish the third plot.} The first resolves only the bulk; the second is
+noisy where the data is thin; the third resolves the tail.
 
-\arrow For each $k$, \ans{count how many nodes have more than $k$ friends,
-divide by a million, and plot that against $k$ with both axes doubling}.
-Nothing in the procedure grows with the network except the counting: no bin
-width, no empty bars, and every node contributes to every point.
+Names: the number of friends of a node is its \ans{degree}, the counts are the
+\ans{degree distribution}, and a degree distribution with a straight-line CCDF
+on log--log axes is a \ans{power law}. If $p(k) \sim k^{-\gamma}$ then the CCDF
+has slope $1 - \gamma$, so the slope of $-1$ here means
+$\mans{\gamma = 2}$.
 
-\ans{Print the third picture.} The first hides 80\% of the network in one bar.
-The second shows the shape but moves by 100\% where the data is thin. The third
-shows the tail.
-
-Names for what you drew. How many friends a node has is its \ans{degree}. The
-counts are the \ans{degree distribution}. A degree distribution whose CCDF is a
-straight line on doubling axes is a \ans{power law}, and its slope says how
-rare the hubs are --- here the count halves at every doubling, a slope of
-$\mans{-1}$.
-
-One caveat. A straight line on a log plot is not proof of a power law. Testing
-the claim needs statistics, not eyeballing.
+A straight line on log--log axes is not proof of a power law; the claim needs a
+statistical fit, not an eye.
 
 \end{document}

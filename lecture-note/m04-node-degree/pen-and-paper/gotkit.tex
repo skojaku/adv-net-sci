@@ -112,11 +112,11 @@
 \newcommand{\rulers}[1]{%
 \begin{tikzpicture}[y=1cm]
   % Top: even spacing, 0 to 32 across 12cm.
-  \draw[axisline] (0,2.9) -- (12.4,2.9);
+  \draw[axisline] (0,3.6) -- (12.4,3.6);
   \foreach \n in {0,4,8,12,16,20,24,28,32} {
-    \draw[axisline] (\n*0.375,2.9) -- ++(0,-0.24);
-    \node[tlab, below] at (\n*0.375,2.66) {\n};}
-  \node[tlab, anchor=west] at (0,3.95) {\bfseries Ruler A \normalfont ---
+    \draw[axisline] (\n*0.375,3.6) -- ++(0,-0.24);
+    \node[tlab, below] at (\n*0.375,3.36) {\n};}
+  \node[tlab, anchor=west] at (0,4.65) {\bfseries Ruler A \normalfont ---
     every step adds 4};
   % Bottom: doubling, 1 to 32 across the same 12cm.
   \draw[axisline] (0,0) -- (12.4,0);
@@ -134,7 +134,7 @@
 % Slot i on x is 1,2,4,8,16; slot j on y is 0.05,0.1,0.2,0.4,0.8.
 % ---------------------------------------------------------------------------
 \newcommand{\ccdfgrid}[1]{%
-\begin{tikzpicture}[x=2.35cm, y=1.30cm]
+\begin{tikzpicture}[x=2.35cm, y=1.72cm]
   \foreach \j in {0,1,2,3,4} \draw[gridline] (0,\j) -- (4.3,\j);
   \foreach \i in {0,1,2,3,4} \draw[gridline] (\i,-0.3) -- (\i,4.3);
   #1
@@ -171,8 +171,8 @@
 % Part 3: where 5 lands on each ruler. On Ruler A that is 5/32 along; on
 % Ruler B it is log2(5) = 2.32 steps of 2.4cm.
 \newcommand{\fivemarks}{%
-  \draw[marker] (1.875,3.28) -- (1.875,2.52);
-  \node[tlab, pltblue!72!black, above] at (1.875,3.28) {\bfseries 5};
+  \draw[marker] (1.875,3.98) -- (1.875,3.22);
+  \node[tlab, pltblue!72!black, above] at (1.875,3.98) {\bfseries 5};
   \draw[marker] (5.573,0.38) -- (5.573,-0.38);
   \node[tlab, pltblue!72!black, above] at (5.573,0.38) {\bfseries 5};}
 
