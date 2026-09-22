@@ -1,33 +1,112 @@
+% Standard pen-and-paper worksheet preamble, in the form m01 and m02 use.
+% Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+%
+% 14pt, not 12pt: the sheet is read with a pencil in hand. There are no blanks
+% and no ruled answer gaps anywhere on it -- questions are asked in words and
+% answered on the back -- so the paper those would have cost goes to the text
+% and to the drawings.
 \documentclass[a4paper, 14pt]{extarticle}
-\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage[top=0.75in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{array}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
 \usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
 \usepackage{tikz}
-\usepackage{tikz-3dplot}
 \usepackage{fontspec}
-%\usetikzlibrary{decorations.pathmorphing}
-\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,3d}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
-% Handwriting font, resolved once into \ppfont and \ppfontname.
-%
-% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
-% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
-% the one face that is always present; Latin Modern is the last resort.
+
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
 %
 % Naming a font that is not installed is a hard error, not a fallback, which is
-% why this is a chain and not a line: seven sheets used to name one outright
-% and stopped building the day it was uninstalled.
-\def\ppfontname{Latin Modern Roman}
-\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
-  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
-    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
-\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
-\expandafter\setmainfont\expandafter{\ppfontname}
-\tikzset{every picture/.style={/utils/exec={\ppfont}}}
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
 
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The lab the sheet hands off to, if it has one. Both the QR code and the
+% printed address are the course's own short link, never the notebook's: paper
+% outlives any one upload, so re-uploading a lab is a line on the server
+% (/etc/caddy/Caddyfile, block go.skojaku.com) and not a reprint.
+%
+%   uvx --from segno segno --output=mNNlab-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/mNNlab"
+%
+% --border=4 is the quiet zone the QR spec asks for and is not optional: at
+% --border=1 some codes run to the edge of the PNG and OpenCV reads nothing.
+\newcommand{\molablink}{https://go.skojaku.com/mNNlab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/mNNlab}}}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
 \makeatletter
 \pgfset{
   /pgf/decoration/randomness/.initial=2,
@@ -50,165 +129,187 @@
 \tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
 \makeatother
 
-\usepackage{etoolbox}
-\AtBeginEnvironment{tabular}{\ppfont}
+% Charts shared with solutions.tex.
+\input{gotkit}
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.5em}
-\usepackage{fancyhdr}
-\usepackage{geometry}
-\usepackage{adjustbox}
-\usepackage{titling}
+% The twenty answers, smallest first. One list, so the sheet and its key can
+% never disagree about the data.
+\newcommand{\dsp}{\hspace{0.75em}}
+\newcommand{\gotdata}{1\dsp 1\dsp 1\dsp 1\dsp 2\dsp 2\dsp 2\dsp 2\dsp 2\dsp
+  2\dsp 2\dsp 2\dsp 3\dsp 3\dsp 4\dsp 4\dsp 6\dsp 7\dsp 10\dsp 24}
 
 \begin{document}
 
-\subsection*{Data Visualization}
+\parthead{1}{Your eye is not a ruler}
 
-{\bf Question 1:} How many times is the bigger one bigger than the smaller one in terms of length, area, and volume?
+Four pairs of shapes are drawn below. In each pair, one is bigger.
 
+{\bf Question 1(a)}: For each pair, write down how many times bigger the big
+one is. Use \textbf{length} for the lines, \textbf{area} for the square and the
+circle, and \textbf{volume} for the cube.
+
+Guess by eye. Do not measure anything.
+
+\vspace{0.2em}
 \begin{center}
-\begin{tikzpicture}[xkcd]
-    \draw (0,1) -- (1,1);
-    \draw (0,0) -- (4,0);
-\end{tikzpicture}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{cc}
+\resizebox{0.47\textwidth}{!}{\sizeline} &
+\resizebox{0.40\textwidth}{!}{\sizesquare} \\[0.3em]
+{\small (a) length} & {\small (b) area} \\[1.6em]
+\resizebox{0.40\textwidth}{!}{\sizecircle} &
+\resizebox{0.45\textwidth}{!}{\sizecube} \\[0.3em]
+{\small (c) area} & {\small (d) volume} \\
+\end{tabular}
 \end{center}
 
-\begin{center}
-\begin{tikzpicture}[xkcd]
-    \draw (0,0) rectangle (1,1);
-    \draw (2,0) rectangle (4,2);
-\end{tikzpicture}
-\end{center}
+\needroom{4\baselineskip}%
+{\bf Question 1(b)}: Compare your four numbers with your neighbour's.
+
+On which pair were the two of you furthest apart? Why that pair and not the
+others?
+
+\parthead{2}{Twenty people and Game of Thrones}
+
+You stop twenty people and ask each one how many hours they spent watching
+Game of Thrones last week. Here are the twenty answers, smallest first.
 
 \begin{center}
-\begin{tikzpicture}[xkcd]
-    \draw (0,0) circle (0.5cm);
-    \draw (2,0) circle (1cm);
-\end{tikzpicture}
-\end{center}
-
+\begin{tcolorbox}[colback=white, width=0.96\textwidth, boxsep=1pt,
+                  top=5pt, bottom=5pt]
 \begin{center}
-\begin{tikzpicture}[xkcd]
-    \draw (0,0,0) -- (1,0,0) -- (1,1,0) -- (0,1,0) -- cycle;
-    \draw (0,0,0) -- (0,0,1) -- (1,0,1) -- (1,0,0);
-    \draw (1,0,1) -- (1,1,1) -- (0,1,1) -- (0,0,1);
-    \draw (1,1,0) -- (1,1,1);
-    \draw (0,1,0) -- (0,1,1);
-    \node at (0.5,-0.5,0.5) {};
-
-    \begin{scope}[xshift=3cm,scale=2]
-    \draw (0,0,0) -- (1,0,0) -- (1,1,0) -- (0,1,0) -- cycle;
-    \draw (0,0,0) -- (0,0,1) -- (1,0,1) -- (1,0,0);
-    \draw (1,0,1) -- (1,1,1) -- (0,1,1) -- (0,0,1);
-    \draw (1,1,0) -- (1,1,1);
-    \draw (0,1,0) -- (0,1,1);
-    \node at (0.5,-0.5,0.5) {};
-    \end{scope}
-\end{tikzpicture}
+\gotdata
 \end{center}
-
-Discuss how your estimates compare to the actual ratios. Did you notice that it became harder to estimate accurately for areas and volumes?
-
-\newpage
-
-\begin{minipage}{\textwidth}
-    {\bf Question 2: Histograms}
-
-    \begin{enumerate}
-        \item Draw a histogram representing the number of hours people spend watching Game of Thrones per week. Use the following data:
-
-        \begin{center}
-            \begin{tabular}{|c|c|}
-                \hline
-                Hours per week & Number of people \\
-                \hline
-                $(0,2]$ & 15 \\
-                $(2,4]$ & 25 \\
-                $(4,6]$ & 35 \\
-                $(6,8]$ & 20 \\
-                $(8,10]$ & 5 \\
-                \hline
-            \end{tabular}
-        \end{center}
-
-        Use equal bin sizes and label your axes appropriately.
-
-        \item Now, draw another histogram using the same data but with varying bin sizes:
-        \begin{center}
-            \begin{tabular}{|c|c|}
-                \hline
-                Hours per week & Number of people \\
-                \hline
-                $(0,2]$ & 15 \\
-                $(2,4]$ & 40 \\
-                $(4,8]$ & 45 \\
-                $(8,16]$ & 30 \\
-                $(16,32]$ & 20 \\
-                \hline
-            \end{tabular}
-        \end{center}
-        How does this change the appearance of the distribution?
-    \end{enumerate}
-\end{minipage}
-
-\newpage
-
-{\bf Question 3:} Consider the following linear and logarithmic scales:
-Mark the position of 5 and 25 on the logarithmic scale.
-
-\begin{center}
-\begin{tikzpicture}
-    % Linear scale
-    \draw[thick] (0,2) -- (13,2);
-    \foreach \x in {0,1,...,10} {
-        \draw (\x,1.9) -- (\x,2.1);
-        \node[below] at (\x,1.9) {\x};
-    }
-    \node[above] at (5,2.2) {Linear:};
-
-    % Logarithmic scale
-    \draw[thick] (0,0) -- (13,0);
-    \foreach \x/\label in {0/1,1/2,2/4,3/8,3.3/10} {
-        \draw (\x*2.5, -0.1) -- (\x*2.5, 0.1);
-        \node[below] at (\x*2.5, -0.1) {\label};
-    }
-    \node[above] at (5,0.2) {Log:};
-\end{tikzpicture}
-\end{center}
-
-
-{\bf Question 4:} Draw a histogram using a logarithmic scale for the x-axis (hours watched) using the data from Question 2.2.
-
-\newpage
-
-{\bf Question 5:}
-
-\begin{tcolorbox}
-The Cumulative Distribution Function (CDF) of a random variable \(X\) is defined as:
-\[
-F(x) = P(X \leq x)
-\]
-It represents the fraction of data points that are less than or equal to \(x\).
-The Complementary Cumulative Distribution Function (CCDF) is defined as:
-\[
-\bar{F}(x) = P(X > x) = 1 - F(x)
-\]
-It represents the the fraction of data points that are greater than \(x\).
 \end{tcolorbox}
-
-
-1. Draw the CDF and CCDF of the following data in linear scale.
-
-\begin{center}
-\{0, 1, 2, 5, 3, 7, 1, 9, 4, 6, 2, 8, 5, 10, 5, 7, 4, 8, 8, 1\}
 \end{center}
 
-2. Draw the CDF and CCDF of the following data in logarithmic scale (both x and y axes).
+One rule for all the counting below: somebody sitting exactly on the boundary
+between two bins belongs in the lower one.
 
+\needroom{11\baselineskip}%
+{\bf Question 2}: The grid below is cut into five bins, each five hours wide.
+Count how many of the twenty people fall into each bin, and darken a bar that
+tall.
+
+\vspace{0.3em}
 \begin{center}
-\{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 1, 2, 4, 8, 16, 32, 256, 1, 2, 4, 32, 64, 1\}
+\linhist{}
 \end{center}
 
+\needroom{5\baselineskip}%
+{\bf Question 3}: Put your thumb over the tallest bar.
 
+Four people watched more than five hours. What can you still say about those
+four from the part of the chart your thumb is not covering?
+
+A newspaper prints your chart. A reader looks at it for two seconds. What do
+they walk away believing about how people watch?
+
+\parthead{3}{Bins that double}
+
+The same twenty people and the same twenty numbers. This time the bins are not
+equal: each one is twice as wide as the one before it.
+
+{\bf Question 4}: Count the twenty people into these six bins and darken a bar
+for each. The first bin is darkened already.
+
+\vspace{0.3em}
+\begin{center}
+\loghist{\logbar{0}{4}}
+\end{center}
+
+\needroom{4\baselineskip}%
+{\bf Question 5}: In Part 2's chart, sixteen of the twenty people sit in one
+single bar.
+
+In the chart you have just drawn, what is the largest number of people in any
+one bar?
+
+Say in one sentence what the doubling bins did.
+
+\needroom{6\baselineskip}%
+{\bf Question 6(a)}: The six bins get wider and wider, but you drew them all
+the same width. That is a choice about the ruler underneath the chart.
+
+Below are two rulers. They are the same length on the page.
+
+Mark where \textbf{5} goes on each of them.
+
+\vspace{0.4em}
+\begin{center}
+\resizebox{0.98\textwidth}{!}{\rulers{}}
+\end{center}
+\vspace{0.4em}
+
+\needroom{5\baselineskip}%
+{\bf Question 6(b)}: The people who watched between 1 and 4 hours are twelve of
+your twenty. How much of Ruler A do those people get? How much of Ruler B?
+
+Ruler B has no 0 on it, and cannot be given one. Why not?
+
+\parthead{4}{Counting without bins}
+
+{\bf Question 7}: Look at the two shortest bars in Part 3, the 8--16 bin and
+the 16--32 bin. Each one is a single person.
+
+You survey one more person, who watched 12 hours. Which of those two bars
+changes, and by what fraction of itself?
+
+You survey one more person, who watched 2 hours instead. Which bar changes, and
+by what fraction of itself?
+
+So which bars of the chart in Part 3 would you trust?
+
+\needroom{7\baselineskip}%
+{\bf Question 8}: Here is a count that never picks a bin. Go back to the twenty
+numbers in Part 2 and count, for each $k$ in the table, how many of the twenty
+watched \textbf{more than $k$ hours}. The $k = 1$ column is done.
+
+\begin{center}
+{\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|l|C{1.7cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|}
+\hline
+$k$ hours & 1 & 2 & 4 & 8 & 16 \\
+\hline
+people watching more & 16 & & & & \\
+\hline
+as a fraction of 20 & 0.80 & & & & \\
+\hline
+\end{tabular}}
+\end{center}
+
+\needroom{5\baselineskip}%
+{\bf Question 9(a)}: Plot your five fractions on the grid below. Both of its
+rulers double, like Ruler B.
+
+\vspace{0.3em}
+\begin{center}
+\ccdfgrid{}
+\end{center}
+
+\vspace{0.2em}
+What do the five points do?
+
+Say what happens to the number of people left every time the hours double.
+
+\needroom{5\baselineskip}%
+{\bf Question 9(b)}: Somebody counts the other way round: the fraction of
+people who watched $k$ hours \textbf{or fewer}. At $k = 4$ that fraction is
+0.80, at $k = 8$ it is 0.90, at $k = 16$ it is 0.95.
+
+Say what those three numbers are doing as $k$ grows.
+
+Which of the two counts lets you see the person who watched 24 hours?
+
+\needroom{5\baselineskip}%
+{\bf Question 10}: Now the twenty people are twenty nodes of a network, and
+each number is how many friends that person has. Nothing about the counting
+changes.
+
+Describe how you would draw Question 9(a)'s picture for a network of a million
+nodes. You do not have to do any arithmetic --- just say what you would count
+and what you would plot.
+
+And of the three pictures you drew today, which one would you print? Why?
 
 \end{document}
