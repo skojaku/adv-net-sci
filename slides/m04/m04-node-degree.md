@@ -4,6 +4,7 @@ theme: network-science
 paginate: true
 math: katex
 ---
+
 <!-- _class: lead -->
 
 <div class="eyebrow">Advanced Topics in Network Science · Module 04</div>
@@ -21,6 +22,7 @@ The paradox is done; this half is the distribution it turned into. Two reminder 
 -->
 
 ---
+
 ## Roadmap for today
 
 <hr>
@@ -36,6 +38,7 @@ The paradox is done; this half is the distribution it turned into. Two reminder 
 </div>
 
 ---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part One</span><span class="count">01 / 05</span></div>
@@ -45,6 +48,7 @@ The paradox is done; this half is the distribution it turned into. Two reminder 
 Two slides, and then we move on
 
 ---
+
 <!-- _class: mid -->
 
 ## Degree
@@ -68,6 +72,7 @@ Every edge has two ends, so $\sum_i k_i = 2M$ and $\langle k\rangle = 2M/N$.
 </div>
 
 ---
+
 ## Why a friend's degree beats yours
 
 <hr>
@@ -84,6 +89,7 @@ Read the four lines out. Nothing on this slide is new: Module 04's first half de
 -->
 
 ---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Two</span><span class="count">02 / 05</span></div>
@@ -93,6 +99,7 @@ Read the four lines out. Nothing on this slide is new: Module 04's first half de
 It is not a curiosity. It is a tool
 
 ---
+
 ## Everything tilts
 
 <hr>
@@ -113,13 +120,14 @@ This is why "we crawled 100,000 users" is not the same as "we sampled 100,000 us
 -->
 
 ---
+
 ## The vaccine game
 
 <hr>
 
 <div class="formula">
 
-lecture-note/assets/vis/vaccination-game.html
+lecture-note/assets/vis/who-do-you-vaccinate.html
 
 </div>
 
@@ -128,6 +136,7 @@ Vaccine for one node in ten, and no map of who knows whom. Two students play it 
 -->
 
 ---
+
 ## Nominated wins, and not by a little
 
 <hr>
@@ -140,6 +149,7 @@ Vaccine for one node in ten, and no map of who knows whom. Two students play it 
 </div>
 
 ---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Three</span><span class="count">03 / 05</span></div>
@@ -149,6 +159,7 @@ Vaccine for one node in ten, and no map of who knows whom. Two students play it 
 First, how a distribution gets drawn at all
 
 ---
+
 ## Twenty nodes
 
 <hr>
@@ -163,6 +174,7 @@ First, how a distribution gets drawn at all
 * *Draw me the picture. Two minutes, on paper.*
 
 ---
+
 ## A bar for each degree
 
 <hr>
@@ -177,6 +189,7 @@ Divide every height by 20 and this is $p(k)$, the **degree distribution**.
 </div>
 
 ---
+
 ## Now the bins are not equal
 
 <hr>
@@ -191,6 +204,7 @@ Divide every height by 20 and this is $p(k)$, the **degree distribution**.
 * *Is $k = 4$ really almost as common as $k = 1$? Hands up.*
 
 ---
+
 ## Area, not height
 
 <hr>
@@ -205,6 +219,7 @@ Divide each count by its bin width, and the bar's **area** is the count again.
 </div>
 
 ---
+
 ## Here is that gap
 
 <hr>
@@ -223,6 +238,7 @@ The same coauthorship network, now with every degree on the axis. None of those 
 -->
 
 ---
+
 ## Nothing — and here is why
 
 <hr>
@@ -241,6 +257,7 @@ The tail runs to 279. On this axis those 28 authors are less than a pixel tall e
 -->
 
 ---
+
 ## A line appears
 
 <hr>
@@ -259,6 +276,7 @@ Nothing was recomputed; only the ruler changed. Gamma is the one number that say
 -->
 
 ---
+
 ## Every point came out of a bin
 
 <hr>
@@ -277,6 +295,7 @@ Out in the tail most bins hold one author, or none, which is where the scatter c
 -->
 
 ---
+
 ## The shape was a choice
 
 <hr>
@@ -296,6 +315,7 @@ Bin width alone moves this network across the gamma = 3 boundary. None of the wi
 -->
 
 ---
+
 ## Count upward instead
 
 <hr>
@@ -310,6 +330,7 @@ Bin width alone moves this network across the gamma = 3 boundary. None of the wi
 * Nothing here has a width: every node is counted at every $k$.
 
 ---
+
 ## Or count from the top
 
 <hr>
@@ -324,6 +345,7 @@ Bin width alone moves this network across the gamma = 3 boundary. None of the wi
 * $\mathrm{CCDF}(k) = P(k' > k)$: the fraction **above** $k$, and no bins at all.
 
 ---
+
 <!-- _class: mid -->
 
 ## The same data, no choices
@@ -344,6 +366,7 @@ Smooth where the histogram was ragged, and it did not cost anything — the same
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## Integrate and see
@@ -364,6 +387,7 @@ Integrating k^-gamma gives k^(1-gamma): the exponent moves UP by one, which is t
 -->
 
 ---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Four</span><span class="count">04 / 05</span></div>
@@ -373,6 +397,7 @@ Integrating k^-gamma gives k^(1-gamma): the exponent moves UP by one, which is t
 A tail that long has to be built by something
 
 ---
+
 ## Everywhere you look
 
 <hr>
@@ -391,6 +416,7 @@ Different sizes, different mechanisms, same qualitative tail. Hold on to the wor
 -->
 
 ---
+
 ## Not a random one
 
 <hr>
@@ -409,6 +435,7 @@ Wire a network up completely at random — Module 02's graph — and ask them to
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## So where do the real ones come from?
@@ -428,6 +455,7 @@ Fish for "they grow" and for "popular things get more popular". You need both.
 -->
 
 ---
+
 ## Growth, then preference
 
 <hr>
@@ -446,6 +474,7 @@ Networks are not wired all at once: nodes keep arriving, each bringing a few edg
 -->
 
 ---
+
 ## Which is which?
 
 <hr>
@@ -464,6 +493,7 @@ Do not let anyone off with "the left one looks clumpier". Ask what in the tail t
 -->
 
 ---
+
 ## Preference is the whole difference
 
 <hr>
@@ -482,6 +512,7 @@ And neither ingredient works alone: uniform growth gives an exponential tail, pr
 -->
 
 ---
+
 <!-- _class: part -->
 
 <div class="band"><span>Part Five</span><span class="count">05 / 05</span></div>
@@ -491,6 +522,7 @@ And neither ingredient works alone: uniform growth gives an exponential tail, pr
 Each one breaks something we just said
 
 ---
+
 ## “On average” is not “for you”
 
 <hr>
@@ -511,6 +543,7 @@ The theorem is a statement about the average, not about any one person. The two 
 -->
 
 ---
+
 ## $p(k)$ counts hubs, not who they touch
 
 <hr>
@@ -529,6 +562,7 @@ Same p(k) for all three, completely different networks. Social hubs sit in a cor
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## Show of hands
@@ -548,6 +582,7 @@ Count the hands. Say you are counting them. Then show the next slide.
 -->
 
 ---
+
 ## This one is not a power law
 
 <hr>
@@ -566,6 +601,7 @@ The log-normal. It arises from multiplying random factors — which is at least 
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## So it takes a test, not an eye
@@ -590,6 +626,7 @@ The two exponents are the point of the fragment, so be ready for "which one is r
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## Module 04 in one page
@@ -610,6 +647,7 @@ Walk it: the observation, the mechanism, the identity, the distribution, the dou
 -->
 
 ---
+
 <!-- _class: mid -->
 
 ## Coming up in Module 05
