@@ -8,21 +8,15 @@
 % the end of a random edge. Question 1 is the friendship paradox, Question 2
 % the percolation threshold, and kappa = <k^2>/<k> is the same number in both.
 %
+% The sheet states the setting and asks for the result. It does NOT lay out the
+% route: q(k), the branching factor, the -1 for the incoming edge, the variance
+% form of the gap and the Poisson second moment are all things the student has
+% to produce. That is the whole assessment, so do not "helpfully" put any of
+% them back on the sheet.
+%
 % Compile with: xelatex -interaction=nonstopmode quiz03.tex   (run twice)
-\documentclass[a4paper, 11pt]{extarticle}
+\documentclass[a4paper, 12pt]{extarticle}
 \input{quizkit}
-
-% This sheet carries two derivations and a shared notation box, which is more
-% text than Quiz 1 or 2. 11pt and slightly tighter margins keep it to the one
-% page the house style asks for; everything else is quizkit's.
-\geometry{top=0.52in, bottom=0.4in, left=0.72in, right=0.72in}
-\setlength{\parskip}{0.3em}
-\renewcommand{\question}[3]{%
-  \vspace{0.25em}
-  {\large\bfseries Question #1 \quad\normalsize\mdseries (#2 points)
-   \quad #3}\par
-  \vspace{-0.25em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par
-  \vspace{0.05em}}
 
 \begin{document}
 
@@ -53,17 +47,14 @@ the square, or type \formshort.
                   sharp corners, boxsep=2pt, left=6pt, right=6pt,
                   top=4pt, bottom=4pt]
 {\small
-\textbf{Notation, used by both questions.}
-$G$ is a finite, simple, undirected network with $N$ nodes and $M \ge 1$ edges
-(no self-loops, no repeated edges). Node $i$ has \textbf{degree} $k_i$, the
-number of edges touching it, and $\mathcal{N}(i)$ is its set of neighbors, so
-$|\mathcal{N}(i)| = k_i$. The \textbf{degree distribution} $p(k)$ is the
-fraction of nodes of degree exactly $k$; the ratio $\kappa$ below is the
-\textbf{degree heterogeneity}. Averages over \emph{nodes} are
+\textbf{Notation.}
+$G$ is a finite, simple, undirected network with $N$ nodes and $M \ge 1$ edges.
+Node $i$ has degree $k_i$ and neighbor set $\mathcal{N}(i)$. The degree
+distribution $p(k)$ is the fraction of nodes of degree exactly $k$, and
 \[
-  \langle k \rangle = \sum_k k\, p(k) = \frac{1}{N}\sum_{i} k_i ,
+  \langle k \rangle = \sum_k k\, p(k) ,
   \quad
-  \langle k^2 \rangle = \sum_k k^2 p(k) = \frac{1}{N}\sum_{i} k_i^2 ,
+  \langle k^2 \rangle = \sum_k k^2 p(k) ,
   \quad
   \mathrm{Var}(k) = \langle k^2 \rangle - \langle k \rangle^2 ,
   \quad
@@ -75,62 +66,42 @@ fraction of nodes of degree exactly $k$; the ratio $\kappa$ below is the
 % ---------------------------------------------------------------------------
 \question{1}{5}{Your friends have more friends than you.}
 
-List every \textbf{(person, friend) pair} in $G$: for each node $i$ and each
-$j \in \mathcal{N}(i)$, write down $(i,j)$. There are $\sum_i k_i = 2M$ such
-pairs, one per edge endpoint. The \textbf{average degree of a friend} is the
-friend's degree averaged over that list,
+The \textbf{average degree of a friend} is the friend's degree averaged over
+every (person, friend) pair in $G$ --- that is, over all $2M$ edge endpoints:
 \[
   \langle k_f \rangle
   \;\equiv\; \frac{1}{2M} \sum_{i} \sum_{j \in \mathcal{N}(i)} k_j .
 \]
 
-\textbf{(a) [3 pts]} Prove the first equality below, and deduce the rest:
-\[
-  \langle k_f \rangle = \frac{\langle k^2 \rangle}{\langle k \rangle} ,
-  \qquad\text{hence}\qquad
-  \langle k_f \rangle - \langle k \rangle
-  = \frac{\mathrm{Var}(k)}{\langle k \rangle} \;\ge\; 0 ,
-  \qquad\text{so}\qquad
-  \langle k \rangle \le \langle k_f \rangle .
-\]
-Note where the argument needs $\langle k \rangle > 0$.
+\textbf{(a) [3 pts]} Prove that $\langle k \rangle \le \langle k_f \rangle$ in
+every such network.
 
-\textbf{(b) [2 pts]} State exactly which networks satisfy
-$\langle k \rangle = \langle k_f \rangle$, prove your condition in
-\emph{both} directions, and name one such network with at least 4 nodes.
+\vspace{0.1em}
+
+\textbf{(b) [2 pts]} State exactly when equality holds, and prove it.
 
 % ---------------------------------------------------------------------------
 \question{2}{5}{How much can you delete before it falls apart?}
 
-Now let $G$ be a \textbf{configuration model} network: $N$ nodes are given
-degrees from $p(k)$, each is cut into that many half-edges, and the half-edges
-are paired uniformly at random. For large $N$ it is \textbf{locally tree-like}
-(short cycles are vanishingly rare), so exploring outward from a node behaves
-like a branching process --- \emph{you may assume this}. A \textbf{giant
-component} holds a non-vanishing fraction of the $N$ nodes as $N \to \infty$;
-under \textbf{random failure} every node is deleted independently with
-probability $f$, so a fraction $1-f$ survives.
+Let $G$ be a \textbf{configuration model} network: $N$ nodes are given degrees
+from $p(k)$, each is cut into that many half-edges, and the half-edges are
+paired uniformly at random. Assume $N$ is large and the network is
+\textbf{locally tree-like}. A \textbf{giant component} holds a non-vanishing
+fraction of the $N$ nodes as $N \to \infty$.
 
-\textbf{(a) [2 pts]} Pick an edge of $G$ uniformly at random and follow it to
-one of its two ends. Show that the node you arrive at has degree $k$ with
-probability
-\[
-  q(k) \;=\; \frac{k\, p(k)}{\langle k \rangle} ,
-\]
-and hence that the expected number of \emph{further} edges leading onward ---
-the \textbf{branching factor} --- is $\kappa - 1$. Then give the condition on
-$\kappa$ for a giant component to exist, with a one-sentence reason.
+Now delete every node independently with probability $f$.
 
-\textbf{(b) [2 pts]} Now delete a fraction $f$ of the nodes at random. Say what
-this does to the branching factor, and solve for the \textbf{critical fraction}
-$f_c$ at which the giant component disappears. Give $f_c$ in terms of $\kappa$.
+\vspace{0.2em}
 
-\textbf{(c) [1 pt]} Evaluate $f_c$ for \textbf{(i)} a Poisson $p(k)$ of mean
-$\langle k \rangle$, where
-$\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$, and
-\textbf{(ii)} $p(k) \sim k^{-\gamma}$ with $2 < \gamma < 3$ as
-$N \to \infty$, where $\langle k^2 \rangle$ diverges. One sentence on what
-(ii) says about such a network.
+\textbf{(a) [3 pts]} Derive the \textbf{critical fraction} $f_c$ at which the
+giant component disappears. Give $f_c$ in terms of $\kappa$.
+
+\vspace{0.1em}
+
+\textbf{(b) [2 pts]} Evaluate $f_c$ for \textbf{(i)} a Poisson $p(k)$ of mean
+$\langle k \rangle$, and \textbf{(ii)} $p(k) \sim k^{-\gamma}$ with
+$2 < \gamma < 3$ as $N \to \infty$. Say in one sentence what (ii) means for
+such a network.
 
 \vfill
 
