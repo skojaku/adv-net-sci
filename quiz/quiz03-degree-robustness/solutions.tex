@@ -1,0 +1,224 @@
+% Quiz 03 --- answer key. Instructor copy. Do not hand out.
+%
+% The sheet asks for two results and states nothing about how to get them, so
+% everything below the question line is what the student had to supply. Mark
+% the route, not the last line: both final formulas are in the lecture note.
+%
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+
+\geometry{top=0.6in, bottom=0.5in, left=0.8in, right=0.8in}
+
+% A grading note, set apart from the answer itself.
+\newenvironment{grading}
+  {\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
+                     sharp corners, boxsep=2pt, left=6pt, right=6pt,
+                     top=4pt, bottom=4pt]\footnotesize\textbf{Marking.}\ }
+  {\end{tcolorbox}}
+
+\begin{document}
+
+{\footnotesize\textsc{Advanced Network Science} \hfill \textsc{Fall 2026}}\par
+\vspace{-0.2em}\rule{\textwidth}{1pt}\par
+\vspace{0.3em}
+{\LARGE\bfseries Quiz 3 \; --- \; Answer key}\par
+\vspace{0.1em}
+{\small Instructor copy. Answers below are models, not the only correct ones.}\par
+\vspace{0.8em}
+
+% ---------------------------------------------------------------------------
+\question{1}{5}{Your friends have more friends than you.}
+
+\textbf{(a) [3 pts]} \emph{Count the friend list by the friend instead of by
+the person.} The double sum runs over every (person, friend) pair. A given
+node $j$ appears as the \emph{friend} once for each neighbor that names it,
+and because $G$ is undirected, $j \in \mathcal{N}(i) \iff i \in \mathcal{N}(j)$
+--- so $j$ is named by exactly $k_j$ people. Interchanging the order of
+summation,
+\[
+  \sum_{i} \sum_{j \in \mathcal{N}(i)} k_j
+  \;=\; \sum_{j} \underbrace{k_j}_{\text{times named}} \cdot\; k_j
+  \;=\; \sum_{j} k_j^2 \;=\; N \langle k^2 \rangle .
+\]
+The denominator is the degree sum, $2M = \sum_i k_i = N \langle k \rangle > 0$.
+Hence
+\[
+  \langle k_f \rangle \;=\; \frac{N \langle k^2 \rangle}{N \langle k \rangle}
+  \;=\; \frac{\langle k^2 \rangle}{\langle k \rangle} ,
+  \qquad\text{so}\qquad
+  \langle k_f \rangle - \langle k \rangle
+  \;=\; \frac{\langle k^2 \rangle - \langle k \rangle^2}{\langle k \rangle}
+  \;=\; \frac{\mathrm{Var}(k)}{\langle k \rangle} \;\ge\; 0 ,
+\]
+because a variance is an average of squares and $\langle k \rangle > 0$.
+Therefore $\langle k \rangle \le \langle k_f \rangle$ in \emph{every} finite
+network with at least one edge. Nothing beyond undirectedness was used: this
+is a counting identity, not a property of social networks.
+
+\begin{grading}
+One point each.
+\textbf{(i) The counting step} --- node $j$ is named $k_j$ times, giving
+$\sum_i \sum_{j \in \mathcal{N}(i)} k_j = \sum_j k_j^2$. Equivalently, a
+student may say that picking a (person, friend) pair is picking an edge
+endpoint, write $q(k) = k\,p(k)/\langle k \rangle$ and then
+$\langle k_f \rangle = \sum_k k\,q(k)$; that is the same argument and earns the
+point. ``Hubs get counted more often'' \emph{with no algebra} earns nothing
+here.
+\textbf{(ii) The ratio} --- the denominator $2M = N\langle k \rangle$, and
+therefore $\langle k_f \rangle = \langle k^2 \rangle/\langle k \rangle$. The
+sheet did not print this; producing it is the point.
+\textbf{(iii) The sign} --- rewriting the gap as
+$\mathrm{Var}(k)/\langle k \rangle$ and concluding $\ge 0$ because a variance
+is never negative. A student who only asserts $\langle k^2\rangle \ge \langle
+k\rangle^2$ without a reason keeps the point \emph{if} they name the variance
+or cite Cauchy--Schwarz / Jensen; a bare assertion does not.
+
+\textbf{Cauchy--Schwarz is a full-credit alternative} for (iii):
+$(\sum_i k_i)^2 \le N \sum_i k_i^2$ gives $\langle k \rangle^2 \le \langle k^2
+\rangle$ directly. $\langle k \rangle > 0$ is worth a mention but not a point.
+\end{grading}
+
+\textbf{(b) [2 pts]} Equality holds \textbf{exactly when every node has the
+same degree} --- when $G$ is $r$-regular for some $r \ge 1$.
+
+\emph{($\Leftarrow$)} If $k_i = r$ for all $i$ then $\langle k \rangle = r$ and
+$\langle k^2 \rangle = r^2$, so
+$\langle k_f \rangle = r^2 / r = r = \langle k \rangle$.
+
+\emph{($\Rightarrow$)} If $\langle k_f \rangle = \langle k \rangle$ then by (a)
+$\mathrm{Var}(k) = 0$. Since
+$\mathrm{Var}(k) = \frac{1}{N}\sum_i (k_i - \langle k \rangle)^2$ is a sum of
+non-negative terms, every term must vanish, so $k_i = \langle k \rangle$ for
+every $i$. (A ring, a complete graph $K_n$, or any other regular network is an
+example; $r \ge 1$ rather than $r \ge 0$ only because $M \ge 1$ rules out the
+empty network.)
+
+\begin{grading}
+One point each.
+\textbf{(i) The condition} --- ``all degrees equal'', ``regular network'', or
+``$\mathrm{Var}(k) = 0$'' are all the same answer and all count. An example
+network is not required, but a student who offers one that is \emph{not}
+regular has contradicted their own condition: lose half.
+\textbf{(ii) Both directions.} One direction only is half. The
+($\Rightarrow$) direction must say why $\mathrm{Var}(k) = 0$ forces every
+degree to equal the mean --- ``a sum of squares vanishes only term by term'';
+restating $\mathrm{Var}(k) = 0$ is not a proof of it.
+
+\textbf{Wrong conditions to watch for:} ``when the network is connected'',
+``when it is a random / Erd\H{o}s--R\'enyi network'', ``when it is a tree'',
+``when there are no hubs''. All score 0 for (i). A Poisson network is
+\emph{not} regular --- its variance equals its mean.
+\end{grading}
+
+\vspace{0.4em}
+% ---------------------------------------------------------------------------
+\question{2}{5}{How much can you delete before it falls apart?}
+
+\textbf{(a) [3 pts]} \emph{Step 1: the degree at the end of a random edge.}
+Cut every edge in half: there are $\sum_i k_i = N \langle k \rangle$
+half-edges, and following a random edge is following a random half-edge. The
+$N p(k)$ nodes of degree $k$ own $k$ half-edges each, so
+\[
+  q(k) \;=\; \frac{N\,p(k) \cdot k}{N \langle k \rangle}
+  \;=\; \frac{k\,p(k)}{\langle k \rangle},
+  \qquad
+  \sum_k k\, q(k) \;=\; \frac{1}{\langle k \rangle}\sum_k k^2 p(k)
+  \;=\; \frac{\langle k^2 \rangle}{\langle k \rangle} \;=\; \kappa .
+\]
+
+\emph{Step 2: the branching factor and the criterion.} One of those $\kappa$
+edges is the one we arrived on, so the expected number of \emph{onward} edges
+is $\kappa - 1$. The network is locally tree-like, so the outward exploration
+is a branching process with that mean offspring: below $1$ each shell is
+smaller than the last and the exploration dies out, leaving only finite
+components; above $1$ the shells grow geometrically and reach a finite fraction
+of the $N$ nodes. Hence a giant component exists iff $\kappa - 1 > 1$, i.e.
+\[
+  \kappa = \frac{\langle k^2 \rangle}{\langle k \rangle} > 2
+  \qquad \text{(Molloy--Reed)} .
+\]
+
+\emph{Step 3: dilute and solve.} With each node surviving independently with
+probability $1-f$, every onward edge leads to a survivor with that
+probability, and the survivors are still wired at random given their degrees.
+The branching factor is thinned to $(1-f)(\kappa - 1)$, and the giant
+component dies when it falls to $1$:
+\[
+  (1-f_c)(\kappa - 1) = 1
+  \quad\Longrightarrow\quad
+  \boxed{\;f_c = 1 - \frac{1}{\kappa - 1}\;}
+\]
+\emph{The same answer the long way.} A survivor of original degree $k_0$ keeps
+$\mathrm{Binomial}(k_0, 1-f)$ edges, so with $p = 1-f$,
+$\langle k \rangle_p = p \langle k \rangle_0$ and
+$\langle k^2 \rangle_p = p^2 \langle k^2 \rangle_0 + p(1-p)\langle k \rangle_0$,
+whence $\kappa_p = p\,\kappa_0 + (1-p)$. Setting $\kappa_p = 2$ gives
+$p_c = 1/(\kappa_0 - 1)$ and $f_c = 1 - p_c$, as above.
+
+\begin{grading}
+One point per step, halves allowed.
+\textbf{(i) $q(k)$.} The half-edge count is the content: degree-$k$ nodes own
+$k$ of the $N\langle k \rangle$ endpoints each. Quoting
+$q(k) = k p(k)/\langle k \rangle$ with no derivation earns 0.
+\textbf{(ii) $\kappa - 1$ and $\kappa > 2$}, half each. The $-1$ is the edge
+arrived on and must be justified, not merely written; the criterion needs its
+branching-process reason. $\mathbb{E}[k(k-2)] > 0$ is the same criterion ---
+full credit.
+\textbf{(iii) The dilution and the solve}, half each: the factor $(1-f)$ on
+the branching factor (or the $\kappa_p = p\kappa_0 + (1-p)$ computation), and
+$f_c = 1 - 1/(\kappa - 1)$ with the threshold set at branching factor $= 1$
+(equivalently $\kappa_p = 2$). A student who deletes \emph{edges} rather than
+nodes and says so still earns the dilution half; the threshold is the same.
+
+\textbf{The three near-misses.}
+$f_c = 1 - 1/\kappa$ --- the incoming edge was forgotten; lose the solve half.
+Reporting $1/(\kappa-1)$ as the answer --- that is the fraction that
+\emph{remains}; award the solve half only if the student says which is which.
+Setting the branching factor to $0$ --- the exploration dies at $1$, not $0$;
+lose the solve half.
+
+\textbf{$\langle k \rangle > 1$ is not the criterion.} That is the
+Erd\H{o}s--R\'enyi condition, which coincides with $\kappa > 2$ only for a
+Poisson $p(k)$. Credit it only if the student restricts it to that case.
+\end{grading}
+
+\textbf{(b) [2 pts]}
+\textbf{(i) Poisson.} A Poisson distribution has variance equal to its mean,
+so $\langle k^2 \rangle = \langle k \rangle^2 + \langle k \rangle$ and
+$\kappa = \langle k \rangle + 1$. Hence
+\[
+  f_c = 1 - \frac{1}{(\langle k \rangle + 1) - 1}
+      = 1 - \frac{1}{\langle k \rangle} .
+\]
+Robustness is set by the average degree alone, and $f_c < 1$ always: a random
+network can always be shattered by removing enough nodes at random.
+
+\textbf{(ii) $2 < \gamma < 3$.} $\langle k^2 \rangle$ diverges, so
+$\kappa \to \infty$ and $f_c \to 1$. Essentially every node must fail before
+the giant component dies --- such a network is almost immune to random
+failure. (It is not immune to a \emph{targeted} attack, where the same hubs
+are the weakness; that is the robust-yet-fragile paradox.)
+
+\begin{grading}
+One point each.
+\textbf{(i)} $\kappa = \langle k \rangle + 1$ and
+$f_c = 1 - 1/\langle k \rangle$. \textbf{The sheet no longer prints the
+Poisson second moment}, so supplying $\langle k^2 \rangle = \langle k \rangle^2
++ \langle k \rangle$ is part of the point; expect this to be where the question
+is lost.
+\textbf{Watch for $\langle k^2 \rangle = \langle k \rangle^2$}, which gives
+$\kappa = \langle k \rangle$ and $f_c = 1 - 1/(\langle k \rangle - 1)$. That is
+the zero-variance \emph{regular} case --- no credit, and say so in the
+feedback, because it is the same confusion as Question 1(b).
+\textbf{(ii)} $f_c \to 1$, \emph{with} one sentence of meaning (``almost every
+node must be removed'', ``extremely robust to random failure''). The limit
+alone is half.
+
+\textbf{Watch for ``it can never break''.} $f_c \to 1$ is a statement about
+$N \to \infty$; a finite network has a finite largest hub and so $f_c < 1$. Do
+not deduct if the limit and its reading are otherwise right --- note it in the
+feedback.
+\end{grading}
+
+\end{document}
