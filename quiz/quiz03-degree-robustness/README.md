@@ -48,12 +48,10 @@ question.
 | `solutions.tex` / `solutions.pdf` | Answer key with marking notes. **Do not hand out.** |
 | `quizkit.tex` | Shared preamble: fonts, the submission link, layout macros. |
 | `quiz03-form-qr.png` | The QR square on the sheet. Encodes `go.skojaku.com/ans-quiz03`. |
+| `build_form.py` | Builds or re-syncs the Google Form through the `gws` CLI. |
 
 `quiz03.tex` is plain `quizkit` at 12pt, like Quiz 1 and 2. `solutions.tex`
 sets 11pt and tighter margins — it is an instructor document and runs long.
-
-There is no `build_form.py` here yet. Copy `../quiz02-small-world/build_form.py`
-and change the title, the description and the PDF link when the form is made.
 
 Build the PDFs (xelatex, run twice so the links resolve):
 
@@ -76,18 +74,19 @@ The sheet and the key are finished. The plumbing is not — none of it exists ye
 for `quiz03`, and each line below is the same step the `quiz02` README
 documents in full.
 
-- [ ] **The Google Form.** Copy `build_form.py` from `quiz02-small-world`, run
-      `python3 build_form.py --sync`, then add the two file-upload questions
-      **by hand** in the Forms editor (titled `Question 1` and `Question 2`;
-      images, 1 file, 10 MB, required). The Forms API refuses to create
-      file-upload questions, and `grader.run check` stops without them. Set
-      email collection to `VERIFIED` — that is what maps a photo back to a
-      student.
+- [x] **The Google Form** exists — `build_form.py --create`, 2026-09-22. Title,
+      description, and `VERIFIED` email collection are set; see below.
+- [ ] **The two upload questions**, added **by hand** in the Forms editor:
+      titled `Question 1` and `Question 2`, file upload, images, 1 file, 10 MB,
+      required. The API still refuses (`Creation of file_upload question not
+      supported`, checked again 2026-09-22 against this very form), and
+      `grader.run check` stops without them.
 - [ ] **Arm the rubric.** The ops repo holds
-      `rubrics/M04-2026-09-22-DegreeRobustness/session.json.pending`. Put the
-      new form id in it and rename it to `session.json`. It is `.pending`
-      precisely so that the nightly grader does not trip over a session with no
-      form — see the note inside the file.
+      `rubrics/M04-2026-09-22-DegreeRobustness/session.json.pending`, with the
+      form id already in it. Rename it to `session.json` once the two upload
+      questions exist. It is `.pending` so the nightly grader does not trip
+      over a session whose form it cannot read — see the note inside the
+      file.
 - [ ] **The two short links** on the droplet (`/etc/caddy/Caddyfile`,
       `go.skojaku.com` block), beside the `quiz02` pair:
       `go.skojaku.com/quiz03` → the question PDF on Drive, and
@@ -101,6 +100,28 @@ documents in full.
 - [ ] **In Brightspace:** a grade item named **`m04-0922`**, 10 points
       (*Grades → Manage Grades → New*), and a quiz object named **`Q3`** for
       the deadline row in `tools/brightspace/course/deadlines.yaml`.
+
+## The Google Form
+
+- **Students:** <https://go.skojaku.com/ans-quiz03> (once the handle is on the
+  droplet) →
+  <https://docs.google.com/forms/d/e/1FAIpQLSf7TsLd9cfD5olSf483XhbkR5j-xbn4OuShiS8i3XhKvTXUdg/viewform>
+- **Editing and responses:**
+  <https://docs.google.com/forms/d/1ap27Cku9mpn06gwJrt84i7nRgFFs_WnB8O6puCfOero/edit>
+- Form id: `1ap27Cku9mpn06gwJrt84i7nRgFFs_WnB8O6puCfOero`
+- Owned by the Binghamton account (`~/.config/gws-binghamton`).
+
+The form is a drop box, not a copy of the quiz. It links to the PDF and takes
+one photo per question; nothing in it has to stay in step with the sheet, and
+there is no typing for the student to do.
+
+Email collection is `VERIFIED`, so respondents sign in with their
+`@binghamton.edu` account — which is what maps an uploaded photo back to a
+student.
+
+`python3 build_form.py --sync` rewrites the live form from the script. It
+deletes every item first, so run it only before responses arrive, and it
+refuses while the hand-made upload questions exist unless you pass `--force`.
 
 ## Where the photos go
 
