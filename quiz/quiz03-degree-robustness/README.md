@@ -68,43 +68,75 @@ of the same answers; keep the two in step. Both mark the *route*, not the final
 formula: `f_c = 1 − 1/(κ−1)` is in the lecture note and can be recalled, so a
 bare correct answer with no working scores half a point out of three.
 
-## Still to do before this can be given and graded
+## The plumbing
 
-The sheet and the key are finished. The plumbing is not — none of it exists yet
-for `quiz03`, and each line below is the same step the `quiz02` README
-documents in full.
+Everything but the printing and Brightspace is done, on 2026-09-22. Each line
+is the same step the `quiz02` README documents in full.
 
-- [x] **The Google Form** exists — `build_form.py --create`, 2026-09-22. Title,
-      description, and `VERIFIED` email collection are set; see below.
-- [ ] **The two upload questions**, added **by hand** in the Forms editor:
-      titled `Question 1` and `Question 2`, file upload, images, 1 file, 10 MB,
-      required. The API still refuses (`Creation of file_upload question not
-      supported`, checked again 2026-09-22 against this very form), and
-      `grader.run check` stops without them.
-- [ ] **Arm the rubric.** The ops repo holds
-      `rubrics/M04-2026-09-22-DegreeRobustness/session.json.pending`, with the
-      form id already in it. Rename it to `session.json` once the two upload
-      questions exist. It is `.pending` so the nightly grader does not trip
-      over a session whose form it cannot read — see the note inside the
-      file.
-- [ ] **The two short links** on the droplet (`/etc/caddy/Caddyfile`,
-      `go.skojaku.com` block), beside the `quiz02` pair:
-      `go.skojaku.com/quiz03` → the question PDF on Drive, and
-      `go.skojaku.com/ans-quiz03` → the Google Form. The QR square already
-      encodes the second one. Then
-      `caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile` and
-      `systemctl reload caddy`.
-- [ ] **Upload `quiz03.pdf`** to the Drive course folder, shared read-only with
-      the `binghamton.edu` domain, and point `go.skojaku.com/quiz03` at it.
+- [x] **The Google Form** — `build_form.py --create`, 2026-09-22. Description
+      and `VERIFIED` email collection set; see below.
+- [x] **The two upload questions**, added by hand in the Forms editor. The API
+      still refuses (`Creation of file_upload question not supported`, checked
+      again 2026-09-22 against this very form).
+- [x] **The file-responses folder** moved out of Drive root into
+      `SSIE 641 Advanced Topics in Network Science/Submission/`, beside
+      quiz01's. Forms drops it in the root and nothing moves it back.
+- [x] **The rubric is armed** — `session.json` in the ops repo, and
+      `grader.run check` reads the form (0 responses, as it should be).
+- [x] **The two short links** on the droplet, beside the `quiz02` pair.
+      Validated and reloaded; both answer 302.
+- [x] **`quiz03.pdf` on Drive**, in the course folder, read-only to the
+      `binghamton.edu` domain, link-only. `go.skojaku.com/quiz03` points at it.
 - [ ] **Print the sheet.**
-- [ ] **In Brightspace:** a grade item named **`m04-0922`**, 10 points
-      (*Grades → Manage Grades → New*), and a quiz object named **`Q3`** for
-      the deadline row in `tools/brightspace/course/deadlines.yaml`.
+- [ ] **In Brightspace**, and neither can be done from here:
+      a grade item named **`m04-0922`**, 10 points
+      (*Grades → Manage Grades → New* — nothing in `bscli blocks` creates a
+      bare grade item), and a quiz object named **`m04-0922`** (`quiz.create`
+      makes the shell, but the bscli session was dead on 2026-09-22 and only a
+      human at the GUI can refresh it). Then add the `m04-0922` row under
+      `quizzes:` in `tools/brightspace/course/deadlines.yaml` with its start,
+      end and due — `sync-deadlines` errors on a name Brightspace does not
+      have, so the row comes after the object, not before. The session's
+      `deadline_key` already points at that row.
+
+## The question PDF on Drive
+
+`quiz03.pdf` is in the Drive course folder and shared **read-only with the
+`binghamton.edu` domain** — link-only, not searchable. Students are signed in
+to that account anyway, because the form demands it.
+
+- File id: `1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW`
+- <https://drive.google.com/file/d/1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW/view>
+
+Re-upload after any edit to the sheet, or the link serves a stale quiz:
+
+```sh
+GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
+gws drive files update --params '{"fileId": "1CfepsY_wor23gQ_gr6MlyxXpmvPMSshW"}' \
+    --upload quiz03.pdf --upload-content-type application/pdf
+```
+
+## Two short links
+
+The QR square and the printed address are the course's own short links, not
+Google's. Paper outlives any one form or file, so swapping either is a line on
+the droplet rather than a reprint.
+
+| Link | Goes to |
+|---|---|
+| `go.skojaku.com/quiz03` | the question PDF on Drive |
+| `go.skojaku.com/ans-quiz03` | the Google Form, where the photos go |
+
+Both went live 2026-09-22 as `handle` blocks in the `go.skojaku.com` site of
+`/etc/caddy/Caddyfile` on `ssh digitalocean`, beside the `quiz02` pair. The
+file before that edit is `Caddyfile.bak-20260922-pre-quiz03` next to it.
+After editing, run
+`caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile`, then
+`systemctl reload caddy`.
 
 ## The Google Form
 
-- **Students:** <https://go.skojaku.com/ans-quiz03> (once the handle is on the
-  droplet) →
+- **Students:** <https://go.skojaku.com/ans-quiz03> →
   <https://docs.google.com/forms/d/e/1FAIpQLSf7TsLd9cfD5olSf483XhbkR5j-xbn4OuShiS8i3XhKvTXUdg/viewform>
 - **Editing and responses:**
   <https://docs.google.com/forms/d/1ap27Cku9mpn06gwJrt84i7nRgFFs_WnB8O6puCfOero/edit>
@@ -138,5 +170,10 @@ adv-net-sci-ops/M04-2026-09-22-DegreeRobustness/
     q2-IMG_1235.jpg
 ```
 
-That session folder does not exist yet; `gforms_download.py` creates it, or the
-nightly grader does it for you once `session.json` is armed.
+That session folder exists — `gforms_download.py mkdir`, 2026-09-22, folder id
+`1nET4wsXMIXMJkXIL464yxeXYQmBHGp1Z`.
+
+The form's own file-responses folder is a different thing and Google puts it in
+the Drive root: `advnetsci-quiz03-degree-robustness (File responses)`, moved on
+2026-09-22 into `SSIE 641 Advanced Topics in Network Science/Submission/` where
+quiz01's sits. Quiz 2's is still in the root, if you are tidying.
