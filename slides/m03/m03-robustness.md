@@ -217,6 +217,7 @@ Step 2 is the worksheet's Order R, step 3 its Order T, step 4 the area estimated
 
 The **R-index** is the mean connectivity over the removals, that is, the area under the curve. Random failure gives 0.41, a targeted attack 0.17.
 
+
 <div class="fig">
 
 ![w:1100](figures/profile-both.png)
@@ -508,6 +509,8 @@ $\langle k^2 \rangle$ grows without bound with $n$, so $\kappa \to \infty$ and $
 ## Design it
 
 Hubs raise the threshold for random failure and lower it for attack
+
+https://skojaku.github.io/adv-net-sci/assets/vis/network-robustness.html
 
 ---
 

@@ -854,9 +854,9 @@ def _():
 
     ## Submit
 
-    One per team: **<https://go.skojaku.com/m03mini>**
-
-    Your emails, both scores, A1, B1, and this file. Save the notebook first.
+    - One per team.
+    - Create the URL to your notebook by 'Share' button on the top. Then, click `🔗 Copy Notebook URL`.
+    - Submit the link through google form. **<https://go.skojaku.com/m03mini>**
     """)
     return
 
