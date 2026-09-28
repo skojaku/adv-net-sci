@@ -548,7 +548,13 @@ def _():
 
     Friends named are picked at random; you cannot choose them, and they may already be interviewed. Only seeds and named people can be interviewed. Each new interview costs 1 of your 150 budget; interviewing the same person again is free. An interview yields color and degree only.
 
-    Your score is the fraction of your estimate placed on the wrong colors, averaged over 50 surveys per town across two towns. Lower is better, and 0 is perfect. The random numbers are fixed, so the same code always gets the same score. Use only the `survey` object; do not edit the setup cell.
+    Let $\hat{p}_c$ be your estimated share of color $c$ and $p_c$ the true share in the town. The error of one survey is
+
+    $$
+    \text{error} = \frac{1}{2} \sum_{c} \left| \hat{p}_c - p_c \right|,
+    $$
+
+    where the sum runs over the four colors. It is 0 when your estimate is exact and 1 at worst. Your score is this error averaged over 50 surveys on each of the two towns. Lower is better. The random numbers are fixed, so the same code always gets the same score. Use only the `survey` object; do not edit the setup cell.
 
     ## Use AI for the code, not for the idea
 
