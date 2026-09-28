@@ -552,37 +552,7 @@ def _():
 
     ## Use AI for the code, not for the idea
 
-    Write Cell 1 first; it is graded. Then run `pi` in your team folder. It opens this notebook and writes Cell 2 from your plan while you watch. Close any `marimo edit` already running on this file first. Paste the brief once.
-
-    ```bash
-    pi
-    ```
-
-    ```markdown
-    You are our coding partner on the marimo notebook that is already open beside
-    this terminal. Work in the live notebook with your nb_* tools. Never edit the
-    file on disk: marimo saves over it.
-
-    Edit exactly one cell, with nb_edit_cell, under this name:
-      *run_survey   cell 2, run_survey(survey)
-    Keep the `# ✍️` comment line at the top of it.
-
-    Change nothing else: not the setup cell, not the scoreboard, and not PLAN.
-    PLAN is ours.
-
-    Read PLAN with nb_read and build what it says. What is written, not what you
-    would have written. Where the plan does not say what to do, stop and ask us.
-
-    numpy only. Use only the `survey` you are handed: seeds, colors, budget,
-    budget_left(), interview() and refer(). Never the networks, the colors or the
-    scoring functions from the setup cell. Do not special-case one town. Return a
-    dict with one share per color. All 50 surveys of one town get 20 seconds.
-
-    After each edit, tell us our score and the benchmark's, and say plainly when
-    ours is worse.
-    ```
-
-    A vague plan gives the wrong code, and your score will show it.
+    Write cell 1 (the plan, graded) yourselves; an AI agent may write cell 2 (the code) from it. To pair an AI agent with this notebook, follow the [marimo pair quickstart](https://docs.marimo.io/guides/generate_with_ai/marimo_pair/#quickstart).
     """)
     return
 
@@ -772,18 +742,6 @@ def _():
     - One submission per team.
     - Create the URL to your notebook with the Share button at the top, then click `🔗 Copy Notebook URL`.
     - Submit the link through the Google Form: **<https://go.skojaku.com/m04mini>**
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ---
-
-    ## If your agent edits the file instead
-
-    Agents like Claude Code or Codex edit `mini-project.py` directly on disk. Close `marimo edit` before they write and reopen afterward, or marimo will overwrite their changes. The brief still applies, but agents cannot read your plan cell. Paste your plan directly to them; they edit the cell marked `# ✍️ 2`.
     """)
     return
 
