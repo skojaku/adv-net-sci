@@ -422,8 +422,8 @@ with app.setup(hide_code=True):
         )
 
     def svg_survey(name, record, upto, size=520):
-        """The town, every person a circle whose area grows with their degree
-        and whose fill is their colour. People the survey has not reached are
+        """The town, every person a circle of the same size whose fill is
+        their colour. People the survey has not reached are
         faded. A dark line runs from each respondent to the person who named
         them."""
         g, colors, pos = NETWORKS[name], COLORS[name], LAYOUTS[name]
@@ -438,8 +438,7 @@ with app.setup(hide_code=True):
         def sy(y):
             return pad + (y - lo_y) / (hi_y - lo_y + 1e-9) * (size - 2 * pad)
 
-        deg = np.array(g.degree())
-        radius = 1.6 + 1.1 * np.sqrt(deg)
+        radius = 4.5
         met = [p for p, _ in record[:upto]]
         met_set = set(met)
         links = "".join(
@@ -461,18 +460,16 @@ with app.setup(hide_code=True):
             if faded:
                 return (
                     f'<circle cx="{sx(pos[v][0]):.1f}" cy="{sy(pos[v][1]):.1f}" '
-                    f'r="{radius[v]:.1f}" fill="{hex_}" fill-opacity="0.22"/>'
+                    f'r="{radius}" fill="{hex_}" fill-opacity="0.22"/>'
                 )
             return (
                 f'<circle cx="{sx(pos[v][0]):.1f}" cy="{sy(pos[v][1]):.1f}" '
-                f'r="{radius[v]:.1f}" fill="{hex_}" stroke="{INK}" '
+                f'r="{radius}" fill="{hex_}" stroke="{INK}" '
                 f'stroke-width="1.2"/>'
             )
 
-        # biggest first, so a hub never hides the people beside it
-        order = np.argsort(-deg)
-        faded = "".join(dot(v, True) for v in order if v not in met_set)
-        solid = "".join(dot(v, False) for v in order if v in met_set)
+        faded = "".join(dot(v, True) for v in range(g.vcount()) if v not in met_set)
+        solid = "".join(dot(v, False) for v in met)
         return mo.Html(
             f'<svg width="{size}" height="{size}" viewBox="0 0 {size} {size}" '
             f'style="background:#ffffff;border:1px solid {RULE};border-radius:4px">'
@@ -595,7 +592,7 @@ def _():
     mo.md(r"""
     ## Watch a survey
 
-    Choose a town and a survey (the starting code or yours). The slider replays interviews in order, and "new seeds" restarts. Circle size shows degree, fill shows color, faded nodes were not reached, and dark lines show who named whom. Bars compare colors met against the town (black tick), and display the final estimate and error.
+    Choose a town and a survey (the starting code or yours). The slider replays interviews in order, and "new seeds" restarts. Fill shows color, faded nodes were not reached, and dark lines show who named whom. Bars compare colors met against the town (black tick), and display the final estimate and error.
     """)
     return
 
