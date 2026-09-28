@@ -18,7 +18,7 @@ degree, so every answer is exact. The counts were built from `p(k) ~ k^-2.5`.
    contradicts the student's own (a).
 2. **The friends** (5 pts). A friend is the second entry of a random
    (person, friend) pair.
-   (a) Plot the CCDF of a friend's degree on the same grid (2). The route,
+   (a) Plot the CCDF of a friend's degree, with Question 1's points on the same axes (2). The route,
    not given: weight each row by `k`, divide by `2M = 26,228`.
    (b) Read its slope, say how much it differs and why (3). Answer: ≈ −0.55,
    shallower by about 1, because `q(k) = k p(k)/⟨k⟩`.
