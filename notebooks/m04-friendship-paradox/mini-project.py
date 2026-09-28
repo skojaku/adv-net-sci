@@ -38,7 +38,7 @@
 
 import marimo
 
-__generated_with = "0.24.2"
+__generated_with = "0.25.0"
 app = marimo.App(width="medium")
 
 with app.setup(hide_code=True):
@@ -532,17 +532,11 @@ def _():
 
     ## Task
 
-    You run a survey of a town. Everyone in the town belongs to one of four groups, shown as four colors: blue, orange, aqua, and yellow. You want to know what share of the town belongs to each color.
+    Everyone in town is blue, orange, aqua, or yellow. Your goal is to estimate each color's share of the town. There is no list of residents, so you start from 3 random people (seeds) and have 150 interviews. Each interview gives color and degree (number of friends); that person names up to 3 friends, and only named people can be interviewed next.
 
-    There is no list of residents, so you cannot call people at random. The only way to reach someone is through someone who already took part. This method is called respondent-driven sampling, and researchers often use it to survey hard-to-reach populations.
+    People reached through friends tend to have many friends, and colors lean weakly with degree, biasing the sample. Colors also cluster, keeping surveys local.
 
-    Your survey starts from 3 people chosen at random, called the seeds. Each person you interview tells you two things: their color and how many friends they have (their degree). They can then name up to 3 of their friends, and those named friends become the only new people you can interview. You have a budget of 150 interviews per survey, which is not enough to interview everyone.
-
-    Here is the catch. A person reached through a friend tends to have many friends. This is the friendship paradox from this module. Because of it, the survey reaches high-degree people much more often than a random sample would. Furthermore, colors lean slightly toward degree: blue is a bit more common among people with many friends, and yellow among people with few. This lean is weak, but the survey magnifies it. Colors also cluster together, so neighbors tend to share a color. If your survey starts in one corner of town, it tends to get trapped there.
-
-    Your goal is to write an algorithm that estimates the town's true color shares as closely as possible, ideally as well as if you had interviewed 150 people picked uniformly at random. You can change who gets interviewed and in what order, you can change how you count the answers, or you can do both.
-
-    You will fill in two cells below. In cell 1, write your plan in plain English. This written plan is what is graded. In cell 2, your plan becomes Python code, which your coding agent can write for you based on cell 1.
+    Match a 150-person random sample by changing who you interview, how you count, or both. Cell 1 is your graded English plan. An AI agent may write Cell 2's code from it.
     """)
     return
 
@@ -552,19 +546,13 @@ def _():
     mo.md(r"""
     ## Rules
 
-    - Every survey starts from 3 seeds drawn at random from the whole town.
-    - Each person you interview names up to 3 friends, picked at random among their friends. You cannot choose which friends they name, and a named friend may be someone you already interviewed.
-    - You may interview only the seeds and people whom an interviewee has named. Each new interview costs 1 of your 150 interviews. Asking the same person again is free and returns the same answer.
-    - An interview tells you only the person's color and degree. It tells you nothing else about the network.
-    - The score is the error of your estimate: half the sum, over the four colors, of the absolute gap between your reported share and the true share. This equals the fraction of your estimate placed on the wrong colors. A score of 0 is perfect. Your final score is the average across 50 surveys on each of the two towns. Lower is better.
-    - The random numbers are fixed, so the same code produces the same score every time.
-    - Do not modify the setup cell. Your code may use only the survey object handed to it.
+    Friends named are picked at random; you cannot choose them, and they may already be interviewed. Only seeds and named people can be interviewed. Each new interview costs 1 of your 150 budget; interviewing the same person again is free. An interview yields color and degree only.
+
+    Your score is the fraction of your estimate placed on the wrong colors, averaged over 50 surveys per town across two towns. Lower is better, and 0 is perfect. The random numbers are fixed, so the same code always gets the same score. Use only the `survey` object; do not edit the setup cell.
 
     ## Use AI for the code, not for the idea
 
-    Write cell 1 before you open an agent, because cell 1 is the graded deliverable. Your `pi` agent will then write cell 2 from your written plan inside this notebook while you watch: it edits the cell, marimo runs it, and the scoreboard updates automatically.
-
-    Start `pi` in your team's folder with no arguments, and let it open this notebook itself. If you already have `marimo edit` running on this file in a terminal, close it first, because two running kernels will write over each other. Paste the brief below once, at the start of your session.
+    Write Cell 1 first; it is graded. Then run `pi` in your team folder. It opens this notebook and writes Cell 2 from your plan while you watch. Close any `marimo edit` already running on this file first. Paste the brief once.
 
     ```bash
     pi
@@ -594,7 +582,7 @@ def _():
     ours is worse.
     ```
 
-    If the plan is vague, the agent builds the wrong thing and the score says so, and that is the exercise.
+    A vague plan gives the wrong code, and your score will show it.
     """)
     return
 
@@ -604,7 +592,7 @@ def _():
     mo.md(r"""
     ## Two towns
 
-    There are two towns, $G_1$ and $G_2$. $G_1$ is a grid where people live along streets and know their immediate neighbors, so colors form patches a few streets wide. $G_2$ contains four distinct communities where each community has a favored color, and a few central residents have very many friends. The table gives their size, mean degree (mean k), largest degree (max k), and the true share of each color. These true shares are printed so you can evaluate your progress, but your code never sees them, and your algorithm must work on both towns.
+    $G_1$ is a grid with colors in patches. $G_2$ has four communities, each favoring one color, plus hubs. The table below lists size, mean and max degree, and true color shares for checking; your code never sees them. Your algorithm must work on both.
     """)
     return
 
@@ -631,9 +619,7 @@ def _():
     mo.md(r"""
     ## Watch a survey
 
-    Pick a town and choose whose survey to watch: the starting code or your team's `run_survey`. The slider lets you replay the interviews in the order they happened, and clicking "new seeds" restarts the survey from three different starting people. In the drawing, every circle is a person: a larger circle indicates more friends, and the fill shows the person's color. Faded circles show people the survey has not reached yet, and a dark line connects each respondent to the person who named them.
-
-    On the right, the first set of bars shows the colors of the people interviewed so far, with a black tick marking the town's true share. The second set shows what `run_survey` reports at the end, along with its error score. Look at the mean degree of the people you met compared with the town average, and watch whether the survey stays trapped in one area. Try running it on the grid town as well.
+    Choose a town and a survey (the starting code or yours). The slider replays interviews in order, and "new seeds" restarts. Circle size shows degree, fill shows color, faded nodes were not reached, and dark lines show who named whom. Bars compare colors met against the town (black tick), and display the final estimate and error. Compare the mean degree of people met with the town average.
     """)
     return
 
@@ -700,7 +686,7 @@ def _():
     mo.md(r"""
     ### ✍️ 1. Your survey plan, in English
 
-    Write your strategy in plain words so that somebody with a pencil could follow it step by step. Keep it between four and ten sentences. State clearly who you choose to interview next and in what order, and explain how you turn the collected answers into your final color shares. This written plan is graded. Your coding agent will use it to write the code in cell 2.
+    Write 4 to 10 plain sentences a person could follow with a pencil: who you interview, in what order, and how you turn answers into shares. This plan is graded; the agent codes from it.
     """)
     return
 
@@ -719,22 +705,18 @@ def _():
     mo.md(r"""
     ### ✍️ 2. The same plan, as code
 
-    Write `run_survey(survey)` to run your sampling process and return your estimated color shares.
-
-    The function takes a `survey` object and must return a dictionary with one share per color, such as `{"blue": 0.3, "orange": 0.2, "aqua": 0.25, "yellow": 0.25}`. If your shares do not sum to 1, they are rescaled automatically.
-
-    The `survey` object provides the following attributes and methods:
+    `run_survey(survey)` returns a dictionary of shares per color rescaled to sum to 1, such as `{"blue": 0.3, "orange": 0.2, "aqua": 0.25, "yellow": 0.25}`.
 
     | what | gives |
     | :--- | :--- |
-    | `survey.seeds` | list of the 3 starting person IDs |
-    | `survey.colors` | `["blue", "orange", "aqua", "yellow"]` |
+    | `survey.seeds` | the 3 starting ids |
+    | `survey.colors` | the four color names |
     | `survey.budget` | 150 |
-    | `survey.budget_left()` | number of paid interviews you have remaining |
-    | `survey.interview(person)` | `{"degree": 4, "color": "aqua"}`; costs 1 on the first call; valid only for seeds and named people |
-    | `survey.refer(person)` | ID of one friend named by this person, or `None` once they reach 3 referrals or run out of friends; usable only after interviewing them |
+    | `survey.budget_left()` | interviews left |
+    | `survey.interview(person)` | `{"degree": 4, "color": "aqua"}`; costs 1 the first time |
+    | `survey.refer(person)` | one friend id, or `None` after 3; interview person first |
 
-    The starting code is a plain snowball sample: it interviews whoever is named first and counts colors as they appear. Replace it with your own logic.
+    The starting code is a plain snowball sample that counts colors as they come. Replace it.
     """)
     return
 
@@ -801,9 +783,7 @@ def _():
 
     ## If your agent edits the file instead
 
-    Claude Code, Codex and similar agents work on `mini-project.py` on disk, not in the running notebook. Close `marimo edit` before you let one write, and reopen it after: marimo saves this notebook from its own memory, and it will undo anything that changed underneath it.
-
-    The brief in **Rules** still holds, with two changes: your agent edits the cell marked `# ✍️ 2` in the file, and it has no `nb_read`, so paste `PLAN` to it yourself.
+    Agents like Claude Code or Codex edit `mini-project.py` directly on disk. Close `marimo edit` before they write and reopen afterward, or marimo will overwrite their changes. The brief still applies, but agents cannot read your plan cell. Paste your plan directly to them; they edit the cell marked `# ✍️ 2`.
     """)
     return
 
