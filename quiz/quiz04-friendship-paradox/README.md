@@ -61,7 +61,7 @@ Each step is the one the `quiz02` README documents in full.
       - Students: <https://go.skojaku.com/ans-quiz04> →
         <https://docs.google.com/forms/d/e/1FAIpQLSe2D_Hvftpb-a3-XlCpeYFdPrsBuiwtmkEmfIRDSZ--1hbxYQ/viewform>
       - Editor: <https://docs.google.com/forms/d/1Znenf2k9Z8EuXIgcckcGP3xiaMiC_bIsYepmzd2Njs4/edit>
-- [ ] **The two upload questions**, by hand in the Forms editor (the API
+- [x] **The two upload questions**, added by hand 2026-09-28 (the API
       refuses them). One per question; the grader matches them to
       `session.json` by these exact titles:
 
@@ -71,12 +71,13 @@ Each step is the one the `quiz02` README documents in full.
       | `Question 2` | File upload · images · 1 file · 10 MB · required |
 
       `gforms_download.py` names the files `q1-` and `q2-`.
-- [ ] **The file-responses folder** moved out of Drive root into
-      `SSIE 641 Advanced Topics in Network Science/Submission/`, once the
-      upload questions exist and Google has made it.
-- [ ] **The rubric** in `adv-net-sci-ops/grading/quiz/rubrics/`, the Quiz 3
-      shape: `session.json` with `"Question 1"` / `"Question 2"`, `q1.md`,
-      `q2.md`.
+- [x] **The file-responses folder** moved out of Drive root into
+      `SSIE 641 Advanced Topics in Network Science/Submission/`, 2026-09-28.
+- [x] **The rubric** — `adv-net-sci-ops/grading/quiz/rubrics/M04-2026-09-29-FriendshipCCDF/`
+      (`session.json`, `q1.md`, `q2.md`). Held 2026-09-29, grade item
+      `m04-0929`. `grader.run check` reads the form (0 responses).
+      `solutions.pdf` is the human copy of the same answers; keep the two in
+      step.
 - [x] **The two short links** on the droplet, 2026-09-28, beside the `quiz03`
       pair. Validated and reloaded; both answer 302. The pre-edit Caddyfile is
       `/etc/caddy/Caddyfile.bak-2026-09-28-quiz04`.
