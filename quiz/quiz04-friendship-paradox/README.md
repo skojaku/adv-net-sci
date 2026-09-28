@@ -36,6 +36,7 @@ reason.
 | `quiz04.tex` / `quiz04.pdf` | The sheet handed out. Two pages. |
 | `solutions.tex` / `solutions.pdf` | Answer key with marking notes. **Do not hand out.** |
 | `quizkit.tex` | Shared preamble, Quiz 3's plus the `\loggrid` graph paper. |
+| `build_form.py` | Builds or re-syncs the Google Form through the `gws` CLI. |
 | `quiz04-form-qr.png` | The QR square on the sheet. Encodes `go.skojaku.com/ans-quiz04`. |
 
 Build the PDFs (xelatex, run twice so the links resolve):
@@ -48,13 +49,41 @@ xelatex -interaction=nonstopmode solutions.tex
 
 ## The plumbing
 
-None of it is done. Each step is the one the `quiz02` README documents.
+Each step is the one the `quiz02` README documents in full.
 
-- [ ] The Google Form (two upload questions: page 1, page 2).
-- [ ] The file-responses folder moved into `Submission/`.
-- [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/`.
-- [ ] The short links `go.skojaku.com/ans-quiz04` and `go.skojaku.com/quiz04`.
-      The QR square already points at the first.
-- [ ] `quiz04.pdf` on Drive.
+- [x] **The Google Form** — made 2026-09-28 (`build_form.py` payload applied
+      with `--sync`). Description set; email collection `VERIFIED`.
+      - Students: <https://go.skojaku.com/ans-quiz04> →
+        <https://docs.google.com/forms/d/e/1FAIpQLSe2D_Hvftpb-a3-XlCpeYFdPrsBuiwtmkEmfIRDSZ--1hbxYQ/viewform>
+      - Editor: <https://docs.google.com/forms/d/1Znenf2k9Z8EuXIgcckcGP3xiaMiC_bIsYepmzd2Njs4/edit>
+- [ ] **The two upload questions**, by hand in the Forms editor (the API
+      refuses them). One per *page*, not per question, because both
+      questions are on both pages:
+
+      | Title | Settings |
+      |---|---|
+      | `Page 1` | File upload · images · 1 file · 10 MB · required |
+      | `Page 2` | File upload · images · 1 file · 10 MB · required |
+
+      `gforms_download.py` names the files `q1-` (page 1) and `q2-` (page 2).
+- [ ] **The file-responses folder** moved out of Drive root into
+      `SSIE 641 Advanced Topics in Network Science/Submission/`, once the
+      upload questions exist and Google has made it.
+- [ ] **The rubric** in `adv-net-sci-ops/grading/quiz/rubrics/`. Each photo
+      holds parts of both questions, so the rubric reads both photos for both
+      questions.
+- [x] **The two short links** on the droplet, 2026-09-28, beside the `quiz03`
+      pair. Validated and reloaded; both answer 302. The pre-edit Caddyfile is
+      `/etc/caddy/Caddyfile.bak-2026-09-28-quiz04`.
+- [x] **`quiz04.pdf` on Drive**, in the `adv-net-sci-ops` folder beside
+      quiz03's, read-only to the `binghamton.edu` domain, link-only.
+      `go.skojaku.com/quiz04` points at it. File id
+      `15gdZmamHfXxP5EwrKashZPBtbHQiv59N`. Re-upload after any edit:
+
+      ```sh
+      GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
+      gws drive files update --params '{"fileId": "15gdZmamHfXxP5EwrKashZPBtbHQiv59N"}' \
+          --upload quiz04.pdf --upload-content-type application/pdf
+      ```
 - [ ] Brightspace.
 - [ ] Print the sheet.
