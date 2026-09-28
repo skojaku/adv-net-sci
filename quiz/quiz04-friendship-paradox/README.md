@@ -91,5 +91,12 @@ Each step is the one the `quiz02` README documents in full.
       gws drive files update --params '{"fileId": "15gdZmamHfXxP5EwrKashZPBtbHQiv59N"}' \
           --upload quiz04.pdf --upload-content-type application/pdf
       ```
-- [ ] Brightspace.
+- [x] **Brightspace grade item** `m04-0929` (id 659065), 10 points, category
+      Quiz (635400), not hidden, 2026-09-28. Made with `POST /grades/` through
+      the bscli session: the route answered 200, not the 403 the quiz03 README
+      records. The Quiz category redistributed itself to 2.5 per item across
+      the four.
+- [ ] Brightspace quiz object for online students, and its
+      `tools/brightspace/course/deadlines.yaml` row, if wanted (Quiz 3 had
+      both; `quiz.create` can link it to grade item 659065).
 - [ ] Print the sheet.
