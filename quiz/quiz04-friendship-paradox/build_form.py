@@ -19,14 +19,13 @@ THE UPLOAD QUESTIONS ARE ADDED BY HAND. The Forms API answers "Creation of
 file_upload question not supported", so the two questions that matter are made
 in the Forms editor:
 
-    Page 1   File upload, images, 1 file, 10 MB, required
-    Page 2   File upload, images, 1 file, 10 MB, NOT required
+    Question 1   File upload, images, 1 file, 10 MB, required
+    Question 2   File upload, images, 1 file, 10 MB, required
 
-One per PAGE, not per question: page 1 holds both questions and the one
-grid both plots go on, and page 2 is spare graph paper that most students
-will not touch. `gforms_download.py` reads the number out of the
-title, so the files come down as `q1-` (page 1) and `q2-` (page 2). Keep
-"Page 1" / "Page 2".
+One per quiz question. The grader (adv-net-sci-ops/grading/quiz) maps each
+upload question to one quiz question by this exact title, and
+`gforms_download.py` names the files `q1-` and `q2-` from the number in it,
+so keep "Question 1" / "Question 2".
 
 Respondents must be signed in to a Google account, which every @binghamton.edu
 student is. `--sync` wipes those two questions along with everything else, so
@@ -53,9 +52,10 @@ DESCRIPTION = (
     "20 minutes - 10 points - Closed notes, calculator allowed, work on your "
     "own.\n\n"
     f"The questions: {QUIZ_PDF}\n\n"
-    "Write on the printed sheet. Photograph page 1 and upload it below. "
-    "Upload page 2 too only if you used its spare graph paper. Photograph "
-    "the whole page, flat, so the plotted points can be read."
+    "Write each question's answer on its own page of your notebook, with "
+    "the plot drawn by hand on log-log axes. Photograph each page and upload "
+    "it below - one photo per question. Photograph the whole page, flat, so "
+    "the plotted points and the axis labels can be read."
 )
 
 
@@ -65,7 +65,7 @@ def items():
             "title": "Your working file",
             "description": (
                 f"The questions are in the PDF: {QUIZ_PDF}\n\n"
-                "One photo per page. Page 2 only if you used it."
+                "One photo per question, in the two boxes below."
             ),
             "textItem": {},
         },
