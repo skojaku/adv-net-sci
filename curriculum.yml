@@ -1365,7 +1365,7 @@ modules:
         level: core
         statement: "There is no single agreed definition of community, so every method encodes a different answer to 'what counts as a group?' - which is why the technique is both ubiquitous and controversial."
         prereq: [m05.c01]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c04
         name: "Clique"
@@ -1381,7 +1381,7 @@ modules:
         level: core
         statement: "A group in which each node connects to all but at most k of the others."
         prereq: [m05.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c06
         name: "k-core (degree relaxation)"
@@ -1389,7 +1389,7 @@ modules:
         level: core
         statement: "A group in which each node connects to at least k others inside the group; obtained by repeatedly peeling away nodes of degree below k."
         prereq: [m05.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c07
         name: "Dense subgraph (density relaxation)"
@@ -1397,7 +1397,7 @@ modules:
         level: core
         statement: "A group whose internal edge density is at least rho, trading exactness for tolerance to missing edges."
         prereq: [m05.c04]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c08
         name: "n-clique, n-clan, n-club (distance relaxation)"
@@ -1405,7 +1405,7 @@ modules:
         level: extension
         statement: "Groups defined by every member being within n steps of every other, with n-clan and n-club adding constraints on where those paths may run."
         prereq: [m05.c04, m02.c05]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c09
         name: "k-truss (hybrid relaxation)"
@@ -1421,7 +1421,7 @@ modules:
         level: core
         statement: "Pattern-based definitions are rigid, often overlap or explode combinatorially, and rarely partition a real network cleanly."
         prereq: [m05.c05, m05.c06, m05.c07]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c11
         name: "Graph cut"
@@ -1429,7 +1429,7 @@ modules:
         level: core
         statement: "Cut(V1, V2) counts the edges crossing between two groups; minimizing it reframes community detection as optimization."
         prereq: [m05.c01]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c12
         name: "The trivial-solution problem"
@@ -1437,7 +1437,7 @@ modules:
         level: core
         statement: "Unconstrained minimum cut peels off a single node (or leaves one giant group), because that is genuinely the fewest crossing edges."
         prereq: [m05.c11]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c13
         name: "Ratio cut"
@@ -1445,7 +1445,7 @@ modules:
         level: core
         statement: "Cut(V1,V2) / (|V1| |V2|): the node-count normalizer is smallest for equal halves and largest when one side holds a single node, so lopsided partitions are penalized."
         prereq: [m05.c12]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c14
         name: "Normalized cut"
@@ -1477,7 +1477,7 @@ modules:
         level: core
         statement: "Q = (1/2m) sum_ij [A_ij - k_i k_j / 2m] delta(c_i, c_j): observed internal edges minus what the null model expects."
         prereq: [m05.c16]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c18
         name: "Reading modularity values"
@@ -1690,7 +1690,7 @@ modules:
         level: core
         statement: "Each edge is two colored balls on a string. Draw strings and count color matches; then cut the strings, draw balls at random with replacement, and count matches again. Modularity is the difference between the two counts."
         prereq: [m05.c15]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c44
         name: "Why degree enters the null model"
@@ -1698,7 +1698,7 @@ modules:
         level: core
         statement: "After cutting the strings there are 2m balls and a node of degree k contributes k of them, so the chance of drawing its color is k/2m - which is where the k_i k_j / 2m term comes from."
         prereq: [m05.c43, m05.c16]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c45
         name: "The two forms of Q are the same"
@@ -1714,7 +1714,7 @@ modules:
         level: core
         statement: "Unlike the cut objectives, Q can be compared across partitions with different numbers of communities, so the number of communities falls out of the optimization."
         prereq: [m05.c17, m05.c40]
-        coverage: {slide: [], in_class: [], out_class: [], assessment: []}
+        coverage: {slide: [], in_class: [lecture-note/m05-clustering/pen-and-paper/exercise.tex], out_class: [], assessment: []}
 
       - id: m05.c47
         name: "Q is not comparable across networks"
