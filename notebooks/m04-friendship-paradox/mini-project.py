@@ -589,7 +589,7 @@ def _():
     mo.md(r"""
     ## Watch a survey
 
-    Choose a town and a survey (the starting code or yours). The slider replays interviews in order, and "new seeds" restarts. Circle size shows degree, fill shows color, faded nodes were not reached, and dark lines show who named whom. Bars compare colors met against the town (black tick), and display the final estimate and error. Compare the mean degree of people met with the town average.
+    Choose a town and a survey (the starting code or yours). The slider replays interviews in order, and "new seeds" restarts. Circle size shows degree, fill shows color, faded nodes were not reached, and dark lines show who named whom. Bars compare colors met against the town (black tick), and display the final estimate and error.
     """)
     return
 
@@ -615,19 +615,15 @@ def _(demo_estimate, demo_record, step_slider, town_radio):
     _name = town_radio.value
     _upto = min(step_slider.value, len(demo_record))
     _met = [p for p, _ in demo_record[:_upto]]
-    _deg = np.array(NETWORKS[_name].degree())
     _colors = COLORS[_name]
     _raw = (
         np.bincount(_colors[_met], minlength=len(GROUPS)) / len(_met)
         if _met
         else np.zeros(len(GROUPS))
     )
-    _mean_k = f"{_deg[_met].mean():.1f}" if _met else "–"
     _panel = [
         note(
-            f"<b>{_upto}</b> of {len(demo_record)} interviews. "
-            f"Mean degree of the people met: <b>{_mean_k}</b> "
-            f"(the whole town: {_deg.mean():.1f}).",
+            f"<b>{_upto}</b> of {len(demo_record)} interviews.",
             BLUE,
         ),
         share_bars("the people met so far", _raw, TRUE_SHARES[_name]),
