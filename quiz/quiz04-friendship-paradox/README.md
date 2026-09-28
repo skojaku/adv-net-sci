@@ -97,7 +97,15 @@ Each step is the one the `quiz02` README documents in full.
       records. The Quiz category redistributed itself to 2.5 per item across
       the four. Next time: `bscli wf apply create-grade-item --set name=<item>
       --set category=Quiz` (added 2026-09-28).
-- [ ] Brightspace quiz object for online students, and its
-      `tools/brightspace/course/deadlines.yaml` row, if wanted (Quiz 3 had
-      both; `quiz.create` can link it to grade item 659065).
+- [x] **Brightspace quiz** `m04-0929` (id 92746), 2026-09-28, feeding grade
+      item `m04-0929` (id 659065), 10 points, category Quiz. Unlimited
+      attempts, best attempt counts, no time limit, open 09-29 09:40 to
+      10-11 23:59. It was made with `bscli wf apply create-quiz`, not in the
+      browser. The page text is Quiz 3's, pointing at `go.skojaku.com/ans-quiz04`.
+      Field by field it differs from Quiz 3 only in its ids, dates, that link,
+      and a close at 23:59:00 rather than 23:59:59. Names were checked with
+      `bscli show quizzes` and `bscli show grade-items`: exactly `m04-0929` with
+      no stray spaces, and `session.json`'s `gradebook_item` and `deadline_key`
+      match it. The `tools/brightspace/course/deadlines.yaml` row is in, and
+      `sync-deadlines` plans clean.
 - [ ] Print the sheet.

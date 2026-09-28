@@ -97,4 +97,7 @@ is the same step the `quiz02` README documents in full.
       from `" m04-0922"`: the leading space would have broken the mark upload,
       which finds the item by the name in `session.json`. The
       `tools/brightspace/course/deadlines.yaml` row is in and
-      `sync-deadlines` plans clean.
+      `sync-deadlines` plans clean. On 2026-09-28 the quiz was found renamed
+      `m03-0922`, and `sync-deadlines` refused the whole file over it. It was
+      renamed back to `m04-0922` with `bscli wf apply update-quiz`, which is the
+      name the grade item, `session.json` and the deadlines row all carry.
