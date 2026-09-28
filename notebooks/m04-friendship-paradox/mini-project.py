@@ -26,10 +26,13 @@
 # and three seeds, averaged over 50 surveys, the error ladder is roughly
 #
 #                           grid    blocks
-#   150 people at random    0.05    0.05    (the floor; not allowed here)
-#   starting code           0.10    0.15    (snowball, count the sample)
-#   benchmark               0.10    0.10    (snowball, weight by 1/degree)
-#   one-coupon chains, 1/k  0.09    0.08    (a plan a team can find)
+#   150 people at random    0.06    0.05    (the floor; not allowed here)
+#   starting code           0.11    0.15    (snowball, count the sample)
+#   benchmark               0.11    0.10    (snowball, weight by 1/degree)
+#   one-coupon chains, 1/k  0.10    0.10    (one chain per seed)
+#   ... preferring friends  0.08    0.09    (step to the friend named the
+#       named least often                    fewest times: walk away from
+#                                            the part already surveyed)
 #
 # so re-weighting alone fixes the blocks town and does nothing for the grid,
 # where the survey is stuck in one neighbourhood of colour patches. A team has
@@ -62,7 +65,7 @@ with app.setup(hide_code=True):
     GROUPS = {
         "blue": "#2a78d6",
         "orange": "#eb6834",
-        "aqua": "#1baf7a",
+        "purple": "#8e5bd6",
         "yellow": "#eda100",
     }
     COLOR_NAMES = list(GROUPS)
@@ -81,8 +84,14 @@ with app.setup(hide_code=True):
             h.vs[key] = list(values)
         comp = h.connected_components()
         big = int(np.argmax(comp.sizes()))
-        return h.induced_subgraph(
+        h = h.induced_subgraph(
             [v for v in range(n) if comp.membership[v] == big]
+        )
+        # Shuffle the ids, so a person's id says nothing about where they
+        # live: without this, grid ids are row * side + column and block
+        # ids come in runs, one run per community.
+        return h.permute_vertices(
+            np.random.default_rng(99).permutation(h.vcount()).tolist()
         )
 
     def _grid(side, diagonal, seed):
@@ -529,7 +538,7 @@ def _():
 
     ## Task
 
-    Everyone in town is blue, orange, aqua, or yellow. Your goal is to estimate each color's share of the town. There is no list of residents, so you start from 3 random people (seeds) and have 150 interviews. Each interview gives color and degree (number of friends); that person names up to 3 friends, and only named people can be interviewed next.
+    Everyone in town is blue, orange, purple, or yellow. Your goal is to estimate each color's share of the town. There is no list of residents, so you start from 3 random people (seeds) and have 150 interviews. Each interview gives color and degree (number of friends); that person names up to 3 friends, and only named people can be interviewed next.
 
     Match a 150-person random sample by changing who you interview, how you count, or both. Cell 1 is your graded English plan. An AI agent may write Cell 2's code from it.
     """)
@@ -672,7 +681,7 @@ def _():
     mo.md(r"""
     ### ✍️ 2. The same plan, as code
 
-    `run_survey(survey)` returns a dictionary of shares per color rescaled to sum to 1, such as `{"blue": 0.3, "orange": 0.2, "aqua": 0.25, "yellow": 0.25}`.
+    `run_survey(survey)` returns a dictionary of shares per color rescaled to sum to 1, such as `{"blue": 0.3, "orange": 0.2, "purple": 0.25, "yellow": 0.25}`.
 
     | what | gives |
     | :--- | :--- |
@@ -680,7 +689,7 @@ def _():
     | `survey.colors` | the four color names |
     | `survey.budget` | 150 |
     | `survey.budget_left()` | interviews left |
-    | `survey.interview(person)` | `{"degree": 4, "color": "aqua"}`; costs 1 the first time |
+    | `survey.interview(person)` | `{"degree": 4, "color": "purple"}`; costs 1 the first time |
     | `survey.refer(person)` | one friend id, or `None` after 3; interview person first |
 
     The starting code is a plain snowball sample that counts colors as they come. Replace it.
@@ -692,7 +701,7 @@ def _():
 # ✍️ 2 — implement the algorithm you described in PLAN.
 def run_survey(survey):
     """Spend the budget, then return your estimate of each colour's share of
-    the town, e.g. {"blue": 0.3, "orange": 0.2, "aqua": 0.25, "yellow": 0.25}.
+    the town, e.g. {"blue": 0.3, "orange": 0.2, "purple": 0.25, "yellow": 0.25}.
 
     This starting version is a plain snowball: interview the seeds, ask every
     respondent to name friends, interview whoever is named first, and report
@@ -705,7 +714,7 @@ def run_survey(survey):
         if person in met:
             continue
         met.append(person)
-        answer = survey.interview(person)  # {"degree": 4, "color": "aqua"}
+        answer = survey.interview(person)  # {"degree": 4, "color": "purple"}
         counts[answer["color"]] += 1
         friend = survey.refer(person)
         while friend is not None:
