@@ -531,8 +531,6 @@ def _():
 
     Everyone in town is blue, orange, aqua, or yellow. Your goal is to estimate each color's share of the town. There is no list of residents, so you start from 3 random people (seeds) and have 150 interviews. Each interview gives color and degree (number of friends); that person names up to 3 friends, and only named people can be interviewed next.
 
-    People reached through friends tend to have many friends, and colors lean weakly with degree, biasing the sample. Colors also cluster, keeping surveys local.
-
     Match a 150-person random sample by changing who you interview, how you count, or both. Cell 1 is your graded English plan. An AI agent may write Cell 2's code from it.
     """)
     return
