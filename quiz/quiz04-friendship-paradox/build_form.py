@@ -20,11 +20,11 @@ file_upload question not supported", so the two questions that matter are made
 in the Forms editor:
 
     Page 1   File upload, images, 1 file, 10 MB, required
-    Page 2   File upload, images, 1 file, 10 MB, required
+    Page 2   File upload, images, 1 file, 10 MB, NOT required
 
-One per PAGE, not per question: this sheet puts both questions' tables on
-page 1 and both plots on the graph paper of page 2, so a question cannot be
-photographed on its own. `gforms_download.py` reads the number out of the
+One per PAGE, not per question: page 1 holds both questions and the one
+grid both plots go on, and page 2 is spare graph paper that most students
+will not touch. `gforms_download.py` reads the number out of the
 title, so the files come down as `q1-` (page 1) and `q2-` (page 2). Keep
 "Page 1" / "Page 2".
 
@@ -53,10 +53,9 @@ DESCRIPTION = (
     "20 minutes - 10 points - Closed notes, calculator allowed, work on your "
     "own.\n\n"
     f"The questions: {QUIZ_PDF}\n\n"
-    "Write on the printed sheet. Photograph each of its two pages and upload "
-    "it below: page 1 (the table and your answers) and page 2 (the graph "
-    "paper). Photograph the whole page, flat, so the plotted points can be "
-    "read."
+    "Write on the printed sheet. Photograph page 1 and upload it below. "
+    "Upload page 2 too only if you used its spare graph paper. Photograph "
+    "the whole page, flat, so the plotted points can be read."
 )
 
 
@@ -66,7 +65,7 @@ def items():
             "title": "Your working file",
             "description": (
                 f"The questions are in the PDF: {QUIZ_PDF}\n\n"
-                "One photo per page, in the two boxes below."
+                "One photo per page. Page 2 only if you used it."
             ),
             "textItem": {},
         },

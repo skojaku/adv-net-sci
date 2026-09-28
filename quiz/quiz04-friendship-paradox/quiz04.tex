@@ -1,15 +1,19 @@
 % Quiz 04 --- The CCDF and the friendship paradox. Printed, worked in class,
-% 20 minutes. Two pages: the questions and the table on page 1, four copies of
-% the same log--log graph paper on page 2 (spares, in case a plot goes wrong).
+% 20 minutes. Page 1 holds everything: the counts, both questions and one
+% log--log grid. Page 2 is four spare grids, for a student whose plot went
+% wrong.
 %
 % Students are given the degree counts of a 10,000-person network and draw two
 % CCDFs by hand on log--log paper: the person's degree, then the friend's. The
 % table has ten rows, degrees 1, 2, 4, ..., 512, and nobody has any other
 % degree, so every number on the sheet is exact.
 %
+% Question 1(a) asks for the CCDF of a continuous power law, so the slope
+% 1 - gamma is derived on the sheet before it is used to read the plot.
+%
 % The sheet gives the definition of a friend (a random end of a random edge)
-% but NOT the route: the k n_k weighting, the slope 1 - gamma and the friend
-% slope 2 - gamma are what the student has to produce. Do not put them back.
+% but NOT the route: the k n_k weighting and the friend slope 2 - gamma are
+% what the student has to produce. Do not put them back.
 %
 % Compile with: xelatex -interaction=nonstopmode quiz04.tex   (run twice)
 \documentclass[a4paper, 11pt]{extarticle}
@@ -26,7 +30,7 @@
 
 \begin{document}
 
-\quizhead{Quiz 4 \; --- \; Your friends' degree, on log--log paper}
+\quizhead{Quiz 4 \; --- \; The CCDF of your friends' degree}
         {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
          Closed notes, calculator allowed, work on your own}
         {Fall 2026}
@@ -41,8 +45,8 @@
 \hfill
 \begin{minipage}[c]{0.83\textwidth}
 {\small
-You hand in two photos: this page, and the graph paper on the back. Write
-your answers on the sheet. Point a camera at the square, or type
+You hand in a photo of this page, and of the back too if you used its spare
+graph paper. Write your answers on the sheet. Point a camera at the square, or type
 \formshort.
 }
 \end{minipage}
@@ -55,42 +59,33 @@ that is not in the table.
 
 \begin{center}
 {\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{|C{1.0cm}|C{1.2cm}||C{2.95cm}|C{2.95cm}||C{2.95cm}|C{2.95cm}|}
+\begin{tabular}{|c||*{10}{C{1.05cm}|}}
 \hline
- & & \multicolumn{2}{c||}{\small Question 1 --- people}
-   & \multicolumn{2}{c|}{\small Question 2 --- friends} \\
-\hline
-$k$ & $n_k$
-  & {\footnotesize people, degree $> k$}
-  & {\footnotesize fraction, degree $> k$}
-  & {\footnotesize your working}
-  & {\footnotesize fraction, degree $> k$} \\
-\hline
-1   & 5000 & & & & \\ \hline
-2   & 3232 & & & & \\ \hline
-4   & 1143 & & & & \\ \hline
-8   & 404  & & & & \\ \hline
-16  & 143  & & & & \\ \hline
-32  & 50   & & & & \\ \hline
-64  & 18   & & & & \\ \hline
-128 & 7    & & & & \\ \hline
-256 & 2    & & & & \\ \hline
-512 & 1    & & & & \\ \hline
+$k$   & 1 & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 & 512 \\ \hline
+$n_k$ & 5000 & 3232 & 1143 & 404 & 143 & 50 & 18 & 7 & 2 & 1 \\ \hline
 \end{tabular}}
 \end{center}
 
 % ---------------------------------------------------------------------------
 \question{1}{5}{The people.}
 
-(a) [2 pts] Fill in the two Question 1 columns.\\
-(b) [1 pt] Plot the fraction against $k$ on the graph paper, as filled
+The CCDF of the degree is $P(k)$, the fraction of nodes with degree $> k$.
+
+(a) [2 pts] Let the degree be continuous with density $p(k) = C k^{-\gamma}$
+for $k \ge 1$, where $\gamma > 1$. Compute the CCDF $P(k)$. What is the slope
+of $\log P(k)$ against $\log k$?
+
+\vspace{3.2cm}
+
+\begin{minipage}[t]{0.47\textwidth}
+\vspace{0pt}
+(b) [1 pt] Plot the CCDF of the network in the table on the grid, as filled
 dots~$\bullet$.\\
-(c) [2 pts] Read the slope of your line and give the power-law exponent
-$\gamma$ of $p(k) \sim k^{-\gamma}$.
+(c) [2 pts] Read the slope of your line and give $\gamma$.
 
 \vspace{0.3em}
-slope $=$ \underline{\hspace{2.5cm}} \qquad
-$\gamma =$ \underline{\hspace{2.5cm}}
+slope $=$ \underline{\hspace{2cm}} \quad
+$\gamma =$ \underline{\hspace{2cm}}
 
 % ---------------------------------------------------------------------------
 \question{2}{5}{The friends.}
@@ -98,25 +93,33 @@ $\gamma =$ \underline{\hspace{2.5cm}}
 List every (person, friend) pair in the network; each friendship gives two.
 A \emph{friend} is the second entry of a pair drawn uniformly at random.
 
-(a) [2 pts] Fill in the last column: the fraction of friends with degree
-$> k$.\\
-(b) [1 pt] Plot it on the \emph{same} grid, as open circles~$\circ$.\\
-(c) [2 pts] Read the slope of the friend line. By how much does it differ
+(a) [2 pts] Plot the CCDF of a friend's degree on the \emph{same} grid, as
+open circles~$\circ$.\\
+(b) [3 pts] Read the slope of the friend line. By how much does it differ
 from the slope in Question 1, and why?
 
 \vspace{0.3em}
-slope $=$ \underline{\hspace{2.5cm}} \qquad differs by \underline{\hspace{2.5cm}}
+slope $=$ \underline{\hspace{2cm}} \quad differs by \underline{\hspace{1.6cm}}
 
 Why:
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{1.2em}
+\raggedleft
+\loggrid{}{}
+\end{minipage}
 
 \vfill
+{\footnotesize Show your working anywhere on this page. Spare graph paper is
+on the back.}
 
 % ===========================================================================
 \newpage
 
-{\small Plot Question 1 ($\bullet$) and Question 2 ($\circ$) on \emph{one}
-grid. The other three are spares: if you use more than one, cross out the
-ones you do not want marked. One decade is the same length on both axes.}
+{\small Spare graph paper, for a plot that went wrong. Use one grid, cross
+out the grid on page 1 and every grid here you do not want marked, and
+upload a photo of this page too.}
 
 \vspace{0.6em}
 \begin{center}
