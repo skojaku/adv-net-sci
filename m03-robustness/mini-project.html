@@ -9,7 +9,7 @@
 <meta name="author" content="Sadamori Kojaku">
 <meta name="dcterms.date" content="2026-09-28">
 
-<title>Exercises and Assignments – Advanced Topics in Network Science</title>
+<title>Advanced Topics in Network Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -28,6 +28,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -38,8 +73,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../m07-random-walks/04-appendix.html" rel="next">
-<link href="../m07-random-walks/02-coding.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -75,49 +108,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script defer="" src="../assets/katex/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet" href="../assets/katex/katex.min.css">
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../assets/anim.css">
 </head>
@@ -249,7 +239,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Advanced Topics in Network Science</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -561,13 +551,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
  <span class="menu-text">M07: Random Walks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../m07-random-walks/01-concepts.html" class="sidebar-item-text sidebar-link">
@@ -582,7 +572,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link active">
+  <a href="../m07-random-walks/03-exercises.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exercises and Assignments</span></a>
   </div>
 </li>
@@ -680,18 +670,20 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pen-and-paper-walk-it-by-hand-before-the-lecture" id="toc-pen-and-paper-walk-it-by-hand-before-the-lecture" class="nav-link active" data-scroll-target="#pen-and-paper-walk-it-by-hand-before-the-lecture">Pen and Paper: Walk It By Hand Before the Lecture</a></li>
-  <li><a href="#interactive-demos" id="toc-interactive-demos" class="nav-link" data-scroll-target="#interactive-demos">Interactive Demos</a></li>
-  <li><a href="#assignments" id="toc-assignments" class="nav-link" data-scroll-target="#assignments">Assignments</a></li>
+  <li><a href="#mini-project-who-gets-the-vaccine-and-who-gets-the-phone-call" id="toc-mini-project-who-gets-the-vaccine-and-who-gets-the-phone-call" class="nav-link active" data-scroll-target="#mini-project-who-gets-the-vaccine-and-who-gets-the-phone-call">Mini Project — Who gets the vaccine, and who gets the phone call?</a>
+  <ul class="collapse">
+  <li><a href="#how-to-work" id="toc-how-to-work" class="nav-link" data-scroll-target="#how-to-work">How to work</a></li>
+  <li><a href="#what-to-hand-in" id="toc-what-to-hand-in" class="nav-link" data-scroll-target="#what-to-hand-in">What to hand in</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m03-robustness/mini-project.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../m07-random-walks/01-concepts.html">M07: Random Walks</a></li><li class="breadcrumb-item"><a href="../m07-random-walks/03-exercises.html">Exercises and Assignments</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Exercises and Assignments</h1>
+<h1 class="title">Advanced Topics in Network Science</h1>
 </div>
 
 
@@ -720,25 +712,67 @@ window.Quarto = {
 </header>
 
 
-<section id="pen-and-paper-walk-it-by-hand-before-the-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="pen-and-paper-walk-it-by-hand-before-the-lecture">Pen and Paper: Walk It By Hand Before the Lecture</h2>
-<p>You work this in class, before any of it is named. It is designed so that you discover the stationary distribution yourself, with nothing but a pencil: you fill in a transition matrix by hand, push a distribution forward step by step, and notice what the numbers settle on before anybody tells you the formula.</p>
+<section id="mini-project-who-gets-the-vaccine-and-who-gets-the-phone-call" class="level1">
+<h1>Mini Project — Who gets the vaccine, and who gets the phone call?</h1>
+<p>A disease is loose in five towns. You are the health department, and you are short of everything.</p>
+<p>Twice you have to decide who to protect.</p>
 <ul>
-<li><strong>Where Does the Drunkard Sleep?</strong> <em>(handed out in class; the PDF is being rewritten)</em>: transition probabilities, one- and two-step distributions, and the long-run visit frequencies of a four-node network.</li>
+<li><strong>Task A.</strong> The vaccine arrives before the disease does. You have the whole network in front of you and doses for <strong>10%</strong> of the town.</li>
+<li><strong>Task B.</strong> The outbreak is already running and is found once <strong>10%</strong> of the town has it. You get one day of contact tracing and isolation beds for <strong>5%</strong>. You never see the network. You see the cases, the people the cases named, and the links that touch a case. Nothing else.</li>
 </ul>
+<p>Both are scored the same way: run an SI epidemic on what is left, and measure the share of the town infected when the clock stops. Lower is better.</p>
+<section id="how-to-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-work">How to work</h2>
+<ol type="1">
+<li><p><strong>Teams of up to three.</strong> Ninety minutes.</p></li>
+<li><p><strong>Get the notebook and open it.</strong></p>
+<details class="qfold">
+<summary>Show the commands</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-O</span> https://raw.githubusercontent.com/skojaku/adv-net-sci/main/notebooks/m03-robustness/mini-project.py</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uvx</span> marimo edit <span class="at">--sandbox</span> mini-project.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>It opens in a browser. If nothing appears, the terminal prints a <code>http://localhost:2718?...</code> address. <code>Ctrl-C</code> stops it. If <code>uv</code> is not set up yet, do <a href="../course/setup.html">Set up your machine</a> first.</p></li>
+<li><p><strong>Fill the four cells.</strong> Two per task:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>cell</th>
+<th>what goes in it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>A1</code></td>
+<td>what your vaccination algorithm does, in English</td>
+</tr>
+<tr class="even">
+<td><code>A2</code></td>
+<td>the same algorithm, as <code>choose_vaccination(g, budget)</code></td>
+</tr>
+<tr class="odd">
+<td><code>B1</code></td>
+<td>what your quarantine algorithm does, in English</td>
+</tr>
+<tr class="even">
+<td><code>B2</code></td>
+<td>the same algorithm, as <code>choose_quarantine(known, budget)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The English cell comes first and <strong>it is the one that is graded</strong>. Write it so somebody who has never seen your code could carry it out with a pencil.</p>
+<p>The code cell may be written by your coding agent from that description. The notebook ends with a block to paste into your agent, and the important line in it is that the agent implements what you wrote rather than what it would have written. If your description is vague, the agent guesses, and the score tells you what it guessed.</p></li>
+<li><p><strong>The scoreboard runs itself.</strong> Every time you edit a code cell the five networks are re-run and your two scores appear against three reference lines: nobody protected, a random selection, and an anonymous benchmark. The seeds are fixed, so the number you see is the number we see.</p></li>
+<li><p><strong><code>igraph</code> and <code>numpy</code> only.</strong> No <code>networkx</code>. Nothing in the setup cell at the top of the notebook is yours to change.</p></li>
+</ol>
 </section>
-<section id="interactive-demos" class="level2">
-<h2 class="anchored" data-anchor-id="interactive-demos">Interactive Demos</h2>
-<ul>
-<li><a href="../assets/vis/amida-kuji.html">Ladder Lottery</a>: a fixed board, an unpredictable outcome. One knob sets the rungs; the histogram is where two thousand fresh boards put you, and <strong>Gap from even</strong> measures it. Drag from <a href="../assets/vis/amida-kuji.html?rungs=4">four rungs</a> to <a href="../assets/vis/amida-kuji.html?rungs=60">sixty</a> and watch the gap fall from about 0.6 to 0.08 — that is a random walk mixing, seen from the inside.</li>
-<li><a href="../assets/vis/random-walks/index.html">Random walk simulator</a>: the karate club by default. Run five thousand steps and watch every bar settle onto its <span class="math inline">k/2m</span> mark. Then run it on a network with <a href="../assets/vis/random-walks/index.html?dataFile=two-cliques.json">two obvious communities</a> and count how long the walker stays on one side. Then turn the teleport knob up and find where the distance stops falling.</li>
-</ul>
-</section>
-<section id="assignments" class="level2">
-<h2 class="anchored" data-anchor-id="assignments">Assignments</h2>
-<p>Neither graded assignment runs in this module. The <a href="../course/pair-notebook.html">Pair Notebook</a> and the <a href="../course/mini-project.html">Group Mini-Project</a> both cover Modules 2 through 6. The worksheet and the notebook above are practice, not submissions.</p>
+<section id="what-to-hand-in" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-hand-in">What to hand in</h2>
+<p>One submission per team: <a href="https://go.skojaku.com/m03mini" class="uri">https://go.skojaku.com/m03mini</a></p>
+<p>The form asks for your Binghamton email addresses, your two scores, the text of <code>A1</code> and <code>B1</code>, the notebook file, and two or three sentences on the last question in the notebook.</p>
+<p><strong>The two English cells are worth more than the two scores.</strong> A team that describes a strategy precisely, implements it, and finds that it loses to the benchmark has done the assignment. A team with a good score and a vague paragraph has not.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1146,18 +1180,6 @@ window.Quarto = {
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../m07-random-walks/02-coding.html" class="pagination-link" aria-label="Hands-on: Walking Randomly, on Purpose">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Hands-on: Walking Randomly, on Purpose</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../m07-random-walks/04-appendix.html" class="pagination-link" aria-label="Appendix: Why the Second Eigenvalue Sets the Clock">
-        <span class="nav-page-text">Appendix: Why the Second Eigenvalue Sets the Clock</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1166,7 +1188,7 @@ window.Quarto = {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m07-random-walks/03-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/skojaku/adv-net-sci/edit/main/m03-robustness/mini-project.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/skojaku/adv-net-sci/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
