@@ -1,0 +1,129 @@
+% Quiz 04 --- The CCDF and the friendship paradox. Printed, worked in class,
+% 20 minutes. Two pages: the questions and the table on page 1, four copies of
+% the same log--log graph paper on page 2 (spares, in case a plot goes wrong).
+%
+% Students are given the degree counts of a 10,000-person network and draw two
+% CCDFs by hand on log--log paper: the person's degree, then the friend's. The
+% table has ten rows, degrees 1, 2, 4, ..., 512, and nobody has any other
+% degree, so every number on the sheet is exact.
+%
+% The sheet gives the definition of a friend (a random end of a random edge)
+% but NOT the route: the k n_k weighting, the slope 1 - gamma and the friend
+% slope 2 - gamma are what the student has to produce. Do not put them back.
+%
+% Compile with: xelatex -interaction=nonstopmode quiz04.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The quizkit heading puts the title on a line of its own; this sheet needs
+% the room for the table, so title and points share one line.
+\renewcommand{\question}[3]{%
+  \vspace{0.4em}
+  {\large\bfseries Question #1 \quad #3\quad\normalsize\mdseries (#2 points)}\par
+  \vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par}
+
+\begin{document}
+
+\quizhead{Quiz 4 \; --- \; Your friends' degree, on log--log paper}
+        {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
+         Closed notes, calculator allowed, work on your own}
+        {Fall 2026}
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.14\textwidth}
+\begin{center}
+\includegraphics[width=1.6cm]{quiz04-form-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.83\textwidth}
+{\small
+You hand in two photos: this page, and the graph paper on the back. Write
+your answers on the sheet. Point a camera at the square, or type
+\formshort.
+}
+\end{minipage}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+A social network has $N = 10{,}000$ people and $M = 13{,}114$ friendships.
+$n_k$ is the number of people with exactly $k$ friends. Nobody has a degree
+that is not in the table.
+
+\begin{center}
+{\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|C{1.0cm}|C{1.2cm}||C{2.95cm}|C{2.95cm}||C{2.95cm}|C{2.95cm}|}
+\hline
+ & & \multicolumn{2}{c||}{\small Question 1 --- people}
+   & \multicolumn{2}{c|}{\small Question 2 --- friends} \\
+\hline
+$k$ & $n_k$
+  & {\footnotesize people, degree $> k$}
+  & {\footnotesize fraction, degree $> k$}
+  & {\footnotesize your working}
+  & {\footnotesize fraction, degree $> k$} \\
+\hline
+1   & 5000 & & & & \\ \hline
+2   & 3232 & & & & \\ \hline
+4   & 1143 & & & & \\ \hline
+8   & 404  & & & & \\ \hline
+16  & 143  & & & & \\ \hline
+32  & 50   & & & & \\ \hline
+64  & 18   & & & & \\ \hline
+128 & 7    & & & & \\ \hline
+256 & 2    & & & & \\ \hline
+512 & 1    & & & & \\ \hline
+\end{tabular}}
+\end{center}
+
+% ---------------------------------------------------------------------------
+\question{1}{5}{The people.}
+
+(a) [2 pts] Fill in the two Question 1 columns.\\
+(b) [1 pt] Plot the fraction against $k$ on the graph paper, as filled
+dots~$\bullet$.\\
+(c) [2 pts] Read the slope of your line and give the power-law exponent
+$\gamma$ of $p(k) \sim k^{-\gamma}$.
+
+\vspace{0.3em}
+slope $=$ \underline{\hspace{2.5cm}} \qquad
+$\gamma =$ \underline{\hspace{2.5cm}}
+
+% ---------------------------------------------------------------------------
+\question{2}{5}{The friends.}
+
+List every (person, friend) pair in the network; each friendship gives two.
+A \emph{friend} is the second entry of a pair drawn uniformly at random.
+
+(a) [2 pts] Fill in the last column: the fraction of friends with degree
+$> k$.\\
+(b) [1 pt] Plot it on the \emph{same} grid, as open circles~$\circ$.\\
+(c) [2 pts] Read the slope of the friend line. By how much does it differ
+from the slope in Question 1, and why?
+
+\vspace{0.3em}
+slope $=$ \underline{\hspace{2.5cm}} \qquad differs by \underline{\hspace{2.5cm}}
+
+Why:
+
+\vfill
+
+% ===========================================================================
+\newpage
+
+{\small Plot Question 1 ($\bullet$) and Question 2 ($\circ$) on \emph{one}
+grid. The other three are spares: if you use more than one, cross out the
+ones you do not want marked. One decade is the same length on both axes.}
+
+\vspace{0.6em}
+\begin{center}
+\loggrid{A}{}\hfill\loggrid{B}{}
+
+\vspace{0.9em}
+\loggrid{C}{}\hfill\loggrid{D}{}
+\end{center}
+
+\end{document}

@@ -1,0 +1,133 @@
+% Quiz 04 --- answer key with marking notes. DO NOT HAND OUT.
+%
+% Every number here comes from the ten counts on the sheet; nobody has a
+% degree outside the table, so the key is exact, not a fit.
+%
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+\newgeometry{top=0.6in, bottom=0.6in, left=0.75in, right=0.75in}
+
+\newcommand{\ans}[1]{{\color{pltblue}\bfseries #1}}
+
+% The two CCDFs in axis units (x = log10 k, y = log10 fraction). The k = 512
+% row is 0 in both columns and has no place on a log axis.
+\newcommand{\keyplot}{%
+  \draw[pltblue!60, line width=0.9pt, dashed] (0,-0.28) -- (2.5,-4.03);
+  \draw[black!55, line width=0.9pt, dashed] (0,-0.09) -- (1.9,-1.13);
+  \foreach \x/\y in {0.0000/-0.3010, 0.3010/-0.7525, 0.6021/-1.2041,
+                     0.9031/-1.6556, 1.2041/-2.1079, 1.5051/-2.5528,
+                     1.8062/-3.0000, 2.1072/-3.5229, 2.4082/-4.0000}
+    \fill[pltblue!80!black] (\x,\y) circle (2.2pt);
+  \foreach \x/\y in {0.0000/-0.0919, 0.3010/-0.2496, 0.6021/-0.4105,
+                     0.9031/-0.5762, 1.2041/-0.7493, 1.5051/-0.9313,
+                     1.8062/-1.1355, 2.1072/-1.4085, 2.4082/-1.7095}
+    \draw[black, line width=0.9pt, fill=white] (\x,\y) circle (2.4pt);
+  \node[font=\footnotesize, pltblue!80!black, anchor=west] at (1.9,-2.6)
+    {people, slope $-1.5$};
+  \node[font=\footnotesize, anchor=west] at (2.0,-0.6)
+    {friends, slope $-0.55$};}
+
+\begin{document}
+
+\quizhead{Quiz 4 \; --- \; Answer key}
+        {Instructor copy \quad$\cdot$\quad do not hand out}
+        {Fall 2026}
+
+\textbf{The network.} $N = 10{,}000$, $\sum_k k\,n_k = 26{,}228 = 2M$, so
+$M = 13{,}114$. The counts were built from $p(k) \sim k^{-2.5}$ on
+$k = 1, 2, 4, \dots, 512$: each doubling of $k$ divides the number of people
+above it by $2^{1.5} \approx 2.83$. $\langle k \rangle = 2.62$ and
+$\langle k_f \rangle = \langle k^2 \rangle / \langle k \rangle = 27.9$.
+
+\begin{center}
+{\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|c||c|c||c|c|c|}
+\hline
+ & & \multicolumn{2}{c||}{Question 1} & \multicolumn{3}{c|}{Question 2} \\
+\hline
+$k$ & $n_k$ & people, $> k$ & fraction & $k\,n_k$ & pairs, friend $> k$
+  & fraction \\
+\hline
+1   & 5000 & \ans{5000} & \ans{0.5}    & \ans{5000} & \ans{21228} & \ans{0.809} \\
+2   & 3232 & \ans{1768} & \ans{0.177}  & \ans{6464} & \ans{14764} & \ans{0.563} \\
+4   & 1143 & \ans{625}  & \ans{0.0625} & \ans{4572} & \ans{10192} & \ans{0.389} \\
+8   & 404  & \ans{221}  & \ans{0.0221} & \ans{3232} & \ans{6960}  & \ans{0.265} \\
+16  & 143  & \ans{78}   & \ans{0.0078} & \ans{2288} & \ans{4672}  & \ans{0.178} \\
+32  & 50   & \ans{28}   & \ans{0.0028} & \ans{1600} & \ans{3072}  & \ans{0.117} \\
+64  & 18   & \ans{10}   & \ans{0.0010} & \ans{1152} & \ans{1920}  & \ans{0.073} \\
+128 & 7    & \ans{3}    & \ans{0.0003} & \ans{896}  & \ans{1024}  & \ans{0.039} \\
+256 & 2    & \ans{1}    & \ans{0.0001} & \ans{512}  & \ans{512}   & \ans{0.020} \\
+512 & 1    & \ans{0}    & \ans{0}      & \ans{512}  & \ans{0}     & \ans{0}     \\
+\hline
+\end{tabular}}
+\end{center}
+
+\begin{minipage}[t]{0.47\textwidth}
+\vspace{0pt}
+\question{1}{5}{The people.}
+
+(a) [2] Count down from the bottom: people with degree $> k$ is the sum of
+$n_{k'}$ over the rows below $k$. Divide by $N$. \emph{Strictly} greater:
+the course CCDF is $P(K > k)$. A column of $P(K \ge k)$ (1, 0.5, 0.177,
+\ldots) is shifted by one row: $-1$.
+Arithmetic slips in one or two cells: $-0.5$ each.
+
+(b) [1] Nine points on a straight line. The $k = 512$ row is $0$ and cannot
+be plotted; no penalty for leaving it off, and a student who says so has
+understood the axis.
+
+(c) [2] Slope $\ans{\approx -1.5}$ (accept $-1.3$ to $-1.7$), so
+$\ans{\gamma = 1 - \text{slope} \approx 2.5}$ (accept $2.3$ to $2.7$).
+From the sheet: $k$ from 2 to 128 is $1.81$ decades; the fraction falls from
+$0.177$ to $0.0003$, $2.77$ decades; $-2.77/1.81 = -1.53$.
+
+Marking (c): the slope correct $+1$; $\gamma$ from it correct $+1$.
+\textbf{$\gamma = 1.5$ (slope read as $-\gamma$) scores 1 of 2} --- it is the
+slip the lecture note warns about.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\vspace{0pt}
+\centering
+\resizebox{\textwidth}{!}{\loggrid{}{\keyplot}}
+\end{minipage}
+
+\question{2}{5}{The friends.}
+
+(a) [2] A random (person, friend) pair lands on a friend of degree $k$ with
+probability $k\,n_k / 2M$: each person of degree $k$ is the second entry of
+$k$ pairs. So weight each row by $k$, count down from the bottom as in
+Question~1, and divide by $2M = 26{,}228$. The \ans{$k\,n_k$ weighting} is
+the whole question; the working column should show it.
+\begin{itemize}[nosep, leftmargin=1.2em]
+  \item Correct weighting, arithmetic slips: $-0.5$ each.
+  \item Unweighted (copies Question 1): $0$ of 2, and (b), (c) are then
+        marked on their own terms only.
+  \item Weighted by $k^2$ or divided by $N$ instead of $2M$: 1 of 2.
+\end{itemize}
+
+(b) [1] Open circles on the same grid, all above the people's line. The line
+bends down at the right end (next paragraph); that is correct, not an error.
+
+(c) [2] Slope $\ans{\approx -0.55}$ over $k = 1$ to $32$ (accept $-0.4$ to
+$-0.8$). It is \ans{shallower by about 1}. Why: the friend's degree
+distribution is $q(k) = k\,p(k)/\langle k \rangle \sim k^{-(\gamma-1)}$, so
+its CCDF has slope $1 - (\gamma - 1) = \ans{2 - \gamma} = -0.5$. High-degree
+people are named as a friend once per friendship, so the friend
+distribution carries one extra factor of $k$, which lifts the tail.
+
+The last three points fall off the line because nobody has more than 512
+friends: the CCDF must reach 0 at $k = 512$, and the friend line, being
+shallow, is still high when it has to start falling. A student who fits the whole line gets about
+$-0.65$; accept it. A student who names the cut-off as the reason for the
+bend gets nothing extra but has understood the plot.
+
+Marking (c): the slope $+0.5$; ``shallower by about 1'' $+0.5$; the reason
+($k\,p(k)$, or ``each person counted once per friend'') $+1$. ``Friends have
+more friends'' with no link to the slope: $+0.5$ of the last point.
+
+The friendship paradox is visible in the plot: at $k = 64$, 0.1\% of people
+have more friends, but 7.3\% of friends do.
+
+\end{document}
