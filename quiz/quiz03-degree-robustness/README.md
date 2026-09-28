@@ -91,8 +91,9 @@ is the same step the `quiz02` README documents in full.
 - [x] **Brightspace**, 2026-09-22. Quiz `m04-0922` (id 92607) feeding grade
       item `m04-0922` (id 657786), 10 points, category Quiz, unlimited
       attempts, no time limit, open 09-22 09:40 to 10-04 23:59. Both were made
-      in the browser — the grade item because it has to be (`POST /grades/`
-      answers 403), the quiz because it came with it — and both were renamed
+      in the browser — the grade item because it had to be (`POST /grades/`
+      answered 403 then; it answered 200 on 2026-09-28 and bscli now has
+      `create-grade-item`), the quiz because it came with it — and both were renamed
       from `" m04-0922"`: the leading space would have broken the mark upload,
       which finds the item by the name in `session.json`. The
       `tools/brightspace/course/deadlines.yaml` row is in and

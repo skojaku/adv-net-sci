@@ -95,7 +95,8 @@ Each step is the one the `quiz02` README documents in full.
       Quiz (635400), not hidden, 2026-09-28. Made with `POST /grades/` through
       the bscli session: the route answered 200, not the 403 the quiz03 README
       records. The Quiz category redistributed itself to 2.5 per item across
-      the four.
+      the four. Next time: `bscli wf apply create-grade-item --set name=<item>
+      --set category=Quiz` (added 2026-09-28).
 - [ ] Brightspace quiz object for online students, and its
       `tools/brightspace/course/deadlines.yaml` row, if wanted (Quiz 3 had
       both; `quiz.create` can link it to grade item 659065).
