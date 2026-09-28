@@ -26,8 +26,8 @@ degree, so every answer is exact. The counts were built from `p(k) ~ k^-2.5`.
 **The sheet does not give the route for Question 2.** The `k n_k` weighting
 and the friend slope `2 − γ` are what the student has to produce.
 
-No graph paper is printed. The sheet asks for evenly spaced powers of ten and
-the same decade length on both axes; the key accepts a slope computed from two
+No graph paper is printed. The sheet asks for the same log scale on both
+axes and leaves the base open (base 2 fits the degrees); the key accepts a slope computed from two
 points as well as one measured off the drawing.
 
 The friend CCDF bends down over its last three points, because nobody has
