@@ -1,0 +1,98 @@
+% Quiz 04 --- The CCDF and the friendship paradox. Printed, worked in class,
+% 20 minutes. One page, questions only, like Quiz 3: students answer in their
+% own notebook, draw the log--log axes by hand, and upload one photo per
+% question.
+%
+% Students are given the degree counts of a 10,000-person network and draw two
+% CCDFs by hand on log--log axes: the person's degree, then the friend's. The
+% table has ten columns, degrees 1, 2, 4, ..., 512, and nobody has any other
+% degree, so every number on the sheet is exact.
+%
+% Question 1(a) asks for the CCDF of a continuous power law, so the slope
+% 1 - gamma is derived on the sheet before it is used to read the plot.
+%
+% The sheet gives the definition of a friend (a random end of a random edge)
+% but NOT the route: the k n_k weighting and the friend slope 2 - gamma are
+% what the student has to produce. Do not put them back.
+%
+% Compile with: xelatex -interaction=nonstopmode quiz04.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The quizkit heading puts the title on a line of its own; this sheet needs
+% the room for the table, so title and points share one line.
+\renewcommand{\question}[3]{%
+  \vspace{0.4em}
+  {\large\bfseries Question #1 \quad #3\quad\normalsize\mdseries (#2 points)}\par
+  \vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par}
+
+\begin{document}
+
+\quizhead{Quiz 4 \; --- \; The CCDF of your friends' degree}
+        {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
+         Closed notes, calculator allowed, work on your own}
+        {Fall 2026}
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.14\textwidth}
+\begin{center}
+\includegraphics[width=1.6cm]{quiz04-form-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.83\textwidth}
+{\small
+You hand in two photos, one per question. Write each question's answer on
+its own page, photograph each page, and upload it. Point a camera at the
+square, or type \formshort.
+}
+\end{minipage}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+A social network has $N = 10{,}000$ people and $M = 13{,}114$ friendships.
+$n_k$ is the number of people with exactly $k$ friends. Nobody has a degree
+that is not in the table.
+
+\begin{center}
+{\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c||*{10}{C{1.05cm}|}}
+\hline
+$k$   & 1 & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 & 512 \\ \hline
+$n_k$ & 5000 & 3232 & 1143 & 404 & 143 & 50 & 18 & 7 & 2 & 1 \\ \hline
+\end{tabular}}
+\end{center}
+
+% ---------------------------------------------------------------------------
+\question{1}{5}{The people.}
+
+The CCDF of the degree is $P(k)$, the fraction of nodes with degree $> k$.
+
+(a) [2 pts] Let the degree be continuous with density $p(k) = C k^{-\gamma}$
+for $k \ge 1$, where $\gamma > 1$. Compute the CCDF $P(k)$. What is the slope
+of $\log P(k)$ against $\log k$?
+
+(b) [1 pt] Plot the CCDF of the network in the table on log--log axes,
+drawn by hand. Use the same log scale on both axes: the same base, and the
+same length per step.
+
+(c) [2 pts] Read the slope of your line and give $\gamma$.
+
+% ---------------------------------------------------------------------------
+\question{2}{5}{The friends.}
+
+List every (person, friend) pair in the network; each friendship gives two.
+A \emph{friend} is the second entry of a pair drawn uniformly at random.
+
+(a) [2 pts] Plot the CCDF of a friend's degree on log--log axes, with the
+Question 1 points on the same axes for comparison.
+
+(b) [3 pts] Read the slope of the friend line. By how much does it differ
+from the slope in Question 1, and why?
+
+\vfill
+
+\end{document}

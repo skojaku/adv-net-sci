@@ -10,6 +10,7 @@ figures themselves are split three ways only so they can be authored in parallel
 
     figs_story.py   Parts 1-4   the eight girls, the theorem, the applications
     figs_tail.py    Parts 5-6   degree distributions, CCDFs, where hubs come from
+    figs_hist.py    Part 5      the twenty-degree histogram worked example
     figs_edge.py    Parts 7-8   edge cases, the straight line that proves nothing
 
 Nothing here stops at the first failure: `figlib.run()` catches per figure, prints every
@@ -19,11 +20,13 @@ round of fixes into seven.
 """
 
 import figs_edge
+import figs_hist
 import figs_story
 import figs_tail
 from figlib import run
 
-FIGURES = figs_story.FIGURES + figs_tail.FIGURES + figs_edge.FIGURES
+FIGURES = (figs_story.FIGURES + figs_tail.FIGURES + figs_hist.FIGURES
+           + figs_edge.FIGURES)
 
 _names = [n for n, _ in FIGURES]
 assert len(_names) == len(set(_names)), \

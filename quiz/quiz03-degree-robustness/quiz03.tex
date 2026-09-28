@@ -1,0 +1,108 @@
+% Quiz 03 --- Degree bias and the breakdown threshold. Printed, worked in
+% class, 20 minutes.
+%
+% The sheet carries the questions only. No boxes and no ruled lines: students
+% write on their own paper, and the Google Form takes a photo.
+%
+% Two derivations, one shared piece of mathematics: the degree of the node at
+% the end of a random edge. Question 1 is the friendship paradox, Question 2
+% the percolation threshold, and kappa = <k^2>/<k> is the same number in both.
+%
+% The sheet states the setting and asks for the result. It does NOT lay out the
+% route: q(k), the branching factor, the -1 for the incoming edge, the variance
+% form of the gap and the Poisson second moment are all things the student has
+% to produce. That is the whole assessment, so do not "helpfully" put any of
+% them back on the sheet.
+%
+% Compile with: xelatex -interaction=nonstopmode quiz03.tex   (run twice)
+\documentclass[a4paper, 12pt]{extarticle}
+\input{quizkit}
+
+\begin{document}
+
+\quizhead{Quiz 3 \; --- \; Degree bias and robustness}
+        {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
+         Closed notes, work on your own}
+        {Fall 2026}
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.19\textwidth}
+\begin{center}
+\includegraphics[width=2.2cm]{quiz03-form-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.77\textwidth}
+{\small
+You hand in two photos, one per question. Write each question's
+answer on its own page, photograph each page, and upload it. Point a camera at
+the square, or type \formshort.
+}
+\end{minipage}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
+                  sharp corners, boxsep=2pt, left=6pt, right=6pt,
+                  top=4pt, bottom=4pt]
+{\small
+Notation.
+$G$ is a finite, simple, undirected network with $N$ nodes and $M \ge 1$ edges.
+Node $i$ has degree $k_i$ and neighbor set $\mathcal{N}(i)$. The degree
+distribution $p(k)$ is the fraction of nodes of degree exactly $k$, and
+\[
+  \langle k \rangle = \sum_k k\, p(k) ,
+  \quad
+  \langle k^2 \rangle = \sum_k k^2 p(k) ,
+  \quad
+  \mathrm{Var}(k) = \langle k^2 \rangle - \langle k \rangle^2 ,
+  \quad
+  \kappa \;\equiv\; \frac{\langle k^2 \rangle}{\langle k \rangle} .
+\]
+}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+\question{1}{5}{Your friends have more friends than you.}
+
+The average degree of a friend is the friend's degree averaged over
+every (person, friend) pair in $G$ --- that is, over all $2M$ edge endpoints:
+\[
+  \langle k_f \rangle
+  \;\equiv\; \frac{1}{2M} \sum_{i} \sum_{j \in \mathcal{N}(i)} k_j .
+\]
+
+(a) [3 pts] Prove that $\langle k \rangle \le \langle k_f \rangle$ in
+every such network.
+
+\vspace{0.1em}
+
+(b) [2 pts] State exactly when equality holds, and prove it.
+
+% ---------------------------------------------------------------------------
+\question{2}{5}{How much can you delete before it falls apart?}
+
+Let $G$ be a configuration model network: $N$ nodes are given degrees
+from $p(k)$, each is cut into that many half-edges, and the half-edges are
+paired uniformly at random. Assume $N$ is large and the network is
+locally tree-like. A giant component holds a non-vanishing
+fraction of the $N$ nodes as $N \to \infty$.
+
+Now delete every node independently with probability $f$.
+
+\vspace{0.2em}
+
+(a) [3 pts] Derive the critical fraction $f_c$ at which the
+giant component disappears. Give $f_c$ in terms of $\kappa$.
+
+\vspace{0.1em}
+
+(b) [2 pts] Evaluate $f_c$ for (i) a Poisson $p(k)$ of mean
+$\langle k \rangle$, and (ii) $p(k) \sim k^{-\gamma}$ with
+$2 < \gamma < 3$ as $N \to \infty$. Say in one sentence what (ii) means for
+such a network.
+
+\vfill
+
+\end{document}

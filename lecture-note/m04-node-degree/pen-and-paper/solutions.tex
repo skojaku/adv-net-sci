@@ -1,0 +1,306 @@
+% Answer key for the Module 4 pen-and-paper sheet.
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+%
+% It carries the questions as well as the answers, so it can be read on its
+% own, and it draws the same charts as the sheet out of gotkit.tex -- an answer
+% to a question about a chart has to be a chart. It is published beside the
+% exercise, so it reads as the worked answer rather than as a key.
+%
+% 11pt here, against the sheet's 14pt: nobody writes on this one.
+\documentclass[a4paper, 11pt]{extarticle}
+\usepackage[top=0.7in, bottom=0.7in, left=0.8in, right=0.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
+%
+% Naming a font that is not installed is a hard error, not a fallback, which is
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The lab the sheet hands off to, if it has one. Both the QR code and the
+% printed address are the course's own short link, never the notebook's: paper
+% outlives any one upload, so re-uploading a lab is a line on the server
+% (/etc/caddy/Caddyfile, block go.skojaku.com) and not a reprint.
+%
+%   uvx --from segno segno --output=mNNlab-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/mNNlab"
+%
+% --border=4 is the quiet zone the QR spec asks for and is not optional: at
+% --border=1 some codes run to the edge of the PNG and OpenCV reads nothing.
+\newcommand{\molablink}{https://go.skojaku.com/mNNlab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/mNNlab}}}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
+\makeatletter
+\pgfset{
+  /pgf/decoration/randomness/.initial=2,
+  /pgf/decoration/wavelength/.initial=100
+}
+\pgfdeclaredecoration{sketch}{init}{
+  \state{init}[width=0pt,next state=draw,persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t0
+  }]{}
+  \state{draw}[width=\pgfdecorationsegmentlength,
+  auto corner on length=\pgfdecorationsegmentlength,
+  persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}
+  }]{
+    \pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}
+    \pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}
+  }
+  \state{final}{}
+}
+\tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
+\makeatother
+
+% Charts shared with exercise.tex.
+\input{gotkit}
+
+% The twenty answers, smallest first. One list, so the sheet and its key can
+% never disagree about the data.
+\newcommand{\dsp}{\hspace{0.75em}}
+\newcommand{\gotdata}{1\dsp 1\dsp 1\dsp 1\dsp 2\dsp 2\dsp 2\dsp 2\dsp 2\dsp
+  2\dsp 2\dsp 2\dsp 3\dsp 3\dsp 4\dsp 4\dsp 6\dsp 7\dsp 10\dsp 24}
+
+
+% An answer, set apart from the question it belongs to. Wrapped rather than
+% switched: a bare \color inside a p-column cell costs the cell its first line.
+\newcommand{\ans}[1]{\textbf{\textcolor{pltblue!75!black}{#1}}}
+
+% The line that turns from question to answer.
+\newcommand{\arrow}{\textcolor{pltblue!75!black}{$\Rightarrow$}\;}
+
+% The same as \ans, for something already inside math: \ans wraps its argument
+% in \textbf, which leaves math mode and takes the formula with it.
+\newcommand{\mans}[1]{{\color{pltblue!75!black}#1}}
+
+\begin{document}
+
+\begin{center}
+{\ppfont\LARGE Answers}
+\end{center}
+
+{\small The sheet with its answers, \ans{in blue}.}
+
+\parthead{1}{Guessing by eye}
+
+{\bf Question 1(a)}: Estimate the ratio of the big shape to the small one in
+each pair --- length, area, area, volume.
+
+\arrow \ans{4, 4, 4, 8.} Twice the side or radius gives four times the area;
+twice the edge gives eight times the volume.
+
+Typical guesses are about 2.5 for the two areas and 3.5 for the cube. Only the
+length pair is usually estimated correctly.
+
+{\bf Question 1(b)}: Which pair did you and your neighbour disagree on most?
+
+\arrow \ans{The cube.} The error grows with the number of dimensions.
+
+\parthead{2}{Twenty viewers}
+
+The twenty values, sorted:
+
+\begin{center}\gotdata\end{center}
+
+{\bf Question 2}: Bin the values into five equal bins of width 5.
+
+\arrow \ans{16, 3, 0, 0, 1} (below left). The second bar is 6, 7, 10; the last
+is 24.
+
+\begin{center}
+\begin{tabular}{@{}c@{\hspace{0.8cm}}c@{}}
+\resizebox{0.46\textwidth}{!}{\linhist{\linsol}} &
+\resizebox{0.46\textwidth}{!}{\loghist{\logsol}} \\[0.4em]
+{\small\bfseries Question 2: equal bins} &
+{\small\bfseries Question 4: doubling bins} \\
+\end{tabular}
+\end{center}
+
+{\bf Question 3}: What can you read about the four values above 5? What does
+the chart fail to show?
+
+\arrow \ans{Almost nothing.} The remaining bars are 3, 0, 0, 1. The chart does
+not show that three of the four lie between 6 and 10, and a bar of height 1 is
+hard to tell from 0. \ans{80\% of the data sits in one bin}, so the chart
+resolves the bulk and not the tail.
+
+\parthead{3}{Bins that double}
+
+{\bf Question 4}: Bin the same values into six bins, each twice as wide as the
+one before.
+
+\arrow \ans{4, 8, 4, 2, 1, 1} (above right). The eight values of 2 go in the
+1--2 bin by the boundary rule. The total is still 20.
+
+{\bf Question 5}: Largest bar, and a comparison of the two charts.
+
+\arrow \ans{8}, the 1--2 bin, and \ans{all six bars are resolved}. After the
+peak \ans{each bar is half the one before}: 8, 4, 2, 1. The same halving is
+present in Part 2's data but not resolvable at width 5.
+
+{\bf Question 6(a)}: Mark 5 on each ruler.
+
+\arrow Below. Ruler A: at $5/32$ of its length. Ruler B: between 4 and 8 and
+\ans{left of the midpoint}, since the midpoint of a doubling step is
+$4\sqrt{2} \approx 5.7$.
+
+\begin{center}
+\resizebox{\textwidth}{!}{\rulers{\fivemarks}}
+\end{center}
+
+{\bf Question 6(b)}: What fraction of each ruler spans 1 to 4? Why can Ruler B
+have no 0?
+
+\arrow Ruler A: $3/32$, \ans{about 9\%}, for 80\% of the data. Ruler B: two
+steps out of five, \ans{40\%}. Ruler B is the $x$-axis of the Question 4
+chart, and a plot drawn on it is a \ans{log plot}.
+
+Its left end is reached by repeated halving, so \ans{0 lies at $-\infty$}.
+Zero and negative values cannot be plotted on a log axis.
+
+{\bf Question 7}: Effect of one added value of 12, then of 2.
+
+\arrow 12 falls in the 8--16 bin: $1 \to 2$, \ans{+100\%}. 2 falls in the
+1--2 bin: $8 \to 9$, \ans{+12.5\%}.
+
+\ans{The left bars are stable, the right bars are not}, and the right bars
+carry the tail. Wider bins cut the variance and the resolution together;
+narrower bins put single counts back in the tail. \ans{No bin width removes the
+trade-off.}
+
+{\bf Question 8}: For each $k$, the number of values greater than $k$.
+
+\arrow Counted from the upper end of the sorted list:
+
+\begin{center}
+{\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|C{1.6cm}|C{1.6cm}|C{1.6cm}|C{1.6cm}|C{1.6cm}|}
+\hline
+$k$ & 1 & 2 & 4 & 8 & 16 \\
+\hline
+count above $k$ & 16 & \ans{8} & \ans{4} & \ans{2} & \ans{1} \\
+\hline
+fraction of 20 & 0.80 & \ans{0.40} & \ans{0.20} & \ans{0.10} & \ans{0.05} \\
+\hline
+\end{tabular}}
+\end{center}
+
+{\bf Question 9(a)}: Plot the five fractions on doubling axes.
+
+\arrow \ans{A straight line.} Each doubling of $k$ halves the count: 16, 8, 4,
+2, 1, and on log--log axes halving one variable as the other doubles is a line
+of \ans{slope $-1$}.
+
+This count is the \ans{CCDF}, $P(X > k)$. It needs no bins.
+
+\begin{center}
+\resizebox{0.85\textwidth}{!}{\ccdfgrid{\ccdfsol}}
+\end{center}
+
+{\bf Question 9(b)}: The fraction of values at most $k$: 0.80, 0.90, 0.95.
+
+\arrow They \ans{rise towards 1 and flatten}, and cannot exceed it. Both counts
+carry the same data, since one is 1 minus the other, but this one compresses
+the whole tail into $[0.95, 1]$.
+
+\ans{The CCDF shows the value 24}, as its rightmost point. The ``at most $k$''
+count is the \ans{CDF}: use it for the bulk and the CCDF for the tail.
+
+{\bf Question 10}: Procedure for $10^6$ nodes, and which plot to publish.
+
+\arrow \ans{For each $k$, count the nodes of degree greater than $k$, divide by
+$n$, and plot against $k$ on log--log axes.} One pass over the degrees, no bin
+width, no empty bins, and every node contributes to every point.
+
+\ans{Publish the third plot.} The first resolves only the bulk; the second is
+noisy where the data is thin; the third resolves the tail.
+
+Names: the number of friends of a node is its \ans{degree}, the counts are the
+\ans{degree distribution}, and a degree distribution with a straight-line CCDF
+on log--log axes is a \ans{power law}. If $p(k) \sim k^{-\gamma}$ then the CCDF
+has slope $1 - \gamma$, so the slope of $-1$ here means
+$\mans{\gamma = 2}$.
+
+A straight line on log--log axes is not proof of a power law; the claim needs a
+statistical fit, not an eye.
+
+\end{document}

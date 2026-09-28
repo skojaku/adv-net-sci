@@ -770,14 +770,9 @@ def _derivation(upto):
             f"{_GLOSS_X + _ink_width(_GLOSS[i]):.0f} and the frame border sits at "
             f"{_FRAME[2]} -- the border will run through its last letter")
         b += text(78, _DERIV_Y[i], str(i + 1), color="annot")
-        if i == 3:
-            b += (f"\\node[font=\\fontsize{{{FONT}}}{{{int(FONT*1.15)}}}\\selectfont,"
-                  f"text=black,anchor=west,align=center] (eqthree) at "
-                  f"({_EQ_X},{_DERIV_Y[i]}) {{{_DERIV[i]}}};\n"
-                  f"\\node[draw=accenttwo,line width=3.4bp,rounded corners=8bp,"
-                  f"fit=(eqthree),inner sep=9bp] {{}};\n")
-        else:
-            b += text(_EQ_X, _DERIV_Y[i], _DERIV[i], anchor="west")
+        # The theorem line used to be boxed in accent-2. The lecturer reads the panel
+        # out himself, and the box was the drawing telling him which line to land on.
+        b += text(_EQ_X, _DERIV_Y[i], _DERIV[i], anchor="west")
         b += text(_GLOSS_X, _DERIV_Y[i], _GLOSS[i], color="annot", anchor="west")
     return b
 
@@ -1242,12 +1237,14 @@ def fig_immunization_curves():
     # x0 = 140, not 170: "nominated" is four glyphs longer than "named" and the
     # gutter label ran off the right edge of a 537bp column. The plot moves left
     # and gives the gutter the room; the type does not move.
-    ax = Axes((140, 132, 300, 300), (0, 0.10), (0.001, 1), ylog=True,
+    # Full width, not a column: the deck shows this plot on its own, with no text
+    # beside it, so the frame gets the slide and the gutter labels get real room.
+    ax = Axes((180, 150, 700, 326), (0, 0.10), (0.001, 1), ylog=True,
               xticks=[0, 0.05, 0.10], yticks=[0.001, 0.01, 0.1, 1],
               xfmt=lambda v: f"{v:g}", yfmt=lambda v: pct(v, 1 if v < 0.01 else 0),
               xlabel="fraction immunised")
     b = ax.frame()
-    b += text(250, 348, "component left (log scale)")
+    b += text(440, 372, "component left (log scale)")
     series = [("random", "accent", f"random {pct(at10['random'])}"),
               ("acquaintance", "accenttwo", f"nominated {pct(at10['acquaintance'])}"),
               ("degree", "annot", "targeted")]
@@ -1256,8 +1253,8 @@ def fig_immunization_curves():
         b += ax.line(IMM_F, ys, color=col, w=3.6,
                      dash=DASH if key == "degree" else "")
         b += ax.points(IMM_F, ys, color=col, d=11)
-        b += text(308, ax.Y(ys[-1]), lab, color=col, anchor="west")
-    emit("immunization-curves", b, container="col", h=COL_H)
+        b += text(716, ax.Y(ys[-1]), lab, color=col, anchor="west")
+    emit("immunization-curves", b, container="full", h=FULL_H)
 
 
 

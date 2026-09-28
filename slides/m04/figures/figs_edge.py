@@ -148,7 +148,9 @@ def fig_individual_vs_average():
     # the direction of the literal being wrong; it can only confirm it, which it did for
     # four rounds. assert_role_counts reads what the TeX actually drew, so it holds
     # whatever route drew it.
-    b = text(540, 330, "each girl against her friends' average", anchor="south")
+    # The deck no longer introduces Feld's eight by name, so the drawing does not use
+    # their names either -- a label the room has never met is a question, not a fact.
+    b = text(540, 330, "each node against its neighbours' average", anchor="south")
     place = {"below": (280, f"{len(BELOW)} have fewer"),
              "above": (720, f"{len(ABOVE)} have more"),
              "equal": (960, f"{len(EQUAL)} the same")}
@@ -161,13 +163,11 @@ def fig_individual_vs_average():
         for i, g in enumerate(members):
             assert paradox_rel(g) == rel, f"{g} is drawn {rel}, data says {paradox_rel(g)}"
             b += role_disc(x0 + 120 * i, 240, role, str(degree(g)))
-            if rel == "above":        # the two the deck calls out by name
-                b += text(x0 + 120 * i, 276, g, anchor="south")
             b += text(x0 + 120 * i, 200, f"${_dec(friend_mean(g), 1)}$",
                       color="annot", anchor="north")
         b += text(cx, 146, lab, color=role or "black", anchor="north")
     assert_role_counts(b, expect, "individual-vs-average")
-    b += text(540, 72, "her $k$ in the disc, her friends' average below it",
+    b += text(540, 72, "its $k$ in the disc, its neighbours' average below it",
               color="annot", anchor="north")
     emit("individual-vs-average", b, container="full", h=400)
 
