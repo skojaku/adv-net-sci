@@ -7,8 +7,11 @@
 % Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
 \documentclass[a4paper, 11pt]{extarticle}
 \input{quizkit}
-\newgeometry{top=0.6in, bottom=0.6in, left=0.75in, right=0.75in}
+\newgeometry{top=0.4in, bottom=0.4in, left=0.75in, right=0.75in}
 
+\renewcommand{\question}[3]{\vspace{0.3em}
+  {\large\bfseries Question #1 \quad\normalsize\mdseries (#2 points) --- #3}\par
+  \vspace{-0.3em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par\vspace{0.1em}}
 \newcommand{\ans}[1]{{\color{pltblue}\bfseries #1}}
 
 % The two CCDFs in axis units (x = log10 k, y = log10 fraction). The k = 512
@@ -35,14 +38,11 @@
         {Instructor copy \quad$\cdot$\quad do not hand out}
         {Fall 2026}
 
-\textbf{The network.} $N = 10{,}000$, $\sum_k k\,n_k = 26{,}228 = 2M$, so
-$M = 13{,}114$. The counts were built from $p(k) \sim k^{-2.5}$ on
-$k = 1, 2, 4, \dots, 512$: each doubling of $k$ divides the number of people
-above it by $2^{1.5} \approx 2.83$. $\langle k \rangle = 2.62$ and
-$\langle k_f \rangle = \langle k^2 \rangle / \langle k \rangle = 27.9$.
+\textbf{Network.} $N = 10{,}000$, $2M = \sum_k k\,n_k = 26{,}228$; counts built from
+$p(k) \sim k^{-2.5}$ on $k = 1, 2, 4, \dots, 512$. The table is the instructor's working.
 
 \begin{center}
-{\renewcommand{\arraystretch}{1.2}
+{\renewcommand{\arraystretch}{1.0}
 \begin{tabular}{|c|c||c|c||c|c|c|}
 \hline
  & & \multicolumn{2}{c||}{Question 1} & \multicolumn{3}{c|}{Question 2} \\
@@ -66,44 +66,23 @@ $k$ & $n_k$ & people, $> k$ & CCDF & $k\,n_k$ & pairs, friend $> k$
 
 \question{1}{5}{The people.}
 
-(a) [2] Normalise: $\int_1^\infty C k^{-\gamma} dk = C/(\gamma-1) = 1$, so
-$C = \gamma - 1$. Then
-\[
-  P(k) = \int_k^\infty (\gamma-1)\,k'^{-\gamma}\,dk' = \ans{k^{-(\gamma-1)}},
-  \qquad
-  \log P(k) = -(\gamma-1)\log k ,
-\]
-a straight line of \ans{slope $1-\gamma$}. The CCDF is a power law with
-exponent one smaller than the density's.
-Marking: the integral from $k$ to $\infty$ set up $+1$; the result and the
-slope $+1$. Skipping $C$ (writing $P(k) \propto k^{-(\gamma-1)}$) is full
-marks: the slope does not depend on it. Slope $-\gamma$: $0$ of the second
-point.
+(a) [2] $C = \gamma-1$, so $P(k) = \int_k^\infty (\gamma-1)k'^{-\gamma}dk' = \ans{k^{-(\gamma-1)}}$:
+a line of \ans{slope $1-\gamma$}. Marking: integral set up $+1$; result and slope $+1$.
+Skipping $C$ is full marks. Slope $-\gamma$: $0$ of the second point.
 
-\begin{minipage}[t]{0.47\textwidth}
+\begin{minipage}[t]{0.56\textwidth}
 \vspace{0pt}
-(b) [1] Nine points on a straight line (people column of the table above:
-count the people below each row, divide by $N$; \emph{strictly} greater).
-The axes are hand-drawn, in any base: they count as log--log if the powers
-of the base are evenly spaced (base 2 suits these degrees best); linear axes
-score $0$. The $k = 512$ row is $0$ and
-cannot be plotted; no penalty for leaving it off. A plot of $P(K \ge k)$ is
-shifted one step left: $-0.5$.
+(b) [1] Nine points on a line: people $>k$ (strictly), divided by $N$. Hand-drawn
+log--log axes in any base with evenly spaced powers; linear axes $0$. The
+$k=512$ row is $0$; no penalty for omitting it. $P(K\ge k)$ (shifted a step): $-0.5$.
 
 (c) [2] Slope $\ans{\approx -1.5}$ (accept $-1.3$ to $-1.7$), so
-$\ans{\gamma = 1 - \text{slope} \approx 2.5}$ (accept $2.3$ to $2.7$).
-From the table: $k$ from 2 to 128 is $1.81$ decades; the CCDF falls from
-$0.177$ to $0.0003$, $2.77$ decades; $-2.77/1.81 = -1.53$.
-
-A slope computed from two points, $\Delta\log P / \Delta\log k$, is as good
-as one measured off the drawing; a hand-drawn scale with unequal decades
-gives a wrong measured slope, so judge by the numbers when they are shown.
-Marking (c): the slope $+1$; $\gamma$ from it $+1$.
-\textbf{$\gamma = 1.5$ (slope read as $-\gamma$) scores 1 of 2}, and
-contradicts the student's own answer to (a).
+$\ans{\gamma = 1-\text{slope} \approx 2.5}$ (accept $2.3$ to $2.7$); e.g.\ $k=2$ to $128$:
+$-2.77/1.81 = -1.53$. Two-point slopes are fine. Marking: slope $+1$; $\gamma$
+from it $+1$. $\gamma=1.5$ (slope read as $-\gamma$): 1 of 2.
 \end{minipage}
 \hfill
-\begin{minipage}[t]{0.48\textwidth}
+\begin{minipage}[t]{0.40\textwidth}
 \vspace{0pt}
 \centering
 \resizebox{\textwidth}{!}{\loggrid{}{\keyplot}}
@@ -111,39 +90,15 @@ contradicts the student's own answer to (a).
 
 \question{2}{5}{The friends.}
 
-(a) [2] A random (person, friend) pair lands on a friend of degree $k$ with
-probability $k\,n_k / 2M$: each person of degree $k$ is the second entry of
-$k$ pairs. So weight each row by $k$, count down from the bottom, and divide
-by $2M = 26{,}228$ (friend columns of the table). The \ans{$k\,n_k$
-weighting} is what this part tests; the plotted points should sit on the
-key's values. Marked from the plot and the working in the photo.
-\begin{itemize}[nosep, leftmargin=1.2em]
-  \item Correct weighting, one or two points misplaced: $-0.5$ each.
-  \item Unweighted (friend points on top of the people's): $0$ of 2, and (b) is then
-        marked on its own terms only.
-  \item Weighted by $k^2$, or divided by $N$ instead of $2M$: 1 of 2.
-\end{itemize}
-The friend line bends down over its last three points; that is correct, not
-an error (see (b)).
+(a) [2] A random (person, friend) pair hits a friend of degree $k$ with
+probability $k\,n_k/2M$. Weight each row by \ans{$k\,n_k$}, count down from the
+bottom, divide by $2M$. Misplaced point: $-0.5$ each. Unweighted: $0$ of 2. Weighted by
+$k^2$, or divided by $N$: 1 of 2. The last three points bend down; that is correct.
 
-(b) [3] Slope $\ans{\approx -0.55}$ over $k = 1$ to $32$ (accept $-0.4$ to
-$-0.8$). It is \ans{shallower by about 1}. Why: the friend's degree
-distribution is $q(k) = k\,p(k)/\langle k \rangle \sim k^{-(\gamma-1)}$, so
-by Question 1(a) its CCDF has slope $1 - (\gamma - 1) = \ans{2 - \gamma}
-= -0.5$. High-degree people are named as a friend once per friendship, so
-the friend distribution carries one extra factor of $k$, which lifts the
-tail.
-
-The last three points fall off the line because nobody has more than 512
-friends: the CCDF must reach 0 at $k = 512$, and the friend line, being
-shallow, is still high when it has to start falling. A student who fits the
-whole line gets about $-0.65$; accept it.
-
-Marking (b): the slope $+1$; ``shallower by about 1'' $+1$; the reason
-($k\,p(k)$, or ``each person counted once per friendship'') $+1$. ``Friends
-have more friends'' with no link to the slope: $+0.5$ of the last point.
-
-The friendship paradox is visible in the plot: at $k = 64$, 0.1\% of people
-have more friends, but 7.3\% of friends do.
+(b) [3] Slope $\ans{\approx -0.55}$ (accept $-0.4$ to $-0.8$; a whole-line fit gives $-0.65$),
+\ans{shallower by about 1}, since $q(k) = k\,p(k)/\langle k\rangle$ has CCDF slope
+$2-\gamma = -0.5$: each person is counted once per friendship. Marking: slope $+1$;
+``shallower by about 1'' $+1$; reason $+1$. ``Friends have more friends'' with no link to the
+slope: $+0.5$ of the last point. At $k=64$: 0.1\% of people but 7.3\% of friends.
 
 \end{document}
