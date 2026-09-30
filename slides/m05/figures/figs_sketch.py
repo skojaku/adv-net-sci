@@ -167,69 +167,305 @@ def _kplex_two():
                  fill={n: "accent" for n in p})
 
 
-# The quiz group: two triangles joined rung by rung (a prism). One group, three
-# questions -- how dense, how far, how many missed -- and three different numbers.
-PRISM = {"at": (70, 290), "ab": (70, 90), "am": (200, 190),
-         "bm": (337, 190), "bt": (467, 290), "bb": (467, 90)}
-PRISM_E = [("at", "ab"), ("at", "am"), ("ab", "am"), ("bt", "bb"), ("bt", "bm"),
-           ("bb", "bm"), ("at", "bt"), ("ab", "bb"), ("am", "bm")]
+# ------------------------------------------------------------------ worked examples
+# Two examples after every pseudo-clique, each with small round numbers: a learner
+# meeting a definition for the first time should be checking the definition, not
+# dividing 8 by 15.
+def _missing(nodes, edges):
+    have = {_k(e) for e in edges}
+    return [e for e in itertools.combinations(nodes, 2) if _k(e) not in have]
 
 
-@lru_cache(maxsize=None)
-def _prism_facts():
-    g = nx.Graph(PRISM_E)
-    n, m = g.number_of_nodes(), g.number_of_edges()
-    possible = n * (n - 1) // 2
-    rho = F(m, possible)
-    diam = nx.diameter(g)
-    min_deg = min(d for _, d in g.degree())
-    k = n - min_deg                      # each member reaches at least n - k others
-    assert (n, m, possible, rho, diam, min_deg, k) == (6, 9, 15, F(3, 5), 2, 3, 3)
-    return g
+RECT4 = {0: (60, 280), 1: (476, 280), 2: (476, 100), 3: (60, 100)}
+PENT = ring_positions(5, 268, 180, 215, 130, start=90)
 
 
-def _prism(**kw):
-    kw.setdefault("fill", {n: "accent" for n in PRISM})
-    kw.setdefault("what", "prism")
-    return small(dict(PRISM), list(PRISM_E), **kw)
+@fig("dense-def", container="col", h=380)
+def _dense_def():
+    """Five members, seven of the ten possible edges: 0.7-dense."""
+    e = [(0, 1), (0, 4), (1, 2), (1, 4), (2, 3), (2, 4), (3, 4)]
+    assert F(len(e), 10) == F(7, 10)
+    return small(PENT, e, what="dense-def", fill={n: "accent" for n in PENT})
 
 
-@fig("quiz-prism", container="col", h=380)
-def _quiz():
-    _prism_facts()
-    assert_planar_drawing(PRISM_E, PRISM, "quiz-prism")
-    return _prism()
+DENSE1_E = [(0, 1), (1, 2), (2, 3)]
+DENSE2_E = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0), (0, 2), (0, 3), (1, 4)]
 
 
-@fig("quiz-prism-dense", container="col", h=380)
-def _quiz_dense():
-    """Q1's answer: nine drawn, six dashed, fifteen possible."""
-    g = _prism_facts()
-    missing = [(a, b) for a, b in itertools.combinations(PRISM, 2) if not g.has_edge(a, b)]
-    assert len(missing) == 6
-    return _prism(dashes=missing, edges_all=list(PRISM_E) + missing, planar=False,
-                  what="quiz-prism-dense")
+@fig("dense-ex1", container="col", h=380)
+def _dense_ex1():
+    assert F(len(DENSE1_E), 6) == F(1, 2)
+    return small(RECT4, DENSE1_E, what="dense-ex1", fill={n: "accent" for n in RECT4})
 
 
-@fig("quiz-prism-dist", container="col", h=380)
-def _quiz_dist():
-    """Q2's answer: a farthest pair, two steps apart."""
-    g = _prism_facts()
-    assert nx.shortest_path_length(g, "at", "bb") == 2
-    return _prism(heavy=[("at", "bt"), ("bt", "bb")], what="quiz-prism-dist")
+@fig("dense-ex1-answer", container="col", h=380)
+def _dense_ex1a():
+    miss = _missing(RECT4, DENSE1_E)
+    assert len(miss) == 3
+    return small(RECT4, DENSE1_E, dashes=miss, edges_all=DENSE1_E + miss, planar=False,
+                 what="dense-ex1-answer", fill={n: "accent" for n in RECT4})
 
 
-@fig("quiz-prism-plex", container="col", h=380)
-def _quiz_plex():
-    """Q3's answer: the ringed member misses two of the other five."""
-    g = _prism_facts()
-    missing = [("at", o) for o in PRISM if o != "at" and not g.has_edge("at", o)]
-    assert len(missing) == 2
-    # Marked by its fill rather than a ring: a ring reaches past the disc and moved the
-    # cropped drawing 10px against the three other quiz slides.
-    fill = {n: (COFF if n == "at" else "accent") for n in PRISM}
-    return _prism(dashes=missing, edges_all=list(PRISM_E) + missing, fill=fill,
-                  planar=False, what="quiz-prism-plex")
+@fig("dense-ex2", container="col", h=380)
+def _dense_ex2():
+    assert F(len(DENSE2_E), 10) == F(4, 5)
+    return small(PENT, DENSE2_E, planar=False, what="dense-ex2",
+                 fill={n: "accent" for n in PENT})
+
+
+@fig("dense-ex2-answer", container="col", h=380)
+def _dense_ex2a():
+    miss = _missing(PENT, DENSE2_E)
+    assert len(miss) == 2
+    return small(PENT, DENSE2_E, dashes=miss, edges_all=DENSE2_E + miss, planar=False,
+                 what="dense-ex2-answer", fill={n: "accent" for n in PENT})
+
+
+ZIG = {0: (60, 120), 1: (200, 260), 2: (340, 120), 3: (480, 260)}
+ZIG_E = [(0, 1), (1, 2), (2, 3)]
+STAR = {0: (268, 185), **{i + 1: p for i, p in
+                          ring_positions(5, 268, 185, 215, 130, start=90).items()}}
+STAR_E = [(0, i) for i in range(1, 6)]
+
+
+@fig("ncl-ex1", container="col", h=380)
+def _ncl1():
+    assert nx.diameter(nx.Graph(ZIG_E)) == 3
+    return small(ZIG, ZIG_E, what="ncl-ex1", fill={n: "accent" for n in ZIG})
+
+
+@fig("ncl-ex1-answer", container="col", h=380)
+def _ncl1a():
+    return small(ZIG, ZIG_E, heavy=ZIG_E, what="ncl-ex1-answer",
+                 fill={n: "accent" for n in ZIG})
+
+
+@fig("ncl-ex2", container="col", h=380)
+def _ncl2():
+    assert nx.diameter(nx.Graph(STAR_E)) == 2
+    return small(STAR, STAR_E, what="ncl-ex2", fill={n: "accent" for n in STAR})
+
+
+@fig("ncl-ex2-answer", container="col", h=380)
+def _ncl2a():
+    return small(STAR, STAR_E, heavy=[(0, 2), (0, 5)], what="ncl-ex2-answer",
+                 fill={n: "accent" for n in STAR})
+
+
+# --------------------------------------------------------- numbers inside the discs
+NUM_NODE = 46                   # a digit at 36pt needs the room; the band is 26-52px
+
+
+def _numbered(pos, edges, fill, nums=None, ghosts=(), node=NUM_NODE, what="numbered",
+              planar=True):
+    """Discs that carry a number, and removed nodes left as dashed outlines.
+
+    The peeling slides need both: the number is a degree that changes from frame to
+    frame, and a node that has been peeled stays visible as a ghost so the room can
+    see where it was.
+    """
+    from figlib import clearance_bad, crossings, disc
+    live = {n: p for n, p in pos.items() if n not in ghosts}
+    e = [x for x in edges if x[0] in live and x[1] in live]
+    if planar:
+        cr = crossings(e, live)
+        assert not cr, f"{what}: {len(cr)} edge crossing(s) -- {cr[:3]}"
+    bad = clearance_bad(e, live, r=node / 2 + 3)
+    assert not bad, f"{what}: edge passes through a disc it does not end at -- {bad[:3]}"
+    out = ""
+    for n in ghosts:
+        x, y = pos[n]
+        out += (f"\\draw[line width=2.6bp,draw=annot,dash pattern=on 6bp off 5bp] "
+                f"({x:.1f},{y:.1f}) circle ({node / 2}bp);\n")
+    for a, b in e:
+        out += seg(live[a], live[b], color="black", w=2.8)
+    for n, (x, y) in live.items():
+        lab = str(nums[n]) if nums and n in nums else ""
+        out += disc(x, y, label=lab, fill=fill.get(n, "annot"), size=node)
+    return out
+
+
+def _degrees(edges, nodes):
+    g = nx.Graph(edges)
+    g.add_nodes_from(nodes)
+    return dict(g.degree())
+
+
+RECT4N = {0: (60, 280), 1: (476, 280), 2: (476, 100), 3: (60, 100)}
+CYC4_E = [(0, 1), (1, 2), (2, 3), (3, 0)]
+HEX6 = ring_positions(6, 268, 190, 215, 130, start=0)
+CYC6_E = [(i, (i + 1) % 6) for i in range(6)]
+
+
+def _plex_k(edges, nodes):
+    s = len(nodes)
+    return s - min(_degrees(edges, nodes).values())
+
+
+@fig("kplex-ex1", container="col", h=380)
+def _kp1():
+    assert _plex_k(CYC4_E, RECT4N) == 2
+    return _numbered(RECT4N, CYC4_E, {n: "accent" for n in RECT4N}, what="kplex-ex1")
+
+
+@fig("kplex-ex1-answer", container="col", h=380)
+def _kp1a():
+    return _numbered(RECT4N, CYC4_E, {n: "accent" for n in RECT4N},
+                     nums=_degrees(CYC4_E, RECT4N), what="kplex-ex1-answer")
+
+
+@fig("kplex-ex2", container="col", h=380)
+def _kp2():
+    assert _plex_k(CYC6_E, HEX6) == 4
+    return _numbered(HEX6, CYC6_E, {n: "accent" for n in HEX6}, what="kplex-ex2")
+
+
+@fig("kplex-ex2-answer", container="col", h=380)
+def _kp2a():
+    return _numbered(HEX6, CYC6_E, {n: "accent" for n in HEX6},
+                     nums=_degrees(CYC6_E, HEX6), what="kplex-ex2-answer")
+
+
+# ------------------------------------------------------------------ the k-core
+def _peel(edges, nodes, k):
+    """Peel in rounds. Returns the list of rounds (nodes removed) and the k-core."""
+    g = nx.Graph(edges)
+    g.add_nodes_from(nodes)
+    h = g.copy()
+    rounds = []
+    while True:
+        low = sorted(n for n, d in h.degree() if d < k)
+        if not low:
+            break
+        rounds.append(low)
+        h.remove_nodes_from(low)
+    assert set(h) == set(nx.k_core(g, k)), "peeling must agree with networkx's k_core"
+    return rounds, set(h), h
+
+
+KDEF = {0: (120, 250), 1: (300, 250), 2: (120, 90), 3: (300, 90),
+        4: (210, 350), 5: (60, 350), 6: (460, 170)}
+KDEF_E = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (4, 0), (4, 1), (4, 5),
+          (6, 1), (6, 3)]
+
+
+@fig("kcore-def", container="col", h=380)
+def _kcore_def():
+    """A network and its 3-core: each blue member has 3 neighbours inside blue."""
+    _, core, h = _peel(KDEF_E, KDEF, 3)
+    assert core == {0, 1, 2, 3}
+    inside = dict(h.degree())
+    fill = {n: ("accent" if n in core else "annot") for n in KDEF}
+    return _numbered(KDEF, KDEF_E, fill, nums=inside, planar=False, what="kcore-def")
+
+
+# The worked example. Node 5 starts with degree 3 and still does not survive: its two
+# triangle partners go in round 1, and it goes in round 2.
+PEEL = {0: (520, 190), 1: (190, 300), 2: (190, 80), 3: (300, 190), 4: (720, 190),
+        5: (880, 190), 6: (1010, 290), 7: (1010, 90), 8: (60, 310), 9: (60, 190)}
+PEEL_E = [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (1, 3), (2, 3), (1, 4), (2, 4),
+          (4, 5), (5, 6), (5, 7), (6, 7), (1, 8), (1, 9), (2, 9)]
+
+
+def _peel_facts():
+    rounds, core, _ = _peel(PEEL_E, PEEL, 3)
+    assert rounds == [[6, 7, 8, 9], [5]] and core == {0, 1, 2, 3, 4}
+    assert _degrees(PEEL_E, PEEL)[5] == 3, "the trap: node 5 starts at degree 3"
+    return rounds, core
+
+
+def _peel_frame(removed, red, blue=()):
+    live_e = [e for e in PEEL_E if e[0] not in removed and e[1] not in removed]
+    deg = _degrees(live_e, [n for n in PEEL if n not in removed])
+    fill = {n: ("accenttwo" if n in red else "accent" if n in blue else "annot")
+            for n in PEEL}
+    return _numbered(PEEL, PEEL_E, fill, nums=deg, ghosts=removed, what="peel")
+
+
+@fig("peel-0", h=380)
+def _peel0():
+    _peel_facts()
+    return _peel_frame(removed=set(), red=set())
+
+
+@fig("peel-1", h=380)
+def _peel1():
+    rounds, _ = _peel_facts()
+    return _peel_frame(removed=set(), red=set(rounds[0]))
+
+
+@fig("peel-2", h=380)
+def _peel2():
+    rounds, _ = _peel_facts()
+    return _peel_frame(removed=set(rounds[0]), red=set(rounds[1]))
+
+
+@fig("peel-3", h=380)
+def _peel3():
+    rounds, core = _peel_facts()
+    return _peel_frame(removed=set(rounds[0]) | set(rounds[1]), red=set(), blue=core)
+
+
+# Example 1: the 2-core. The branch goes one node at a time; the node on the path
+# between the square and the triangle has degree 2 and stays.
+KEX1 = {0: (90, 290), 1: (250, 290), 2: (250, 100), 3: (90, 100), 7: (450, 100),
+        4: (650, 120), 5: (790, 260), 6: (830, 90), 8: (420, 300), 9: (580, 310),
+        10: (960, 320), 11: (990, 210)}
+KEX1_E = [(0, 1), (1, 2), (2, 3), (3, 0), (2, 7), (7, 4), (4, 5), (4, 6), (5, 6),
+          (1, 8), (8, 9), (5, 10), (5, 11)]
+
+# Example 2: the 3-core comes in two pieces.
+KEX2 = {0: (70, 190), 1: (170, 300), 2: (170, 80), 3: (270, 190), 8: (430, 250),
+        9: (650, 250), 4: (810, 190), 5: (910, 300), 6: (910, 80), 7: (1010, 190)}
+KEX2_E = clique_edges([0, 1, 2, 3]) + clique_edges([4, 5, 6, 7]) + [(3, 8), (8, 9), (9, 4)]
+
+
+def _kex(pos, edges, k, answer):
+    rounds, core, h = _peel(edges, pos, k)
+    removed = set().union(*map(set, rounds)) if rounds else set()
+    if not answer:
+        return _numbered(pos, edges, {n: "annot" for n in pos}, planar=False,
+                         what="kcore-ex")
+    fill = {n: "accent" for n in core}
+    return _numbered(pos, edges, fill, nums=dict(h.degree()), ghosts=removed,
+                     planar=False, what="kcore-ex-answer")
+
+
+@fig("kcore-ex1", h=380)
+def _kex1():
+    rounds, core, _ = _peel(KEX1_E, KEX1, 2)
+    assert rounds == [[9, 10, 11], [8]] and core == {0, 1, 2, 3, 4, 5, 6, 7}
+    return _kex(KEX1, KEX1_E, 2, answer=False)
+
+
+@fig("kcore-ex1-answer", h=380)
+def _kex1a():
+    return _kex(KEX1, KEX1_E, 2, answer=True)
+
+
+@fig("kcore-ex2", h=380)
+def _kex2():
+    rounds, core, h = _peel(KEX2_E, KEX2, 3)
+    assert rounds == [[8, 9]] and core == set(range(8))
+    assert nx.number_connected_components(h) == 2, "the 3-core must be in two pieces"
+    return _kex(KEX2, KEX2_E, 3, answer=False)
+
+
+@fig("kcore-ex2-answer", h=380)
+def _kex2a():
+    return _kex(KEX2, KEX2_E, 3, answer=True)
+
+
+CORE_COLS = {4: "accent", 3: "accenttwo", 2: "accentthree", 1: "annot"}
+
+
+@fig("karate-core", h=380)
+def _karate_core():
+    """The club coloured by core number: the largest k whose k-core holds the member."""
+    c = nx.core_number(_karate_simple())
+    counts = {k: sum(1 for v in c.values() if v == k) for k in range(1, 5)}
+    assert counts == {1: 1, 2: 11, 3: 12, 4: 10}, counts
+    return karate(fill={n: CORE_COLS[c[n]] for n in range(34)})
 
 
 # =========================================================================== Part 2

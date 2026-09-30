@@ -26,14 +26,15 @@ no rhetoric. No em-dash anywhere.
 | "What do u see" (crossed out) | 2 | title "Let's look at a network"; the question is spoken |
 | "What is the strongest community structure?" + clique | 4, 5 | question slide, then the clique as the answer |
 | "Is the problem done? Bye!" | 6 | kept as written: "Done. Bye!" |
-| "3 dimensions" + Density / Distance / Degree | 8-11 | ρ-dense, n-clique, k-plex; k-core, n-clan, n-club and k-truss go to speaker notes |
-| "Q1 This is a ___ ? × 3" | 12-17 | one group (a triangular prism) asked three ways: 0.6-dense, a 2-clique, a 3-plex |
+| "3 dimensions" + Density / Distance / Degree | 8-34 | ρ-dense, n-clique, k-plex and k-core; n-clan, n-club and k-truss go to speaker notes |
+| "Q1 This is a ___ ? × 3" | replaced | lecturer, 2026-09-30: a bundled quiz needs every definition memorized. Each pseudo-clique now gets two examples right after its definition, question then answer, with numbers that divide easily (3/6, 8/10) |
+| k-core (lecturer, 2026-09-30) | 24-34 | definition, a worked peeling in three steps (a degree-3 node that still goes), the algorithm, two exercises (a 2-core with a cascading branch; a 3-core in two pieces), core numbers on the club |
 | "Works?" + "we don't like it: 1 vs rest" | 22, 23 | split into a question slide and an answer slide |
 | "Zachary's karate club: Cut, RCut, NCut" | 27-29 | three slides, one method each: three club drawings side by side put the discs under the 26px floor |
-| "Game: find a cut that minimizes ___" | 30 | the graph-cut game on the club, linked on the slide |
+| "Game: find a cut that minimizes ___" | 55 | the lecturer's own 2024 game, restored at `assets/vis/community-detection/index.html`; the August 2026 rewrite is now `partition-game.html` and the lecture note links there |
 | "Modularity limitation" (crossed out) | none | dropped |
 | "I need a slide to explain modularity" | 35 | the formula with each term as a fragment, and the worked value for the small club |
-| "Turn it around" (crossed out) | none | SBM dropped |
+| "Turn it around" (crossed out) | 60-67 | the lecturer asked for the SBM back: Part Four, reusing the SBM figures in `figs_chance.py` |
 | "Resolution limit: ring of cliques, n ~ √2m" | 39, 40 | ring of triangles: question, then 4 vs 10 triangles |
 | "Karate: similar Q, different partition" | 41, 42 | two local maxima of Q, one per slide |
 

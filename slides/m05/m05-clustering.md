@@ -138,7 +138,7 @@ Real groups miss many edges. How can we allow for that?
 * **Degree**: every member is connected to most of the others
 
 <!--
-These are called pseudo-cliques. The lecture note has more of them (k-core, n-clan, n-club, k-truss); we take one per axis.
+These are called pseudo-cliques. For degree we take two, the k-plex and the k-core. The lecture note has more (n-clan, n-club, k-truss).
 -->
 
 ---
@@ -161,8 +161,94 @@ $$\frac{\text{edges inside}}{s(s-1)/2} \ge \rho$$
 </div>
 <div class="fig">
 
-![w:537](figures/rho-dense.png)
-<figcaption>8 of the 15 possible edges: 0.53-dense</figcaption>
+![w:537](figures/dense-def.png)
+<figcaption>5 members, 10 possible edges, 7 present: 0.7-dense</figcaption>
+
+</div>
+</div>
+
+<!--
+Goldberg 1984. We report the largest ρ that works.
+-->
+
+---
+
+## Example 1: how dense is this group?
+
+<hr>
+
+<div class="cols">
+<div>
+
+Let's find the largest ρ.
+
+</div>
+<div class="fig">
+
+![w:537](figures/dense-ex1.png)
+
+</div>
+</div>
+
+---
+
+## Example 1: 0.5-dense
+
+<hr>
+
+<div class="cols">
+<div>
+
+4 members have $4 \times 3 / 2 = 6$ possible edges. 3 are present.
+
+$3/6 = 0.5$
+
+</div>
+<div class="fig">
+
+![w:537](figures/dense-ex1-answer.png)
+<figcaption>dashed: the 3 missing edges</figcaption>
+
+</div>
+</div>
+
+---
+
+## Example 2: how dense is this group?
+
+<hr>
+
+<div class="cols">
+<div>
+
+Let's find the largest ρ.
+
+</div>
+<div class="fig">
+
+![w:537](figures/dense-ex2.png)
+
+</div>
+</div>
+
+---
+
+## Example 2: 0.8-dense
+
+<hr>
+
+<div class="cols">
+<div>
+
+5 members have $5 \times 4 / 2 = 10$ possible edges. 8 are present.
+
+$8/10 = 0.8$
+
+</div>
+<div class="fig">
+
+![w:537](figures/dense-ex2-answer.png)
+<figcaption>dashed: the 2 missing edges</figcaption>
 
 </div>
 </div>
@@ -188,8 +274,86 @@ A group is an **n-clique** if every pair is at most $n$ steps apart.
 </div>
 
 <!--
-Luce 1950. The path may pass through nodes outside the group; the n-clan and n-club forbid that (lecture note).
+Luce 1950. We report the smallest n that works. The path may pass through nodes outside the group; the n-clan and n-club forbid that (lecture note).
 -->
+
+---
+
+## Example 1: which n-clique?
+
+<hr>
+
+<div class="cols">
+<div>
+
+Let's find the smallest $n$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ncl-ex1.png)
+
+</div>
+</div>
+
+---
+
+## Example 1: a 3-clique
+
+<hr>
+
+<div class="cols">
+<div>
+
+The two ends are 3 steps apart. No pair is farther.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ncl-ex1-answer.png)
+<figcaption>red: the path between the two ends</figcaption>
+
+</div>
+</div>
+
+---
+
+## Example 2: which n-clique?
+
+<hr>
+
+<div class="cols">
+<div>
+
+Let's find the smallest $n$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ncl-ex2.png)
+
+</div>
+</div>
+
+---
+
+## Example 2: a 2-clique
+
+<hr>
+
+<div class="cols">
+<div>
+
+Any two outer members are 2 steps apart, through the center.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ncl-ex2-answer.png)
+<figcaption>red: one 2-step path between outer members</figcaption>
+
+</div>
+</div>
 
 ---
 
@@ -212,139 +376,293 @@ In a **k-plex** of $s$ members, every member is connected to at least $s-k$ of t
 </div>
 
 <!--
-Seidman and Foster 1978. A 1-plex is a clique. The k-core is the other degree relaxation: every member has at least k neighbors inside, whatever the group size.
+Seidman and Foster 1978. A 1-plex is a clique. We report the smallest k that works: k = s minus the smallest number of connections a member has.
 -->
 
 ---
 
-## Q1. This group is ___-dense
+## Example 1: which k-plex?
 
 <hr>
 
 <div class="cols">
 <div>
 
-Fill in the largest ρ.
+Let's find the smallest $k$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/quiz-prism.png)
+![w:537](figures/kplex-ex1.png)
 
 </div>
 </div>
 
 ---
 
-## Q1. 0.6-dense
+## Example 1: a 2-plex
 
 <hr>
 
 <div class="cols">
 <div>
 
-6 members have 15 possible edges. 9 are present.
+Each member is connected to 2 of the other 3.
 
-$9/15 = 0.6$
+$s - k = 2$ with $s = 4$, so $k = 2$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/quiz-prism-dense.png)
-<figcaption>dashed: the 6 missing edges</figcaption>
+![w:537](figures/kplex-ex1-answer.png)
+<figcaption>number: connections inside the group</figcaption>
 
 </div>
 </div>
 
 ---
 
-## Q2. This group is a ___-clique
+## Example 2: which k-plex?
 
 <hr>
 
 <div class="cols">
 <div>
 
-Fill in the smallest $n$.
+Let's find the smallest $k$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/quiz-prism.png)
+![w:537](figures/kplex-ex2.png)
 
 </div>
 </div>
 
 ---
 
-## Q2. A 2-clique
+## Example 2: a 4-plex
 
 <hr>
 
 <div class="cols">
 <div>
 
-Every pair is at most 2 steps apart.
+Each member is connected to 2 of the other 5.
+
+$s - k = 2$ with $s = 6$, so $k = 4$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/quiz-prism-dist.png)
-<figcaption>red: the 2-step path between a farthest pair</figcaption>
-
-</div>
-</div>
-
----
-
-## Q3. This group is a ___-plex
-
-<hr>
-
-<div class="cols">
-<div>
-
-Fill in the smallest $k$.
-
-</div>
-<div class="fig">
-
-![w:537](figures/quiz-prism.png)
-
-</div>
-</div>
-
----
-
-## Q3. A 3-plex
-
-<hr>
-
-<div class="cols">
-<div>
-
-Each member is connected to 3 of the other 5.
-
-$s - k = 3$ with $s = 6$, so $k = 3$.
-
-</div>
-<div class="fig">
-
-![w:537](figures/quiz-prism-plex.png)
-<figcaption>red: one member. Dashed: its 2 missing edges.</figcaption>
+![w:537](figures/kplex-ex2-answer.png)
+<figcaption>number: connections inside the group</figcaption>
 
 </div>
 </div>
 
 <!--
-The same group is 0.6-dense, a 2-clique and a 3-plex. Each relaxation gives its own number, and on a real network each finds different groups.
+Same number of connections per member as Example 1, but a bigger group, so a larger k. The k-plex asks for more connections as the group grows.
+-->
+
+---
+
+## Degree: the k-core
+
+<hr>
+
+<div class="cols">
+<div>
+
+The **k-core** of a network is the largest group in which every member has at least $k$ neighbors inside the group.
+
+The threshold $k$ does not depend on the group size.
+
+</div>
+<div class="fig">
+
+![w:537](figures/kcore-def.png)
+<figcaption>blue: the 3-core. Number: neighbors inside the blue group.</figcaption>
+
+</div>
+</div>
+
+<!--
+Seidman 1983. Compare the k-plex: there the requirement s - k rises with the group size s. Here it stays at k.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## How do we find the 3-core?
+
+<hr>
+
+Which nodes belong to the 3-core of this network?
+
+<div class="fig">
+
+![w:1080](figures/peel-0.png)
+<figcaption>number: degree</figcaption>
+
+</div>
+
+<!--
+30 seconds. Collect a few answers before the next slide.
+-->
+
+---
+
+## Step 1: remove every node with degree below 3
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/peel-1.png)
+<figcaption>number: degree. Red: degree below 3.</figcaption>
+
+</div>
+
+---
+
+## Step 2: update the degrees
+
+<hr>
+
+Removing a node lowers its neighbors' degrees. One node drops from 3 to 1.
+
+<div class="fig">
+
+![w:1080](figures/peel-2.png)
+<figcaption>dashed circle: removed. Red: now below 3.</figcaption>
+
+</div>
+
+<!--
+This node had degree 3 at the start. It looked safe, and it is not in the 3-core. That is why we cannot stop after one pass.
+-->
+
+---
+
+## Step 3: repeat until no node is below 3
+
+<hr>
+
+What is left is the 3-core.
+
+<div class="fig">
+
+![w:1080](figures/peel-3.png)
+<figcaption>blue: the 3-core. Every member has 3 or more neighbors in it.</figcaption>
+
+</div>
+
+---
+
+<!-- _class: mid -->
+
+## The peeling algorithm
+
+<hr>
+
+To find the k-core:
+
+* Remove every node with degree below $k$
+* Update the degrees of their neighbors
+* Repeat until no node has degree below $k$
+
+<!--
+The order of removal does not change the result: the k-core is unique. The algorithm takes time proportional to the number of edges (Batagelj and Zaversnik 2003), so it runs on networks with billions of edges.
+-->
+
+---
+
+## Example 1: find the 2-core
+
+<hr>
+
+Let's peel this network. Two minutes.
+
+<div class="fig">
+
+![w:1080](figures/kcore-ex1.png)
+
+</div>
+
+---
+
+## Example 1: the 2-core
+
+<hr>
+
+The branch goes one node at a time. The node between the square and the triangle stays.
+
+<div class="fig">
+
+![w:1080](figures/kcore-ex1-answer.png)
+<figcaption>blue: the 2-core. Number: neighbors inside it. Dashed circle: removed.</figcaption>
+
+</div>
+
+<!--
+Round 1 removes the three nodes of degree 1. The branch node then has degree 1 and goes in round 2. The node on the path between the square and the triangle has degree 2 throughout.
+-->
+
+---
+
+## Example 2: find the 3-core
+
+<hr>
+
+Let's peel this one.
+
+<div class="fig">
+
+![w:1080](figures/kcore-ex2.png)
+
+</div>
+
+---
+
+## Example 2: the 3-core has two pieces
+
+<hr>
+
+A k-core does not have to be connected.
+
+<div class="fig">
+
+![w:1080](figures/kcore-ex2-answer.png)
+<figcaption>blue: the 3-core. Number: neighbors inside it. Dashed circle: removed.</figcaption>
+
+</div>
+
+---
+
+## The karate club, peeled
+
+<hr>
+
+The **core number** of a node is the largest $k$ whose k-core contains it.
+
+<div class="fig">
+
+![w:1080](figures/karate-core.png)
+<figcaption>color: core number. Blue 4, red 3, gold 2, gray 1. The 4-core has 10 members.</figcaption>
+
+</div>
+
+<!--
+Counts: core number 4: 10 members, 3: 12, 2: 11, 1: 1. The k-cores are nested: the 4-core sits inside the 3-core, which sits inside the 2-core.
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Two</span><span class="count">02 / 03</span></div>
+<div class="band"><span>Part Two</span><span class="count">02 / 04</span></div>
 
 ## Graph cut
 
@@ -575,14 +893,14 @@ Let's split the club into two groups. Cut as few edges as you can.
 [Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
 
 <!--
-Someone will paint everyone one color and get a cut of 0. That is the missing rule: each group needs at least one member. The page's "best known" of 11 is the real split; the smallest cut is 1 (the lone member, two slides back).
+The page's target is 0: paint everyone one color and nothing is cut. That is the missing rule: each group needs at least one member. With both colors in use, the smallest cut is 1 (the lone member).
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Three</span><span class="count">03 / 03</span></div>
+<div class="band"><span>Part Three</span><span class="count">03 / 04</span></div>
 
 ## More than chance
 
@@ -718,7 +1036,7 @@ Let's color the club with up to four groups. Get Q as high as you can.
 [Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
 
 <!--
-The best known Q for the club is 0.420, with four groups.
+The page's target is 0.37, a split into two groups. Four groups can reach 0.420, the best known Q for the club.
 -->
 
 ---
@@ -787,4 +1105,128 @@ Many different splits have almost the same Q.
 
 <!--
 Both splits are local maxima: no single member can move and raise Q. The best known split scores 0.420. Run Louvain with two random seeds and you can get two different answers.
+-->
+
+---
+
+<!-- _class: part -->
+
+<div class="band"><span>Part Four</span><span class="count">04 / 04</span></div>
+
+## Turn it around
+
+Let's build a network from the groups
+
+---
+
+## Groups first, then edges
+
+<hr>
+
+In the **stochastic block model** (SBM), nodes $i$ and $j$ connect with probability $p_{c_i c_j}$, where $c_i$ is the group of $i$.
+
+<div class="fig">
+
+![w:1080](figures/sbm-flip.png)
+<figcaption>groups, then one probability per pair of groups, then a network. Gold: a high probability.</figcaption>
+
+</div>
+
+<!--
+Holland, Laskey and Leinhardt 1983. Every other method today reads a network and finds groups. The SBM goes the other way: it writes a network from the groups.
+-->
+
+---
+
+## Can we see the groups?
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/sbm-shuffled.png)
+<figcaption>right: who is connected to whom, rows and columns in a random order</figcaption>
+
+</div>
+
+<!--
+Rows and columns are the ten members; a filled cell is an edge. Ask: can you see two groups in the matrix?
+-->
+
+---
+
+## Sort by group, and blocks appear
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/sbm-blocks.png)
+<figcaption>the same matrix, members sorted by group. Red boxes: edges inside a group.</figcaption>
+
+</div>
+
+<!--
+Nothing changed but the order. The dense blocks on the diagonal are why it is called a block model.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## What if edges between groups are more likely?
+
+<hr>
+
+Let's set the probability between groups higher than inside. What does the network look like?
+
+---
+
+## Groups can also connect outward
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/sbm-three-cases.png)
+<figcaption>gold: a high probability. With no difference, the SBM is a random network.</figcaption>
+
+</div>
+
+<!--
+Outside more likely: buyers and sellers, predators and prey. Modularity scores these near zero, and the SBM describes them with the same four numbers.
+-->
+
+---
+
+## A community is a shared pattern
+
+<hr>
+
+Members of a group connect to the rest in the same way. They need not connect to each other.
+
+<div class="fig">
+
+![w:1080](figures/sbm-pattern.png)
+<figcaption>no edge inside either group</figcaption>
+
+</div>
+
+---
+
+## Finding the groups is inference
+
+<hr>
+
+We choose the grouping under which the observed network is most likely.
+
+<div class="fig">
+
+![w:1080](figures/sbm-inference.png)
+<figcaption>axis: log-likelihood of one network under five groupings. Red: the grouping that made it.</figcaption>
+
+</div>
+
+<!--
+Given a grouping, each block's probability is counting: edges in the block divided by pairs in the block. Choosing the grouping is the hard part; it is as hard as maximizing Q, and the fitting methods are heuristics too. The SBM also lets us compare different numbers of groups with a likelihood instead of a rule of thumb. Details: lecture note and appendix.
 -->
