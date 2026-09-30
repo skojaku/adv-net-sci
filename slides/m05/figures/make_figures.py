@@ -21,10 +21,12 @@ round of fixes into seven.
 
 import figs_chance
 import figs_doubt
+import figs_sketch
 import figs_story
 from figlib import run
 
-FIGURES = figs_story.FIGURES + figs_chance.FIGURES + figs_doubt.FIGURES
+FIGURES = (figs_story.FIGURES + figs_chance.FIGURES + figs_doubt.FIGURES
+           + figs_sketch.FIGURES)
 
 _names = [n for n, _ in FIGURES]
 assert len(_names) == len(set(_names)), \

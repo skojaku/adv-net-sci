@@ -1,3 +1,5 @@
+> **2026-09-30:** this spec describes the previous deck. New figures for the rebuilt deck are in `figures/figs_sketch.py`; see `review/DECK_SPEC.md`.
+
 # m05 FIGURE_SPEC
 
 Every figure for `m05-clustering.md`, authored per `FIGURE_GUIDE.md`: TikZ through

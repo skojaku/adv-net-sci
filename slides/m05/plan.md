@@ -1,3 +1,5 @@
+> **2026-09-30:** superseded. The deck was rebuilt from the lecturer's hand sketches; see `review/DECK_SPEC.md`. This plan describes the previous version.
+
 # m05 "The Club That Broke in Two" — スライド計画
 
 2026-08-05、講師との相談で確定。実装は DECK_BUILD_GUIDE.md の Order of work に従い、
