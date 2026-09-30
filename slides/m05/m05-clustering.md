@@ -41,7 +41,7 @@ Ask what they see before moving on. Wait for someone to say "groups".
 
 <hr>
 
-We call them **communities**. Can we define one? How?
+We call them **communities**. How would we define one?
 
 <div class="fig tight">
 
@@ -114,7 +114,7 @@ Pause and wait for an objection.
 
 Remove one edge, and the group is no longer a clique.
 
-Real groups miss many edges. What does a real group look like?
+Real groups miss many edges. How can we allow for that?
 
 </div>
 <div class="fig">
@@ -150,11 +150,11 @@ These are called pseudo-cliques. The lecture note has more of them (k-core, n-cl
 <div class="cols">
 <div>
 
-A group is **ρ-dense** if it has at least a fraction ρ of all possible edges.
+A group of $s$ members is **ρ-dense** if it has at least a fraction ρ of all possible edges.
 
 <div class="formula">
 
-$$\rho = \frac{\text{edges inside}}{n(n-1)/2}$$
+$$\frac{\text{edges inside}}{s(s-1)/2} \ge \rho$$
 
 </div>
 
@@ -162,7 +162,7 @@ $$\rho = \frac{\text{edges inside}}{n(n-1)/2}$$
 <div class="fig">
 
 ![w:537](figures/rho-dense.png)
-<figcaption>8/15 = 0.53, so this group is 0.53-dense</figcaption>
+<figcaption>8 of the 15 possible edges: 0.53-dense</figcaption>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ A group is an **n-clique** if every pair is at most $n$ steps apart.
 <div class="fig">
 
 ![w:537](figures/n-clique-two.png)
-<figcaption>red: a farthest pair, 2 steps apart. A 2-clique.</figcaption>
+<figcaption>red: a farthest pair's 2-step path. A 2-clique.</figcaption>
 
 </div>
 </div>
@@ -200,13 +200,13 @@ Luce 1950. The path may pass through nodes outside the group; the n-clan and n-c
 <div class="cols">
 <div>
 
-In a **k-plex** of $n$ members, every member is connected to at least $n-k$ of the others.
+In a **k-plex** of $s$ members, every member is connected to at least $s-k$ of the others.
 
 </div>
 <div class="fig">
 
-![w:537](figures/k-plex.png)
-<figcaption>each member misses at most 1 other: a 2-plex</figcaption>
+![w:537](figures/k-plex-two.png)
+<figcaption>dashed: missing edges. Each member is connected to at least 3 = 5 − 2 others: a 2-plex.</figcaption>
 
 </div>
 </div>
@@ -243,7 +243,7 @@ Fill in the largest ρ.
 <div class="cols">
 <div>
 
-6 members make 15 possible edges. 9 are present.
+6 members have 15 possible edges. 9 are present.
 
 $9/15 = 0.6$
 
@@ -290,7 +290,7 @@ Every pair is at most 2 steps apart.
 <div class="fig">
 
 ![w:537](figures/quiz-prism-dist.png)
-<figcaption>red: a farthest pair, 2 steps apart</figcaption>
+<figcaption>red: the 2-step path between a farthest pair</figcaption>
 
 </div>
 </div>
@@ -325,13 +325,13 @@ Fill in the smallest $k$.
 
 Each member is connected to 3 of the other 5.
 
-$n - k = 3$ with $n = 6$, so $k = 3$.
+$s - k = 3$ with $s = 6$, so $k = 3$.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/quiz-prism-plex.png)
-<figcaption>dashed: the 2 members the ringed one is not connected to</figcaption>
+<figcaption>red: one member. Dashed: its 2 missing edges.</figcaption>
 
 </div>
 </div>
@@ -352,6 +352,8 @@ Let's find groups by cutting edges
 
 ---
 
+<!-- _class: mid -->
+
 ## How would we split this into two groups?
 
 <hr>
@@ -371,7 +373,7 @@ Let's find groups by cutting edges
 <div class="cols">
 <div>
 
-**Cut** counts the edges between the two groups.
+**Cut** counts the edges between groups $V_1$ and $V_2$.
 
 <div class="formula">
 
@@ -383,7 +385,7 @@ $$\text{Cut}(V_1, V_2) = \sum_{i \in V_1} \sum_{j \in V_2} A_{ij}$$
 <div class="fig">
 
 ![w:537](figures/cut-def-col.png)
-<figcaption>thick: the edges we cut</figcaption>
+<figcaption>blue, red: the two groups. Thick: the edges we cut.</figcaption>
 
 </div>
 </div>
@@ -413,7 +415,7 @@ $$\min_{V_1, \dots, V_K} \text{Cut}(V_1, \dots, V_K)$$
 <div class="fig">
 
 ![w:537](figures/cut-works.png)
-<figcaption>no split into three groups cuts fewer edges</figcaption>
+<figcaption>thick: the 3 edges we cut. No split into three groups cuts fewer.</figcaption>
 
 </div>
 </div>
@@ -465,7 +467,7 @@ $$\text{RatioCut}(V_1, V_2) = \frac{\text{Cut}(V_1, V_2)}{|V_1|\,|V_2|}$$
 <div class="fig tight">
 
 ![w:1080](figures/rcut-small.png)
-<figcaption>one node alone: 1/(1 × 8). Balanced: 2/(5 × 4). The balanced split scores lower.</figcaption>
+<figcaption>one node alone: 1/(1 × 8). Balanced (red): 2/(5 × 4). We pick the lower score.</figcaption>
 
 </div>
 
@@ -475,7 +477,7 @@ We minimize. The denominator is largest when the two sides are equal, so the bal
 
 ---
 
-## Balanced by edges: normalized cut
+## Balance by degree: normalized cut
 
 <hr>
 
@@ -488,7 +490,7 @@ $$\text{NCut}(V_1, V_2) = \frac{\text{Cut}(V_1, V_2)}{\text{vol}(V_1)\,\text{vol
 <div class="fig tight">
 
 ![w:1080](figures/ncut-small.png)
-<figcaption>vol: the sum of degrees in a group. Balanced: 1/112. One node alone: 1/29.</figcaption>
+<figcaption>thick: the 2 edges we cut. vol: the sum of degrees in a group. Balanced: 1/112. One node alone: 1/29.</figcaption>
 
 </div>
 
@@ -552,7 +554,7 @@ Before the next three slides, ask: what will each of the three scores do on this
 <div class="fig">
 
 ![w:1080](figures/karate-cut-norm.png)
-<figcaption>17 against 17. 32 of 34 members match the real split; ringed: the two who do not.</figcaption>
+<figcaption>thick: the 10 edges we cut. 17 against 17. Ringed: the 2 of 34 who do not match the real split.</figcaption>
 
 </div>
 
@@ -573,7 +575,7 @@ Let's split the club into two groups. Cut as few edges as you can.
 [Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
 
 <!--
-Someone will paint everyone one color and get a cut of 0. That is the missing rule: each group needs at least one member.
+Someone will paint everyone one color and get a cut of 0. That is the missing rule: each group needs at least one member. The page's "best known" of 11 is the real split; the smallest cut is 1 (the lone member, two slides back).
 -->
 
 ---
@@ -588,6 +590,8 @@ Let's compare a network with a random one
 
 ---
 
+<!-- _class: mid -->
+
 ## How dense should a community be?
 
 <hr>
@@ -600,7 +604,7 @@ Let's compare a network with a random one
 </div>
 
 <!--
-Is a star a community? Its density is 0.33 or less. Any fixed threshold is arbitrary.
+Ask: is a star a community? Take two answers.
 -->
 
 ---
@@ -611,7 +615,7 @@ Is a star a community? Its density is 0.33 or less. Any fixed threshold is arbit
 
 <hr>
 
-Count the edges inside the groups. Subtract the number we expect by chance.
+We subtract the edges we expect by chance.
 
 <div class="formula">
 
@@ -619,18 +623,22 @@ $$(\text{edges inside}) - (\text{edges inside by chance}) > 0$$
 
 </div>
 
+<!--
+The stars on the last slide have density 0.33 or less. Any fixed density threshold is arbitrary; chance gives each network its own threshold.
+-->
+
 ---
 
-## Modularity: how surprising are the groups?
+## Chance: the configuration model
 
 <hr>
 
-Our **null model**, the **configuration model**, keeps every node's degree and connects edges at random.
+Our **null model**, the **configuration model**, keeps every node's degree and pairs up edge ends at random.
 
 <div class="fig tight">
 
 ![w:1080](figures/null-model.png)
-<figcaption>right: one random draw. On average, chance puts 7.5 of the 15 edges inside.</figcaption>
+<figcaption>color: group. Right: one random draw. On average, 7.53 of the 15 edges land inside.</figcaption>
 
 </div>
 
@@ -650,10 +658,10 @@ $$Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(
 
 </div>
 
-* $A_{ij}$: 1 if $i$ and $j$ are connected
-* $k_i k_j / 2m$: the edges we expect between $i$ and $j$ by chance
-* $\delta(c_i, c_j)$: 1 if $i$ and $j$ are in the same group
-* Our example: $Q = (13 - 7.53)/15 = 0.36$
+* $A_{ij}$: 1 if $i$ and $j$ are connected, else 0
+* $k_i k_j / 2m$: the expected number of edges between $i$ and $j$ by chance, where $k_i$ is the degree of $i$
+* $\delta(c_i, c_j)$: 1 if the groups $c_i$ and $c_j$ are the same
+* Our example, with $m = 15$ edges: $Q = (13 - 7.53)/15 = 0.36$
 
 <!--
 Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j's k_j ends with probability k_j / 2m. The sum runs over ordered pairs, so every edge is counted twice; dividing by 2m turns the count into a fraction of the m edges. Q is at most 1; around 0.3 to 0.7 for real networks with clear groups.
@@ -665,12 +673,12 @@ Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j'
 
 <hr>
 
-Finding the best Q is hard. **Louvain** repeats two steps until Q stops rising.
+**Louvain** repeats two steps until Q stops rising.
 
 <div class="fig tight">
 
 ![w:1080](figures/louvain-steps.png)
-<figcaption>step 1: move each node to the neighboring group that raises Q most. Step 2: each group becomes one node.</figcaption>
+<figcaption>color: group. Step 1: move each node to the neighboring group that raises Q most. Step 2: each group becomes one node.</figcaption>
 
 </div>
 
@@ -684,7 +692,7 @@ Blondel et al. 2008. Maximizing Q is NP-hard. After step 2, step 1 runs again on
 
 <hr>
 
-Louvain can return a group in two pieces. **Leiden** checks each group and splits it.
+Louvain can leave a group in two pieces. **Leiden** splits it.
 
 <div class="fig tight">
 
@@ -732,12 +740,14 @@ The best known Q for the club is 0.420, with four groups.
 
 <hr>
 
-With more than $\sqrt{2m}$ triangles, Q puts two triangles in one group.
+Past $\sqrt{2m}$ triangles, pairs score a higher Q than single triangles.
+
+What Q picks depends on the network's size: the **resolution limit**.
 
 <div class="fig">
 
 ![w:1080](figures/ring-four-ten.png)
-<figcaption>shaded: one group. 4 triangles: apart 0.500, pairs 0.375. 10 triangles: apart 0.650, pairs 0.675.</figcaption>
+<figcaption>shaded: the higher-Q groups. 4: apart 0.500, pairs 0.375. 10: apart 0.650, pairs 0.675.</figcaption>
 
 </div>
 
@@ -751,7 +761,7 @@ Fortunato and Barthelemy 2007. n triangles give m = 4n edges. Apart: Q = 3/4 - 1
 
 <hr>
 
-Two splits of the karate club.
+Let's compare two splits of the club.
 
 <div class="fig">
 

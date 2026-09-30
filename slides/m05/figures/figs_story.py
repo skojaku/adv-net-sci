@@ -234,10 +234,7 @@ def _dense():
     e = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 0), (0, 2), (3, 5)]
     poss = 6 * 5 // 2
     assert abs(len(e) / poss - 8 / 15) < 1e-9
-    out = small(p, e, fill={n: "accent" for n in p}, what="rho-dense", planar=False)
-    out += text(268, 48, f"{len(e)} of {poss} possible", color="accenttwo",
-                anchor="north", size=FONT)
-    return out
+    return small(p, e, fill={n: "accent" for n in p}, what="rho-dense", planar=False)
 
 
 @fig("n-clique", container="col", h=330)

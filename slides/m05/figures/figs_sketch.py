@@ -23,7 +23,9 @@ import networkx as nx
 import numpy as np
 
 import verify_numbers as V
-from figlib import FONT, assert_planar_drawing, emit, label_box, seg, text
+from figlib import FONT, NODE, assert_planar_drawing, emit, label_box, seg, text
+
+NODE_R = NODE / 2
 from figs_story import SMALL_E, SMALL_LEFT, SMALL_POS
 from kfig import (
     CHI, COFF, arrow, assert_boxes_clear, clique_edges, karate, ring_positions, small,
@@ -144,6 +146,27 @@ def _n_clique_two():
     return small(p, e, heavy=path, what="n-clique-two", fill={n: "accent" for n in p})
 
 
+@fig("k-plex-two", container="col", h=380)
+def _kplex_two():
+    """Five members; the two dashed diagonals are the only missing edges.
+
+    Drawn planar: the member who knows everyone sits inside the rectangle, above the
+    point where the diagonals cross, so neither diagonal runs through the disc.
+    """
+    p = {0: (60, 300), 1: (476, 300), 2: (476, 80), 3: (60, 80), 4: (268, 244)}
+    missing = [(0, 2), (1, 3)]
+    have = [(0, 1), (1, 2), (2, 3), (3, 0), (4, 0), (4, 1), (4, 2), (4, 3)]
+    g = nx.Graph(have)
+    s = g.number_of_nodes()
+    assert min(d for _, d in g.degree()) == s - 2, "each member reaches at least s - 2"
+    assert len(have) + len(missing) == s * (s - 1) // 2
+    assert_planar_drawing(have, p, "k-plex-two")
+    from figlib import clearance_bad
+    assert not clearance_bad(missing, p, r=NODE_R + 3), "a dashed diagonal hits a disc"
+    return small(p, have, dashes=missing, edges_all=have + missing, what="k-plex-two",
+                 fill={n: "accent" for n in p})
+
+
 # The quiz group: two triangles joined rung by rung (a prism). One group, three
 # questions -- how dense, how far, how many missed -- and three different numbers.
 PRISM = {"at": (70, 290), "ab": (70, 90), "am": (200, 190),
@@ -202,10 +225,11 @@ def _quiz_plex():
     g = _prism_facts()
     missing = [("at", o) for o in PRISM if o != "at" and not g.has_edge("at", o)]
     assert len(missing) == 2
-    # A gold ring: check_render finds discs by their blue/red fill, so a red ring
-    # would merge with the disc it circles and measure as one 58px node.
-    return _prism(dashes=missing, edges_all=list(PRISM_E) + missing, rings=["at"],
-                  ring_color="accentthree", planar=False, what="quiz-prism-plex")
+    # Marked by its fill rather than a ring: a ring reaches past the disc and moved the
+    # cropped drawing 10px against the three other quiz slides.
+    fill = {n: (COFF if n == "at" else "accent") for n in PRISM}
+    return _prism(dashes=missing, edges_all=list(PRISM_E) + missing, fill=fill,
+                  planar=False, what="quiz-prism-plex")
 
 
 # =========================================================================== Part 2
@@ -270,7 +294,10 @@ def _cut_plain():
                  fill={n: "annot" for n in SMALL_POS})
 
 
-CUT_COL = _squash(SMALL_POS, sx=0.52, nx0=30.0)
+# Each half scaled by 0.8 and the right half moved left, so only the two bridges get
+# shorter. Squashing the whole drawing by 0.52 left the lone node's edge 14bp long.
+CUT_COL = {n: ((30 + (x - 46) * 0.8) if n in SMALL_LEFT else (507 - (960 - x) * 0.8), y)
+           for n, (x, y) in SMALL_POS.items()}
 
 
 @fig("cut-def-col", container="col", h=380)
@@ -279,7 +306,7 @@ def _cut_def_col():
     s = _small_numbers()
     out = small(dict(CUT_COL), list(SMALL_E), what="cut-def-col",
                 fill=_two_sides(SMALL_LEFT), heavy=_crossing(SMALL_LEFT), heavy_color="black")
-    out += text(292, 214, f"cut = {s['cut_bal']}", color="black", anchor="center", size=FONT)
+    out += text(268, 62, f"cut = {s['cut_bal']}", color="black", anchor="north", size=FONT)
     return out
 
 
@@ -324,7 +351,7 @@ def _cut_trivial():
     return out
 
 
-SQ = _squash(SMALL_POS, sy=0.8)
+SQ = _squash(SMALL_POS, sy=0.7)
 
 
 @fig("rcut-small", h=400, hmod="tight")
@@ -335,8 +362,8 @@ def _rcut():
     out = small(dict(SQ), list(SMALL_E), what="rcut-small", fill={n: "accent" for n in SQ})
     for x, col, val in ((98, "annot", s["rc_lone"]), (550, "accenttwo", s["rc_bal"])):
         out += (f"\\draw[line width=3.6bp,draw={col},dash pattern=on 13bp off 10bp] "
-                f"({x},100) -- ({x},325);\n")
-        out += text(x, 336, f"{val.numerator}/{val.denominator}", color=col,
+                f"({x},120) -- ({x},308);\n")
+        out += text(x, 318, f"{val.numerator}/{val.denominator}", color=col,
                     anchor="south", size=44)
     return out
 
@@ -348,8 +375,8 @@ def _ncut():
     assert s["nc_bal"] < s["nc_lone"]
     out = small(dict(SQ), list(SMALL_E), what="ncut-small", fill=_two_sides(SMALL_LEFT),
                 heavy=_crossing(SMALL_LEFT), heavy_color="black")
-    out += text(216, 95, f"vol = {s['vol_l']}", color="accent", anchor="north", size=FONT)
-    out += text(866, 95, f"vol = {s['vol_r']}", color="accenttwo", anchor="north", size=FONT)
+    out += text(216, 112, f"vol = {s['vol_l']}", color="accent", anchor="north", size=FONT)
+    out += text(866, 112, f"vol = {s['vol_r']}", color="accenttwo", anchor="north", size=FONT)
     return out
 
 
