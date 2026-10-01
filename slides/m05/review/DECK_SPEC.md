@@ -61,3 +61,10 @@ OpenRouter on 2026-10-01, asked for 8 strings in a bag: 3 blue-blue, 3 red-red, 
 blue-red, in the deck's blue #3959A6 and red #B14434, with no text. The drawing was
 checked by eye against that count, cropped and quantized. It is committed (a `!` line in
 `.gitignore`) and exempt from the in-figure type checks in `check_render.py`.
+
+`figures/modularity-bag-pull.png` (slide 53, "Pull one string") is not a model drawing. A
+Gemini attempt at a hand pulling a string out miscounted the balls (7 blue, 6 red, a ball
+with no string), so the picture is a composite of `modularity-bag.png`: its top-left
+blue-blue string is cut out by a flood fill over its own ink, moved above the bag, and an
+arrow is drawn from the mouth. The bag keeps 7 strings (2 blue-blue, 3 red-red, 2
+blue-red); a recount finds 8 blue and 8 red balls in all.

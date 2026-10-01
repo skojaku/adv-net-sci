@@ -1009,13 +1009,23 @@ The stage from the lecture note, on a 12-node network: strings into the first ba
 
 ---
 
-<!-- _class: mid -->
-
 ## Pull one string. Do its balls match?
 
 <hr>
 
+<div class="cols">
+<div>
+
 What is the chance that the two balls on a random string have the same color?
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag-pull.png)
+<figcaption>one string, pulled out at random</figcaption>
+
+</div>
+</div>
 
 <!--
 Let them count on the picture before moving on.

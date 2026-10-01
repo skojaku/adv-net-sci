@@ -11,6 +11,6 @@ run(
     # modularity-bag*.png: raster illustrations (Gemini via OpenRouter) with no text in
     # them, so the in-figure type checks have nothing to measure.
     exempt_figures=["boruvka-portrait.png", "konigsberg-map.png", "modularity-bag.png",
-                    "modularity-bag-cut.png"],
+                    "modularity-bag-cut.png", "modularity-bag-pull.png"],
     content_bottom=660,
 )
