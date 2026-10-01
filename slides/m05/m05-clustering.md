@@ -1062,9 +1062,9 @@ m is the number of strings, which is the number of edges.
 <div class="cols">
 <div>
 
-We draw two balls at random.
+We draw one ball, put it back, and draw again: **sampling with replacement**.
 
-What is the chance they have the same color?
+What is the chance the two balls have the same color?
 
 </div>
 <div class="fig">
@@ -1076,7 +1076,7 @@ What is the chance they have the same color?
 </div>
 
 <!--
-We draw one ball, put it back, and draw again (with replacement), as in the lecture note.
+As in the lecture note. Without putting the first ball back, the chance would be 2 x (8/16)(7/15) = 0.467, and the square in the next slide would not hold.
 -->
 
 ---
@@ -1087,7 +1087,7 @@ We draw one ball, put it back, and draw again (with replacement), as in the lect
 
 <hr>
 
-The chance of drawing color $c$ is the share of balls with color $c$. We draw two balls, so we square it, then add over the colors.
+The chance of drawing color $c$ is the share of balls with color $c$. The first ball goes back, so the second draw has the same chance: we square it, then add over the colors.
 
 <div class="formula">
 
@@ -1133,6 +1133,8 @@ Cutting the strings and pairing the ends at random keeps every node's degree. Th
 
 <!--
 Exact expectation: sum over groups of vol^2 / 4m = (16^2 + 14^2) / 60 = 7.53.
+
+Pairing the ends of cut strings is drawing without replacement. Drawing with replacement, as on the last slides, is what gives k_i k_j / 2m in the formula; for a big bag the two are close.
 -->
 
 ---
