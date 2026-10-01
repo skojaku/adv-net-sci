@@ -274,7 +274,7 @@ Now, the community detection problem is translated into **an optimization proble
 ::: {.callout-note title="Try it, then read on"}
 The description of this problem is not complete. Can you say what is missing? Without it, the best cut is trivial.
 
-[Graph cut, hands on](../assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json) --- ten nodes in two colours; click a node to move it to the other side, and the panel counts the edges you have cut. Get the count as low as you can.
+[Graph cut, hands on](../assets/vis/community-detection/partition-game.html?scoreType=graphcut&numCommunities=2&randomness=1&dataFile=two-cliques.json) --- ten nodes in two colours; click a node to move it to the other side, and the panel counts the edges you have cut. Get the count as low as you can.
 :::
 
 ::: {.callout-note collapse="true" title="Click to reveal the answer" appearance="simple"}
@@ -1201,11 +1201,11 @@ Notice also what moving a single node did: five strings broken, and $Q$ fell fro
 
 Now take the same move to larger networks. Three rounds, each with a point:
 
-**Round 1 — two cliques, two colors.** Click nodes to repaint them, and keep going until $Q$ stops rising. You should land on the obvious answer. [Two cliques, two colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
+**Round 1 — two cliques, two colors.** Click nodes to repaint them, and keep going until $Q$ stops rising. You should land on the obvious answer. [Two cliques, two colors](../assets/vis/community-detection/partition-game.html?scoreType=modularity&numCommunities=2&randomness=1&dataFile=two-cliques.json)
 
-**Round 2 — the same network, four colors.** Unlike ratio and normalized cut, modularity's objective does not take the number of communities as an input: hand it four colors and the highest-scoring partition is free to leave two of them unused. Check whether it does. [Two cliques, four colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json)
+**Round 2 — the same network, four colors.** Unlike ratio and normalized cut, modularity's objective does not take the number of communities as an input: hand it four colors and the highest-scoring partition is free to leave two of them unused. Check whether it does. [Two cliques, four colors](../assets/vis/community-detection/partition-game.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json)
 
-**Round 3 — a real network.** The Zachary karate club: friendships among 34 members of a university karate club that split into two factions after a dispute. It is the fruit fly of network science. [Karate club, four colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
+**Round 3 — a real network.** The Zachary karate club: friendships among 34 members of a university karate club that split into two factions after a dispute. It is the fruit fly of network science. [Karate club, four colors](../assets/vis/community-detection/partition-game.html?scoreType=modularity&numCommunities=4&randomness=0.25&dataFile=net_karate.json)
 
 
 ## Two ways modularity lies to you
@@ -1614,7 +1614,7 @@ Note also that the scale is $\sqrt{2m}$ and not $m$. In a network with $m = 5{,}
 
 ### It finds communities in pure noise
 
-What if the network has no communities at all? Take a random network — every pair of nodes connected with the same probability, no structure of any kind — and maximize modularity on it. [Random network, three colors](../assets/vis/community-detection/index.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json)
+What if the network has no communities at all? Take a random network — every pair of nodes connected with the same probability, no structure of any kind — and maximize modularity on it. [Random network, three colors](../assets/vis/community-detection/partition-game.html?scoreType=modularity&numCommunities=3&randomness=0.8&dataFile=random-net.json)
 
 ::: {.callout-note collapse="true" title="Click here to see the solution" appearance="simple"}
 

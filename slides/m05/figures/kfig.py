@@ -188,7 +188,7 @@ def small(pos, edges, fill=None, heavy=(), heavy_color="accenttwo", rings=(),
         k = _k(e)
         p, q = pos[e[0]], pos[e[1]]
         if k in dashes:
-            out += seg(p, q, color="annot", w=2.4, dash="dash pattern=on 7bp off 6bp")
+            out += seg(p, q, color="annot", w=3.4, dash="dash pattern=on 9bp off 7bp")
         elif k in heavy:
             out += seg(p, q, color=heavy_color, w=5.8)
         else:
