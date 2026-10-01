@@ -641,7 +641,7 @@ A k-core does not have to be connected.
 
 ---
 
-## The karate club, peeled
+## A real network, peeled
 
 <hr>
 
@@ -650,12 +650,12 @@ The **core number** of a node is the largest $k$ whose k-core contains it.
 <div class="fig">
 
 ![w:1080](figures/karate-core.png)
-<figcaption>color: core number. Blue 4, red 3, gold 2, gray 1. The 4-core has 10 members.</figcaption>
+<figcaption>34 members of a karate club and their 78 friendships. Color: core number (blue 4, red 3, gold 2, gray 1).</figcaption>
 
 </div>
 
 <!--
-Counts: core number 4: 10 members, 3: 12, 2: 11, 1: 1. The k-cores are nested: the 4-core sits inside the 3-core, which sits inside the 2-core.
+We meet this club properly in Part Two. Counts: core number 4: 10 members, 3: 12, 2: 11, 1: 1. The k-cores are nested: the 4-core sits inside the 3-core, which sits inside the 2-core.
 -->
 
 ---
@@ -833,8 +833,22 @@ Wayne Zachary recorded friendships in a karate club, 1970 to 1972.
 
 <!--
 A university karate club. The instructor (Mr. Hi) wanted to raise the fees; the administrator (John A.) did not. The club split into two clubs, 17 members each. Zachary 1977, Journal of Anthropological Research 33(4): 452-473.
+-->
 
-Before the next three slides, ask: what will each of the three scores do on this network?
+---
+
+<!-- _class: mid -->
+
+## Game: find the smallest cut
+
+<hr>
+
+Let's split the club into two groups. Cut as few edges as you can.
+
+[Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
+
+<!--
+The page's target is a cut of 1: the one member with a single friend, alone. The next slide shows it. If someone paints everyone one color, the cut is 0 and the page says "even better". Ask whether that is a split: each group needs at least one member.
 -->
 
 ---
@@ -849,6 +863,10 @@ Before the next three slides, ask: what will each of the three scores do on this
 <figcaption>thick: the 1 edge we cut. One member against 33.</figcaption>
 
 </div>
+
+<!--
+The game's target. Before the next two slides, ask: what will ratio cut and normalized cut do on this network?
+-->
 
 ---
 
@@ -878,22 +896,6 @@ Before the next three slides, ask: what will each of the three scores do on this
 
 <!--
 10 edges cut. Each split is the best found by a random-restart local search (figs_sketch.py); finding the exact optimum is NP-hard.
--->
-
----
-
-<!-- _class: mid -->
-
-## Game: find the smallest cut
-
-<hr>
-
-Let's split the club into two groups. Cut as few edges as you can.
-
-[Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
-
-<!--
-The page's target is 0: paint everyone one color and nothing is cut. That is the missing rule: each group needs at least one member. With both colors in use, the smallest cut is 1 (the lone member).
 -->
 
 ---

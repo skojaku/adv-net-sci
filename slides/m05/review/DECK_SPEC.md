@@ -30,13 +30,13 @@ no rhetoric. No em-dash anywhere.
 | "Q1 This is a ___ ? × 3" | replaced | lecturer, 2026-09-30: a bundled quiz needs every definition memorized. Each pseudo-clique now gets two examples right after its definition, question then answer, with numbers that divide easily (3/6, 8/10) |
 | k-core (lecturer, 2026-09-30) | 24-34 | definition, a worked peeling in three steps (a degree-3 node that still goes), the algorithm, two exercises (a 2-core with a cascading branch; a 3-core in two pieces), core numbers on the club |
 | "Works?" + "we don't like it: 1 vs rest" | 39, 40 | split into a question slide and an answer slide |
-| "Zachary's karate club: Cut, RCut, NCut" | 44-46 | three slides, one method each: three club drawings side by side put the discs under the 26px floor |
-| "Game: find a cut that minimizes ___" | 47, 55 | the lecturer's own 2024 game, restored at `assets/vis/community-detection/index.html`; the August 2026 rewrite is now `partition-game.html` and the lecture note links there |
+| "Zachary's karate club: Cut, RCut, NCut" | 45-47 | three slides, one method each: three club drawings side by side put the discs under the 26px floor |
+| "Game: find a cut that minimizes ___" | 44, 56 | the lecturer's own 2024 game, restored at `assets/vis/community-detection/index.html`; the August 2026 rewrite is now `partition-game.html` and the lecture note links there. The cut game sits before the club's cut slides, and its karate target (`net_karate.json`) is now the one-member cut of 1, which slide 45 shows; it used to be 0, everyone in one group |
 | "Modularity limitation" (crossed out) | none | dropped |
-| "I need a slide to explain modularity" | 52 | the formula with each term as a fragment, and the worked value for the small club |
-| "Turn it around" (crossed out) | 60-67 | the lecturer asked for the SBM back: Part Four, reusing the SBM figures in `figs_chance.py` |
-| "Resolution limit: ring of cliques, n ~ √2m" | 56, 57 | ring of triangles: question, then 4 vs 10 triangles |
-| "Karate: similar Q, different partition" | 58, 59 | two local maxima of Q, one per slide |
+| "I need a slide to explain modularity" | 53 | the formula with each term as a fragment, and the worked value for the small club |
+| "Turn it around" (crossed out) | 61-68 | the lecturer asked for the SBM back: Part Four, reusing the SBM figures in `figs_chance.py` |
+| "Resolution limit: ring of cliques, n ~ √2m" | 57, 58 | ring of triangles: question, then 4 vs 10 triangles |
+| "Karate: similar Q, different partition" | 59, 60 | two local maxima of Q, one per slide |
 
 ## Numbers on the slides, all asserted in `figures/figs_sketch.py`
 
