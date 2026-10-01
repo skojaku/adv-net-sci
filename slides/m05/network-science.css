@@ -332,3 +332,420 @@ section::after {
 }
 section.lead::after,
 section.part::after { display: none; }
+
+/*-----------------------------------------------------------------------------
+  ANIMATION STAGE — the slide-sized port of lecture-note/assets/anim.css.
+
+  Same ink, same paper, same class names, so a scene script written for the
+  lecture note runs here unchanged; only the sizes differ, because a slide's
+  body is 30px where the note's is 18px. Drive it with
+  lecture-note/assets/anim.js and a scene file from lecture-note/assets/anim/.
+
+  This deck's theme writes its colours as literals rather than tokens, so the
+  tokens the kit expects are declared here, once, from this deck's palette.
+-----------------------------------------------------------------------------*/
+
+section {
+  --ink: #000000;
+  --ink-soft: #6b6b6b;
+  --ink-faint: #bdbcbf;
+  --accent: #3959A6;
+  --accent-soft: #e7ecf7;
+  --contrast: #B14434;
+  --contrast-soft: #f8e9e5;
+  --rule: #dddddd;
+  --paper: #fffdf8;
+  --hand: 'Caveat', 'Bradley Hand', 'Chalkboard SE', cursive;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+/* ---------- animation stage ---------- */
+/* The slide-sized port of lecture-note/assets/anim.css. Same ink, same paper,
+   same class names, so a scene script written for the note runs here unchanged
+   — only the sizes differ, because a slide's body is 30px where the note's is
+   18px. Drive it with slides/assets/anim.js.
+   Wrap the stage in <div class="stage-wrap"> when you want it centred. */
+
+section .anim-stage {
+  /* short private names, exactly as in the note's kit */
+  --_ink: var(--ink);
+  --_ink-soft: var(--ink-soft);
+  --_ink-faint: var(--ink-faint);
+  --_paper: var(--paper);
+  --_white: #ffffff;
+  --_accent: var(--accent);
+  --_accent-soft: var(--accent-soft);
+  --_amber: var(--contrast);
+  --_amber-soft: var(--contrast-soft);
+  --_rule: var(--rule);
+  --_hand: var(--hand);
+  --_mono: var(--mono);
+  --_shade: rgba(34, 33, 43, 0.18);
+
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 14px 16px 16px;
+  color: var(--_ink);
+  background-color: var(--_paper);
+  background-image:
+    linear-gradient(rgba(57, 89, 166, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 89, 166, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 2px solid var(--_ink);
+  border-radius: 14px 7px 16px 9px / 9px 16px 7px 14px;
+  box-shadow: 4px 5px 0 -1px var(--_shade);
+}
+
+section .anim-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+}
+section .anim-step {
+  font-family: var(--_hand);
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+section .anim-step .anim-num {
+  display: inline-block;
+  min-width: 32px;
+  margin-right: 8px;
+  padding: 0 7px;
+  text-align: center;
+  color: #fff;
+  background: var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+
+section .anim-dots { display: flex; gap: 0; flex: none; }
+section .anim-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+section .anim-dot::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: 1.8px solid var(--_ink);
+  border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+  background: transparent;
+}
+section .anim-dot[aria-current="true"]::before {
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+section .anim-btn {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 5px 11px;
+  color: var(--_ink);
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 14px 6px 14px 6px / 6px 14px 6px 14px;
+  box-shadow: 2px 2px 0 -0.5px rgba(34, 33, 43, 0.35);
+  cursor: pointer;
+  flex: none;
+}
+section .anim-btn:hover { background: var(--_accent-soft); }
+section .anim-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+
+section .anim-grid-2 {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+section .anim-panel {
+  --tilt: 0deg;
+  position: relative;
+  margin: 0 0 10px;
+  padding: 9px 11px 10px;
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  box-shadow: 2px 3px 0 -1px var(--_shade);
+  transform: rotate(var(--tilt));
+}
+section .anim-panel:last-child { margin-bottom: 0; }
+
+/* .anim-stack tilts its panels alternately, like a real pile. */
+section .anim-stack > .anim-panel:nth-child(even) { --tilt: -0.3deg; }
+section .anim-stack > .anim-panel:nth-child(odd) { --tilt: 0.25deg; }
+/* An unpadded window frame with its own chrome; a dark terminal; an empty slot
+   waiting to be filled. The modifiers compose with .anim-panel. */
+section .anim-panel--frame {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-width: 2px;
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  box-shadow: 3px 4px 0 -1px rgba(34, 33, 43, 0.25);
+}
+section .anim-panel--term { background: #221f30; color: #ece9f5; }
+section .anim-panel--dashed {
+  background: #fbf8ff;
+  border: 2.2px dashed var(--_ink);
+  border-radius: 12px 6px 14px 7px / 7px 14px 6px 12px;
+  box-shadow: none;
+}
+section .anim-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: #86c5ff;
+  animation: anim-blink 1s step-end infinite;
+}
+@keyframes anim-blink { 50% { opacity: 0; } }
+
+section .anim-caption {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--_ink-soft);
+  margin-top: 5px;
+}
+section .anim-quote {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.4;
+  padding-left: 10px;
+  border-left: 3px solid var(--_accent);
+}
+/* A row of the drawing's own numbers. The gap is load-bearing: without it the
+   label and its value run together into one word. */
+section .anim-readout {
+  font-family: var(--_mono);
+  font-size: 20px;
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+section .anim-readout b { font-weight: 700; }
+section .anim-readout--tight { gap: 13px; font-size: 18px; }
+section .anim-tally {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--_hand);
+  font-size: 23px;
+  line-height: 1.5;
+  color: var(--_ink);
+}
+section .anim-tally b { font-weight: 700; }
+section .anim-big {
+  font-family: var(--_hand);
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--_ink);
+}
+/* The per-scene prose, and the stage's own account of itself for a reader who
+   cannot see the drawing. Two lines are reserved so the box never jumps. */
+section .anim-note {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--_ink);
+  margin-top: 10px;
+  padding-left: 9px;
+  border-left: 3px solid var(--_accent);
+  /* Three lines, always. The longest note either deck mounts is 286 characters,
+     which wraps to three at this size across a full-width stage; reserving them
+     stops the drawing above jumping as the scenes change. */
+  min-height: calc(3 * 1.3em);
+}
+
+/* SVG ink — identical to the note's, so a scene's own geometry needs no edit.
+   The cap is a variable: set --anim-svg-max on the stage (or on the wrapper
+   holding one wide drawing) rather than re-declaring .anim-svg. */
+section .anim-svg {
+  display: block;
+  width: 100%;
+  max-width: var(--anim-svg-max, 420px);
+  height: auto;
+  margin: 0 auto;
+}
+section .anim-edge {
+  stroke: var(--_ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+}
+section .anim-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.8; }
+section .anim-node-off { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.8; }
+section .anim-accent-stroke { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-accent-fill { fill: var(--_accent); }
+section .anim-amber-stroke { stroke: var(--_amber); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-amber-fill { fill: var(--_amber); }
+section .anim-axis { stroke: var(--_ink); stroke-width: 1.4; }
+section .anim-marker { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+section .anim-marker--accent { stroke: var(--_accent); }
+section .anim-marker--faint { stroke: var(--_ink-faint); }
+section .anim-label { font-family: var(--_hand); font-size: 11px; fill: var(--_ink); }
+section .anim-faint { stroke: var(--_ink-faint); fill: var(--_ink-faint); }
+section .anim-knockout {
+  paint-order: stroke fill;
+  stroke: var(--_paper);
+  stroke-width: var(--anim-knockout-w, 3px);
+  stroke-linejoin: round;
+}
+section .anim-shade { fill: var(--_accent); fill-opacity: 0.16; stroke: none; }
+section .anim-trail {
+  stroke: var(--_amber);
+  stroke-width: 4.5;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+section .anim-token { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* motion primitives — plain add-on classes, so ink and motion stay separable */
+section .anim-draw {
+  stroke-dasharray: var(--dash, 240);
+  stroke-dashoffset: var(--dash, 240);
+  animation: anim-draw 0.4s ease forwards;
+}
+@keyframes anim-draw { to { stroke-dashoffset: 0; } }
+section .anim-fade { opacity: 0; animation: anim-fade 0.3s ease forwards; }
+@keyframes anim-fade { to { opacity: 1; } }
+section .anim-fade-out { animation: anim-fade-out 0.45s ease forwards; }
+@keyframes anim-fade-out { from { opacity: 1; } to { opacity: 0; } }
+section .anim-glide { transition: transform 0.34s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+section .anim-pop { animation: anim-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes anim-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+
+/* the knob — see mountKnob() in slides/assets/anim.js */
+section .anim-range { max-width: 420px; margin: 8px auto 4px; }
+section .anim-track {
+  position: relative;
+  height: 10px;
+  margin: 16px 7px 9px;
+  background: var(--_rule);
+  border: 1.8px solid var(--_ink);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+  touch-action: none;
+  cursor: pointer;
+}
+section .anim-knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background: var(--_accent);
+  border: 1.8px solid var(--_ink);
+  border-radius: 58% 42% 50% 50% / 50% 50% 42% 58%;
+  transition: left 0.12s linear;
+  touch-action: none;
+  cursor: grab;
+}
+section .anim-knob-live { transition: none; cursor: grabbing; }
+
+/* ---------- per-stage rules ---------- */
+/* The two bags (m05): the scenes are lecture-note/assets/anim/mod-bags.js, which
+   the lecture note mounts too; these rules mirror the note's own block at slide
+   size. The SVG is drawn in a 230 x 286 viewBox, so a viewBox unit lands at
+   290/230 = 1.26 slide px: a 12-unit label is 15px of type. 290px, not more: at
+   340 the drawing stood 423px tall and the stage ran 94px off the slide. */
+section #mod-bags { --anim-svg-max: 290px; }
+section #mod-bags .anim-grid-2 { grid-template-columns: 290px minmax(0, 1fr); gap: 34px; align-items: start; }
+/* The drawing's own caption (12 nodes, 20 edges, 2m = 40) is said aloud on a
+   slide; in a 290px column it wrapped to three lines. */
+section #mod-bags [data-mb-draw] > .anim-caption { display: none; }
+section #mod-bags .anim-step { font-size: 34px; }
+section #mod-bags .anim-note { font-size: 28px; min-height: 1.3em; }
+section #mod-bags .anim-tally { font-size: 26px; }
+section #mod-bags .anim-caption { font-size: 24px; }
+section #mod-bags .anim-quote { font-size: 28px; }
+section #mod-bags .anim-label { font-size: 12px; }
+section #mod-bags .anim-panel { padding: 10px 16px 12px; }
+
+section #mod-bags .mb-fly {
+  transform-origin: 0 0;
+  transition: transform 0.6s cubic-bezier(0.34, 0.85, 0.4, 1), opacity 0.3s ease;
+}
+section #mod-bags .mb-now { transition: none !important; }
+section #mod-bags .mb-pouch { fill: var(--_white); stroke: var(--_ink); stroke-width: 2; }
+section #mod-bags .mb-seam { fill: none; stroke: var(--_ink-faint); stroke-width: 1.3; }
+section #mod-bags .mb-string { fill: none; stroke: var(--_ink); stroke-width: 1.5; }
+section #mod-bags .mb-ball { stroke: var(--_ink); stroke-width: 1.2; }
+section #mod-bags .mb-c0 { fill: var(--_accent); }
+section #mod-bags .mb-c1 { fill: var(--_amber); }
+section #mod-bags .mb-cut { stroke: var(--_ink-faint); stroke-dasharray: 3 4.5; }
+section #mod-bags .mb-tool { fill: none; stroke: var(--_ink); stroke-width: 1.7; stroke-linecap: round; }
+section #mod-bags .mb-live .anim-node { cursor: pointer; }
+section #mod-bags .mb-ping {
+  fill: none; stroke: var(--_ink); stroke-width: 2.2;
+  transform-origin: 0 0;
+  animation: mb-ping 0.6s ease-out forwards;
+}
+@keyframes mb-ping {
+  from { transform: translate(var(--px), var(--py)) scale(0.7); opacity: 0.9; }
+  to { transform: translate(var(--px), var(--py)) scale(2.1); opacity: 0; }
+}
+
+/* the two bars and the gap between them */
+section #mod-bags .mb-row,
+section #mod-bags .mb-sub {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 100px;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--_hand);
+}
+section #mod-bags .mb-row { font-size: 26px; line-height: 1.3; }
+section #mod-bags .mb-sub { font-size: 21px; line-height: 1.25; color: var(--_ink-soft); margin: 0 0 4px; }
+section #mod-bags .mb-sub em { font-style: normal; }
+section #mod-bags .mb-track {
+  position: relative; height: 22px; overflow: hidden;
+  background: var(--_white); border: 2px solid var(--_ink);
+  border-radius: 9px 4px 9px 4px / 4px 9px 4px 9px;
+}
+section #mod-bags .mb-track i {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  transition: width 0.5s cubic-bezier(0.4, 0.05, 0.3, 1);
+}
+section #mod-bags .mb-obs { background: var(--_accent); }
+section #mod-bags .mb-luck { background: var(--_amber); }
+section #mod-bags .mb-val { font-family: var(--_mono); font-size: 24px; text-align: right; }
+section #mod-bags .mb-gap { position: relative; height: 24px; }
+section #mod-bags .mb-hatch {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 0; opacity: 0;
+  border-left: 2px dashed var(--_ink); border-right: 2px dashed var(--_ink);
+  background-image: repeating-linear-gradient(-45deg, var(--_ink-faint) 0 2px, transparent 2px 7px);
+  transition: left 0.5s ease, width 0.5s ease, opacity 0.35s ease;
+}
+
+/* the tally board */
+section #mod-bags .mb-tal { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 2px 0 6px; }
+section #mod-bags .mb-tal-col {
+  padding: 4px 10px 6px;
+  border: 2px dashed var(--_ink-faint);
+  border-radius: 12px 5px 12px 5px / 5px 12px 5px 12px;
+}
+section #mod-bags .mb-tal-h { font-family: var(--_hand); font-size: 24px; color: var(--_ink-soft); }
+section #mod-bags .mb-tal-m { min-height: 1.4em; font-size: 22px; line-height: 1.2; letter-spacing: 0.05em; word-break: break-all; }
+section #mod-bags .mb-tal-m i { font-style: normal; }
+section #mod-bags .mb-tal-m i.mb-x { color: var(--_ink-faint); }
+section #mod-bags .mb-tal-n { font-family: var(--_hand); font-size: 28px; font-weight: 700; line-height: 1.1; }
+section #mod-bags .mb-act { margin-top: 8px; }

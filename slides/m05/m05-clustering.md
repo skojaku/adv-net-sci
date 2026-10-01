@@ -975,6 +975,40 @@ The game from the lecture note. Pull a string from the bag: matching colors mean
 
 ---
 
+
+## Let's watch it: the two bags
+
+<hr>
+
+<figure class="anim-stage" id="mod-bags">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-mb-draw></div>
+    <div data-anim-clear data-mb-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<!-- Deck-wide, and it must run before the first anim.js: the stage steps by
+     hand, so nothing advances while the room is talking. -->
+<script>window.animStepOnly = true;</script>
+<script src="../../lecture-note/assets/anim/mod-bags.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+The stage from the lecture note, on a 12-node network: strings into the first bag; all twenty drawn, 18 match (0.900); strings cut, each node drops k balls (40); pairs drawn from the second bag (exact chance 0.500); Q is the gap, 0.400; then click nodes to recolor. Painting everything one color gives 1.000 minus 1.000, so Q = 0. One node at a time, watching Q, is Louvain's first step by hand.
+-->
+
+---
+
 <!-- _class: mid -->
 
 ## Pull one string. Do its balls match?
@@ -1154,22 +1188,6 @@ $$Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(
 
 <!--
 Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j's k_j ends with probability k_j / 2m. The sum runs over ordered pairs, so every edge is counted twice; dividing by 2m turns the count into a fraction of the m edges. Q is at most 1; around 0.3 to 0.7 for real networks with clear groups.
--->
-
----
-
-<!-- _class: mid -->
-
-## Let's watch it: the two bags
-
-<hr>
-
-Twelve nodes and twenty strings. We fill both bags, count the matches, and take the gap. Then we recolor nodes and watch Q move.
-
-[Open the animation](https://skojaku.github.io/adv-net-sci/m05-clustering/01-concepts.html#mod-bags)
-
-<!--
-The stage from the lecture note, six steps: the strings go into the first bag; all twenty are drawn and 18 match (0.900); the strings are cut and each node drops k balls (40 balls); pairs are drawn from the second bag (exact chance 0.500); Q is the gap, 0.400; then click nodes to recolor them. Painting everything one color gives 1.000 minus 1.000, so Q = 0. Clicking one node and watching Q is Louvain's first step, by hand.
 -->
 
 ---
