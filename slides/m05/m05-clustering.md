@@ -975,11 +975,110 @@ The game from the lecture note. Pull a string from the bag: matching colors mean
 
 ---
 
+<!-- _class: mid -->
+
+## Pull one string. Do its balls match?
+
+<hr>
+
+What is the chance that the two balls on a random string have the same color?
+
+<!--
+Let them count on the picture before moving on.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Same color on one string: 6 of 8
+
+<hr>
+
+$A_{ij} = 1$ if a string joins $i$ and $j$. $\delta(c_i, c_j) = 1$ if $i$ and $j$ have the same color.
+
+<div class="formula">
+
+$$P_{\text{string}} = \frac{\text{matching strings}}{m} = \frac{1}{2m}\sum_{i,j} A_{ij}\,\delta(c_i, c_j)$$
+
+</div>
+
+The sum visits every string twice, once from each end, so we divide by $2m$. Our bag: $6/8 = 0.75$.
+
+<!--
+m is the number of strings, which is the number of edges.
+-->
+
+---
+
+## Cut every string and mix the balls
+
+<hr>
+
+<div class="cols">
+<div>
+
+We draw two balls at random.
+
+What is the chance they have the same color?
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag-cut.png)
+<figcaption>the same 16 balls, no strings</figcaption>
+
+</div>
+</div>
+
+<!--
+We draw one ball, put it back, and draw again (with replacement), as in the lecture note.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Same color by chance: 8/16 squared, twice
+
+<hr>
+
+The chance of drawing color $c$ is the share of balls with color $c$. We draw two balls, so we square it, then add over the colors.
+
+<div class="formula">
+
+$$P_{\text{chance}} = \sum_{c} \left(\frac{\text{balls of color } c}{2m}\right)^2$$
+
+</div>
+
+Our bag: $(8/16)^2 + (8/16)^2 = 0.5$.
+
+---
+
+## One ball per edge end
+
+<hr>
+
+Node $i$ is at the end of $k_i$ strings, so $k_i$ of the $2m$ balls carry its color.
+
+<div class="fig">
+
+![w:1080](figures/bag-2m.png)
+<figcaption>the ringed node has degree 3, so 3 of the 14 balls are its</figcaption>
+
+</div>
+
+<!--
+So the number of balls of color c is the sum of the degrees of the nodes with color c: the sum over i of k_i times delta(c, c_i).
+-->
+
+---
+
 ## Chance: the configuration model
 
 <hr>
 
-Our **null model**, the **configuration model**, keeps every node's degree and pairs up edge ends at random.
+Cutting the strings and pairing the ends at random keeps every node's degree. This **null model** is the **configuration model**.
 
 <div class="fig tight">
 
@@ -991,6 +1090,50 @@ Our **null model**, the **configuration model**, keeps every node's degree and p
 <!--
 Exact expectation: sum over groups of vol^2 / 4m = (16^2 + 14^2) / 60 = 7.53.
 -->
+
+---
+
+<!-- _class: mid -->
+
+## Modularity is the gap
+
+<hr>
+
+Same color on a string, minus same color by chance.
+
+Our bag: $Q = 0.75 - 0.5 = 0.25$.
+
+<div class="formula">
+
+$$Q = \frac{1}{2m}\sum_{i,j} A_{ij}\,\delta(c_i, c_j) \;-\; \sum_{c} \left(\frac{1}{2m}\sum_{i} k_i\,\delta(c, c_i)\right)^2$$
+
+</div>
+
+<!--
+The second term counts balls of color c as the sum of degrees of the nodes with that color, from the last slide.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Expand the square
+
+<hr>
+
+We write the square as a sum over pairs $i, j$.
+
+<div class="formula">
+
+$$\begin{aligned}
+\sum_{c} \left(\frac{1}{2m}\sum_{i} k_i\,\delta(c, c_i)\right)^2
+&= \frac{1}{(2m)^2}\sum_{i,j} k_i k_j \sum_{c} \delta(c, c_i)\,\delta(c, c_j) \\
+&= \frac{1}{2m}\sum_{i,j} \frac{k_i k_j}{2m}\,\delta(c_i, c_j)
+\end{aligned}$$
+
+</div>
+
+$\sum_c \delta(c, c_i)\,\delta(c, c_j) = \delta(c_i, c_j)$: it is 1 only when $i$ and $j$ have the same color.
 
 ---
 
@@ -1007,7 +1150,7 @@ $$Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(
 * $A_{ij}$: 1 if $i$ and $j$ are connected, else 0
 * $k_i k_j / 2m$: the expected number of edges between $i$ and $j$ by chance, where $k_i$ is the degree of $i$
 * $\delta(c_i, c_j)$: 1 if the groups $c_i$ and $c_j$ are the same
-* Our example, with $m = 15$ edges: $Q = (13 - 7.53)/15 = 0.36$
+* The 9-node network, with $m = 15$ edges: $Q = (13 - 7.53)/15 = 0.36$
 
 <!--
 Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j's k_j ends with probability k_j / 2m. The sum runs over ordered pairs, so every edge is counted twice; dividing by 2m turns the count into a fraction of the m edges. Q is at most 1; around 0.3 to 0.7 for real networks with clear groups.
