@@ -1158,6 +1158,22 @@ Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j'
 
 ---
 
+<!-- _class: mid -->
+
+## Let's watch it: the two bags
+
+<hr>
+
+Twelve nodes and twenty strings. We fill both bags, count the matches, and take the gap. Then we recolor nodes and watch Q move.
+
+[Open the animation](https://skojaku.github.io/adv-net-sci/m05-clustering/01-concepts.html#mod-bags)
+
+<!--
+The stage from the lecture note, six steps: the strings go into the first bag; all twenty are drawn and 18 match (0.900); the strings are cut and each node drops k balls (40 balls); pairs are drawn from the second bag (exact chance 0.500); Q is the gap, 0.400; then click nodes to recolor them. Painting everything one color gives 1.000 minus 1.000, so Q = 0. Clicking one node and watching Q is Louvain's first step, by hand.
+-->
+
+---
+
 ## Louvain: maximize Q, then coarse-grain
 
 <hr>

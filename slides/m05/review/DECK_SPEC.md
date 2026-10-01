@@ -34,6 +34,7 @@ no rhetoric. No em-dash anywhere.
 | "Game: find a cut that minimizes ___" | 44, 56 | the lecturer's own 2024 game, restored at `assets/vis/community-detection/index.html`; the August 2026 rewrite is now `partition-game.html` and the lecture note links there. The cut game sits before the club's cut slides, and its karate target (`net_karate.json`) is now the one-member cut of 1, which slide 45 shows; it used to be 0, everyone in one group |
 | "Modularity limitation" (crossed out) | none | dropped |
 | "I need a slide to explain modularity" | 51-60 | lecturer, 2026-10-01: derive it from the balls. Pull a string, same color? (6/8). Cut and mix, same color? ((8/16)^2 x 2). One ball per edge end, so k_i balls. The configuration model. Q is the gap (0.25). Expand the square into the usual form |
+| "animation" (lecturer, 2026-10-01) | 61 | the lecture note's two-bags stage (`#mod-bags`), linked on its own slide after the formula. It lives inline in `01-concepts.qmd`; embedding it in the deck means moving it to `assets/anim/mod-bags.js`, porting the stage CSS into this theme, and one-line scene notes for the slide |
 | "Turn it around" (crossed out) | 61-68 | the lecturer asked for the SBM back: Part Four, reusing the SBM figures in `figs_chance.py` |
 | "Resolution limit: ring of cliques, n ~ √2m" | 57, 58 | ring of triangles: question, then 4 vs 10 triangles |
 | "Karate: similar Q, different partition" | 59, 60 | two local maxima of Q, one per slide |
