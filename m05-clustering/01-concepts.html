@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2026-09-28">
+<meta name="dcterms.date" content="2026-10-01">
 
 <title>Birds of a Feather — and the Flocks That Were Never There – Advanced Topics in Network Science</title>
 <style>
@@ -766,7 +766,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 28, 2026</p>
+      <p class="date">October 1, 2026</p>
     </div>
   </div>
   
@@ -1481,7 +1481,7 @@ Figure&nbsp;4: Staying inside the group, <span class="math inline">b</span> reac
 </div>
 <div class="callout-body-container callout-body">
 <p>The description of this problem is not complete. Can you say what is missing? Without it, the best cut is trivial.</p>
-<p><a href="../assets/vis/community-detection/index.html?scoreType=graphcut&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Graph cut, hands on</a> — ten nodes in two colours; click a node to move it to the other side, and the panel counts the edges you have cut. Get the count as low as you can.</p>
+<p><a href="../assets/vis/community-detection/partition-game.html?scoreType=graphcut&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Graph cut, hands on</a> — ten nodes in two colours; click a node to move it to the other side, and the panel counts the edges you have cut. Get the count as low as you can.</p>
 </div>
 </div>
 <div class="callout callout-style-simple callout-note callout-titled" title="Click to reveal the answer">
@@ -2384,9 +2384,9 @@ Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \ri
 <p>The last step is the one thing a formula can only assert. Paint every node the same colour and <em>every</em> string matches, so the observed bar goes to <span class="math inline">1.000</span> — and the luck bar goes to <span class="math inline">1.000</span> with it, because a bag of forty balls that are all one colour matches itself every time. The difference is <span class="math inline">0</span>. The partition that trivially maximizes agreement is worth exactly nothing, and modularity knows it because of the subtraction, not in spite of it.</p>
 <p>Notice also what moving a single node did: five strings broken, and <span class="math inline">Q</span> fell from <span class="math inline">0.400</span> to <span class="math inline">0.119</span>. Trying one node at a time and keeping the move that raises <span class="math inline">Q</span> the most <em>is</em> Louvain’s local-moving phase from the previous section. Clicking around until <span class="math inline">Q</span> stops rising is running that phase by hand.</p>
 <p>Now take the same move to larger networks. Three rounds, each with a point:</p>
-<p><strong>Round 1 — two cliques, two colors.</strong> Click nodes to repaint them, and keep going until <span class="math inline">Q</span> stops rising. You should land on the obvious answer. <a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, two colors</a></p>
-<p><strong>Round 2 — the same network, four colors.</strong> Unlike ratio and normalized cut, modularity’s objective does not take the number of communities as an input: hand it four colors and the highest-scoring partition is free to leave two of them unused. Check whether it does. <a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, four colors</a></p>
-<p><strong>Round 3 — a real network.</strong> The Zachary karate club: friendships among 34 members of a university karate club that split into two factions after a dispute. It is the fruit fly of network science. <a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=0.25&amp;dataFile=net_karate.json">Karate club, four colors</a></p>
+<p><strong>Round 1 — two cliques, two colors.</strong> Click nodes to repaint them, and keep going until <span class="math inline">Q</span> stops rising. You should land on the obvious answer. <a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, two colors</a></p>
+<p><strong>Round 2 — the same network, four colors.</strong> Unlike ratio and normalized cut, modularity’s objective does not take the number of communities as an input: hand it four colors and the highest-scoring partition is free to leave two of them unused. Check whether it does. <a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, four colors</a></p>
+<p><strong>Round 3 — a real network.</strong> The Zachary karate club: friendships among 34 members of a university karate club that split into two factions after a dispute. It is the fruit fly of network science. <a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=0.25&amp;dataFile=net_karate.json">Karate club, four colors</a></p>
 </section>
 </section>
 <section id="two-ways-modularity-lies-to-you" class="level2">
@@ -2788,7 +2788,7 @@ Q_{\text{pairs}} - Q_{\text{apart}} = \left(\frac{7}{8} - \frac{3}{4}\right) - \
 </section>
 <section id="it-finds-communities-in-pure-noise" class="level3">
 <h3 class="anchored" data-anchor-id="it-finds-communities-in-pure-noise">It finds communities in pure noise</h3>
-<p>What if the network has no communities at all? Take a random network — every pair of nodes connected with the same probability, no structure of any kind — and maximize modularity on it. <a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.8&amp;dataFile=random-net.json">Random network, three colors</a></p>
+<p>What if the network has no communities at all? Take a random network — every pair of nodes connected with the same probability, no structure of any kind — and maximize modularity on it. <a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.8&amp;dataFile=random-net.json">Random network, three colors</a></p>
 <div class="callout callout-style-simple callout-note callout-titled" title="Click here to see the solution">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sadamori Kojaku">
-<meta name="dcterms.date" content="2026-09-28">
+<meta name="dcterms.date" content="2026-10-01">
 
 <title>Exercises and Assignments – Advanced Topics in Network Science</title>
 <style>
@@ -712,7 +712,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 28, 2026</p>
+      <p class="date">October 1, 2026</p>
     </div>
   </div>
   
@@ -736,11 +736,11 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="be-the-algorithm">Be the Algorithm</h2>
 <p>The same tool as the concepts page, on all four networks. In each one you click a node to repaint it, the score updates on the spot, and the dashed line is the best score known for that network with that many colours.</p>
 <ul>
-<li><a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, modularity</a> — the warm-up. Reach the dashed line.</li>
-<li><a href="../assets/vis/community-detection/index.html?scoreType=graphcut&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, graph cut</a> — now you are <em>minimizing</em> the number of edges cut. Beat the dashed line, and then look at what you built.</li>
-<li><a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=0.25&amp;dataFile=net_karate.json">Karate club</a> — a real network, four colours.</li>
-<li><a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.9&amp;dataFile=two-cliques-big-clique.json">Two cliques plus a big one — the resolution limit</a> — three colours for what are obviously three groups. Try the obvious answer first, then find the one that scores higher.</li>
-<li><a href="../assets/vis/community-detection/index.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.8&amp;dataFile=random-net.json">A random network with no communities at all</a></li>
+<li><a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, modularity</a> — the warm-up. Reach the dashed line.</li>
+<li><a href="../assets/vis/community-detection/partition-game.html?scoreType=graphcut&amp;numCommunities=2&amp;randomness=1&amp;dataFile=two-cliques.json">Two cliques, graph cut</a> — now you are <em>minimizing</em> the number of edges cut. Beat the dashed line, and then look at what you built.</li>
+<li><a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=4&amp;randomness=0.25&amp;dataFile=net_karate.json">Karate club</a> — a real network, four colours.</li>
+<li><a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.9&amp;dataFile=two-cliques-big-clique.json">Two cliques plus a big one — the resolution limit</a> — three colours for what are obviously three groups. Try the obvious answer first, then find the one that scores higher.</li>
+<li><a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.8&amp;dataFile=random-net.json">A random network with no communities at all</a></li>
 </ul>
 <p>Two things to take from the list. On the resolution-limit network, the partition that maximizes <span class="math inline">Q</span> is <em>not</em> the one your eye picks: it merges the two small cliques, and the dashed line is set where the merge is. On the random network, the best <span class="math inline">Q</span> you can reach is higher than the best <span class="math inline">Q</span> on the two honest cliques. If a random network outscores a real one, what does a modularity score on its own actually tell you?</p>
 </section>
