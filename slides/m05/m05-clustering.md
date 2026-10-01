@@ -947,6 +947,32 @@ The stars on the last slide have density 0.33 or less. Any fixed density thresho
 
 ---
 
+## Every edge is a string with two balls
+
+<hr>
+
+<div class="cols">
+<div>
+
+A ball's color is the group of the node at that end.
+
+Let's put all the strings in a bag. A string with two matching balls is an edge inside a group.
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag.png)
+<figcaption>6 of the 8 strings have matching balls</figcaption>
+
+</div>
+</div>
+
+<!--
+The game from the lecture note. Pull a string from the bag: matching colors means an edge inside a group. Next we ask how many matches chance alone would give: cut every string, mix the balls, and draw two at random.
+-->
+
+---
+
 ## Chance: the configuration model
 
 <hr>
