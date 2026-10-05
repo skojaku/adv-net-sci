@@ -4,9 +4,9 @@ import {Frame} from '../components/Frame';
 import {Fade} from '../components/Fade';
 import {Box} from '../components/Text';
 import {Tex} from '../components/Tex';
-import {C, F} from '../theme';
+import {C} from '../theme';
 import {prog, stageStart} from '../lib/anim';
-import {lerp} from '../lib/plot';
+import {FormulaStack} from '../components/FormulaStack';
 
 /**
  * The likelihood of a network, built up one formula at a time (the lecturer explains each one).
@@ -52,14 +52,7 @@ const DEFS = [
 export const S29: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const item = (k: number) => prog(frame, stageStart(marks, k) + (k === 0 ? 6 : 4), stageStart(marks, k) + (k === 0 ? 24 : 22));
   const def = (from: number) => prog(frame, stageStart(marks, from) + (from === 0 ? 14 : 4), stageStart(marks, from) + (from === 0 ? 32 : 22));
-  // a step is large from the moment its first line appears until the first line of the next step appears
-  const first = (g: number) => ROWS.findIndex((r) => r.group === g);
-  const big = (g: number) => {
-    const next = first(g + 1);
-    return next < 0 ? 1 : 1 - prog(frame, stageStart(marks, next) + 4, stageStart(marks, next) + 22);
-  };
 
   return (
     <Frame n={29}>
@@ -72,14 +65,8 @@ export const S29: React.FC = () => {
           </Box>
         </Fade>
       ))}
-      {/* the formulas, each added under the last; the lines below move as the ones above change size */}
-      <div style={{position: 'absolute', left: FX, top: TOP0, width: 1180, fontFamily: F.serif, color: C.ink, lineHeight: 1.3}}>
-        {ROWS.map((r, k) => (
-          <div key={k} style={{opacity: item(k), marginBottom: GAP, fontSize: lerp(OLD, NEW, big(r.group)), transform: `translateY(${(1 - item(k)) * 14}px)`}}>
-            <Tex tex={r.tex} />
-          </div>
-        ))}
-      </div>
+      {/* the formulas, each added under the last */}
+      <FormulaStack rows={ROWS} marks={marks} x={FX} y={TOP0} w={1180} big={NEW} small={OLD} gap={GAP} />
     </Frame>
   );
 };

@@ -8,7 +8,7 @@ import {renderStill, selectComposition} from '@remotion/renderer';
 const [id, list, outDir] = process.argv.slice(2);
 const root = path.resolve(import.meta.dirname, '..');
 fs.mkdirSync(outDir, {recursive: true});
-const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts')});
+const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts'), publicDir: path.join(root, 'public')});
 const composition = await selectComposition({serveUrl, id});
 for (const f of list.split(',').map(Number)) {
   await renderStill({composition, serveUrl, frame: f, output: path.join(outDir, `${id}-f${String(f).padStart(3, '0')}.png`), scale: 0.5});

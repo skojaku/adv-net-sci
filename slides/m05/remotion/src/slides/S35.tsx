@@ -2,58 +2,97 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Cap} from '../components/Text';
+import {Box} from '../components/Text';
+import {Tex} from '../components/Tex';
+import {FormulaStack} from '../components/FormulaStack';
 import {C} from '../theme';
 import {LOOK} from '../lib/look';
 import {fromStage, prog} from '../lib/anim';
-import {KARATE_EDGES, KARATE_POS, KARATE_REAL} from '../data/data';
-import {Network, toCanvas} from '../lib/network';
 
 /**
- * The punchline. Fitted to the karate club, graph-tool's Bayesian SBM (degree-corrected, the shortest description)
- * returns ONE group (Peixoto 2019; the graph-tool mailing list, "Inference for the karate network"): the two groups we
- * have looked at all along are no stronger than what a random network with the same degrees gives.
- * 0: the club in its real split, the groups so far.
- * 1: the same club in graph-tool's answer: one group.
- * 2: the punchline.
+ * The degree-corrected SBM (Karrer and Newman 2011): every node gets a number theta_i.
+ * 0: the SBM: the groups alone decide the probability of an edge.
+ * 1: the degree-corrected SBM: the number of edges between i and j is Poisson with mean theta_i theta_j omega_{c_i c_j};
+ *    theta_i: how many edges node i tends to make.
+ * 2: same group (omega = 1): two nodes with large theta are expected to share more edges than two with small theta:
+ *    2 x 2 x 1 = 4, 2 x 1/2 x 1 = 1, 1/2 x 1/2 x 1 = 1/4. The area of a disc is theta.
  */
-export const marks = [50, 108, 164];
+export const marks = [56, 112, 172];
 
-const POS_L = toCanvas(KARATE_POS, 135, 285, 750, 540);
-const POS_R = toCanvas(KARATE_POS, 1035, 285, 750, 540);
-const EDGES = KARATE_EDGES as unknown as ReadonlyArray<readonly [number, number]>;
-const REAL = KARATE_REAL.map((g) => LOOK[g]);
-const ONE = KARATE_REAL.map(() => LOOK[0]);
+const sym = (tex: string, text: string) => (
+  <div>
+    <Tex tex={tex} style={{fontSize: 40}} />
+    <span>: {text}</span>
+  </div>
+);
+const ROWS = [
+  {group: 0, label: 'SBM', tex: 'P(A_{ij}=1\\mid c,p)=p_{c_ic_j}'},
+  {
+    group: 1,
+    label: 'degree-corrected SBM',
+    tex: 'A_{ij}\\sim\\mathrm{Poisson}\\big(\\theta_i\\,\\theta_j\\,\\omega_{c_ic_j}\\big)',
+    note: (
+      <>
+        {sym('A_{ij}', 'the number of edges between i and j')}
+        {sym('\\theta_i', 'how many edges node i tends to make')}
+        {sym('\\omega_{rs}', 'how many edges groups r and s tend to share')}
+      </>
+    ),
+  },
+] as const;
+
+// three pairs of nodes of one group: the area of a disc is theta
+const PAIRS = [
+  {x: 480, a: 2, b: 2, tex: '2\\times 2\\times 1=4'},
+  {x: 960, a: 2, b: 0.5, tex: '2\\times \\tfrac12\\times 1=1'},
+  {x: 1440, a: 0.5, b: 0.5, tex: '\\tfrac12\\times \\tfrac12\\times 1=\\tfrac14'},
+] as const;
+const D1 = 64; // diameter of a disc with theta = 1
+const PY = 770;
 
 export const S35: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const left = (i: number) => prog(frame, 0.4 * i, 0.4 * i + 12);
-  const right = (i: number) => prog(frame, marks[0] + 2 + 0.4 * i, marks[0] + 2 + 0.4 * i + 12);
-  const edgeL = (i: number) => prog(frame, 6 + 0.28 * i, 6 + 0.28 * i + 10);
-  const edgeR = (i: number) => prog(frame, marks[0] + 8 + 0.28 * i, marks[0] + 8 + 0.28 * i + 10);
-  const capL = prog(frame, 18, 36);
-  const capR = prog(frame, marks[0] + 18, marks[0] + 36);
-  const punch = fromStage(frame, marks, 2, 16);
+  const pairs = fromStage(frame, marks, 2, 16);
+  const nums = prog(frame, marks[1] + 24, marks[1] + 42);
 
   return (
     <Frame n={35}>
+      <FormulaStack rows={ROWS} marks={marks} x={120} y={200} w={1680} big={52} small={42} gap={26} labelW={330} />
+
+      {/* stage 2 */}
       <Canvas>
-        <Network pos={POS_L} edges={EDGES} look={REAL} nodeD={40} edgeW={2.5} nodeOp={left} edgeOp={edgeL} />
-        <Network pos={POS_R} edges={EDGES} look={ONE} nodeD={40} edgeW={2.5} nodeOp={right} edgeOp={edgeR} />
-        <line x1={960} y1={285} x2={960} y2={830} stroke={C.rule} strokeWidth={3} opacity={prog(frame, marks[0], marks[0] + 12)} />
+        <g opacity={pairs}>
+          {PAIRS.map((p, k) => {
+            const da = D1 * Math.sqrt(p.a);
+            const db = D1 * Math.sqrt(p.b);
+            const gap = 26;
+            const total = da + gap + db;
+            const xa = p.x - total / 2 + da / 2;
+            const xb = p.x + total / 2 - db / 2;
+            return (
+              <g key={k}>
+                <circle cx={xa} cy={PY} r={da / 2} fill={LOOK[0].fill} stroke="#fff" strokeWidth={3} />
+                <circle cx={xb} cy={PY} r={db / 2} fill={LOOK[0].fill} stroke="#fff" strokeWidth={3} />
+              </g>
+            );
+          })}
+        </g>
       </Canvas>
-      <Fade o={capL} dy={14}>
-        <Cap x={510} y={212} w={800}>the groups so far</Cap>
-      </Fade>
-      <Fade o={capR} dy={14}>
-        <Cap x={1410} y={212} w={800}>graph-tool: 1 group</Cap>
-      </Fade>
-      <Fade o={punch} dy={14}>
-        <Box x={960} y={860} w={1680} align="center" size={50}>
-          The two groups are no stronger than in a random network.
+      <Fade o={pairs} dy={12}>
+        <Box x={960} y={665} w={1500} align="center" size={36} color={C.soft}>
+          nodes of one group, <Tex tex="\omega=1" />; the area of a disc is <Tex tex="\theta" />
         </Box>
-        <Cap x={960} y={940} w={1680}>degree-corrected SBM, the shortest description</Cap>
+      </Fade>
+      <Fade o={nums} dy={12}>
+        {PAIRS.map((p, k) => (
+          <Box key={k} x={p.x} y={845} w={460} align="center" size={46}>
+            <Tex tex={p.tex} />
+          </Box>
+        ))}
+        <Box x={960} y={918} w={1500} align="center" size={36} color={C.soft}>
+          expected edges between the two nodes
+        </Box>
       </Fade>
     </Frame>
   );

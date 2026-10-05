@@ -20,7 +20,7 @@ const slides = [...index.matchAll(/\{n: (\d+), id: '([^']+)'/g)].map((m) => {
   return {n, id: m[2], marks, title: (file.match(/title="([^"]+)"/) || file.match(/title: ?'([^']+)'/) || [])[1] ?? m[2].replace(/-/g, ' ')};
 });
 
-const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts')});
+const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts'), publicDir: path.join(root, 'public')});
 const cards = [];
 for (const s of slides) {
   const id = `S${String(s.n).padStart(2, '0')}-${s.id}`;

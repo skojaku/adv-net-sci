@@ -2,7 +2,7 @@
 
 2026-10-05。設計表。
 
-**改訂 (同日、講師の指摘のあと)**: 35 枚 (最初の案は 23 枚)。
+**改訂 (同日、講師の指摘のあと)**: 41 枚 (最初の案は 23 枚)。
 
 - Rand 指数は、ノードの組を **行列のセル** で見せる (S09, S10)。ノード 2 つを線で結ぶ絵は、ネットワークの辺に見えるので使わない。
   2 つの分け方を並べ、見つけた分け方の段を 90 度回して行列の左辺にする (S09)。Rand 指数は「両方で一緒」と「両方で別々」の
@@ -13,13 +13,16 @@
 - **群の色は、青、オレンジ、茶色、紫、濃い灰色。赤は文字だけ。** ストライプ (茶色) は、帯と円の重なりにだけ使う。
 - 乱数 u は見せない (S23)。確率は 10 枚のくじで説明する。
 - 最後に、SBM の推定を数式で積み上げる (S29 から S31。p_rs は与えず、一般の形の尤度から対数尤度、最大化、c を固定して p を求め、c だけの式に戻す)、
-  尤度が K とともに増えること (S32)、Peixoto のベイズ流 SBM (S33)、graph-tool (S34)、オチの空手クラブ (S35) を足した。
+  尤度が K とともに増えること (S32)、次数補正つき SBM (S33 から S38)、Peixoto のベイズ流 SBM (S39)、graph-tool (S40)、オチの空手クラブ (S41) を足した。
+- **次数補正つき SBM (Karrer and Newman, Phys. Rev. E 83, 016107, 2011; arXiv:1008.3926)** は、ベイズ流 SBM の前に置く。政治ブログの図 (論文の Fig. 2、
+  講師が取り込んだ画像を `public/` に 2 枚に切って置いた) で動機づけ (S33)、次数と群は別の量だという説明 (S34)、モデル (S35)、
+  c を固定して θ と ω を決める (S36)、戻して c だけの式にして最大化 (S37)、最後にもう一度ブログ (S38)。式の記号と因子は論文の本文で確かめた (下の「検算した数字」)。
 - 字幕は 1 段階に短いもの 1 つまで。数える単位 (ノードの組か、ノード 1 つか) を明示する。
 - **見出しは付けない** (扉の S01, S08, S22 を除く)。内容に必要な語は本文に入れた (S06 `no groups`、S18 `mutual information`、
-  S19 `normalized mutual information`、S33 `Bayesian SBM`、S34 `graph-tool`)。見出しがない分、内容を上へ寄せて拡大し (既定は 1.08 倍)、
+  S19 `normalized mutual information`、S39 `Bayesian SBM`、S40 `graph-tool`)。見出しがない分、内容を上へ寄せて拡大し (既定は 1.08 倍)、
   **下の 160 px (y = 920 から) は後で付ける字幕のために空ける**。`Frame` の `zoom` と `top` で調整し、
   `npm run review` のあと `python3 scripts/check_bottom.py` で、どの段階の静止画も y = 920 より下に絵がないことと、
-  端 40 px に絵がかかっていないことを確かめる (今は全 103 枚で最下部は y = 918)。
+  端 40 px に絵がかかっていないことを確かめる (今は全 120 枚で最下部は y = 918)。
 
 ## 何を作るか
 
@@ -35,7 +38,7 @@ Marp デッキ `../m05-clustering.md` のモジュラリティの導出まで (�
 | A ring of triangles / Q merges neighbors | S02 から S04 |
 | Similar Q, different groups (2枚) | S05 |
 | (なし。デッキを作り直したときに落ちた) | S06 から S07 (ノイズ)、S08 から S21 (Rand、ARI、NMI) |
-| Turn it around から Finding the groups is inference まで (8枚) | S22 から S28。そのあとに S29 から S35 を追加 |
+| Turn it around から Finding the groups is inference まで (8枚) | S22 から S28。そのあとに S29 から S41 を追加 |
 
 スライドの文字は英語にする。Marp デッキと同じで、手順書が前提にしている日本語ではない。
 この文書の説明は日本語、`like this` の引用がスライド上の文字。
@@ -211,12 +214,29 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | S32 `More groups always fit better` | 0 | グループ数 K = 1 から 8 の、最良の log L: -19.1, -6.4, -3.0, -1.4, 0, 0, 0, 0 の折れ線。`log L never decreases as K grows` | 折れ線 |
 | | 1 | `More groups, more parameters, a better fit`。K = 5 から 8 は 0 (完全に当てはまる) | + 破線 |
 | | 2 | K = 8 (全員ひとり) に輪。`A large K overfits: the groups mean nothing`、`K = 8: every node alone, a perfect fit` | 結び |
-| S33 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping` | 2 つの式 |
+| S33 `Political blogs` | 0 | 論文の Fig. 2(a) (普通の SBM、2 群)。`Political blogs, split in two by a plain SBM`、`node size: degree`、問い `What separates the two groups?` (答えは出さない)。出典 `Karrer and Newman (2011)` | 画像 + 問い |
+| | 1 | 青 = `the high-degree blogs`、黄 = `the others`。`The groups follow degree, not politics.` (色は画像の青 #3880E5 と黄 #E6E679) | + 凡例と答え |
+| S34 `Hubs` | 0 | カラテクラブの次数の点の図 (34 点。次数 1 から 17、最大 17)。`karate club` | 点の図 1 つ |
+| | 1 | 右に S06、S07 の無作為ネットワーク (同じ 34 節点 78 辺) の次数 (2 から 8)。`random network, the same numbers of nodes and edges` | 点の図 2 つ |
+| | 2 | `In an SBM, every node of a group has the same expected degree.`、`To fit the hubs, the SBM makes a group of hubs.` | + 2 行 |
+| S35 `Degree-corrected model` | 0 | SBM: `P(A_ij = 1 given c, p) = p_{c_i c_j}` (ラベル `SBM`) | 式 1 |
+| | 1 | `A_ij ~ Poisson(theta_i theta_j omega_{c_i c_j})` (ラベル `degree-corrected SBM`)。新しい式を大きく、古い式を少し小さく。定義: `A_ij` (i と j の間の辺の数)、`theta_i` (節点 i が辺を作りやすい度合い)、`omega_rs` | + 式 2 と定義 |
+| | 2 | 同じ群の 3 組の節点 (円の面積 = θ、ω = 1): `2 x 2 x 1 = 4`、`2 x 1/2 x 1 = 1`、`1/2 x 1/2 x 1 = 1/4`。`expected edges between the two nodes` | + 3 組 |
+| S36 `Fix c (degree-corrected)` | 0 | 8 ノードの網 (白抜き)。`log L(c, theta, omega) = sum_i k_i log theta_i + 1/2 sum_{r,s} (m_rs log omega_rs - omega_rs theta_r theta_s)` (2 行)。定義 `k_i`、`m_rs` (群内の辺は 2 回数える)、`theta_r` (群の θ の和、1 に固定) | 式 + 定義 |
+| | 1 | c を固定: 網が c の色に塗られる。`fix c: (theta-hat, omega-hat) = argmax over theta, omega of log L(c, theta, omega)` | + 式 |
+| | 2 | `theta-hat_i = k_i / kappa_{c_i}`、`omega-hat_rs = m_rs`、`kappa_r` (群の次数の和)。節点の大きさが θ-hat に。`node size: its share of the group's degree` | + 結果 |
+| S37 `Back to c (degree-corrected)` | 0 | 戻すと c だけの式: `log L(c) = 1/2 sum_{r,s} m_rs log (m_rs / (kappa_r kappa_s)) + const`。左に 2 つの表: `seen` 10, 1, 1, 12 と `expected` 5.04, 5.96, 5.96, 7.04 (kappa_r kappa_s / 2m、次数だけから期待される辺)。`more edges inside the groups than expected` | 式 + 表 2 つ |
+| | 1 | `= m I(c) + const`: m 掛ける、辺の両端の群の相互情報量 (= の位置は 1 行目の = の真下) | + 式 |
+| | 2 | `I(c) = sum p(r, s) log [p(r, s) / (p(r) p(s))]`、`p(r, s) = m_rs / 2m`、`p(r) = kappa_r / 2m` (同時確率を周辺確率の積で割る。S15 から S19 と同じ形) | + I の式 |
+| | 3 | `c-hat = argmax over c of log L(c)`。`all that is left: maximize over c` | 結び |
+| S38 `Back to the blogs` | 0 | 論文の Fig. 2(a) と (b) を並べる。`plain SBM`、`degree-corrected SBM` | 画像 2 つ |
+| | 1 | `Degree correction finds the groups despite heterogeneous degrees.`。`NMI with the known labels: 0.0001` と `NMI with the known labels: 0.72` (論文の値。後者を赤) | + NMI |
+| S39 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping` | 2 つの式 |
 | | 1 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2` | 谷のある折れ線 + 輪 |
-| | 2 | `K is inferred: the shortest description`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
-| S34 `graph-tool` | 0 | `A Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
+| | 2 | `K is inferred: Bayesian SBM`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
+| S40 `graph-tool` | 0 | `graph-tool: a Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
 | | 1 | 関数名 `minimize_nested_blockmodel_dl`、`graph-tool.skewed.de` | 結び |
-| S35 `The karate club, once more` | 0 | 左にカラテクラブを実際の分裂 (青とオレンジ) で。`the groups so far` | クラブ 1 つ |
+| S41 `The karate club, once more` | 0 | 左にカラテクラブを実際の分裂 (青とオレンジ) で。`the groups so far` | クラブ 1 つ |
 | | 1 | 右に同じクラブを 1 色で。`graph-tool: 1 group` | クラブ 2 つ |
 | | 2 | オチ: `The two groups are no stronger than in a random network.`、`degree-corrected SBM, the shortest description` | 結び |
 
@@ -256,7 +276,21 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
   対数尤度は真 -6.4、1 人動かす -15.5、縞 -17.5、2 人動かす -18.4、全員 1 群 -19.1。
   `u` は節点 1 と 2 が 0.72、節点 1 と 6 が 0.59。
 
+- **次数補正つき SBM** (`scripts/verify_dcsbm.py`、標準ライブラリだけ): カラテクラブの次数は最大 17、S06 の無作為ネットワークは最大 8
+  (どちらも 34 節点 78 辺で次数の和 156)。8 ノードの網の次数は 2, 3, 2, 4, 3, 3, 4, 3。真の分け方で m_rs = [[10, 1], [1, 12]]
+  (群内の辺は 2 回数える。群内 5 本と 6 本、群間 1 本)、kappa = (11, 13)、2m = 24、次数だけから期待される辺は 5.04, 5.96, 5.96, 7.04。
+  ポアソンの対数尤度を θ-hat_i = k_i / kappa_{c_i}、ω-hat_rs = m_rs で計算した値が、`1/2 sum m_rs log(m_rs / (kappa_r kappa_s)) + sum k_i log k_i - m`
+  と一致し (3 群までの全 6051 通りの分け方で)、また `m I(c) - m log 2m + 定数` とも一致する。
+  **論文の式 (17)、(21)、(23) は、ここで使う対数尤度の 2 倍の形** (式 (16) の対数をとると 1/2 が付く)。式 (23) は「正規化していない対数尤度」で、
+  c で最大化する答えは変わらない。論文の式 (24) が、この目的関数を辺の両端の群の相互情報量 (同時確率 m_rs / 2m と周辺確率 kappa_r / 2m の積) と書いている。
+  8 ノードの網で、次数補正つきの対数尤度が最大になる 2 群への分け方は真の分け方。I(真の分け方) = 0.4032 nats (スライドには出さない)。
+  政治ブログの NMI 0.72 (次数補正) と 0.0001 (補正なし) は論文の本文の値 (最大連結成分 1222 節点、Adamic and Glance のラベルとの NMI)。
+
 ## 話すときの注 (スライドには出さない)
+
+- S33 から S38: 論文はカラテクラブも同じ方法 (K = 2 の最尤) で示している (Fig. 1)。補正なしは高次数の群と低次数の群に分け、補正ありは実際の分裂を
+  1 人の誤りを除いて見つける。S41 のベイズ流 (K も推定する) の結果と食い違って見えるが、問いが違う (K = 2 を与えた最尤か、2 群を支持する証拠があるか)。
+- 論文の内容を使う画像 (図 2) は Karrer and Newman の出版物のもの。授業で使う権利は講師の判断。
 
 - S04: Fortunato と Barthelemy (2007)。しきい値は √(2m) で、群の運命が、その群ではなく網全体の辺数 m で決まる。
 - S07: 「Q > 0.3 を意味のある構造の目安とする」は講義ノートの記述と同じ。
@@ -280,7 +314,7 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 - 確認できた (2026-10-05):
   - 上の数字。すべて `scripts/verify_numbers.py` で assert が通った (K ごとの SBM のスコアを含む)。
   - `npm run build` (型チェックとビルド)。
-  - 32 枚の全段階の静止画。`npm run review` で作り、全部を目で見て、重なり、欠け、文字の切れがないことを確かめた。
+  - 41 枚の全段階の静止画 (120 枚)。`npm run review` で作り、全部を目で見て、重なり、欠け、文字の切れがないことを確かめた。
   - headless Chrome でキーボード操作 (→ で進む、← で戻る) を最後の段階まで通し、段階の表示が正しく進むこと、
     スクリプトのエラーがないことを確かめた (27 枚の版で。その後に追加した分は静止画だけ)。
 - 確認できていない:
@@ -290,7 +324,7 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
   - 動画の書き出し (`npx remotion render`)。
   - Remotion のライセンス (営利企業は有料になりうる。教育目的の扱いは公式の License ページで確認)。
   - Peixoto の文献と graph-tool の関数名、URL は手元の記憶で書いた。授業の前に原典で確認すること。
-  - S35 の「graph-tool で空手クラブは 1 群」は、手元で graph-tool を実行して確かめてはいない。graph-tool のメーリングリスト
+  - S41 の「graph-tool で空手クラブは 1 群」は、手元で graph-tool を実行して確かめてはいない。graph-tool のメーリングリスト
     (Inference for the "karate network") の `minimize_blockmodel_dl(G, deg_corr=True)` の結果と、Peixoto の
     Bayesian stochastic blockmodeling (arXiv:1705.10225) の記述による。**次数補正つきの場合**で、2 群以上の分け方も合わせると
     事後確率の約半分を占めるので、「群の構造がない」ではなく「2 群を支持する証拠が、同じ次数列のランダムなネットワークと変わらない」

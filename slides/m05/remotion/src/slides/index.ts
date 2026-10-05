@@ -34,6 +34,12 @@ import {S32, marks as marks32} from './S32';
 import {S33, marks as marks33} from './S33';
 import {S34, marks as marks34} from './S34';
 import {S35, marks as marks35} from './S35';
+import {S36, marks as marks36} from './S36';
+import {S37, marks as marks37} from './S37';
+import {S38, marks as marks38} from './S38';
+import {S39, marks as marks39} from './S39';
+import {S40, marks as marks40} from './S40';
+import {S41, marks as marks41} from './S41';
 
 export type SlideDef = {
   /** the slide's number in DECK_SPEC.md */
@@ -77,7 +83,13 @@ export const slides: SlideDef[] = [
   {n: 30, id: 'fix-c-find-p', marks: marks30, Component: S30},
   {n: 31, id: 'back-to-c', marks: marks31, Component: S31},
   {n: 32, id: 'more-groups', marks: marks32, Component: S32},
-  {n: 33, id: 'bayesian-sbm', marks: marks33, Component: S33},
-  {n: 34, id: 'graph-tool', marks: marks34, Component: S34},
-  {n: 35, id: 'karate-one-group', marks: marks35, Component: S35},
+  {n: 33, id: 'political-blogs', marks: marks33, Component: S33},
+  {n: 34, id: 'hubs', marks: marks34, Component: S34},
+  {n: 35, id: 'degree-corrected-model', marks: marks35, Component: S35},
+  {n: 36, id: 'dc-fix-c', marks: marks36, Component: S36},
+  {n: 37, id: 'dc-back-to-c', marks: marks37, Component: S37},
+  {n: 38, id: 'blogs-corrected', marks: marks38, Component: S38},
+  {n: 39, id: 'bayesian-sbm', marks: marks39, Component: S39},
+  {n: 40, id: 'graph-tool', marks: marks40, Component: S40},
+  {n: 41, id: 'karate-one-group', marks: marks41, Component: S41},
 ];
