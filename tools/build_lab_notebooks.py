@@ -248,9 +248,35 @@ M02 = [
     ),
 ]
 
+# ---------------------------------------------------------------------------
+# Module 5 -- find the blocks. The lab has one line of code to write; everything
+# else a student does is typed into a box or picked from a list. The worked copy
+# therefore differs from lab.py by that one line, by the switch that fills in
+# every box and every pick from the key held in the hidden kit, and by the title.
+# ---------------------------------------------------------------------------
+M05 = [
+    # The one line of code: igraph hands over its links as a list of pairs.
+    (
+        """    #    Ask g_foot for them. igraph has one method that does exactly this.
+    foot_edges = ...  # TASK""",
+        """    #    Ask g_foot for them. igraph has one method that does exactly this.
+    foot_edges = g_foot.get_edgelist()""",
+    ),
+    # Fill in Part 1's groups and every "which structure is it" pick.
+    (
+        "    SHOW_ANSWERS = False  # TASK",
+        "    SHOW_ANSWERS = True",
+    ),
+    (
+        "    # Lab · Find the blocks\n",
+        "    # Lab · Find the blocks — worked copy\n",
+    ),
+]
+
 MODULES = {
     "m01-euler_tour": M01,
     "m02-small-world": M02,
+    "m05-clustering": M05,
 }
 
 

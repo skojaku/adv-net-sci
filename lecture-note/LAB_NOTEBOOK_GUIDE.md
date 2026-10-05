@@ -6,9 +6,12 @@ is `.claude/skills/pen-and-paper/SKILL.md`; this file is the notebook half of
 the same deliverable.
 
 A sheet's last part sends the student to a marimo notebook that runs, by
-machine, the thing they have just done in pencil. Two of them exist, under
-`lecture-note/m01-euler_tour/pen-and-paper/` and
-`lecture-note/m02-small-world/pen-and-paper/`, and each directory holds:
+machine, the thing they have just done in pencil. Three of them exist, under
+`lecture-note/m01-euler_tour/pen-and-paper/`,
+`lecture-note/m02-small-world/pen-and-paper/` and
+`lecture-note/m05-clustering/pen-and-paper/` (the last is not tied to a sheet;
+see [the graph-tool lab](#a-lab-that-needs-graph-tool-m05)), and each directory
+holds:
 
 - `lab.py` — the student's copy
 - `lecture-hall.css` — the look, copied verbatim from the mini-project's
@@ -167,6 +170,41 @@ notation.
 `lab.py` **exactly once**; if a blank moves or a hint is reworded, the script
 stops rather than writing an answer copy that is a version behind. It also
 asserts no `TASK` survives, and stamps a do-not-edit banner into the output.
+
+## A lab that needs graph-tool (m05)
+
+`m05-clustering/pen-and-paper/lab.py` is the one lab that cannot be pure PyPI.
+graph-tool is a C++ library that only conda packages (the `graph-tool` on PyPI
+is an empty placeholder), and molab installs from PyPI. m05's own coding
+notebook dropped graph-tool for exactly this reason (commit `3ad30496`). The lab
+puts it back, so the notebook has to install it itself:
+
+- **Installer.** A cell starts a `mo.Thread` at once. It downloads `micromamba`
+  (one file, from micro.mamba.pm), creates a private environment in the system
+  temp directory with `graph-tool=3.9 python=3.12` from conda-forge, and checks
+  that it imports. About 70 seconds and 1.4 GB on a laptop; the student is in
+  Part 1 meanwhile, and the figures that need it show a waiting card until the
+  thread sets `gt_state` to `"ready"`. Already installed means ready at once.
+- **A separate process, not an import.** The conda build brings its own Python
+  and its own C++ runtime. Loading it into the Python that runs marimo is the
+  kind of thing that works on one machine and not the next. The notebook sends a
+  job (a JSON file) to `GT_WORKER_SRC` run by the environment's own `python`, and
+  reads an answer back. Same job twice is cached. The worker's functions are
+  shown to the student, unfolded, so what graph-tool is asked to do is on the
+  page.
+- **Pinned.** `GT_VERSION = "3.9"`. The worker calls graph-tool by name and the
+  API moves between releases (`get_nonempty_B` became `get_B`).
+- **Data.** Airports, airlines, football and the map outline travel inside the
+  file like the CSS does: `python tools/build_m05_lab_data.py` (needs the
+  network; OpenFlights is ODbL, Natural Earth is public domain).
+
+Verified on macOS arm64: the installer from an empty directory, the state
+change reaching the page in a real browser, every figure, the blank copy and the
+answer copy. **Not verified on molab itself.** Whether molab lets a notebook
+download an installer and write 1.4 GB, and whether its Linux image resolves the
+same conda-forge build, has to be tried once on molab before class. If it does
+not work, the failure is a red bar at the top with the installer's own log, not a
+traceback.
 
 ## Checking a notebook before calling it done
 
