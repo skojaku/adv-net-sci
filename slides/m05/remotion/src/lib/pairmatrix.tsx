@@ -2,11 +2,13 @@ import React from 'react';
 import {C, F} from '../theme';
 import {BAND_SOLID} from './look';
 import {FOUND8, TRUTH8, randIndex} from './metrics';
-import {Disc, trueLook} from './eight';
+import {trueLook} from './eight';
 
 /**
- * The 28 pairs of the eight-node example as the cells of a matrix (nodes 1 to 8 along both sides, one cell
- * for each pair i < j). A pair is never drawn as two nodes joined by a line: a line reads as a network edge.
+ * The pairs of the eight-node example as the cells of a full 8 x 8 matrix (nodes 1 to 8 along both sides).
+ * A pair is never drawn as two nodes joined by a line: a line reads as a network edge.
+ * Every pair (i, j) with i != j is in two cells ((i, j) and (j, i)) and the diagonal is a node with itself:
+ * the diagonal always agrees and cancels out of the Rand index, (50 - 8) / (64 - 8) = 21 / 28.
  */
 export const PAIRS8: {i: number; j: number; k: number; trueSame: boolean; foundSame: boolean; agree: boolean}[] = [];
 for (let i = 0; i < 8; i++) {
@@ -16,12 +18,18 @@ for (let i = 0; i < 8; i++) {
     PAIRS8.push({i, j, k: PAIRS8.length, trueSame, foundSame, agree: trueSame === foundSame});
   }
 }
+/** pairs that agree, each counted once */
 export const N_AGREE = PAIRS8.filter((p) => p.agree).length;
-if (PAIRS8.length !== 28 || N_AGREE !== 21 || Math.abs(N_AGREE / 28 - randIndex(TRUTH8, FOUND8)) > 1e-9) {
+/** cells of the full matrix: every pair twice, plus the diagonal */
+export const N_CELLS = 64;
+export const N_DIAG = 8;
+/** agreeing cells of the full matrix: every agreeing pair twice, plus the diagonal */
+export const N_AGREE_CELLS = 2 * N_AGREE + N_DIAG;
+if (PAIRS8.length !== 28 || N_AGREE !== 21 || N_AGREE_CELLS !== 50 || Math.abs((N_AGREE_CELLS - N_DIAG) / (N_CELLS - N_DIAG) - randIndex(TRUTH8, FOUND8)) > 1e-9) {
   throw new Error('pairmatrix: unexpected pair counts');
 }
 
-/** Cell half: blue tint when the pair is together, white when it is apart. */
+/** Cell shade: blue tint when the pair is together, white when it is apart. */
 export const TOGETHER = '#9db1de';
 
 /** The found groups of the example as ranges of rows: nodes 1 to 5 (A) and nodes 6 to 8 (B). */
@@ -31,97 +39,10 @@ const BOXES: ReadonlyArray<readonly [number, number]> = [
 ];
 
 /**
- * The matrix. (x, y) is the top-left corner of the cell area, `c` the size of a cell. The top side lists the
- * nodes with their true colours; the left side lists them inside their found boxes.
- * `trueHalf(k)`, `foundHalf(k)` and `mark(k)` give, for the pair with index k, the opacity of its upper half
- * (the true split), its lower half (the found split) and its check or cross.
- */
-export const PairMatrix: React.FC<{
-  x: number;
-  y: number;
-  c?: number;
-  trueHalf?: (k: number) => number;
-  foundHalf?: (k: number) => number;
-  mark?: (k: number) => number;
-  /** pair indices to outline in black */
-  hot?: number[];
-  /** nodes to ring in the headers */
-  ringNodes?: number[];
-  headerOp?: number;
-  labels?: boolean;
-  /** draw the found boxes around the nodes on the left */
-  boxes?: boolean;
-}> = ({x, y, c = 76, trueHalf, foundHalf, mark, hot = [], ringNodes = [], headerOp = 1, labels = true, boxes = true}) => {
-  const d = 0.7 * c;
-  const topY = y - 0.62 * c;
-  const leftX = x - 0.62 * c;
-  const cx = (j: number) => x + (j + 0.5) * c;
-  const cy = (i: number) => y + (i + 0.5) * c;
-  return (
-    <g>
-      {/* the cells below the diagonal and the diagonal repeat the pairs above it: left empty */}
-      {Array.from({length: 8}, (_, i) =>
-        Array.from({length: 8}, (_, j) =>
-          j <= i ? <rect key={`e${i}${j}`} x={x + j * c} y={y + i * c} width={c} height={c} fill="#f4f4f4" /> : null,
-        ),
-      )}
-      {PAIRS8.map((p) => {
-        const x0 = x + p.j * c;
-        const y0 = y + p.i * c;
-        const t = trueHalf?.(p.k) ?? 0;
-        const f = foundHalf?.(p.k) ?? 0;
-        const m = mark?.(p.k) ?? 0;
-        const s = c * 0.17;
-        const gx = x0 + c / 2;
-        const gy = y0 + c / 2;
-        return (
-          <g key={p.k}>
-            <rect x={x0} y={y0} width={c} height={c} fill="#fff" stroke={C.faint} strokeWidth={2} />
-            {t > 0.001 && <polygon points={`${x0},${y0} ${x0 + c},${y0} ${x0 + c},${y0 + c}`} fill={p.trueSame ? TOGETHER : '#fff'} opacity={t} />}
-            {f > 0.001 && <polygon points={`${x0},${y0} ${x0},${y0 + c} ${x0 + c},${y0 + c}`} fill={p.foundSame ? TOGETHER : '#fff'} opacity={f} />}
-            {m > 0.001 && (
-              <g opacity={m}>
-                <circle cx={gx} cy={gy} r={c * 0.3} fill="#fff" stroke={p.agree ? C.blue : C.red} strokeWidth={3} />
-                {p.agree ? (
-                  <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={C.blue} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
-                ) : (
-                  <path d={`M${gx - s * 0.8} ${gy - s * 0.8} L${gx + s * 0.8} ${gy + s * 0.8} M${gx + s * 0.8} ${gy - s * 0.8} L${gx - s * 0.8} ${gy + s * 0.8}`} fill="none" stroke={C.red} strokeWidth={6} strokeLinecap="round" />
-                )}
-              </g>
-            )}
-            {hot.includes(p.k) && <rect x={x0 + 3} y={y0 + 3} width={c - 6} height={c - 6} fill="none" stroke={C.ink} strokeWidth={7} />}
-          </g>
-        );
-      })}
-      <g opacity={headerOp}>
-        {/* top: the nodes in their true colours */}
-        {Array.from({length: 8}, (_, j) => (
-          <Disc key={`t${j}`} x={cx(j)} y={topY} d={d} look={trueLook(j)} label={j + 1} ring={ringNodes.includes(j) ? 1 : 0} />
-        ))}
-        {/* left: the nodes inside their found boxes */}
-        {boxes && BOXES.map(([a, b], n) => (
-          <rect key={`b${n}`} x={leftX - d / 2 - 12} y={cy(a) - c / 2 + 6} width={d + 24} height={(b - a + 1) * c - 12} rx={20} fill={BAND_SOLID} stroke={C.blue} strokeWidth={3} />
-        ))}
-        {Array.from({length: 8}, (_, i) => (
-          <Disc key={`l${i}`} x={leftX} y={cy(i)} d={d} look={trueLook(i)} label={i + 1} ring={ringNodes.includes(i) ? 1 : 0} />
-        ))}
-        {labels && (
-          <g fontFamily={F.hand} fontSize={45} fill={C.soft} textAnchor="middle">
-            <text x={x + 4 * c} y={topY - d / 2 - 22}>true</text>
-            <text x={leftX - d / 2 - 70} y={topY + 8}>found</text>
-          </g>
-        )}
-      </g>
-    </g>
-  );
-};
-
-/**
  * A matrix for ONE split: the cell of a pair is shaded when the two nodes are in the same group of that split
- * (`mode` 'true': the same colour, 'found': the same box). Mode 'agree' compares the two: a check where the true
- * and the found matrix are alike (both shaded or both white), a cross where they differ.
- * `reveal(k)` is the opacity of the cell of the pair with index k. Nodes run along both sides; only the 28 pairs
- * above the diagonal are cells.
+ * (`mode` 'true': the same colour, 'found': the same box). Mode 'agree' compares the two: a check where the true and the
+ * found matrix are alike (both shaded or both white), a cross where they differ.
+ * `reveal(k)` is the opacity of the cell (row i, column j), k = 8 i + j. `hot` outlines cells, `ringNodes` rings nodes in the headers.
  */
 export const CoMatrix: React.FC<{
   x: number;
@@ -132,7 +53,9 @@ export const CoMatrix: React.FC<{
   /** opacity of the frame, the headers and the label */
   frame?: number;
   label?: string;
-}> = ({x, y, c = 54, mode, reveal, frame = 1, label}) => {
+  hot?: [number, number][];
+  ringNodes?: number[];
+}> = ({x, y, c = 54, mode, reveal, frame = 1, label, hot = [], ringNodes = []}) => {
   const d = 0.78 * c;
   const cx = (j: number) => x + (j + 0.5) * c;
   const cy = (i: number) => y + (i + 0.5) * c;
@@ -141,6 +64,7 @@ export const CoMatrix: React.FC<{
     const lk = trueLook(i);
     return (
       <g key={key}>
+        {ringNodes.includes(i) && <circle cx={px} cy={py} r={d / 2 + 6} fill="none" stroke={C.ink} strokeWidth={5} />}
         <circle cx={px} cy={py} r={d / 2 - lk.sw / 2} fill={lk.fill} stroke={lk.stroke} strokeWidth={lk.sw} />
         <text x={px} y={py + 9} textAnchor="middle" fontFamily={F.serif} fontSize={26} fontWeight={700} fill={lk.text}>
           {i + 1}
@@ -148,14 +72,14 @@ export const CoMatrix: React.FC<{
       </g>
     );
   };
+  const cells: {i: number; j: number; k: number}[] = [];
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) cells.push({i, j, k: 8 * i + j});
+  const same = (i: number, j: number, m: 'true' | 'found') => (i === j ? true : m === 'true' ? TRUTH8[i] === TRUTH8[j] : FOUND8[i] === FOUND8[j]);
   return (
     <g>
       <g opacity={frame}>
-        {Array.from({length: 8}, (_, i) =>
-          Array.from({length: 8}, (_, j) => (j <= i ? <rect key={`e${i}${j}`} x={x + j * c} y={y + i * c} width={c} height={c} fill="#f4f4f4" /> : null)),
-        )}
-        {PAIRS8.map((p) => (
-          <rect key={`f${p.k}`} x={x + p.j * c} y={y + p.i * c} width={c} height={c} fill="#fff" stroke={C.faint} strokeWidth={2} />
+        {cells.map(({i, j, k}) => (
+          <rect key={`f${k}`} x={x + j * c} y={y + i * c} width={c} height={c} fill="#fff" stroke={C.faint} strokeWidth={2} />
         ))}
         {mode === 'found' &&
           BOXES.map(([a, b], n) => (
@@ -172,28 +96,33 @@ export const CoMatrix: React.FC<{
           </text>
         )}
       </g>
-      {PAIRS8.map((p) => {
-        const r = reveal?.(p.k) ?? 0;
+      {cells.map(({i, j, k}) => {
+        const r = reveal?.(k) ?? 0;
         if (r < 0.001) return null;
-        const x0 = x + p.j * c;
-        const y0 = y + p.i * c;
+        const x0 = x + j * c;
+        const y0 = y + i * c;
         if (mode !== 'agree') {
-          const together = mode === 'true' ? p.trueSame : p.foundSame;
-          return together ? <rect key={p.k} x={x0} y={y0} width={c} height={c} fill={TOGETHER} stroke={C.faint} strokeWidth={2} opacity={r} /> : null;
+          return same(i, j, mode) ? <rect key={k} x={x0} y={y0} width={c} height={c} fill={TOGETHER} stroke={C.faint} strokeWidth={2} opacity={r} /> : null;
         }
+        const agree = same(i, j, 'true') === same(i, j, 'found');
+        const diag = i === j;
+        const col = diag ? C.soft : agree ? C.blue : C.red;
         const gx = x0 + c / 2;
         const gy = y0 + c / 2;
         return (
-          <g key={p.k} opacity={r}>
-            <circle cx={gx} cy={gy} r={c * 0.34} fill="#fff" stroke={p.agree ? C.blue : C.red} strokeWidth={3} />
-            {p.agree ? (
-              <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={C.blue} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+          <g key={k} opacity={r}>
+            <circle cx={gx} cy={gy} r={c * 0.34} fill="#fff" stroke={col} strokeWidth={3} />
+            {agree ? (
+              <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
             ) : (
-              <path d={`M${gx - s * 0.8} ${gy - s * 0.8} L${gx + s * 0.8} ${gy + s * 0.8} M${gx + s * 0.8} ${gy - s * 0.8} L${gx - s * 0.8} ${gy + s * 0.8}`} fill="none" stroke={C.red} strokeWidth={6} strokeLinecap="round" />
+              <path d={`M${gx - s * 0.8} ${gy - s * 0.8} L${gx + s * 0.8} ${gy + s * 0.8} M${gx + s * 0.8} ${gy - s * 0.8} L${gx - s * 0.8} ${gy + s * 0.8}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" />
             )}
           </g>
         );
       })}
+      {hot.map(([i, j]) => (
+        <rect key={`h${i}${j}`} x={x + j * c + 3} y={y + i * c + 3} width={c - 6} height={c - 6} fill="none" stroke={C.ink} strokeWidth={7} />
+      ))}
     </g>
   );
 };

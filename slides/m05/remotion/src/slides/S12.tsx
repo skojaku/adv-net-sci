@@ -58,7 +58,7 @@ export const S12: React.FC = () => {
       </Canvas>
       <Fade o={cap0} dy={14}>
         <Box x={960} y={205} w={1200} align="center" size={45} color={C.soft} hand>
-          true groups: 5 groups of 6 nodes
+          true groups
         </Box>
       </Fade>
       <Fade o={cap1} dy={14}>

@@ -62,7 +62,7 @@ export const S31: React.FC = () => {
       </Fade>
       <Fade o={(left + right) / 2} dy={10}>
         <Box x={120} y={840} w={1680} size={38} color={C.soft}>
-          <Tex tex="A" />: the network. <Tex tex="c" />: the groups. <Tex tex="p" />: the probabilities in the table, integrated out in <Tex tex={'P(A \\mid c)'} />.
+          <Tex tex="A" />: the network. <Tex tex="c" />: the groups. <Tex tex="p" />: the probabilities in the table.
         </Box>
       </Fade>
 

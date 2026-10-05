@@ -5,7 +5,7 @@ import {Canvas, Fade} from '../components/Fade';
 import {Box} from '../components/Text';
 import {betweenStages, prog} from '../lib/anim';
 import {Row8, eightX} from '../lib/entropy8';
-import {PAIRS8, PairMatrix} from '../lib/pairmatrix';
+import {CoMatrix} from '../lib/pairmatrix';
 
 /**
  * 0: a pair of nodes is one cell of a matrix (nodes along both sides): the Rand index counts pairs of nodes.
@@ -20,7 +20,6 @@ const GAP = 170;
 const D = 96;
 const PAIR = [1, 5] as const; // nodes 2 and 6
 const ONE = 2; // node 3
-const HOT = PAIRS8.find((p) => p.i === PAIR[0] && p.j === PAIR[1])!.k;
 
 export const S14: React.FC = () => {
   const frame = useCurrentFrame();
@@ -34,7 +33,7 @@ export const S14: React.FC = () => {
     <Frame n={14} title="Pairs or nodes?">
       <Canvas>
         <g opacity={pair}>
-          <PairMatrix x={360} y={345} c={76} labels={false} boxes={false} hot={[HOT]} ringNodes={[...PAIR]} headerOp={prog(frame, 0, 16)} />
+          <CoMatrix x={360} y={345} c={76} mode="true" frame={prog(frame, 0, 16)} hot={[[PAIR[0], PAIR[1]], [PAIR[1], PAIR[0]]]} ringNodes={[...PAIR]} />
         </g>
         <g opacity={one}>
           <Row8 cx={CX} y={ROW_Y} gap={GAP} d={D} nodeOp={(i) => prog(frame, 50 + i * 1.5, 64 + i * 1.5)} lit={(i) => (i === ONE ? prog(frame, 60, 74) : 0)} />

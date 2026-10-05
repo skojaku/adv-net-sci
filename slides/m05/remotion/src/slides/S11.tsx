@@ -6,7 +6,7 @@ import {Box, Term} from '../components/Text';
 import {C, F} from '../theme';
 import {betweenStages, fromStage, prog} from '../lib/anim';
 import {Frac} from '../lib/eight';
-import {CoMatrix, N_AGREE, PAIRS8} from '../lib/pairmatrix';
+import {CoMatrix, N_AGREE, N_AGREE_CELLS, N_CELLS, N_DIAG} from '../lib/pairmatrix';
 
 /**
  * Three matrices, one cell for each of the 28 pairs of nodes. A pair is never drawn as two nodes joined by a line.
@@ -20,9 +20,9 @@ export const marks = [44, 100, 160, 226, 288];
 
 const C54 = 54;
 const SLOT_X = [180, 762, 1344];
-const MY = 370;
+const MY = 350;
 
-const stagger = (frame: number, start: number) => (k: number) => prog(frame, start + k * 1.0, start + k * 1.0 + 10);
+const stagger = (frame: number, start: number) => (k: number) => prog(frame, start + k * 0.45, start + k * 0.45 + 10);
 
 export const S11: React.FC = () => {
   const frame = useCurrentFrame();
@@ -50,7 +50,7 @@ export const S11: React.FC = () => {
 
       <Fade o={cap0} dy={14}>
         <Box x={960} y={830} w={1600} align="center" size={48}>
-          8 nodes make 28 pairs of nodes. One cell is one pair.
+          One cell is one pair of nodes. The diagonal: a node with itself.
         </Box>
       </Fade>
       <Fade o={cap1} dy={14}>
@@ -65,17 +65,19 @@ export const S11: React.FC = () => {
       </Fade>
       <Fade o={cap3} dy={14}>
         <Box x={960} y={830} w={1600} align="center" size={48}>
-          Alike in both: <span style={{color: C.blue}}>agree</span>. Different: <Term>disagree</Term>. {N_AGREE} of {PAIRS8.length} agree.
+          Alike in both: <span style={{color: C.blue}}>agree</span>. Different: <Term>disagree</Term>.
         </Box>
       </Fade>
       <Fade o={cap4} dy={14}>
-        <div style={{position: 'absolute', left: 150, top: 815, width: 1620, background: C.panel, padding: '12px 28px', fontFamily: F.serif, fontSize: 42, lineHeight: 1.3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, whiteSpace: 'nowrap'}}>
-          <Term>Rand index</Term>
-          <span>=</span>
-          <Frac top="agreeing pairs of nodes" bottom="all pairs of nodes" />
-          <span>=</span>
-          <Frac top={N_AGREE} bottom={PAIRS8.length} />
-          <span>= {(N_AGREE / PAIRS8.length).toFixed(2)}</span>
+        <div style={{position: 'absolute', left: 150, top: 815, width: 1620, background: C.panel, padding: '12px 28px', fontFamily: F.serif, fontSize: 42, lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap'}}>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16}}>
+            <Term>Rand index</Term>
+            <span>=</span>
+            <Frac top="agreeing pairs of nodes" bottom="all pairs of nodes" />
+            <span>=</span>
+            <Frac top={`${N_AGREE_CELLS} \u2212 ${N_DIAG}`} bottom={`${N_CELLS} \u2212 ${N_DIAG}`} />
+            <span>= {((N_AGREE_CELLS - N_DIAG) / (N_CELLS - N_DIAG)).toFixed(2)}</span>
+          </div>
         </div>
       </Fade>
     </Frame>
