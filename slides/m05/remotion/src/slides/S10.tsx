@@ -110,15 +110,16 @@ export const S10: React.FC = () => {
         const x1 = nodeX(G, pr.a);
         const x2 = lerp(x1, nodeX(G, pr.b), pp[k].p);
         return [G.yTrue, G.yFound].map((y) => (
-          <g key={`${k}-${y}`}>
-            <line x1={x1} y1={y} x2={x2} y2={y} stroke={C.ink} strokeWidth={12} strokeLinecap="round" opacity={pp[k].p > 0.001 ? 1 : 0} />
-            {/* once the verdict is out, the line takes its colour: blue for agree, red for disagree */}
-            <line x1={x1} y1={y} x2={x2} y2={y} stroke={pr.agree ? C.blue : C.red} strokeWidth={12} strokeLinecap="round" opacity={pp[k].v} />
-          </g>
+          <line key={`${k}-${y}`} x1={x1} y1={y} x2={x2} y2={y} stroke={C.ink} strokeWidth={12} strokeLinecap="round" opacity={pp[k].p > 0.001 ? 1 : 0} />
         ));
       })}
     </g>
   );
+  // once the verdict is out, the edge of the pair's two nodes takes its colour: blue for agree, red for disagree
+  const ringColorOf = (i: number) => {
+    const k = PAIRS.findIndex((pr) => i === pr.a || i === pr.b);
+    return k >= 0 && pp[k].v > 0.5 ? (PAIRS[k].agree ? C.blue : C.red) : C.ink;
+  };
   const ringOf = (i: number) => PAIRS.reduce((m, pr, k) => (i === pr.a || i === pr.b ? Math.max(m, pp[k].p) : m), 0);
 
   return (
@@ -126,7 +127,7 @@ export const S10: React.FC = () => {
       {/* stages 0 to 2 */}
       <Canvas>
         <g opacity={rows}>
-          <EightRows g={G} names={false} under={under} ringTrue={ringOf} ringFound={ringOf} />
+          <EightRows g={G} names={false} under={under} ringTrue={ringOf} ringFound={ringOf} ringColor={ringColorOf} />
         </g>
       </Canvas>
       <Fade o={rows}>

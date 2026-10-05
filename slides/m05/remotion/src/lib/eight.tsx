@@ -41,13 +41,15 @@ export const Disc: React.FC<{
   look: Look;
   label?: string | number;
   ring?: number;
+  /** colour of the ring (default black) */
+  ringColor?: string;
   op?: number;
   scale?: number;
-}> = ({x, y, d, look, label, ring = 0, op = 1, scale = 1}) => {
+}> = ({x, y, d, look, label, ring = 0, ringColor = C.ink, op = 1, scale = 1}) => {
   const fs = Math.max(34, d * 0.48);
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`} opacity={op}>
-      {ring > 0.001 && <circle r={d / 2 + 9} fill="none" stroke={C.ink} strokeWidth={7} opacity={ring} />}
+      {ring > 0.001 && <circle r={d / 2 + 9} fill="none" stroke={ringColor} strokeWidth={7} opacity={ring} />}
       <circle r={d / 2 - look.sw / 2} fill={look.fill} stroke={look.stroke} strokeWidth={look.sw} />
       {label != null && (
         <text y={fs * 0.35} textAnchor="middle" fontFamily={F.serif} fontSize={fs} fontWeight={700} fill={look.text}>
@@ -96,8 +98,9 @@ export const EightRows: React.FC<{
   names?: boolean;
   ringTrue?: (i: number) => number;
   ringFound?: (i: number) => number;
+  ringColor?: (i: number) => string;
   under?: React.ReactNode;
-}> = ({g, found = AB, trueOp = () => 1, foundOp = () => 1, foundT = () => 1, boxOp = 1, names = true, ringTrue, ringFound, under}) => {
+}> = ({g, found = AB, trueOp = () => 1, foundOp = () => 1, foundT = () => 1, boxOp = 1, names = true, ringTrue, ringFound, ringColor, under}) => {
   const idx = [0, 1, 2, 3, 4, 5, 6, 7];
   return (
     <g>
@@ -106,13 +109,13 @@ export const EightRows: React.FC<{
       {idx.map((i) => {
         const o = trueOp(i);
         return o > 0.001 ? (
-          <Disc key={`t${i}`} x={nodeX(g, i)} y={g.yTrue} d={g.d} look={trueLook(i)} label={i + 1} ring={ringTrue?.(i) ?? 0} op={o} scale={0.7 + 0.3 * o} />
+          <Disc key={`t${i}`} x={nodeX(g, i)} y={g.yTrue} d={g.d} look={trueLook(i)} label={i + 1} ring={ringTrue?.(i) ?? 0} ringColor={ringColor?.(i)} op={o} scale={0.7 + 0.3 * o} />
         ) : null;
       })}
       {idx.map((i) => {
         const o = foundOp(i);
         return o > 0.001 ? (
-          <Disc key={`f${i}`} x={nodeX(g, i)} y={lerp(g.yTrue, g.yFound, foundT(i))} d={g.d} look={trueLook(i)} label={i + 1} ring={ringFound?.(i) ?? 0} op={o} />
+          <Disc key={`f${i}`} x={nodeX(g, i)} y={lerp(g.yTrue, g.yFound, foundT(i))} d={g.d} look={trueLook(i)} label={i + 1} ring={ringFound?.(i) ?? 0} ringColor={ringColor?.(i)} op={o} />
         ) : null;
       })}
     </g>
@@ -120,20 +123,21 @@ export const EightRows: React.FC<{
 };
 
 /**
- * A pair of nodes as an icon: two hollow discs joined by a line, centred on (x, y). The line carries the
- * verdict: blue when the two splits agree about the pair, red when they disagree (black when `agree` is
- * not given). Pass `looks` to draw the two nodes in their true looks instead of hollow.
+ * A pair of nodes as an icon: two white discs joined by a black line, centred on (x, y). The verdict is the
+ * edge (outline) of the two discs: blue when the two splits agree about the pair, red when they disagree.
+ * Without `agree` the discs are plain hollow nodes. Pass `looks` to draw the nodes in their true looks.
  */
 export const PairIcon: React.FC<{x: number; y: number; agree?: boolean; a?: number; b?: number; looks?: boolean; d?: number; gap?: number}> = ({x, y, agree, a = 0, b = 0, looks = false, d = 26, gap = 42}) => (
   <g>
-    <line x1={x - gap / 2} y1={y} x2={x + gap / 2} y2={y} stroke={agree === undefined ? C.ink : agree ? C.blue : C.red} strokeWidth={agree === undefined ? 4 : 8} strokeLinecap="round" />
+    <line x1={x - gap / 2} y1={y} x2={x + gap / 2} y2={y} stroke={C.ink} strokeWidth={4} />
     {[
       [a, -gap / 2],
       [b, gap / 2],
     ].map(([i, dx]) => {
       const lk = looks ? trueLook(i) : LOOK[1];
-      const sw = Math.min(lk.sw, 4);
-      return <circle key={dx} cx={x + dx} cy={y} r={d / 2 - sw / 2} fill={lk.fill} stroke={lk.stroke === '#fff' ? C.blue : lk.stroke} strokeWidth={sw} />;
+      const edge = agree === undefined ? (lk.stroke === '#fff' ? C.blue : lk.stroke) : agree ? C.blue : C.red;
+      const sw = agree === undefined ? Math.min(lk.sw, 4) : 7;
+      return <circle key={dx} cx={x + dx} cy={y} r={d / 2 - sw / 2} fill={agree === undefined ? lk.fill : '#fff'} stroke={edge} strokeWidth={sw} />;
     })}
   </g>
 );
