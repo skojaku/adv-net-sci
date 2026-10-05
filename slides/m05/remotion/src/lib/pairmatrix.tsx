@@ -22,7 +22,10 @@ for (let i = 0; i < 8; i++) {
 export const N_BOTH = PAIRS8.filter((p) => p.trueSame && p.foundSame).length;
 export const N_APART = PAIRS8.filter((p) => !p.trueSame && !p.foundSame).length;
 export const N_PAIRS = PAIRS8.length;
-if (N_PAIRS !== 28 || N_BOTH !== 9 || N_APART !== 12 || Math.abs((N_BOTH + N_APART) / N_PAIRS - randIndex(TRUTH8, FOUND8)) > 1e-9) {
+/** the pairs the two splits agree about (together in both, or apart in both) and the pairs they disagree about */
+export const N_AGREE = N_BOTH + N_APART;
+export const N_DISAGREE = N_PAIRS - N_AGREE;
+if (N_PAIRS !== 28 || N_BOTH !== 9 || N_APART !== 12 || N_AGREE !== 21 || N_DISAGREE !== 7 || Math.abs(N_AGREE / N_PAIRS - randIndex(TRUTH8, FOUND8)) > 1e-9) {
   throw new Error('pairmatrix: unexpected pair counts');
 }
 
@@ -40,20 +43,24 @@ const BOXES: ReadonlyArray<readonly [number, number]> = [
  * (`mode` 'true': the same colour, 'found': the same box). The product of the two: mode 'both' puts a check on the cells
  * shaded in both matrices (the pair is together in both splits); mode 'apart' puts a check on the cells white in both
  * (the pair is apart in both splits). A cell that is not in the class has no mark.
+ * Mode 'agree' marks every cell: a blue check where the two splits give the same answer for the pair (shaded in both or white in
+ * both), a black cross where they differ (shaded in one, white in the other). The diagonal is a node with itself: a grey check.
  * `reveal(k)` is the opacity of the cell (row i, column j), k = 8 i + j. `hot` outlines cells, `ringNodes` rings nodes in the headers.
  */
 export const CoMatrix: React.FC<{
   x: number;
   y: number;
   c?: number;
-  mode: 'true' | 'found' | 'both' | 'apart';
+  mode: 'true' | 'found' | 'both' | 'apart' | 'agree';
   reveal?: (k: number) => number;
+  /** mode 'agree': opacity of the crosses (default: the same as `reveal`) */
+  revealCross?: (k: number) => number;
   /** opacity of the frame, the headers and the label */
   frame?: number;
   label?: string;
   hot?: [number, number][];
   ringNodes?: number[];
-}> = ({x, y, c = 54, mode, reveal, frame = 1, label, hot = [], ringNodes = []}) => {
+}> = ({x, y, c = 54, mode, reveal, revealCross, frame = 1, label, hot = [], ringNodes = []}) => {
   const d = 0.78 * c;
   const cx = (j: number) => x + (j + 0.5) * c;
   const cy = (i: number) => y + (i + 0.5) * c;
@@ -95,10 +102,35 @@ export const CoMatrix: React.FC<{
         )}
       </g>
       {cells.map(({i, j, k}) => {
-        const r = reveal?.(k) ?? 0;
+        const t0 = same(i, j, 'true');
+        const f0 = same(i, j, 'found');
+        const isCross = mode === 'agree' && t0 !== f0;
+        const r = (isCross ? revealCross ?? reveal : reveal)?.(k) ?? 0;
         if (r < 0.001) return null;
         const x0 = x + j * c;
         const y0 = y + i * c;
+        if (mode === 'agree') {
+          const gx = x0 + c / 2;
+          const gy = y0 + c / 2;
+          if (isCross) {
+            const q = c * 0.15;
+            return (
+              <g key={k} opacity={r}>
+                <rect x={x0} y={y0} width={c} height={c} fill="#fff" stroke={C.faint} strokeWidth={2} />
+                <circle cx={gx} cy={gy} r={c * 0.34} fill="#fff" stroke={C.ink} strokeWidth={3} />
+                <path d={`M${gx - q} ${gy - q} L${gx + q} ${gy + q} M${gx + q} ${gy - q} L${gx - q} ${gy + q}`} fill="none" stroke={C.ink} strokeWidth={6} strokeLinecap="round" />
+              </g>
+            );
+          }
+          const col = i === j ? C.soft : C.blue;
+          return (
+            <g key={k} opacity={r}>
+              <rect x={x0} y={y0} width={c} height={c} fill={i === j ? '#fff' : C.blueSoft} stroke={C.faint} strokeWidth={2} />
+              <circle cx={gx} cy={gy} r={c * 0.34} fill="#fff" stroke={col} strokeWidth={3} />
+              <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+            </g>
+          );
+        }
         if (mode === 'true' || mode === 'found') {
           return same(i, j, mode) ? <rect key={k} x={x0} y={y0} width={c} height={c} fill={TOGETHER} stroke={C.faint} strokeWidth={2} opacity={r} /> : null;
         }
