@@ -191,14 +191,15 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | S29 `The SBM estimate, step by step` | 0 | 8 ノードの網と群 c。`1 A grouping c` | 網 + 群 |
 | | 1 | ブロックごとに辺 m と組 n を数える: 5/6、6/6、1/16。`2 Count edges m and pairs of nodes n` | 升に m / n |
 | | 2 | `p_rs = m_rs / n_rs`: 0.83、1.00、0.06 | 升に p |
-| | 3 | ブロックの寄与 -2.70、0、-3.74。式 `log L(c) = sum over r <= s of [ m log p + (n - m) log(1 - p) ]`、`log L = -2.70 - 3.74 + 0 = -6.44` | 式 + 和 |
-| | 4 | `5 Keep the largest log L`。`the grouping that makes the network most likely` | 結び |
+| | 3 | ネットワークの確率を、ブロックごとの積で示す: `L(c) = product over blocks of p^m (1 - p)^(n - m)`。各項に注釈: `each block`、`m pairs with an edge`、`n - m pairs with no edge`。升の中は各ブロックの確率 0.067、0.024、1 で、`L = 0.067 x 0.024 x 1 = 0.0016` | 積の式 + 注釈 |
+| | 4 | 対数をとると積が和になる: `log L(c) = sum over blocks of [m log p + (n - m) log(1 - p)]` (注釈つき)。升の中は -2.70、-3.74、0 で、`log L = -2.70 - 3.74 + 0 = -6.44` | 和の式 |
+| | 5 | `6 Keep the c with the largest log L: the most likely grouping` | 結び |
 | S30 `More groups always fit better` | 0 | グループ数 K = 1 から 8 の、最良の log L: -19.1, -6.4, -3.0, -1.4, 0, 0, 0, 0 の折れ線。`log L never decreases as K grows` | 折れ線 |
 | | 1 | `More groups, more parameters, a better fit`。K = 5 から 8 は 0 (完全に当てはまる) | + 破線 |
 | | 2 | K = 8 (全員ひとり) に輪。`A large K overfits: the groups mean nothing`、`K = 8: every node alone, a perfect fit` | 結び |
-| S31 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: ベイズ `P(c given A) is proportional to P(c) times the integral of P(A given c, p) P(p) dp` ("p is integrated out: more groups must pay for themselves") | 2 つの式 |
-| | 1 | 簡単なベイズ流のスコア (一様な事前分布) の K ごとの最良値の折れ線。K = 2 で最高。`The score peaks at K = 2`、`uniform priors, 8 nodes` | 折れ線 + 輪 |
-| | 2 | `K is inferred`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
+| S31 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping`。P(A given c) は p を積分して消したもの | 2 つの式 |
+| | 1 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2`、`lower is better. uniform priors, 8 nodes` | 谷のある折れ線 + 輪 |
+| | 2 | `K is inferred: the shortest description`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
 | S32 `graph-tool` | 0 | `A Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
 | | 1 | 関数名 `minimize_nested_blockmodel_dl`、`graph-tool.skewed.de` | 結び |
 
@@ -228,9 +229,9 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
   平均 0.417 (0.362 から 0.471) で、クラブの 0.420 はこの範囲の中。ゲームと同じ大きさの 40 節点 41 辺
   (平均次数 2.05) は 200 個で平均 0.592 (0.465 から 0.681)。疎い網ほど Q は高くなる。
 - **SBM の K ごと** (S30、S31): 8 ノードの網で、全 4140 通りの分け方のうち K 個の群への最良値。最尤の log L は
-  K = 1 から 8 で -19.121、-6.444、-3.014、-1.386、0、0、0、0 (K とともに減らない)。簡単なベイズ流のスコア
-  (各ブロックの確率に一様な事前分布を置いて積分し、P(K) = 1/8、P(c | K) は K 個の群への分け方の上で一様) は
-  -22.68、-18.21、-20.33、-21.85、-22.60、-22.91、-23.09、-21.49 で、K = 2 で最高。
+  K = 1 から 8 で -19.121、-6.444、-3.014、-1.386、0、0、0、0 (K とともに減らない)。簡単なベイズ流の記述長 (nats。各ブロックの確率に
+  一様な事前分布を置いて積分し、P(K) = 1/8、P(c | K) は K 個の群への分け方の上で一様。符号を反転した量が事後確率の対数) は
+  22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49 で、K = 2 で最短。
 - **確率の表** (S15 から S18): 同時確率 0.5, 0, 0.125, 0.375。周辺確率は真 0.5, 0.5、found 0.625, 0.375。
   積 0.3125, 0.1875。比 1.6, 0, 0.4, 2。寄与 0.339, 0, -0.165, 0.375。和 0.549。
 - **SBM** (8 節点、固定乱数の種 901): 辺は 12 本 (群内 11)、15 本 (群内 1)、12 本 (群内 6)。
