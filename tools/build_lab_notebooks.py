@@ -249,38 +249,46 @@ M02 = [
 ]
 
 # ---------------------------------------------------------------------------
-# Module 5 -- find the blocks. The lab has three blanks, all of them code a
-# student types from a block on the page: the stochastic block model, Louvain on
-# the airline-airport network, and graph-tool's sampler. The worked copy fills
-# them in and says so in the title. (The drag-to-sort warm-up has its own
-# "Show answer" button, so it needs nothing here.)
+# Module 5 -- find the blocks. The lab has four blanks, all of them code a
+# student types from a block on the page: Leiden on the airports, the stochastic
+# block model, Leiden on the airline-airport network, and graph-tool's sampler.
+# The worked copy fills them in and says so in the title. (The drag-to-sort
+# warm-up has its own "Show answer" button, so it needs nothing here.)
 # ---------------------------------------------------------------------------
+LEIDEN = 'community_leiden(objective_function="modularity", n_iterations=-1).membership'
 M05 = [
+    # Leiden, typed from the block in section 2.
+    (
+        "    leiden = ...  # TASK",
+        f"    leiden = g_air.{LEIDEN}",
+    ),
     # The stochastic block model, typed from the block in section 3.
     (
         "    sbm_blocks = ...  # TASK",
-        '''    sbm_blocks = graph_tool("""
-    state = gt.minimize_blockmodel_dl(g)
-    out = state.get_blocks().a.tolist()
-    """, edges=g_air.get_edgelist())''',
+        """    def fit_sbm(g):
+        state = gt.minimize_blockmodel_dl(g)
+        return state.get_blocks().a.tolist()
+
+    sbm_blocks = graph_tool(fit_sbm, edges=g_air.get_edgelist())""",
     ),
-    # Louvain, as in section 2, on the bipartite network.
+    # Leiden again, on the bipartite network.
     (
-        "    bip_louvain = ...  # TASK",
-        "    bip_louvain = g_bip.community_multilevel().membership",
+        "    bip_leiden = ...  # TASK",
+        f"    bip_leiden = g_bip.{LEIDEN}",
     ),
     # The sampler, typed from the block in section 5.
     (
         "    sure = ...  # TASK",
-        '''    sure = graph_tool("""
-    state = gt.minimize_blockmodel_dl(g)
-    partitions = []
-    for _ in range(20):
-        state.multiflip_mcmc_sweep(niter=2)
-        partitions.append(state.get_blocks().a.copy())
-    pv = gt.PartitionModeState(partitions, converge=True).get_marginal(g)
-    out = [float(max(pv[v]) / sum(pv[v])) for v in g.vertices()]
-    """, edges=g_air.get_edgelist())''',
+        """    def sample_blocks(g):
+        state = gt.minimize_blockmodel_dl(g)
+        partitions = []
+        for _ in range(20):
+            state.multiflip_mcmc_sweep(niter=2)
+            partitions.append(state.get_blocks().a.copy())
+        pv = gt.PartitionModeState(partitions, converge=True).get_marginal(g)
+        return [float(max(pv[v]) / sum(pv[v])) for v in g.vertices()]
+
+    sure = graph_tool(sample_blocks, edges=g_air.get_edgelist())""",
     ),
     (
         "    # Lab · Find the blocks\n",

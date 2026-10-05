@@ -13,7 +13,7 @@
 # The Module 5 lab, done alone at a laptop: find the blocks with graph-tool.
 #
 # A warm-up by hand (drag the rows of a shuffled matrix until the dark squares
-# form blocks), then the US airport network: Louvain, the stochastic block
+# form blocks), then the US airport network: Leiden, the stochastic block
 # model, its bipartite form, and graph-tool's sampler. Prose is one or two
 # lines a cell, and there are no questions: the cells are the lab.
 #
@@ -21,18 +21,20 @@
 # that conda packages. The install cell is plain Python, shown to the student,
 # and works as it stands in a Colab cell as well as on molab. graph-tool runs
 # in its own process, in its own conda environment, so that its C++ runtime
-# never meets the one marimo runs on; the `graph_tool(code, edges=...)`
-# function that cell defines is the bridge, and the code a student types goes
-# through it.
+# never meets the one marimo runs on (checked on molab: importing it in the
+# kernel fails with GLIBCXX_3.4.36 not found). The `graph_tool(fn, edges=...)`
+# function that cell defines is the bridge: a student writes an ordinary
+# function, and its source is sent over and run there.
 #
 # The notebook is in three layers, and only the top one is a student's:
 #
 #   * the kit     -- everything in the setup block: drawing and the drag-to-sort
 #                    matrix. Hidden.
-#   * the cells   -- the install cell, the Louvain cell, the figures.
-#   * the blanks  -- three cells that say `...`: the stochastic block model
-#                    (typed from a block that cannot be copied), Louvain on the
-#                    bipartite network, and the sampler (typed likewise).
+#   * the cells   -- the install cell, the figures, the schematic of a bipartite network.
+#   * the blanks  -- four cells that say `...`: Leiden and the stochastic block
+#                    model on the airports (both typed from a block that cannot
+#                    be copied), Leiden on the bipartite network, and the sampler
+#                    (typed likewise).
 #
 # Rules this file obeys, learned on m01 and m02:
 #
@@ -54,7 +56,7 @@ with app.setup(hide_code=True):
     # The kit. Nothing here is yours to edit.
     import base64
     import html
-    import inspect
+    import inspect as _inspect
     import json as _json
     import math
     import zlib
@@ -62,6 +64,7 @@ with app.setup(hide_code=True):
     import anywidget
     import igraph
     import marimo as mo
+    import matplotlib.patheffects as pe
     import matplotlib.pyplot as plt
     import numpy as np
     import traitlets
@@ -283,7 +286,7 @@ with app.setup(hide_code=True):
             f'<pre style="user-select:none;-webkit-user-select:none;cursor:default;'
             f"font-family:{MONO};font-size:13.5px;line-height:1.5;margin:10px 0;"
             f"padding:10px 14px;background:{PAPER};border:1.5px solid {RULE};"
-            f'border-radius:{WOBBLE};color:{INK};overflow-x:auto">{html.escape(inspect.cleandoc(src))}</pre>'
+            f'border-radius:{WOBBLE};color:{INK};overflow-x:auto">{html.escape(_inspect.cleandoc(src))}</pre>'
         )
 
     def is_list_of(x, n):
@@ -341,14 +344,17 @@ with app.setup(hide_code=True):
         plt.close(fig)
         return fig
 
-    def draw_dots(ax, M, rows, cols, s, cuts_r=(), cuts_c=(), title=None):
+    def draw_dots(ax, M, rows, cols, s, cuts_r=(), cuts_c=(), title=None,
+                  colors=None, cut_color=RUST):
+        """The matrix as dots. `colors`: one colour for each row, in row order."""
         sub = M[np.ix_(rows, cols)]
         r, c = np.nonzero(sub)
-        ax.scatter(c, r, s=s, marker="s", linewidths=0, color=INK, rasterized=True)
+        dots = INK if colors is None else list(colors[r])
+        ax.scatter(c, r, s=s, marker="s", linewidths=0, color=dots, rasterized=True)
         for k in cuts_c:
-            ax.axvline(k - 0.5, color=RUST, lw=0.7, alpha=0.7)
+            ax.axvline(k - 0.5, color=cut_color, lw=0.7, alpha=0.7)
         for k in cuts_r:
-            ax.axhline(k - 0.5, color=RUST, lw=0.7, alpha=0.7)
+            ax.axhline(k - 0.5, color=cut_color, lw=0.7, alpha=0.7)
         ax.set_xlim(-0.5, len(cols) - 0.5)
         ax.set_ylim(len(rows) - 0.5, -0.5)
         ax.set_aspect("equal")
@@ -358,6 +364,125 @@ with app.setup(hide_code=True):
             side.set_color(GREY)
         if title:
             ax.set_title(title, fontsize=9, color=INK, loc="left")
+
+    # Colours for the blocks on the map. These six hues of the screen palette are
+    # the largest set that passes the all-pairs colour checks on the paper surface
+    # (dataviz validate_palette.js --pairs all): blue, aqua, yellow, magenta,
+    # green, violet. Past six, a block is grey. Aqua, yellow and magenta are thin
+    # on paper, so every coloured block is also named on the map by its busiest
+    # airport, and no colour has to be read alone.
+    COMMUNITY_COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7"]
+    OTHER = "#9A968A"
+
+    def community_colors(blocks, deg):
+        """A colour for each airport: the six biggest blocks take the palette in
+        order of size, every other block is grey. Also the key to the map: for
+        each coloured block, its busiest airport and its size."""
+        blocks = np.asarray(blocks)
+        ids, sizes = np.unique(blocks, return_counts=True)
+        big = ids[np.argsort(-sizes, kind="stable")][: len(COMMUNITY_COLORS)]
+        colors = np.array([OTHER] * len(blocks), dtype=object)
+        key = []
+        for color, b in zip(COMMUNITY_COLORS, big):
+            members = np.flatnonzero(blocks == b)
+            colors[members] = color
+            key.append((members[np.argmax(deg[members])], len(members)))
+        return colors, key
+
+    def draw_map(ax, colors, deg, title):
+        """The airports on the map, one colour a block."""
+        draw_outline(ax)
+        order = np.argsort(deg)  # small airports first, so that hubs lie on top
+        ax.scatter(AIR_X[order], AIR_Y[order], s=7 + 3 * np.sqrt(deg[order]),
+                   c=list(colors[order]), edgecolors=PAPER, linewidths=0.5, zorder=3)  # fmt: skip
+        ax.set_aspect("equal")
+        ax.axis("off")
+        ax.set_title(title, fontsize=9, color=INK, loc="left")
+
+    def name_blocks(ax, key):
+        """Name each coloured block on the map by its busiest airport and its
+        size. The label goes in the first spot, around the airport, where it
+        covers no label already placed. Call after the layout is final."""
+        fig = ax.figure
+        renderer = fig.canvas.get_renderer()
+        taken = []
+        spots = [(0, 10), (0, -16), (-30, 8), (30, 8), (-30, -14), (30, -14), (0, 26), (0, -32)]
+        for hub, size in key:
+            for dx, dy in spots:
+                label = ax.annotate(
+                    f"{AIR[hub][0]} · {size}", (AIR_X[hub], AIR_Y[hub]),
+                    xytext=(dx, dy), textcoords="offset points", ha="center",
+                    fontsize=8, fontweight="bold", color=INK, zorder=5,
+                    path_effects=[pe.withStroke(linewidth=2.6, foreground=PAPER)],
+                )  # fmt: skip
+                box = label.get_window_extent(renderer)
+                if not any(box.overlaps(other) for other in taken):
+                    taken.append(box)
+                    break
+                label.remove()
+
+    def map_matrix_figure(panels):
+        """One row a panel. A panel is (title, blocks): the airports on the map,
+        coloured by block, and the matrix with the airports listed block by block."""
+        M = edge_matrix(AIR_N, AIR_EDGES)
+        deg = M.sum(axis=1)
+        fig, axs = plt.subplots(
+            len(panels), 2, figsize=(8.6, 3.9 * len(panels)), facecolor=PAPER,
+            gridspec_kw=dict(width_ratios=[1.5, 1]), squeeze=False,
+        )  # fmt: skip
+        keys = []
+        for (ax_map, ax_mat), (title, blocks) in zip(axs, panels):
+            ax_map.set_facecolor(PAPER)
+            ax_mat.set_facecolor(PAPER)
+            b = rank_blocks(blocks, deg)
+            order = np.lexsort((-deg, b))
+            colors, key = community_colors(blocks, deg)
+            keys.append((ax_map, key))
+            draw_map(ax_map, colors, deg, f"{title}: {b.max() + 1} blocks")
+            draw_dots(ax_mat, M, order, order, 1.4, cuts_of(b), cuts_of(b),
+                      title="the same airports, block by block",
+                      colors=colors[order], cut_color=GREY)  # fmt: skip
+        fig.tight_layout()
+        fig.canvas.draw()
+        for ax_map, key in keys:
+            name_blocks(ax_map, key)
+        plt.close(fig)
+        return fig
+
+    def bipartite_sketch():
+        """Four airports on the left, three airlines on the right. A line joins
+        an airport to every airline that serves it."""
+        airports, airlines = "ABCD", "XYZ"
+        links = [("A", "X"), ("A", "Y"), ("B", "X"), ("C", "Y"), ("C", "Z"), ("D", "Z")]
+        ya = {n: 58 + 46 * i for i, n in enumerate(airports)}
+        yl = {n: 81 + 46 * i for i, n in enumerate(airlines)}
+        xa, xl = 100, 300
+        out = [
+            '<svg viewBox="0 0 400 230" width="100%" role="img" '
+            'style="max-width:420px;display:block" aria-label="Four airports on the '
+            "left, three airlines on the right, and a line from each airline to "
+            'every airport it serves">'
+        ]
+        for a, k in links:
+            out.append(
+                f'<line x1="{xa}" y1="{ya[a]}" x2="{xl}" y2="{yl[k]}" stroke="{INK}" '
+                'stroke-width="2" stroke-linecap="round"/>'
+            )
+        for names, ys, x, color in ((airports, ya, xa, BLUE), (airlines, yl, xl, RUST)):
+            for n in names:
+                out.append(
+                    f'<circle cx="{x}" cy="{ys[n]}" r="16" fill="{color}" '
+                    f'stroke="{PAPER}" stroke-width="2.5"/>'
+                    f'<text x="{x}" y="{ys[n] + 5.5}" text-anchor="middle" font-size="15" '
+                    f'font-weight="700" font-family="{SANS}" fill="#fff">{n}</text>'
+                )
+        for label, x in (("Airport", xa), ("Airline", xl)):
+            out.append(
+                f'<text x="{x}" y="24" text-anchor="middle" font-size="15" '
+                f'font-weight="700" font-family="{SANS}" fill="{INK}">{label}</text>'
+            )
+        out.append("</svg>")
+        return mo.Html("".join(out))
 
     def blocks_figure(M, panels, s):
         """One matrix per panel, side by side. A panel is (title, blocks): the
@@ -435,7 +560,7 @@ def _():
 
 @app.cell
 def _():
-    import io, json, os, pathlib, platform, subprocess, tarfile, tempfile, textwrap, urllib.request
+    import inspect, io, json, os, pathlib, platform, subprocess, tarfile, tempfile, textwrap, urllib.request
 
     GT = pathlib.Path(tempfile.gettempdir()) / "graph-tool"  # where graph-tool will live
     GT_PYTHON = GT / "env" / "bin" / "python"
@@ -450,19 +575,23 @@ def _():
         )
 
 
-    def graph_tool(code, **data):
-        """Run `code` inside graph-tool and return `out`. The code sees `gt`, your
-        keyword arguments, and `g`, the graph built from `edges`."""
+    def graph_tool(fn, **data):
+        """Run the function `fn` inside graph-tool and return what it returns.
+        In `fn`, `gt` is graph-tool; `g` is the graph built from `edges`, and any
+        other argument is one of your keyword arguments."""
+        call = ", ".join(
+            "g" if p == "g" else f"data[{p!r}]" for p in inspect.signature(fn).parameters
+        )
         with tempfile.TemporaryDirectory() as tmp:
             tmp = pathlib.Path(tmp)
             (tmp / "in.json").write_text(json.dumps(data))
             (tmp / "run.py").write_text(
                 "import json\nimport graph_tool.all as gt\n"
                 "gt.seed_rng(1); gt.openmp_set_num_threads(1)\n"  # same seed, same answer
-                "globals().update(json.load(open('in.json')))\n"
-                "g = gt.Graph(directed=False); g.add_edge_list(edges)\n"
-                + textwrap.dedent(code)
-                + "\njson.dump(out, open('out.json', 'w'))\n"
+                "data = json.load(open('in.json'))\n"
+                "g = gt.Graph(directed=False); g.add_edge_list(data['edges'])\n\n"
+                + textwrap.dedent(inspect.getsource(fn))
+                + f"\n\njson.dump({fn.__name__}({call}), open('out.json', 'w'))\n"
             )
             done = subprocess.run([GT_PYTHON, "run.py"], cwd=tmp, capture_output=True, text=True)
             if done.returncode:
@@ -474,11 +603,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    `graph_tool(code, edges=...)` runs `code` inside graph-tool and hands back the variable `out`. In the code, `gt` is graph-tool and `g` is your network.
+    `graph_tool(fn, edges=...)` runs your function `fn` inside graph-tool and hands back what it returns. In `fn`, `gt` is graph-tool and `g` is your network. (graph-tool lives in its own Python, so the function is sent over to it.)
 
     ---
 
-    ## 2 · US airports and Louvain
+    ## 2 · US airports and Leiden
 
     540 airports. Two airports are linked when a flight connects them.
     """)
@@ -507,15 +636,43 @@ def _():
 @app.cell
 def _():
     g_air = igraph.Graph(n=AIR_N, edges=AIR_EDGES)  # the airport network
-    louvain = g_air.community_multilevel().membership  # Louvain: a community for each airport
-    return g_air, louvain
+    return (g_air,)
 
 
 @app.cell(hide_code=True)
-def _(louvain):
-    blocks_figure(
-        edge_matrix(AIR_N, AIR_EDGES), [("A→Z order", None), ("Louvain", louvain)], 0.9
+def _():
+    mo.vstack(
+        [
+            mo.md(r"""
+    Leiden looks for groups that are dense inside. Type the code below into the cell under it. `my_net` is a stand-in; your network is `g_air`.
+    """),
+            type_me(
+                '''leiden = my_net.community_leiden(objective_function="modularity", n_iterations=-1).membership'''
+            ),
+        ]
     )
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Type the code above.
+    leiden = ...  # TASK
+    return (leiden,)
+
+
+@app.cell(hide_code=True)
+def _(leiden):
+    if leiden is ...:
+        _out = WAITING
+    elif not is_list_of(leiden, AIR_N):
+        _out = note(
+            "Not yet. <code>leiden</code> should hold one community number per airport.",
+            RUST,
+        )
+    else:
+        _out = map_matrix_figure([("Leiden", leiden)])
+    _out
     return
 
 
@@ -528,15 +685,16 @@ def _():
 
     ## 3 · The stochastic block model
 
-    Louvain looks for groups that are dense inside. The stochastic block model finds more: hubs, spokes, and groups that link to each other in any pattern.
+    It finds more than dense groups: hubs, spokes, and groups that link to each other in any pattern.
 
-    Type the code below into the cell under it. `my_net` is a stand-in; your network is `g_air`.
+    Type the code below into the cell under it.
     """),
             type_me(
-                '''blocks = graph_tool("""
-                state = gt.minimize_blockmodel_dl(g)
-                out = state.get_blocks().a.tolist()
-                """, edges=my_net.get_edgelist())'''
+                '''def fit_sbm(g):
+                    state = gt.minimize_blockmodel_dl(g)
+                    return state.get_blocks().a.tolist()
+
+                blocks = graph_tool(fit_sbm, edges=my_net.get_edgelist())'''
             ),
         ]
     )
@@ -551,8 +709,8 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(louvain, sbm_blocks):
-    if sbm_blocks is ...:
+def _(leiden, sbm_blocks):
+    if leiden is ... or sbm_blocks is ...:
         _out = WAITING
     elif not is_list_of(sbm_blocks, AIR_N):
         _out = note(
@@ -560,10 +718,13 @@ def _(louvain, sbm_blocks):
             RUST,
         )
     else:
-        _out = blocks_figure(
-            edge_matrix(AIR_N, AIR_EDGES),
-            [("Louvain", louvain), ("Stochastic block model", sbm_blocks)],
-            0.9,
+        _out = mo.vstack(
+            [
+                map_matrix_figure(
+                    [("Leiden", leiden), ("Stochastic block model", sbm_blocks)]
+                ),
+                mo.md("Colours belong to one row: the same colour in the two rows is not the same group."),
+            ]
         )
     _out
     return
@@ -581,6 +742,17 @@ def _():
     return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.vstack(
+        [
+            bipartite_sketch(),
+            mo.md("A line means the airline serves the airport. No line joins two airports, or two airlines."),
+        ]
+    )
+    return
+
+
 @app.cell
 def _():
     n_airlines = len(BIP_AIRLINES)
@@ -590,12 +762,13 @@ def _():
     )
     kinds = [0] * n_airlines + [1] * len(BIP_AIRPORTS)  # 0 = airline, 1 = airport
 
-    bip_sbm = graph_tool("""
-    pclabel = g.new_vertex_property("int")
-    pclabel.a = kinds
-    state = gt.minimize_blockmodel_dl(g, state_args=dict(pclabel=pclabel))
-    out = state.get_blocks().a.tolist()
-    """, edges=g_bip.get_edgelist(), kinds=kinds)
+    def fit_bipartite(g, kinds):
+        pclabel = g.new_vertex_property("int")
+        pclabel.a = kinds
+        state = gt.minimize_blockmodel_dl(g, state_args=dict(pclabel=pclabel))
+        return state.get_blocks().a.tolist()
+
+    bip_sbm = graph_tool(fit_bipartite, edges=g_bip.get_edgelist(), kinds=kinds)
     return bip_sbm, g_bip
 
 
@@ -612,31 +785,31 @@ def _(bip_sbm, g_bip):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Now run Louvain on this network yourself and compare.
+    Now run Leiden on this network yourself and compare.
     """)
     return
 
 
 @app.cell
 def _(g_bip):
-    # ✍️ Run Louvain on g_bip, as you did for g_air.
-    bip_louvain = ...  # TASK
-    return (bip_louvain,)
+    # ✍️ Run Leiden on g_bip, as you did for g_air.
+    bip_leiden = ...  # TASK
+    return (bip_leiden,)
 
 
 @app.cell(hide_code=True)
-def _(bip_louvain, bip_sbm, g_bip):
-    if bip_louvain is ...:
+def _(bip_leiden, bip_sbm, g_bip):
+    if bip_leiden is ...:
         _out = WAITING
-    elif not is_list_of(bip_louvain, g_bip.vcount()):
+    elif not is_list_of(bip_leiden, g_bip.vcount()):
         _out = note(
-            "Not yet. <code>bip_louvain</code> should hold one community number per node.",
+            "Not yet. <code>bip_leiden</code> should hold one community number per node.",
             RUST,
         )
     else:
         _out = blocks_figure(
             edge_matrix(g_bip.vcount(), g_bip.get_edgelist()),
-            [("Louvain", bip_louvain), ("Stochastic block model", bip_sbm)],
+            [("Leiden", bip_leiden), ("Stochastic block model", bip_sbm)],
             1.3,
         )
     _out
@@ -657,15 +830,16 @@ def _():
     Type the code below into the cell under it. It takes a few seconds.
     """),
             type_me(
-                '''sure = graph_tool("""
-                state = gt.minimize_blockmodel_dl(g)
-                partitions = []
-                for _ in range(20):
-                    state.multiflip_mcmc_sweep(niter=2)
-                    partitions.append(state.get_blocks().a.copy())
-                pv = gt.PartitionModeState(partitions, converge=True).get_marginal(g)
-                out = [float(max(pv[v]) / sum(pv[v])) for v in g.vertices()]
-                """, edges=my_net.get_edgelist())'''
+                '''def sample_blocks(g):
+                    state = gt.minimize_blockmodel_dl(g)
+                    partitions = []
+                    for _ in range(20):
+                        state.multiflip_mcmc_sweep(niter=2)
+                        partitions.append(state.get_blocks().a.copy())
+                    pv = gt.PartitionModeState(partitions, converge=True).get_marginal(g)
+                    return [float(max(pv[v]) / sum(pv[v])) for v in g.vertices()]
+
+                sure = graph_tool(sample_blocks, edges=my_net.get_edgelist())'''
             ),
         ]
     )
