@@ -120,18 +120,18 @@ export const EightRows: React.FC<{
 };
 
 /**
- * A pair of nodes as an icon: two small discs joined by a line, centred on (x, y).
- * By default both discs are solid blue, so the icon says "a pair of nodes" and nothing else: where it
- * sits (which pile) carries the meaning. Pass `looks` to draw the two nodes in their true looks.
+ * A pair of nodes as an icon: two hollow discs joined by a line, centred on (x, y). The line carries the
+ * verdict: blue when the two splits agree about the pair, red when they disagree (black when `agree` is
+ * not given). Pass `looks` to draw the two nodes in their true looks instead of hollow.
  */
-export const PairIcon: React.FC<{x: number; y: number; a?: number; b?: number; looks?: boolean; d?: number; gap?: number}> = ({x, y, a = 0, b = 0, looks = false, d = 26, gap = 42}) => (
+export const PairIcon: React.FC<{x: number; y: number; agree?: boolean; a?: number; b?: number; looks?: boolean; d?: number; gap?: number}> = ({x, y, agree, a = 0, b = 0, looks = false, d = 26, gap = 42}) => (
   <g>
-    <line x1={x - gap / 2} y1={y} x2={x + gap / 2} y2={y} stroke={C.ink} strokeWidth={4} />
+    <line x1={x - gap / 2} y1={y} x2={x + gap / 2} y2={y} stroke={agree === undefined ? C.ink : agree ? C.blue : C.red} strokeWidth={agree === undefined ? 4 : 8} strokeLinecap="round" />
     {[
       [a, -gap / 2],
       [b, gap / 2],
     ].map(([i, dx]) => {
-      const lk = looks ? trueLook(i) : LOOK[0];
+      const lk = looks ? trueLook(i) : LOOK[1];
       const sw = Math.min(lk.sw, 4);
       return <circle key={dx} cx={x + dx} cy={y} r={d / 2 - sw / 2} fill={lk.fill} stroke={lk.stroke === '#fff' ? C.blue : lk.stroke} strokeWidth={sw} />;
     })}

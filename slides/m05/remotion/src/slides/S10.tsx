@@ -110,7 +110,11 @@ export const S10: React.FC = () => {
         const x1 = nodeX(G, pr.a);
         const x2 = lerp(x1, nodeX(G, pr.b), pp[k].p);
         return [G.yTrue, G.yFound].map((y) => (
-          <line key={`${k}-${y}`} x1={x1} y1={y} x2={x2} y2={y} stroke={C.ink} strokeWidth={12} strokeLinecap="round" opacity={pp[k].p > 0.001 ? 1 : 0} />
+          <g key={`${k}-${y}`}>
+            <line x1={x1} y1={y} x2={x2} y2={y} stroke={C.ink} strokeWidth={12} strokeLinecap="round" opacity={pp[k].p > 0.001 ? 1 : 0} />
+            {/* once the verdict is out, the line takes its colour: blue for agree, red for disagree */}
+            <line x1={x1} y1={y} x2={x2} y2={y} stroke={pr.agree ? C.blue : C.red} strokeWidth={12} strokeLinecap="round" opacity={pp[k].v} />
+          </g>
         ));
       })}
     </g>
@@ -162,7 +166,7 @@ export const S10: React.FC = () => {
           const p = landed(n);
           return (
             <g key={n} opacity={chipsIn}>
-              <PairIcon x={lerp(ch.sx, tx, p)} y={lerp(ch.sy, ty, p)} d={32} gap={46} />
+              <PairIcon x={lerp(ch.sx, tx, p)} y={lerp(ch.sy, ty, p)} agree={ch.r === ch.c} d={28} gap={56} />
             </g>
           );
         })}
