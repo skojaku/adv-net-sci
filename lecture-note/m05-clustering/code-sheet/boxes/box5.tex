@@ -8,9 +8,12 @@ for ax, name, groups in zip(axes, ["Leiden", "SBM"], [leiden, sbm]):
     ig.plot(
         karate, target=ax, layout=layout,
         vertex_color=colors_of(groups),
+        vertex_shape=shapes_of(groups),
         vertex_label=karate.vs.indices,
+        vertex_label_color="white",
         edge_color="lightgray",
     )
+    group_legend(ax, groups)
     ax.set_title(name)
 plt.show()
 \end{codebox}
@@ -19,6 +22,7 @@ plt.show()
 \item[3] \texttt{plt.subplots(1, 2, ...)} makes one picture with two panels side by side (1 row, 2 columns), 10 inches wide and 5 tall. \texttt{fig} is the whole picture and \texttt{axes} holds the two panels.
 \item[4] A loop: the indented lines run twice, once for each panel. \texttt{zip} walks through three lists together. The first time round, \texttt{ax} is the first panel, \texttt{name} is \texttt{"Leiden"} and \texttt{groups} is the list from Box 2; the second time, the SBM's.
 \item[5] \texttt{np.argsort(groups)} lists the node numbers sorted by group, so nodes of one group sit together. \texttt{layout\_circle(order=...)} puts the nodes on a circle in that order: each group takes one arc. The layout holds a position for every node.
-\item[6--11] \texttt{ig.plot} draws the network into the panel \texttt{ax}, at the positions in \texttt{layout}. \texttt{vertex\_color} paints each node in the colour of its group (\texttt{colors\_of} was written for you); \texttt{vertex\_label} writes the node's number in it (\texttt{karate.vs.indices} is the list of node numbers); \texttt{edge\_color} draws the friendships in light grey. Each line ends with a comma.
-\item[12--13] \texttt{ax.set\_title(name)} writes the title above the panel, and \texttt{plt.show()} shows the finished picture.
+\item[6--13] \texttt{ig.plot} draws the network into the panel \texttt{ax}, at the positions in \texttt{layout}. \texttt{vertex\_color} and \texttt{vertex\_shape} give each node the colour and the shape of its group, so that a group never depends on colour alone (\texttt{colors\_of} and \texttt{shapes\_of} were written for you); \texttt{vertex\_label} writes the node's number inside it, in white (\texttt{karate.vs.indices} is the list of node numbers); \texttt{edge\_color} draws the friendships in light grey. Each line ends with a comma.
+\item[14] \texttt{group\_legend} (written for you) adds a key under the panel: the marker and the size of each group.
+\item[15--16] \texttt{ax.set\_title(name)} writes the title above the panel, and \texttt{plt.show()} shows the finished picture.
 \end{linenotes}

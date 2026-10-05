@@ -45,6 +45,9 @@
 \setlength{\parskip}{0.4em}
 \setlength{\emergencystretch}{1.2em}
 \raggedbottom
+% No single line of a note is left alone at the foot or the head of a page.
+\clubpenalty=10000
+\widowpenalty=10000
 
 % Break the page unless #1 of it is left (needspace's glue trick, written out
 % because needspace.sty is not in a BasicTeX install; see exercise.tex).
@@ -157,7 +160,7 @@ moves the karate club over to it and fits the stochastic block model from the le
 \begin{itemize}[itemsep=0.1em, topsep=0.2em, leftmargin=1.4em]
 \item Find node 0 and node 33 in each picture. Which groupings keep them apart?
 \item The two methods look for different things. In the SBM picture, who ends up
-together, and how many friends do they have? (Bigger circles: more friends.)
+together, and how many friends do they have? (Bigger marks: more friends.)
 \end{itemize}
 
 \parthead{5}{Draw the groups on a circle}

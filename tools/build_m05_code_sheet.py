@@ -105,7 +105,7 @@ print(sbm)''',
         title="Put the results side by side",
         code='''show(karate, Real=club, Leiden=leiden, SBM=sbm)''',
         notes=[
-            ("1", r"\texttt{show} was written for you in the notebook's setup. It draws the karate club once for each grouping you give it, coloured by group, with the adjacency matrix under it (the members listed group by group). The word before each \texttt{=} is the title printed on the picture. \texttt{club} is ready-made too: who really joined which side when the club split in two."),
+            ("1", r"\texttt{show} was written for you in the notebook's setup. It draws the karate club once for each grouping you give it. The word before each \texttt{=} is the title printed on the picture. Each of the four biggest groups has a colour and a shape of its own, and the circles are bigger for members with more friends. Under each drawing is the adjacency matrix, with the members listed group by group: its black squares are friendships, and the strip along its top and left edges has the colour of each group. \texttt{club} is ready-made too: who really joined which side when the club split in two."),
         ],
     ),
     dict(
@@ -119,9 +119,12 @@ for ax, name, groups in zip(axes, ["Leiden", "SBM"], [leiden, sbm]):
     ig.plot(
         karate, target=ax, layout=layout,
         vertex_color=colors_of(groups),
+        vertex_shape=shapes_of(groups),
         vertex_label=karate.vs.indices,
+        vertex_label_color="white",
         edge_color="lightgray",
     )
+    group_legend(ax, groups)
     ax.set_title(name)
 plt.show()''',
         notes=[
@@ -129,8 +132,9 @@ plt.show()''',
             ("3", r"\texttt{plt.subplots(1, 2, ...)} makes one picture with two panels side by side (1 row, 2 columns), 10 inches wide and 5 tall. \texttt{fig} is the whole picture and \texttt{axes} holds the two panels."),
             ("4", r"A loop: the indented lines run twice, once for each panel. \texttt{zip} walks through three lists together. The first time round, \texttt{ax} is the first panel, \texttt{name} is \texttt{"+'"Leiden"'+r"} and \texttt{groups} is the list from Box 2; the second time, the SBM's."),
             ("5", r"\texttt{np.argsort(groups)} lists the node numbers sorted by group, so nodes of one group sit together. \texttt{layout\_circle(order=...)} puts the nodes on a circle in that order: each group takes one arc. The layout holds a position for every node."),
-            ("6--11", r"\texttt{ig.plot} draws the network into the panel \texttt{ax}, at the positions in \texttt{layout}. \texttt{vertex\_color} paints each node in the colour of its group (\texttt{colors\_of} was written for you); \texttt{vertex\_label} writes the node's number in it (\texttt{karate.vs.indices} is the list of node numbers); \texttt{edge\_color} draws the friendships in light grey. Each line ends with a comma."),
-            ("12--13", r"\texttt{ax.set\_title(name)} writes the title above the panel, and \texttt{plt.show()} shows the finished picture."),
+            ("6--13", r"\texttt{ig.plot} draws the network into the panel \texttt{ax}, at the positions in \texttt{layout}. \texttt{vertex\_color} and \texttt{vertex\_shape} give each node the colour and the shape of its group, so that a group never depends on colour alone (\texttt{colors\_of} and \texttt{shapes\_of} were written for you); \texttt{vertex\_label} writes the node's number inside it, in white (\texttt{karate.vs.indices} is the list of node numbers); \texttt{edge\_color} draws the friendships in light grey. Each line ends with a comma."),
+            ("14", r"\texttt{group\_legend} (written for you) adds a key under the panel: the marker and the size of each group."),
+            ("15--16", r"\texttt{ax.set\_title(name)} writes the title above the panel, and \texttt{plt.show()} shows the finished picture."),
         ],
     ),
     dict(
@@ -147,7 +151,7 @@ show_map(Leiden=leiden_air, SBM=sbm_air)''',
             ("1--2", r"Box 2 again. Only the network changed: \texttt{g\_air} is the US airport network (540 airports, two linked when a flight connects them), already built for you."),
             ("3--4", r"Box 3, lines 3 and 4, again, with a new graph-tool network called \texttt{g2}."),
             ("5--6", r"Box 3, lines 5 and 6, again. Nothing is printed this time, because 540 numbers are too many to read."),
-            ("7", r"\texttt{show\_map} is the airport version of \texttt{show}: the airports on a map of the US, coloured by group, next to the matrix. Each of the five biggest groups is named on the map by its busiest airport."),
+            ("7", r"\texttt{show\_map} is the airport version of \texttt{show}: the airports on a map of the US, coloured by group, next to the matrix. Each of the four biggest groups is named on the map by its busiest airport."),
         ],
     ),
 ]
@@ -177,17 +181,28 @@ import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
+from matplotlib.patches import Rectangle
 
 # The airport data travels inside this notebook, so nothing is downloaded.
 _DATA = json.loads(zlib.decompress(base64.b64decode("@@DATA@@")))
 
-INK, GREY, OTHER = "#1D1E21", "#BDB8AA", "#9A968A"
-# Five muted colours: the course's blue, rust and mustard, and a light blue and a
-# rose. They pass the all-pairs colour checks (dataviz validate_palette.js --pairs all,
-# on white); a sixth group, and any later one, is grey. Every group is also named in
-# words under its picture.
-COLORS = ["#3959A6", "#B14434", "#D4A017", "#5BA7D6", "#D77A8A"]
-plt.rcParams.update({"figure.dpi": 100, "font.size": 9})
+# Colour marks the group, and nothing else does. The four biggest groups take the two
+# accents of the course figures (blue, vermillion) and two steps of ink, each with a
+# marker shape of its own, so that no group is told apart by colour alone; every other
+# group is light grey, "the rest". Blue and vermillion pass the all-pairs colour checks
+# (dataviz validate_palette.js, on white): worst colour-blind separation 21.9, normal
+# vision 31.2. Ink and grey carry no hue, so those checks do not apply to them.
+INK, INK2, INK3 = "#1a1a1a", "#767676", "#bdbdbd"
+TEXT, AXIS = "#52514e", "#c3c2b7"
+STYLES = [  # colour, matplotlib marker, igraph shape: for each of the four biggest groups
+    ("#0072b2", "o", "circle"),
+    ("#d55e00", "s", "rectangle"),
+    (INK, "^", "triangle-up"),
+    (INK2, "D", "diamond"),
+]
+REST = (INK3, "o", "circle")
+plt.rcParams.update({"figure.dpi": 100, "font.size": 9, "text.color": INK,
+                     "axes.edgecolor": AXIS, "axes.labelcolor": INK})
 
 # Who joined which side when the karate club split: 0 = Mr. Hi, 1 = the Officer.
 _OFFICER = {9, 14, 15, 18, 20, 22, *range(23, 34)}
@@ -199,74 +214,116 @@ g_air = igraph.Graph(n=len(AIRPORTS), edges=_DATA["edges"])
 
 
 def _groups(blocks):
-    """Number the groups 0, 1, 2 ... from the biggest, and colour them."""
+    """Number the groups 0, 1, 2 ... from the biggest. Returns the group number of
+    each node, and the group sizes, biggest first."""
     blocks = np.asarray(blocks)
     ids, sizes = np.unique(blocks, return_counts=True)
     ranked = ids[np.argsort(-sizes, kind="stable")]
     rank = {b: k for k, b in enumerate(ranked)}
-    number = np.array([rank[b] for b in blocks])
-    colors = np.array([COLORS[k] if k < len(COLORS) else OTHER for k in number], dtype=object)
-    return number, colors, np.sort(sizes)[::-1]
+    return np.array([rank[b] for b in blocks]), np.sort(sizes)[::-1]
+
+
+def _style(k):
+    return STYLES[k] if k < len(STYLES) else REST
 
 
 def colors_of(blocks):
-    """The colour of the group each node is in, to draw with. The biggest group is
-    painted first; groups past the fifth are grey."""
-    return list(_groups(blocks)[1])
+    """The colour of the group each node is in, to draw with. The four biggest
+    groups have a colour each; every other group is light grey."""
+    return [_style(k)[0] for k in _groups(blocks)[0]]
 
 
-def _matrix(ax, graph, number, colors, title):
-    """The adjacency matrix with the nodes listed group by group."""
+def shapes_of(blocks):
+    """The shape of the group each node is in, to draw with: one for each of the four
+    biggest groups, so that colour is never the only way to tell them apart."""
+    return [_style(k)[2] for k in _groups(blocks)[0]]
+
+
+def group_legend(ax, blocks, shapes=True):
+    """A key under a drawing: the marker and the size of each group. Every group
+    past the fourth is counted together as "the rest"."""
+    _, sizes = _groups(blocks)
+    keys = []
+    for k in range(min(len(sizes), len(STYLES))):
+        color, marker, _ = STYLES[k]
+        keys.append(ax.scatter([], [], marker=marker if shapes else "o", s=42, color=color,
+                               label=f"group {k + 1}: {sizes[k]}"))
+    if len(sizes) > len(STYLES):
+        keys.append(ax.scatter([], [], marker="o", s=42, color=INK3,
+                               label=f"the rest: {int(sizes[len(STYLES):].sum())}"))
+    ax.legend(handles=keys, loc="upper center", bbox_to_anchor=(0.5, 0.03), ncol=len(keys),
+              frameon=False, fontsize=8, labelcolor=TEXT, handletextpad=0.2, columnspacing=1.0)
+
+
+def _matrix(ax, graph, number, title):
+    """The adjacency matrix with the nodes listed group by group. The matrix is ink:
+    the order already says which group is which. A thin strip in each group's colour
+    along the top and the left links it to the drawing."""
     n = graph.vcount()
     degree = np.array(graph.degree())
     order = np.lexsort((-degree, number))
     place = np.empty(n, dtype=int)
     place[order] = np.arange(n)
-    rows, cols, dots = [], [], []
+    rows, cols = [], []
     for i, j in graph.get_edgelist():
-        for a, b in ((i, j), (j, i)):
-            rows.append(place[a]), cols.append(place[b]), dots.append(colors[a])
+        rows += [place[i], place[j]]
+        cols += [place[j], place[i]]
     ax.scatter(cols, rows, s=max(1.3, 0.9 * (260 / n) ** 2), marker="s",
-               linewidths=0, c=dots, rasterized=True)
-    for k in np.cumsum(np.bincount(number))[:-1]:
-        ax.axvline(k - 0.5, color=GREY, lw=0.7)
-        ax.axhline(k - 0.5, color=GREY, lw=0.7)
+               linewidths=0, color=INK, rasterized=True)
+    edges = np.concatenate([[0], np.cumsum(np.bincount(number))])
+    width = max(1.2, 0.022 * n)
+    for k in range(len(edges) - 1):
+        length = edges[k + 1] - edges[k]
+        color = _style(k)[0]
+        ax.add_patch(Rectangle((-0.5 - 1.7 * width, edges[k] - 0.5), width, length,
+                               color=color, linewidth=0, clip_on=False))
+        ax.add_patch(Rectangle((edges[k] - 0.5, -0.5 - 1.7 * width), length, width,
+                               color=color, linewidth=0, clip_on=False))
+    for k in edges[1:-1]:
+        ax.axvline(k - 0.5, color=INK3, lw=0.7)
+        ax.axhline(k - 0.5, color=INK3, lw=0.7)
     ax.set_xlim(-0.5, n - 0.5)
     ax.set_ylim(n - 0.5, -0.5)
     ax.set_aspect("equal")
     if n <= 40:
-        ax.set_xticks(range(n), order, fontsize=5, rotation=90)
-        ax.set_yticks(range(n), order, fontsize=5)
+        ax.yaxis.tick_right()  # the strips take the left and the top
+        ax.set_xticks(range(n), order, fontsize=5, rotation=90, color=TEXT)
+        ax.set_yticks(range(n), order, fontsize=5, color=TEXT)
+        ax.tick_params(length=0)
     else:
         ax.set_xticks([])
         ax.set_yticks([])
     for side in ax.spines.values():
-        side.set_color(GREY)
-    ax.set_title(title, fontsize=9, loc="left")
+        side.set_color(AXIS)
+    ax.set_title(title, fontsize=9, loc="left", color=INK,
+                 pad=6 + 2.7 * width * 260 / n)  # above the strip
 
 
 def show(graph, **groupings):
     """Draw a small network once for each grouping, with its matrix under it.
     show(karate, Leiden=leiden): the word before = is the title of the picture."""
     where = np.array(graph.layout_kamada_kawai())  # the same picture every time
-    n = graph.vcount()
-    fig, axs = plt.subplots(2, len(groupings), figsize=(3.9 * len(groupings), 7.9), squeeze=False)
+    degree = np.array(graph.degree())
+    fig, axs = plt.subplots(2, len(groupings), figsize=(3.9 * len(groupings), 8.2), squeeze=False)
     for col, (name, blocks) in enumerate(groupings.items()):
-        number, colors, sizes = _groups(blocks)
+        number, sizes = _groups(blocks)
         top = axs[0, col]
         for a, b in graph.get_edgelist():
-            top.plot(*where[[a, b]].T, color=GREY, lw=0.8, zorder=1)
-        top.scatter(where[:, 0], where[:, 1], s=50 + 24 * np.array(graph.degree()), c=list(colors),
-                    edgecolors="white", linewidths=1, zorder=2)
-        for v in range(n):
-            top.text(*where[v], str(v), ha="center", va="center", fontsize=6.5, color="white",
-                     zorder=3, path_effects=[pe.withStroke(linewidth=1.6, foreground=INK)])
+            top.plot(*where[[a, b]].T, color=INK3, lw=0.8, zorder=1)
+        for k in range(len(sizes) - 1, -1, -1):  # the rest first, the biggest group on top
+            members = np.flatnonzero(number == k)
+            color, marker, _ = _style(k)
+            top.scatter(where[members, 0], where[members, 1], s=40 + 22 * degree[members],
+                        marker=marker, color=color, edgecolors="white", linewidths=1.5, zorder=2)
+        for v in np.argsort(-degree)[:2]:  # name the two best-connected members
+            top.annotate(str(v), where[v], xytext=(0, 12), textcoords="offset points",
+                         ha="center", fontsize=9, fontweight="bold", color=INK, zorder=3,
+                         path_effects=[pe.withStroke(linewidth=2.4, foreground="white")])
         top.set_aspect("equal")
         top.axis("off")
-        top.set_title(f"{name}: {len(sizes)} groups", fontsize=9, loc="left")
-        top.text(0.5, -0.03, "group sizes: " + ", ".join(str(s) for s in sizes),
-                 transform=top.transAxes, ha="center", va="top", fontsize=8)
-        _matrix(axs[1, col], graph, number, colors, "the same nodes, group by group")
+        top.set_title(f"{name}: {len(sizes)} groups", fontsize=9, loc="left", color=INK)
+        group_legend(top, blocks)
+        _matrix(axs[1, col], graph, number, "the same nodes, group by group")
     fig.tight_layout()
     plt.show()
 
@@ -310,26 +367,29 @@ def show_map(**groupings):
     show_map(Leiden=leiden_air): the word before = is the title of the picture."""
     graph = g_air
     degree = np.array(graph.degree())
-    fig, axs = plt.subplots(len(groupings), 2, figsize=(8.6, 3.9 * len(groupings)),
+    fig, axs = plt.subplots(len(groupings), 2, figsize=(8.6, 4.1 * len(groupings)),
                             gridspec_kw=dict(width_ratios=[1.5, 1]), squeeze=False)
     todo = []
     for (ax_map, ax_mat), (name, blocks) in zip(axs, groupings.items()):
-        number, colors, sizes = _groups(blocks)
+        number, sizes = _groups(blocks)
         for ring in _DATA["states"]:
             x, y = _albers([p[0] for p in ring], [p[1] for p in ring])
-            ax_map.plot(x, y, color=GREY, lw=0.5, zorder=0)
-        by_size = np.argsort(degree)  # small airports first, so that hubs lie on top
-        ax_map.scatter(_AIR_X[by_size], _AIR_Y[by_size], s=7 + 3 * np.sqrt(degree[by_size]),
-                       c=list(colors[by_size]), edgecolors="white", linewidths=0.5, zorder=3)
+            ax_map.plot(x, y, color=AXIS, lw=0.5, zorder=0)
+        for k in range(len(sizes) - 1, -1, -1):  # the rest first, the biggest group on top
+            members = np.flatnonzero(number == k)
+            members = members[np.argsort(degree[members])]  # hubs on top
+            ax_map.scatter(_AIR_X[members], _AIR_Y[members], s=7 + 3 * np.sqrt(degree[members]),
+                           color=_style(k)[0], edgecolors="white", linewidths=0.5, zorder=3)
         ax_map.set_aspect("equal")
         ax_map.axis("off")
-        ax_map.set_title(f"{name}: {len(sizes)} groups", fontsize=9, loc="left")
+        ax_map.set_title(f"{name}: {len(sizes)} groups", fontsize=9, loc="left", color=INK)
+        group_legend(ax_map, blocks, shapes=False)
         hubs = []
-        for k in range(min(len(sizes), len(COLORS))):
+        for k in range(min(len(sizes), len(STYLES))):
             members = np.flatnonzero(number == k)
             hubs.append((members[np.argmax(degree[members])], len(members)))
         todo.append((ax_map, hubs))
-        _matrix(ax_mat, graph, number, colors, "the same airports, group by group")
+        _matrix(ax_mat, graph, number, "the same airports, group by group")
     fig.tight_layout()
     fig.canvas.draw()
     for ax_map, hubs in todo:
