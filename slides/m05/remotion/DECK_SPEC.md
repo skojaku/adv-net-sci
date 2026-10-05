@@ -2,7 +2,7 @@
 
 2026-10-05。設計表。
 
-**改訂 (同日、講師の指摘のあと)**: 32 枚 (最初の案は 23 枚)。
+**改訂 (同日、講師の指摘のあと)**: 35 枚 (最初の案は 23 枚)。
 
 - Rand 指数は、ノードの組を **行列のセル** で見せる (S11)。ノード 2 つを線で結ぶ絵は、ネットワークの辺に見えるので使わない。
   なぜ組を数えるかは、ノードを数える案と反例で示す (S10)。
@@ -10,7 +10,8 @@
   同時確率を分子に、周辺確率どうしの積を分母にした比で決まる。
 - **群の色は、青、オレンジ、茶色、紫、濃い灰色。赤は文字だけ。** ストライプ (茶色) は、帯と円の重なりにだけ使う。
 - 乱数 u は見せない (S23)。確率は 10 枚のくじで説明する。
-- 最後に、SBM の推定の式 (S29)、尤度が K とともに増えること (S30)、Peixoto のベイズ流 SBM (S31)、graph-tool (S32) を足した。
+- 最後に、SBM の推定を数式で積み上げる (S29 から S31。p_rs は与えず、一般の形の尤度から対数尤度、最大化、c を固定して p を求め、c だけの式に戻す)、
+  尤度が K とともに増えること (S32)、Peixoto のベイズ流 SBM (S33)、graph-tool (S34)、オチの空手クラブ (S35) を足した。
 - 字幕は 1 段階に短いもの 1 つまで。数える単位 (ノードの組か、ノード 1 つか) を明示する。
 
 ## 何を作るか
@@ -27,7 +28,7 @@ Marp デッキ `../m05-clustering.md` のモジュラリティの導出まで (�
 | A ring of triangles / Q merges neighbors | S02 から S04 |
 | Similar Q, different groups (2枚) | S05 |
 | (なし。デッキを作り直したときに落ちた) | S06 から S07 (ノイズ)、S08 から S21 (Rand、ARI、NMI) |
-| Turn it around から Finding the groups is inference まで (8枚) | S22 から S28。そのあとに S29 から S32 を追加 |
+| Turn it around から Finding the groups is inference まで (8枚) | S22 から S28。そのあとに S29 から S35 を追加 |
 
 スライドの文字は英語にする。Marp デッキと同じで、手順書が前提にしている日本語ではない。
 この文書の説明は日本語、`like this` の引用がスライド上の文字。
@@ -40,7 +41,7 @@ Marp デッキ `../m05-clustering.md` のモジュラリティの導出まで (�
    組を数えるだけの Rand のほうが具体的なので先にした。限界の最後の「Q が同点でも分割は別」から
    「では2つの分割はどれだけ違うか」へ自然につながる。
 3. **任意の3枚。** S06 から S07 (ノイズで Q が高い、2枚) と S20 (全員ひとりの分割、1枚) は
-   入れなくても話は通る。外すと 32 枚が 29 枚になる。外すかどうか。
+   入れなくても話は通る。外すと 35 枚が 32 枚になる。外すかどうか。
    S06 から S07 は、Marp の直前にある「Game: where Q goes wrong」の第 2 タブ (2024 年のゲーム。
    40 節点 41 辺の無作為ネットワークで、3 色で Q = 0.57、Louvain で 0.66) の解説と重なる。
    残す場合、ゲームの網そのものを使うか (数字を入れ替える)、クラブと同じ大きさ (34 節点 78 辺) で
@@ -187,20 +188,30 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 1 | その推測のもとで、この網がそのまま生まれる確率の対数 (`score`) を数直線に置く: -17.5 | 点 1 つ |
 | | 2 | 推測を 3 つ足す: 1 ノード動かした -15.5、他 2 つ、全員 1 群 -19.1 | 点 4 つ |
 | | 3 | 真の分け方 (5/6、6/6、1/16): -6.4 で最高。黒い点、赤い文字 | 点 5 つ |
-| S29 `The SBM estimate, step by step` | 0 | 8 ノードの網と群 c。`1 A grouping c` | 網 + 群 |
-| | 1 | ブロックごとに辺 m と組 n を数える: 5/6、6/6、1/16。`2 Count edges m and pairs of nodes n` | 升に m / n |
-| | 2 | `p_rs = m_rs / n_rs`: 0.83、1.00、0.06 | 升に p |
-| | 3 | ネットワークの確率を、ブロックごとの積で示す: `L(c) = product over blocks of p^m (1 - p)^(n - m)`。各項に注釈: `each block`、`m pairs with an edge`、`n - m pairs with no edge`。升の中は各ブロックの確率 0.067、0.024、1 で、`L = 0.067 x 0.024 x 1 = 0.0016` | 積の式 + 注釈 |
-| | 4 | 対数をとると積が和になる: `log L(c) = sum over blocks of [m log p + (n - m) log(1 - p)]` (注釈つき)。升の中は -2.70、-3.74、0 で、`log L = -2.70 - 3.74 + 0 = -6.44` | 和の式 |
-| | 5 | `6 Keep the c with the largest log L: the most likely grouping` | 結び |
-| S30 `More groups always fit better` | 0 | グループ数 K = 1 から 8 の、最良の log L: -19.1, -6.4, -3.0, -1.4, 0, 0, 0, 0 の折れ線。`log L never decreases as K grows` | 折れ線 |
+| S29 `The likelihood of a network` | 0 | 左の列に記号の定義 (`A_ij`、`c_i`、`p_rs`)。右に `L(c, p) = P(A given c, p)`。**p_rs の値は与えない** | 定義 + L の定義 |
+| | 1 | 1 組のノード (i, j): 辺があれば確率 p_{c_i c_j}、なければ 1 - p_{c_i c_j} (場合分けの式) | + 場合分け |
+| | 2 | 1 つの式にまとめる: `p^{A_ij} (1 - p)^{1 - A_ij}` | + べき乗の式 |
+| | 3 | すべての組の積: `L(c, p) = product over i < j of p^{A_ij} (1 - p)^{1 - A_ij}` (尤度) | + 積 |
+| | 4 | ブロック (r, s) ごとにまとめる: `L(c, p) = product over r <= s of p_rs^{m_rs} (1 - p_rs)^{n_rs - m_rs}`。左の列に m_rs と n_rs の定義が加わる | + ブロックの式 |
+| | 5 | 対数をとる: `log L(c, p) = sum over r <= s of [m_rs log p_rs + (n_rs - m_rs) log(1 - p_rs)]` | + 対数尤度。式はどれも消さず、最後まで残す |
+| S30 `Fix c, find p` | 0 | 上の帯に前の式 (L と log L) を小さく残す。`(c-hat, p-hat) = argmax of log L(c, p)` (尤度の最大化) | 帯 + 最大化の式 |
+| | 1 | c を固定する: ネットワークが c の色に塗られ、ブロックごとの m / n の表が出る。`fix c: p-hat = argmax over p of log L(c, p)` | 色つきの網 + 表 (5/6、1/16、6/6) |
+| | 2 | log L を p_rs で微分して 0 とおく: `m / p - (n - m) / (1 - p) = 0` | + 微分の式 |
+| | 3 | `p-hat_rs = m_rs / n_rs`。表が p-hat (0.83、0.06、1.00) に変わる | + 結果 |
+| S31 `Back to c` | 0 | 上の帯に log L(c, p) と p-hat を小さく残す。p-hat を戻すと c だけの式: `log L(c) = sum over r <= s of [m log(m / n) + (n - m) log(1 - m / n)]` | 帯 + c だけの式 |
+| | 1 | `a formula in c alone`。この c の値: 表に -2.70、-3.74、0。`log L = -2.70 - 3.74 + 0 = -6.44` | + 数値 |
+| | 2 | `c-hat = argmax over c of log L(c)`。`all that is left: maximize over c` | 結び |
+| S32 `More groups always fit better` | 0 | グループ数 K = 1 から 8 の、最良の log L: -19.1, -6.4, -3.0, -1.4, 0, 0, 0, 0 の折れ線。`log L never decreases as K grows` | 折れ線 |
 | | 1 | `More groups, more parameters, a better fit`。K = 5 から 8 は 0 (完全に当てはまる) | + 破線 |
 | | 2 | K = 8 (全員ひとり) に輪。`A large K overfits: the groups mean nothing`、`K = 8: every node alone, a perfect fit` | 結び |
-| S31 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping`。P(A given c) は p を積分して消したもの | 2 つの式 |
-| | 1 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2`、`lower is better. uniform priors, 8 nodes` | 谷のある折れ線 + 輪 |
+| S33 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping` | 2 つの式 |
+| | 1 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2` | 谷のある折れ線 + 輪 |
 | | 2 | `K is inferred: the shortest description`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
-| S32 `graph-tool` | 0 | `A Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
+| S34 `graph-tool` | 0 | `A Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
 | | 1 | 関数名 `minimize_nested_blockmodel_dl`、`graph-tool.skewed.de` | 結び |
+| S35 `The karate club, once more` | 0 | 左にカラテクラブを実際の分裂 (青とオレンジ) で。`the groups so far` | クラブ 1 つ |
+| | 1 | 右に同じクラブを 1 色で。`graph-tool: 1 group` | クラブ 2 つ |
+| | 2 | オチ: `The two groups are no stronger than in a random network.`、`degree-corrected SBM, the shortest description` | 結び |
 
 ## 検算した数字
 
@@ -272,3 +283,8 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
   - 動画の書き出し (`npx remotion render`)。
   - Remotion のライセンス (営利企業は有料になりうる。教育目的の扱いは公式の License ページで確認)。
   - Peixoto の文献と graph-tool の関数名、URL は手元の記憶で書いた。授業の前に原典で確認すること。
+  - S35 の「graph-tool で空手クラブは 1 群」は、手元で graph-tool を実行して確かめてはいない。graph-tool のメーリングリスト
+    (Inference for the "karate network") の `minimize_blockmodel_dl(G, deg_corr=True)` の結果と、Peixoto の
+    Bayesian stochastic blockmodeling (arXiv:1705.10225) の記述による。**次数補正つきの場合**で、2 群以上の分け方も合わせると
+    事後確率の約半分を占めるので、「群の構造がない」ではなく「2 群を支持する証拠が、同じ次数列のランダムなネットワークと変わらない」
+    と読むこと。次数補正なしの SBM の結果は確かめていない。

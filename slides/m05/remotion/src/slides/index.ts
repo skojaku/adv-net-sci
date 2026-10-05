@@ -31,6 +31,9 @@ import {S29, marks as marks29} from './S29';
 import {S30, marks as marks30} from './S30';
 import {S31, marks as marks31} from './S31';
 import {S32, marks as marks32} from './S32';
+import {S33, marks as marks33} from './S33';
+import {S34, marks as marks34} from './S34';
+import {S35, marks as marks35} from './S35';
 
 export type SlideDef = {
   /** the slide's number in DECK_SPEC.md */
@@ -70,8 +73,11 @@ export const slides: SlideDef[] = [
   {n: 26, id: 'outward-question', marks: marks26, Component: S26},
   {n: 27, id: 'outward', marks: marks27, Component: S27},
   {n: 28, id: 'inference', marks: marks28, Component: S28},
-  {n: 29, id: 'sbm-estimate', marks: marks29, Component: S29},
-  {n: 30, id: 'more-groups', marks: marks30, Component: S30},
-  {n: 31, id: 'bayesian-sbm', marks: marks31, Component: S31},
-  {n: 32, id: 'graph-tool', marks: marks32, Component: S32},
+  {n: 29, id: 'sbm-likelihood', marks: marks29, Component: S29},
+  {n: 30, id: 'fix-c-find-p', marks: marks30, Component: S30},
+  {n: 31, id: 'back-to-c', marks: marks31, Component: S31},
+  {n: 32, id: 'more-groups', marks: marks32, Component: S32},
+  {n: 33, id: 'bayesian-sbm', marks: marks33, Component: S33},
+  {n: 34, id: 'graph-tool', marks: marks34, Component: S34},
+  {n: 35, id: 'karate-one-group', marks: marks35, Component: S35},
 ];

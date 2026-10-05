@@ -4,7 +4,7 @@ import {C, F, S} from '../theme';
 import {prog} from '../lib/anim';
 import {PatternDefs} from './Patterns';
 
-export const TOTAL = 32;
+export const TOTAL = 35;
 
 /** A content slide: title, the rule under it, the page number. Same as the Marp theme at 1.5x. */
 export const Frame: React.FC<{n: number; title: string; children: React.ReactNode}> = ({n, title, children}) => {

@@ -2,127 +2,107 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Cap, Term} from '../components/Text';
+import {Box, Cap} from '../components/Text';
 import {Tex} from '../components/Tex';
-import {C, F} from '../theme';
-import {betweenStages, fromStage, prog} from '../lib/anim';
-import {BEST_BAYES} from '../lib/sbmscore';
+import {BlockTable} from '../components/BlockTable';
+import {Network} from '../lib/network';
+import {C} from '../theme';
+import {betweenStages, prog, stageStart} from '../lib/anim';
+import {SBM_GROUP, SBM_LOOK, sbmEdges} from '../lib/sbm';
+import {arcs8} from '../lib/sbmLayout';
+import {blocksOf} from '../lib/sbmscore';
 
 /**
- * Peixoto's Bayesian SBM, in its simplest form.
- * 0: maximum likelihood against the description length: the block probabilities p are integrated out, and the groups
- *    themselves have to be described. A shorter description is a better grouping.
- * 1: the description length of the 8-node network, best grouping for each K, in nats: the shortest is at K = 2.
- *    (description length = minus the log of the Bayesian posterior, up to a constant)
- * 2: what the full model adds: K is inferred, groups within groups, uneven degrees.
+ * Maximum likelihood, step 2: with p_rs = m_rs / n_rs put back, only c is left.
+ * The formulas so far stay, small, in the panel at the top (nothing is deleted).
+ * 0: put p back into log L(c, p): a formula in c alone.
+ * 1: the number for this c: log L = -2.70 - 3.74 + 0 = -6.44.
+ * 2: all that is left is to maximize over c.
  */
-export const marks = [64, 134, 196];
+export const marks = [56, 116, 172];
 
-const X0 = 230;
-const X1 = 1130;
-const Y0 = 835; // description length 16
-const Y1 = 300; // description length 24
-const px = (k: number) => X0 + ((k - 1) / 7) * (X1 - X0);
-const py = (v: number) => Y0 - ((v - 16) / 8) * (Y0 - Y1);
-/** description length in nats: minus the log of (the marginal likelihood times the prior), for the best grouping with K groups */
-const DL = BEST_BAYES.map((v) => -v);
-const SHORTEST = DL.indexOf(Math.min(...DL));
-if (SHORTEST !== 1 || Math.abs(DL[1] - 18.213) > 2e-3) throw new Error('S31: the description length should be shortest at K = 2');
+const EDGES = sbmEdges(0.9, 0.1);
+const LOOKS = SBM_GROUP.map((g) => SBM_LOOK[g]);
+const LABELS = Array.from({length: 8}, (_, i) => String(i + 1));
+const POS = arcs8(400, 520, 150);
+
+const {m: M, n: NN} = blocksOf(SBM_GROUP);
+const fmt2 = (x: number) => x.toFixed(2).replace('-', '\u2212');
+const term = (r: number, s: number) => {
+  const m = M[r][s];
+  const n = NN[r][s];
+  return m === 0 || m === n ? 0 : m * Math.log(m / n) + (n - m) * Math.log(1 - m / n);
+};
+const T = [term(0, 0), term(0, 1), term(1, 1)];
+const TOTAL = T[0] + T[1] + T[2];
+if (fmt2(TOTAL) !== '\u22126.44') throw new Error(`S31: log L is ${TOTAL}`);
+const P = (r: number, s: number) => M[Math.min(r, s)][Math.max(r, s)] / NN[Math.min(r, s)][Math.max(r, s)];
+const pMat: [[number, number], [number, number]] = [
+  [P(0, 0), P(0, 1)],
+  [P(1, 0), P(1, 1)],
+];
+const terms: [[string, string], [string, string]] = [
+  [fmt2(T[0]), fmt2(T[1])],
+  ['', T[2] === 0 ? '0' : fmt2(T[2])],
+];
+
+const RECAP1 = '\\log L(c,p)=\\sum_{r\\le s}\\Big[m_{rs}\\log p_{rs}+\\big(n_{rs}-m_{rs}\\big)\\log\\big(1-p_{rs}\\big)\\Big]';
+const RECAP2 = '\\hat p_{rs}=\\dfrac{m_{rs}}{n_{rs}}';
+const FX = 800;
+const ITEMS = [
+  {y: 350, h: 230, tex: '\\begin{aligned}\\log L(c)&=\\sum_{r\\le s}\\Big[m_{rs}\\log\\dfrac{m_{rs}}{n_{rs}}\\\\&\\qquad+\\big(n_{rs}-m_{rs}\\big)\\log\\Big(1-\\dfrac{m_{rs}}{n_{rs}}\\Big)\\Big]\\end{aligned}'},
+  {y: 665, h: 70, tex: `\\log L=${fmt2(T[0]).replace('\u2212', '-')}\\ ${fmt2(T[1]).replace('\u2212', '-')}\\ +\\,0\\ =\\ ${fmt2(TOTAL).replace('\u2212', '-')}`.replace('\\ -', '\\ -\\,')},
+  {y: 770, h: 70, tex: '\\hat c=\\arg\\max_{c}\\ \\log L(c)'},
+] as const;
+
+const TX = 230;
+const TY = 760;
+const CELL = 90;
 
 export const S31: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const left = betweenStages(frame, marks, 0, 0) * prog(frame, 6, 24);
-  const right = betweenStages(frame, marks, 0, 0) * prog(frame, 26, 46);
-  const plot = betweenStages(frame, marks, 1, 1);
-  const dot = (i: number) => prog(frame, marks[0] + 8 + i * 4, marks[0] + 20 + i * 4);
-  const peak = prog(frame, marks[0] + 52, marks[0] + 66);
-  const full = fromStage(frame, marks, 2, 14);
+  const recap = prog(frame, 0, 18);
+  const net = prog(frame, 4, 22);
+  const item = (k: number) => prog(frame, stageStart(marks, k) + 4, stageStart(marks, k) + 24);
+  const bar = (k: number) => betweenStages(frame, marks, k, k);
+  const tableIn = prog(frame, marks[0] + 6, marks[0] + 24);
+  const only = prog(frame, marks[0] + 8, marks[0] + 24) * (1 - prog(frame, marks[1], marks[1] + 10));
+  const last = prog(frame, marks[1] + 8, marks[1] + 26);
 
   return (
-    <Frame n={31} title="Bayesian SBM">
-      {/* stage 0 */}
-      <Fade o={left} dy={14}>
-        <Cap x={120} y={250} w={760} align="left">maximum likelihood</Cap>
-        <Box x={120} y={350} w={780} size={50}>
-          <Tex tex={'\\max_{c,\\,p}\\ \\log P(A \\mid c, p)'} />
-        </Box>
-        <Box x={120} y={470} w={780} size={45} color={C.soft}>
-          more groups always fit better
-        </Box>
-      </Fade>
-      <Fade o={right} dy={14}>
-        <Cap x={1000} y={250} w={800} align="left">Bayesian: description length</Cap>
-        <Box x={1000} y={340} w={820} size={34}>
-          <Tex tex={'\\Sigma(c)=\\underbrace{-\\log P(A \\mid c)}_{\\text{the network, given the groups}}\\ \\underbrace{-\\log P(c)}_{\\text{the groups}}'} />
-        </Box>
-        <Box x={1000} y={520} w={800} size={45} color={C.soft}>
-          a shorter description is a better grouping
-        </Box>
-      </Fade>
-      <Fade o={(left + right) / 2} dy={10}>
-        <Box x={120} y={840} w={1680} size={38} color={C.soft}>
-          <Tex tex="A" />: the network. <Tex tex="c" />: the groups. <Tex tex="p" />: the probabilities in the table.
-        </Box>
+    <Frame n={31} title="Back to c">
+      <Fade o={recap} dy={10}>
+        <div style={{position: 'absolute', left: 120, top: 186, width: 1680, background: C.panel, padding: '8px 24px', fontSize: 32, lineHeight: 1.25}}>
+          <div><Tex tex={RECAP1} /></div>
+          <div><Tex tex={RECAP2} /></div>
+        </div>
       </Fade>
 
-      {/* stage 1 */}
       <Canvas>
-        <g opacity={plot}>
-          <line x1={X0} y1={Y0} x2={X1 + 30} y2={Y0} stroke={C.soft} strokeWidth={3} />
-          <line x1={X0} y1={Y1 - 20} x2={X0} y2={Y0} stroke={C.soft} strokeWidth={3} />
-          {DL.map((_, i) => (
-            <g key={i}>
-              <line x1={px(i + 1)} y1={Y0} x2={px(i + 1)} y2={Y0 + 10} stroke={C.soft} strokeWidth={3} />
-              <text x={px(i + 1)} y={Y0 + 52} textAnchor="middle" fontFamily={F.serif} fontSize={38} fill={C.soft}>
-                {i + 1}
-              </text>
-            </g>
-          ))}
-          {[16, 18, 20, 22, 24].map((v) => (
-            <g key={v}>
-              <line x1={X0 - 10} y1={py(v)} x2={X0} y2={py(v)} stroke={C.soft} strokeWidth={3} />
-              <text x={X0 - 20} y={py(v) + 13} textAnchor="end" fontFamily={F.serif} fontSize={38} fill={C.soft}>
-                {v}
-              </text>
-            </g>
-          ))}
-          <text x={X1 + 30} y={Y0 + 112} textAnchor="end" fontFamily={F.hand} fontSize={45} fill={C.soft}>
-            number of groups K
-          </text>
-          <text x={120} y={Y1 - 50} textAnchor="start" fontFamily={F.hand} fontSize={45} fill={C.soft}>
-            description length (nats)
-          </text>
-          {DL.slice(1).map((v, i) => (
-            <line key={i} x1={px(i + 1)} y1={py(DL[i])} x2={px(i + 2)} y2={py(v)} stroke={C.blue} strokeWidth={5} opacity={Math.min(dot(i), dot(i + 1))} />
-          ))}
-          {DL.map((v, i) => (
-            <circle key={i} cx={px(i + 1)} cy={py(v)} r={15} fill={C.blue} stroke="#fff" strokeWidth={3} opacity={dot(i)} />
-          ))}
-          <circle cx={px(SHORTEST + 1)} cy={py(DL[SHORTEST])} r={26} fill="none" stroke={C.ink} strokeWidth={7} opacity={peak} />
+        <Network pos={POS} edges={EDGES} look={LOOKS} nodeD={54} edgeW={4} label={LABELS} labelSize={30} opacity={net} />
+        <g opacity={tableIn}>
+          <BlockTable x={TX} y={TY} cell={CELL} fontSize={34} p={pMat} text={terms} />
         </g>
       </Canvas>
-      <Fade o={plot * peak} dy={14}>
-        <Box x={1230} y={380} w={580} size={50}>
-          The shortest description: <Tex tex="K = 2" />
-        </Box>
-        <Cap x={1230} y={520} w={580} align="left">lower is better. uniform priors, 8 nodes</Cap>
-      </Fade>
 
-      {/* stage 2 */}
-      <Fade o={full} dy={14}>
-        <Box x={260} y={290} w={1400} size={54}>
-          <Term>K</Term> is inferred: the shortest description
-        </Box>
-        <Box x={260} y={410} w={1400} size={54}>
-          groups within groups: <Term>nested</Term> SBM
-        </Box>
-        <Box x={260} y={530} w={1400} size={54}>
-          uneven degrees: <Term>degree-corrected</Term> SBM
-        </Box>
-        <Box x={260} y={730} w={1400} size={40} color={C.soft}>
-          Tiago Peixoto (2014, 2017, 2019)
-        </Box>
+      {ITEMS.map((it, k) => (
+        <React.Fragment key={k}>
+          <Fade o={item(k)} dy={14}>
+            <Box x={FX} y={it.y} w={1000} size={40}>
+              <Tex tex={it.tex} />
+            </Box>
+          </Fade>
+          <Fade o={bar(k) * item(k)}>
+            <div style={{position: 'absolute', left: FX - 22, top: it.y + 4, width: 7, height: it.h, background: C.blue}} />
+          </Fade>
+        </React.Fragment>
+      ))}
+      <Fade o={only} dy={12}>
+        <Cap x={FX} y={590} w={900} align="left">a formula in c alone</Cap>
+      </Fade>
+      <Fade o={last} dy={12}>
+        <Cap x={FX} y={860} w={900} align="left">all that is left: maximize over c</Cap>
       </Fade>
     </Frame>
   );
