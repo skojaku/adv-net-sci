@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Where Modularity Goes Wrong</title>
+    <title>Modularity: Three Games</title>
     <style>
         body {
             margin: 0;
@@ -65,12 +65,21 @@
     </style>
 </head>
 <body>
-    <h1>🔍 Where Modularity Goes Wrong</h1>
+    <h1>🔍 Modularity: Three Games</h1>
 
     <div class="tabs" role="tablist">
-        <button role="tab" data-tab="resolution">1. Small groups</button>
-        <button role="tab" data-tab="random">2. A random network</button>
+        <button role="tab" data-tab="cliques">1. Two cliques</button>
+        <button role="tab" data-tab="resolution">2. Small groups</button>
+        <button role="tab" data-tab="random">3. A random network</button>
     </div>
+
+    <section id="tab-cliques" role="tabpanel" hidden>
+        <p class="prompt">
+            Two groups of 5, joined by one edge. You have four colors. Get Q as high as you can: how many colors does your best coloring use?
+            <button class="restart">↻ start over</button>
+        </p>
+        <iframe data-src="index.html?scoreType=modularity&numCommunities=4&randomness=1&dataFile=two-cliques.json" title="Two cliques, four colors"></iframe>
+    </section>
 
     <section id="tab-resolution" role="tabpanel" hidden>
         <p class="prompt">
@@ -93,7 +102,7 @@
         // parameters. A game loads the first time its tab opens and keeps its
         // state when the student switches tabs. The URL hash names the tab;
         // the panels' ids differ from it so the browser does not scroll the
-        // tabs out of view when the page opens on #resolution or #random.
+        // tabs out of view when the page opens on, say, #random.
         const buttons = document.querySelectorAll(".tabs button");
         const panels = document.querySelectorAll("[role=tabpanel]");
 
