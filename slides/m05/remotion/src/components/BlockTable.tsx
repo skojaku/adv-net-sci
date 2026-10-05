@@ -1,9 +1,10 @@
 import React from 'react';
 import {C, F} from '../theme';
 import {mix} from '../lib/network';
+import {LOOK} from '../lib/look';
 
 /**
- * A 2 x 2 table of block probabilities for two groups (blue, red). The fill of a cell is gold in
+ * A 2 x 2 table of block probabilities for two groups (solid, hollow). The fill of a cell is blue in
  * proportion to its value. `text` overrides the printed value (for example "5 / 6"). `hot` marks cells with an outline.
  */
 export const BlockTable: React.FC<{
@@ -21,8 +22,8 @@ export const BlockTable: React.FC<{
     <g opacity={opacity}>
       {[0, 1].map((k) => (
         <g key={k}>
-          <circle cx={x + cell * (k + 0.5)} cy={y - chip * 0.9} r={chip / 2} fill={k === 0 ? C.blue : C.red} />
-          <circle cx={x - chip * 0.9} cy={y + cell * (k + 0.5)} r={chip / 2} fill={k === 0 ? C.blue : C.red} />
+          <circle cx={x + cell * (k + 0.5)} cy={y - chip * 0.9} r={chip / 2 - LOOK[k].sw / 2} fill={LOOK[k].fill} stroke={LOOK[k].stroke === '#fff' ? C.blue : LOOK[k].stroke} strokeWidth={LOOK[k].sw} />
+          <circle cx={x - chip * 0.9} cy={y + cell * (k + 0.5)} r={chip / 2 - LOOK[k].sw / 2} fill={LOOK[k].fill} stroke={LOOK[k].stroke === '#fff' ? C.blue : LOOK[k].stroke} strokeWidth={LOOK[k].sw} />
         </g>
       ))}
       {[0, 1].map((r) =>
@@ -33,8 +34,8 @@ export const BlockTable: React.FC<{
               y={y + r * cell}
               width={cell}
               height={cell}
-              fill={mix('#ffffff', C.gold, Math.min(1, p[r][c]))}
-              stroke={hot?.[r][c] ? C.red : C.soft}
+              fill={mix('#ffffff', C.blue, 0.5 * Math.min(1, p[r][c]))}
+              stroke={hot?.[r][c] ? C.ink : C.soft}
               strokeWidth={hot?.[r][c] ? 8 : 3}
             />
             <text

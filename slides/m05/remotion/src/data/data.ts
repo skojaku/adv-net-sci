@@ -48,6 +48,6 @@ export const EXPECTED_RAND = 0.7146 as const;
 /** One uniform number per pair, in the order (0,1) (0,2) ... (6,7). An edge exists when u < p of the pair's block. */
 export const SBM_U = [0.723306, 0.936635, 0.351917, 0.854237, 0.586032, 0.171544, 0.798486, 0.035494, 0.308475, 0.128739, 0.742591, 0.800103, 0.137187, 0.455742, 0.115461, 0.986988, 0.566602, 0.399882, 0.467429, 0.99758, 0.093553, 0.594316, 0.66558, 0.697074, 0.48746, 0.253382, 0.34223, 0.410785] as const;
 
-/** A fixed order of the 8 nodes for the unsorted adjacency matrix. */
-export const SBM_SHUFFLE = [6, 7, 2, 1, 4, 5, 3, 0] as const;
+/** A fixed order of the 8 nodes (slot -> node) for the unsorted adjacency matrix; chosen so that no two neighbouring slots are joined by many edges, i.e. the blocks are not visible. */
+export const SBM_SHUFFLE = [1, 4, 3, 5, 7, 0, 2, 6] as const;
 

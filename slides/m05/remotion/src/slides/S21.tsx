@@ -1,7 +1,7 @@
 import React from 'react';
-import {Frame} from '../components/Frame';
+import {Part} from '../components/Frame';
 
-// TODO: not built yet. See DECK_SPEC.md, S21.
+/** 0: the section divider. */
 export const marks = [40];
 
-export const S21: React.FC = () => <Frame n={21} title='What if edges between groups are more likely?'>{null}</Frame>;
+export const S21: React.FC = () => <Part band="Generative models" count="3 / 3" title="Turn it around" sub="Let's build a network from the groups" />;

@@ -2,8 +2,9 @@ import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {C, F, S} from '../theme';
 import {prog} from '../lib/anim';
+import {PatternDefs} from './Patterns';
 
-export const TOTAL = 23;
+export const TOTAL = 27;
 
 /** A content slide: title, the rule under it, the page number. Same as the Marp theme at 1.5x. */
 export const Frame: React.FC<{n: number; title: string; children: React.ReactNode}> = ({n, title, children}) => {
@@ -27,6 +28,7 @@ export const Frame: React.FC<{n: number; title: string; children: React.ReactNod
         {title}
       </div>
       <div style={{position: 'absolute', left: S.margin, right: S.margin, top: S.ruleY, height: 3, background: C.rule}} />
+      <PatternDefs />
       {children}
       <div style={{position: 'absolute', right: S.margin, bottom: 36, fontSize: S.page, color: C.page}}>{n}</div>
     </AbsoluteFill>

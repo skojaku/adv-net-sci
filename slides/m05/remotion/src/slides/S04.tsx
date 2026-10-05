@@ -106,7 +106,6 @@ export const S04: React.FC = () => {
   const toPairs = clamp((Nf - 8) / 2, 0, 1);
   const read = betweenStages(frame, marks, 2, 2);
   const cross = prog(frame, 204, 222);
-  const cap1 = prog(frame, 212, 232);
   const cap2 = prog(frame, 228, 248);
 
   const dotOp = o2;
@@ -123,7 +122,7 @@ export const S04: React.FC = () => {
         <Box x={480} y={196} w={700} align="center" size={45} color={C.blue} hand>
           each triangle alone
         </Box>
-        <Box x={1340} y={196} w={700} align="center" size={45} color={C.red} hand>
+        <Box x={1340} y={196} w={700} align="center" size={45} color={C.ink} hand>
           neighbors in pairs
         </Box>
       </Fade>
@@ -181,11 +180,11 @@ export const S04: React.FC = () => {
           <text x={PX1 + 20} y={PY_BOT + 106} textAnchor="end" fontFamily={F.hand} fontSize={45} fill={C.soft}>triangles in the ring</text>
           <text x={PX0 - 18} y={PY_TOP - 34} textAnchor="end" fontFamily={F.hand} fontSize={45} fill={C.soft}>Q</text>
           <path d={curve(qApart)} fill="none" stroke={C.blue} strokeWidth={6} />
-          <path d={curve(qPairs)} fill="none" stroke={C.red} strokeWidth={6} />
+          <path d={curve(qPairs)} fill="none" stroke={C.ink} strokeWidth={6} />
           <circle cx={px(Nf)} cy={py(qApart(Nf))} r={13} fill={C.blue} stroke="#fff" strokeWidth={3} opacity={dotOp} />
-          <circle cx={px(Nf)} cy={py(qPairs(Nf))} r={13} fill={C.red} stroke="#fff" strokeWidth={3} opacity={dotOp} />
+          <circle cx={px(Nf)} cy={py(qPairs(Nf))} r={13} fill={C.ink} stroke="#fff" strokeWidth={3} opacity={dotOp} />
           {/* direct labels at the right end of each curve */}
-          <text x={PX1} y={py(qPairs(16)) - 30} textAnchor="end" fontFamily={F.serif} fontSize={36} fill={C.red}>neighbors in pairs</text>
+          <text x={PX1} y={py(qPairs(16)) - 30} textAnchor="end" fontFamily={F.serif} fontSize={36} fill={C.ink}>neighbors in pairs</text>
           <text x={PX1} y={py(qApart(16)) + 78} textAnchor="end" fontFamily={F.serif} fontSize={36} fill={C.blue}>each triangle alone</text>
           {/* the crossing */}
           <g opacity={cross}>
@@ -203,14 +202,9 @@ export const S04: React.FC = () => {
           <Tex tex={'n = 8 = \\sqrt{2m}'} />
         </Box>
       </Fade>
-      <Fade o={cap1} dy={14}>
-        <Box x={1030} y={200} w={760} size={45} color={C.soft} hand>
-          The two triangles did not change. The rest of the network got bigger.
-        </Box>
-      </Fade>
       <Fade o={cap2} dy={14}>
-        <Box x={1030} y={318} w={770} size={40}>
-          Q depends on the size of the whole network: the <Term>resolution limit</Term>.
+        <Box x={1030} y={210} w={770} size={40}>
+          The network got bigger: the <Term>resolution limit</Term>.
         </Box>
       </Fade>
     </Frame>

@@ -68,7 +68,7 @@ export const Tag: React.FC<{x: number; y: number; hot?: boolean; children: React
       fontWeight: hot ? 700 : 400,
       color: hot ? C.red : C.ink,
       padding: '6px 26px',
-      background: hot ? C.redSoft : C.panel,
+      background: C.panel,
       whiteSpace: 'nowrap',
       ...style,
     }}

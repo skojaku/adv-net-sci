@@ -150,7 +150,7 @@ out += ts("EXPECTED_RAND", round((435 + 2 * ea - 150) / 435, 4), "Expected Rand 
 u = np.random.default_rng(901).random(28)
 out += ts("SBM_U", [round(float(v), 6) for v in u],
           "One uniform number per pair, in the order (0,1) (0,2) ... (6,7). An edge exists when u < p of the pair's block.")
-out += ts("SBM_SHUFFLE", [6, 7, 2, 1, 4, 5, 3, 0], "A fixed order of the 8 nodes for the unsorted adjacency matrix.")
+out += ts("SBM_SHUFFLE", [1, 4, 3, 5, 7, 0, 2, 6], "A fixed order of the 8 nodes (slot -> node) for the unsorted adjacency matrix; chosen so that no two neighbouring slots are joined by many edges, i.e. the blocks are not visible.")
 
 (OUT / "data.ts").write_text(out)
 print("wrote", OUT / "data.ts", len(out), "bytes")

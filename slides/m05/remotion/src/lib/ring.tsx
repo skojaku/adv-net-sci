@@ -1,5 +1,6 @@
 import React from 'react';
 import {C} from '../theme';
+import {BAND_HATCH, BAND_SOLID} from './look';
 
 export type Pt = readonly [number, number];
 
@@ -53,7 +54,7 @@ const blob = (pts: Pt[], links: [Pt, Pt][], color: string, opacity: number, key:
 
 /**
  * Draws the ring. `apart` and `pairs` are the opacities of the two groupings' bands:
- * blue bands, one per triangle; red bands, one per two neighbouring triangles.
+ * light-blue bands, one per triangle; striped bands, one per two neighbouring triangles.
  */
 export const Ring: React.FC<{
   w: number[];
@@ -74,7 +75,7 @@ export const Ring: React.FC<{
   if (apart > 0.001) {
     tri.forEach((t, i) => {
       if (w[i] < 0.001) return;
-      els.push(blob([t.a, t.b, t.c], [[t.a, t.b], [t.b, t.c], [t.a, t.c]], C.blue, 0.3 * apart * w[i], `ba${i}`, rad));
+      els.push(blob([t.a, t.b, t.c], [[t.a, t.b], [t.b, t.c], [t.a, t.c]], BAND_SOLID, apart * w[i], `ba${i}`, rad));
     });
   }
   if (pairs > 0.001) {
@@ -90,15 +91,15 @@ export const Ring: React.FC<{
           blob(
             [T.a, T.b, T.c, U.a, U.b, U.c],
             [[T.a, T.b], [T.b, T.c], [T.a, T.c], [T.b, U.a], [U.a, U.b], [U.b, U.c], [U.a, U.c]],
-            C.red,
-            0.3 * pairs * Math.min(wi, wj),
+            BAND_HATCH,
+            pairs * Math.min(wi, wj),
             `bp${k}`,
             rad,
           ),
         );
       }
       if (wj < 0.999) {
-        els.push(blob([T.a, T.b, T.c], [[T.a, T.b], [T.b, T.c], [T.a, T.c]], C.red, 0.3 * pairs * wi * (1 - wj), `bs${k}`, rad));
+        els.push(blob([T.a, T.b, T.c], [[T.a, T.b], [T.b, T.c], [T.a, T.c]], BAND_HATCH, pairs * wi * (1 - wj), `bs${k}`, rad));
       }
     }
   }

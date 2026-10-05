@@ -1,5 +1,6 @@
 import React from 'react';
 import {C, F} from '../theme';
+import {LOOK, type Look} from './look';
 
 export type Pt = readonly [number, number];
 export type Edge = readonly [number, number];
@@ -34,49 +35,54 @@ const val = <T,>(v: Num<T> | undefined, i: number, item: T, dflt: number) => (v 
 export const Network: React.FC<{
   pos: ReadonlyArray<Pt>;
   edges: ReadonlyArray<Edge>;
-  fill?: string | ReadonlyArray<string>;
+  /** one Look for all nodes, or one per node (see lib/look.ts); default: solid blue */
+  look?: Look | ReadonlyArray<Look>;
+  /** a second look per node, cross-faded in by `t` (0 = look only, 1 = lookTo only) */
+  lookTo?: ReadonlyArray<Look>;
+  t?: number;
   nodeD?: number;
   nodeOp?: Num<number>;
   edgeOp?: Num<Edge>;
   edgeColor?: string;
   edgeW?: number;
+  /** an outline drawn around chosen nodes (for example the nodes that changed group) */
   ring?: ReadonlyArray<string | null>;
   ringW?: number;
   label?: ReadonlyArray<string | number | null>;
   labelSize?: number;
   opacity?: number;
-}> = ({pos, edges, fill = C.blue, nodeD = 46, nodeOp, edgeOp, edgeColor = C.ink, edgeW = 3.5, ring, ringW = 7, label, labelSize = 26, opacity = 1}) => (
-  <g opacity={opacity}>
-    {edges.map((e, i) => {
-      const o = val(edgeOp, i, e, 1);
-      return o > 0.001 ? (
-        <line
-          key={`e${i}`}
-          x1={pos[e[0]][0]}
-          y1={pos[e[0]][1]}
-          x2={pos[e[1]][0]}
-          y2={pos[e[1]][1]}
-          stroke={edgeColor}
-          strokeWidth={edgeW}
-          opacity={0.7 * o}
-        />
-      ) : null;
-    })}
-    {pos.map((p, i) => {
-      const o = val(nodeOp, i, i, 1);
-      if (o <= 0.001) return null;
-      const f = typeof fill === 'string' ? fill : fill[i];
-      const rg = ring?.[i];
-      return (
-        <g key={`n${i}`} opacity={o}>
-          <circle cx={p[0]} cy={p[1]} r={nodeD / 2} fill={f} stroke={rg ?? '#fff'} strokeWidth={rg ? ringW : 3} />
-          {label?.[i] != null && (
-            <text x={p[0]} y={p[1] + labelSize * 0.35} textAnchor="middle" fontFamily={F.serif} fontSize={labelSize} fontWeight={700} fill="#fff">
-              {label[i]}
-            </text>
-          )}
-        </g>
-      );
-    })}
-  </g>
-);
+}> = ({pos, edges, look = LOOK[0], lookTo, t = 0, nodeD = 46, nodeOp, edgeOp, edgeColor = C.ink, edgeW = 3.5, ring, ringW = 7, label, labelSize = 26, opacity = 1}) => {
+  const lk = (i: number): Look => (Array.isArray(look) ? (look as ReadonlyArray<Look>)[i] : (look as Look));
+  const disc = (p: Pt, l: Look, key: string, o: number) => (
+    <circle key={key} cx={p[0]} cy={p[1]} r={nodeD / 2 - l.sw / 2} fill={l.fill} stroke={l.stroke} strokeWidth={l.sw} opacity={o} />
+  );
+  return (
+    <g opacity={opacity}>
+      {edges.map((e, i) => {
+        const o = val(edgeOp, i, e, 1);
+        return o > 0.001 ? (
+          <line key={`e${i}`} x1={pos[e[0]][0]} y1={pos[e[0]][1]} x2={pos[e[1]][0]} y2={pos[e[1]][1]} stroke={edgeColor} strokeWidth={edgeW} opacity={0.7 * o} />
+        ) : null;
+      })}
+      {pos.map((p, i) => {
+        const o = val(nodeOp, i, i, 1);
+        if (o <= 0.001) return null;
+        const rg = ring?.[i];
+        const to = lookTo && t > 0.001 ? lookTo[i] : null;
+        const shown = to && t > 0.5 ? to : lk(i);
+        return (
+          <g key={`n${i}`} opacity={o}>
+            {disc(p, lk(i), 'a', 1)}
+            {to && disc(p, to, 'b', t)}
+            {rg && <circle cx={p[0]} cy={p[1]} r={nodeD / 2 + ringW / 2 + 2} fill="none" stroke={rg} strokeWidth={ringW} />}
+            {label?.[i] != null && (
+              <text x={p[0]} y={p[1] + labelSize * 0.35} textAnchor="middle" fontFamily={F.serif} fontSize={labelSize} fontWeight={700} fill={shown.text}>
+                {label[i]}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </g>
+  );
+};
