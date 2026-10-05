@@ -249,23 +249,38 @@ M02 = [
 ]
 
 # ---------------------------------------------------------------------------
-# Module 5 -- find the blocks. The lab has one line of code to write; everything
-# else a student does is typed into a box or picked from a list. The worked copy
-# therefore differs from lab.py by that one line, by the switch that fills in
-# every box and every pick from the key held in the hidden kit, and by the title.
+# Module 5 -- find the blocks. The lab has three blanks, all of them code a
+# student types from a block on the page: the stochastic block model, Louvain on
+# the airline-airport network, and graph-tool's sampler. The worked copy fills
+# them in and says so in the title. (The drag-to-sort warm-up has its own
+# "Show answer" button, so it needs nothing here.)
 # ---------------------------------------------------------------------------
 M05 = [
-    # The one line of code: igraph hands over its links as a list of pairs.
+    # The stochastic block model, typed from the block in section 3.
     (
-        """    #    Ask g_foot for them. igraph has one method that does exactly this.
-    foot_edges = ...  # TASK""",
-        """    #    Ask g_foot for them. igraph has one method that does exactly this.
-    foot_edges = g_foot.get_edgelist()""",
+        "    sbm_blocks = ...  # TASK",
+        '''    sbm_blocks = graph_tool("""
+    state = gt.minimize_blockmodel_dl(g)
+    out = state.get_blocks().a.tolist()
+    """, edges=g_air.get_edgelist())''',
     ),
-    # Fill in Part 1's groups and every "which structure is it" pick.
+    # Louvain, as in section 2, on the bipartite network.
     (
-        "    SHOW_ANSWERS = False  # TASK",
-        "    SHOW_ANSWERS = True",
+        "    bip_louvain = ...  # TASK",
+        "    bip_louvain = g_bip.community_multilevel().membership",
+    ),
+    # The sampler, typed from the block in section 5.
+    (
+        "    sure = ...  # TASK",
+        '''    sure = graph_tool("""
+    state = gt.minimize_blockmodel_dl(g)
+    partitions = []
+    for _ in range(20):
+        state.multiflip_mcmc_sweep(niter=2)
+        partitions.append(state.get_blocks().a.copy())
+    pv = gt.PartitionModeState(partitions, converge=True).get_marginal(g)
+    out = [float(max(pv[v]) / sum(pv[v])) for v in g.vertices()]
+    """, edges=g_air.get_edgelist())''',
     ),
     (
         "    # Lab · Find the blocks\n",
