@@ -109,6 +109,31 @@ print(sbm)''',
         ],
     ),
     dict(
+        id="circle",
+        title="Draw the groups on a circle",
+        code='''import matplotlib.pyplot as plt
+import numpy as np
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+for ax, name, groups in zip(axes, ["Leiden", "SBM"], [leiden, sbm]):
+    layout = karate.layout_circle(order=np.argsort(groups))
+    ig.plot(
+        karate, target=ax, layout=layout,
+        vertex_color=colors_of(groups),
+        vertex_label=karate.vs.indices,
+        edge_color="lightgray",
+    )
+    ax.set_title(name)
+plt.show()''',
+        notes=[
+            ("1--2", r"\texttt{matplotlib} is Python's drawing library, and \texttt{numpy} is a library for lists of numbers. \texttt{plt} and \texttt{np} are their usual short names."),
+            ("3", r"\texttt{plt.subplots(1, 2, ...)} makes one picture with two panels side by side (1 row, 2 columns), 10 inches wide and 5 tall. \texttt{fig} is the whole picture and \texttt{axes} holds the two panels."),
+            ("4", r"A loop: the indented lines run twice, once for each panel. \texttt{zip} walks through three lists together. The first time round, \texttt{ax} is the first panel, \texttt{name} is \texttt{"+'"Leiden"'+r"} and \texttt{groups} is the list from Box 2; the second time, the SBM's."),
+            ("5", r"\texttt{np.argsort(groups)} lists the node numbers sorted by group, so nodes of one group sit together. \texttt{layout\_circle(order=...)} puts the nodes on a circle in that order: each group takes one arc. The layout holds a position for every node."),
+            ("6--11", r"\texttt{ig.plot} draws the network into the panel \texttt{ax}, at the positions in \texttt{layout}. \texttt{vertex\_color} paints each node in the colour of its group (\texttt{colors\_of} was written for you); \texttt{vertex\_label} writes the node's number in it (\texttt{karate.vs.indices} is the list of node numbers); \texttt{edge\_color} draws the friendships in light grey. Each line ends with a comma."),
+            ("12--13", r"\texttt{ax.set\_title(name)} writes the title above the panel, and \texttt{plt.show()} shows the finished picture."),
+        ],
+    ),
+    dict(
         id="airports",
         title="The same recipe on the US airports",
         code='''result_air = g_air.community_leiden("modularity", n_iterations=-1)
@@ -122,7 +147,7 @@ show_map(Leiden=leiden_air, SBM=sbm_air)''',
             ("1--2", r"Box 2 again. Only the network changed: \texttt{g\_air} is the US airport network (540 airports, two linked when a flight connects them), already built for you."),
             ("3--4", r"Box 3, lines 3 and 4, again, with a new graph-tool network called \texttt{g2}."),
             ("5--6", r"Box 3, lines 5 and 6, again. Nothing is printed this time, because 540 numbers are too many to read."),
-            ("7", r"\texttt{show\_map} is the airport version of \texttt{show}: the airports on a map of the US, coloured by group, next to the matrix. Each of the six biggest groups is named on the map by its busiest airport."),
+            ("7", r"\texttt{show\_map} is the airport version of \texttt{show}: the airports on a map of the US, coloured by group, next to the matrix. Each of the five biggest groups is named on the map by its busiest airport."),
         ],
     ),
 ]
@@ -157,9 +182,11 @@ from matplotlib.collections import LineCollection
 _DATA = json.loads(zlib.decompress(base64.b64decode("@@DATA@@")))
 
 INK, GREY, OTHER = "#1D1E21", "#BDB8AA", "#9A968A"
-# Six colours that stay apart for most readers, colour-blind ones included. Any
-# further group is grey. Every group is also named in words under its picture.
-COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7"]
+# Five muted colours: the course's blue, rust and mustard, and a light blue and a
+# rose. They pass the all-pairs colour checks (dataviz validate_palette.js --pairs all,
+# on white); a sixth group, and any later one, is grey. Every group is also named in
+# words under its picture.
+COLORS = ["#3959A6", "#B14434", "#D4A017", "#5BA7D6", "#D77A8A"]
 plt.rcParams.update({"figure.dpi": 100, "font.size": 9})
 
 # Who joined which side when the karate club split: 0 = Mr. Hi, 1 = the Officer.
@@ -180,6 +207,12 @@ def _groups(blocks):
     number = np.array([rank[b] for b in blocks])
     colors = np.array([COLORS[k] if k < len(COLORS) else OTHER for k in number], dtype=object)
     return number, colors, np.sort(sizes)[::-1]
+
+
+def colors_of(blocks):
+    """The colour of the group each node is in, to draw with. The biggest group is
+    painted first; groups past the fifth are grey."""
+    return list(_groups(blocks)[1])
 
 
 def _matrix(ax, graph, number, colors, title):

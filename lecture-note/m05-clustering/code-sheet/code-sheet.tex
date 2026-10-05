@@ -156,17 +156,27 @@ moves the karate club over to it and fits the stochastic block model from the le
 \textbf{What to look at.}
 \begin{itemize}[itemsep=0.1em, topsep=0.2em, leftmargin=1.4em]
 \item Find node 0 and node 33 in each picture. Which groupings keep them apart?
-\item Leiden and the stochastic block model look for different things. In the SBM
-picture, who ends up together, and how many friends do they have? (Bigger circles
-are members with more friends.)
+\item The two methods look for different things. In the SBM picture, who ends up
+together, and how many friends do they have? (Bigger circles: more friends.)
 \end{itemize}
 
-\parthead{5}{If you have time: the US airports}
+\parthead{5}{Draw the groups on a circle}
+
+Another way to look at a grouping: every member on a circle, each group on its own
+arc. This box uses the drawing tools themselves, \texttt{matplotlib} and igraph,
+instead of the ready-made \texttt{show}.
+
+\input{boxes/box5}
+
+\textbf{What to look at.} Which friendships run from one arc to another? Compare the
+two circles: where do they put the same members, and where do they differ?
+
+\parthead{6}{If you have time: the US airports}
 
 The same recipe on a bigger network: 540 US airports, two linked when a flight
 connects them.
 
-\input{boxes/box5}
+\input{boxes/box6}
 
 \textbf{What to look at.} Do the groups follow regions of the map, or something
 else? Compare Leiden with the stochastic block model.
