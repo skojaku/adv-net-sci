@@ -123,15 +123,13 @@ const readWav = (file) => {
     }
     mono[i] = sum / fmt.ch;
   }
-  // cut the silence before the click (keep 3 ms) and level the file
+  // cut the silence before the click (keep 3 ms); the level is set for all the samples together afterwards, so the space bar stays louder than a letter
+  let peak = 0;
+  for (const v of mono) peak = Math.max(peak, Math.abs(v));
   let start = 0;
-  while (start < frames && Math.abs(mono[start]) < 0.02) start++;
+  while (start < frames && Math.abs(mono[start]) < 0.04 * peak) start++;
   start = Math.max(0, start - Math.floor(0.003 * fmt.sr));
-  const trimmed = mono.slice(start);
-  let pk = 0;
-  for (const v of trimmed) pk = Math.max(pk, Math.abs(v));
-  for (let i = 0; i < trimmed.length; i++) trimmed[i] = (trimmed[i] / (pk || 1)) * 0.8;
-  return {sr: fmt.sr, x: trimmed};
+  return {sr: fmt.sr, x: mono.slice(start), peak};
 };
 const samples = {key: [], space: [], back: []};
 if (fs.existsSync(soundsDir)) {
@@ -140,6 +138,11 @@ if (fs.existsSync(soundsDir)) {
     if (m) samples[m[1].toLowerCase()].push(readWav(path.join(soundsDir, f)));
   }
 }
+{
+  let all = 0;
+  for (const bank of Object.values(samples)) for (const smp of bank) all = Math.max(all, smp.peak);
+  for (const bank of Object.values(samples)) for (const smp of bank) for (let i = 0; i < smp.x.length; i++) smp.x[i] = (smp.x[i] / (all || 1)) * 0.8;
+}
 const lastPick = {key: -1, space: -1, back: -1};
 const playSample = (t0, kind) => {
   const bank = samples[kind];
@@ -147,7 +150,8 @@ const playSample = (t0, kind) => {
   if (bank.length > 1 && i === lastPick[kind]) i = (i + 1) % bank.length;
   lastPick[kind] = i;
   const {sr, x} = bank[i];
-  const rate = (sr / SR) * (0.96 + rnd() * 0.08); // a touch of pitch variation
+  const wide = bank.length < 3 ? 0.12 : 0.07; // a bank with few recordings gets more pitch variation
+  const rate = (sr / SR) * (1 - wide / 2 + rnd() * wide);
   const gain = 0.85 + rnd() * 0.3;
   const pan = (rnd() - 0.5) * 0.3;
   const gl = Math.cos(((pan + 1) * Math.PI) / 4), gr = Math.sin(((pan + 1) * Math.PI) / 4);
