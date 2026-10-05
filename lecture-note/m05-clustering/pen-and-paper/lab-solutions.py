@@ -276,6 +276,7 @@ def main(job_path, answer_path):
     job = json.load(open(job_path))
     gt.seed_rng(job.get("seed", 1))
     np.random.seed(job.get("seed", 1))
+    gt.openmp_set_num_threads(1)  # one thread: the same seed, the same answer
     g = to_graph_tool(job["n"], job["edges"])
     if job["kind"] == "blocks":
         answer = fit_blocks(g, job["deg_corr"], job.get("kinds"))
@@ -1533,7 +1534,7 @@ def _():
 
     # 3 · Blocks inside blocks
 
-    The airport network had more than a dozen blocks. Many of them link to the others in a
+    The airport network had several blocks. Many of them link to the others in a
     similar way. For example, the many small airports that each link to a few
     hubs. graph-tool can group the blocks into bigger blocks, and those into
     still bigger ones. This is called a **hierarchy**.
@@ -1587,22 +1588,31 @@ def _(hier_fit):
     if hier_fit is None:
         _out = WAITING
     else:
-        _lv = np.array(hier_fit["levels"][1])
-        _ids = sorted(set(_lv.tolist()), key=lambda r: -(_lv == r).sum())
-        _fig, _ax = figure(1, 1, 3.4)
-        draw_outline(_ax)
-        _small = _lv == _ids[-1]
-        _ax.scatter(AIR_X[~_small], AIR_Y[~_small], s=5, color=BLUE, lw=0, zorder=2)
-        _ax.scatter(AIR_X[_small], AIR_Y[_small], s=5, color=RUST, lw=0, zorder=3)
-        _ax.set_aspect("equal")
-        _ax.axis("off")
-        _ax.set_title("the two top-level blocks", fontsize=9, color=INK, loc="left")
+        _deg = edge_matrix(AIR_N, AIR_EDGES).sum(axis=1)
+        # The level above the finest. How many blocks that is depends on the
+        # fit, so nothing below assumes a number.
+        _lv = rank_blocks(hier_fit["levels"][min(1, len(hier_fit["levels"]) - 1)], _deg)
+        _names = block_names_by(_lv, _deg, [a[0] for a in AIR])
+        _nb = _lv.max() + 1
+        _cols = min(_nb, 4)
+        _rows = math.ceil(_nb / _cols)
+        _fig, _axs = figure(_rows, _cols, 2.1 * _rows)
+        for _k, _ax in enumerate(np.atleast_1d(_axs).ravel()):
+            _ax.axis("off")
+            if _k >= _nb:
+                continue
+            _in = _lv == _k
+            draw_outline(_ax)
+            _ax.scatter(AIR_X[~_in], AIR_Y[~_in], s=1.5, color=GREY, lw=0)
+            _ax.scatter(AIR_X[_in], AIR_Y[_in], s=7, color=RUST, lw=0, zorder=3)
+            _ax.set_aspect("equal")
+            _ax.set_title(_names[_k], fontsize=8.5, color=INK)
         _out = mo.vstack(
             [
                 mo.md(
-                    f"One level below the whole network, there are "
-                    f"**{len(_ids)} blocks**: {int((~_small).sum())} airports "
-                    f"in blue and {int(_small.sum())} airports in red."
+                    f"One step up from the finest level, there are **{_nb} "
+                    "blocks**. Each is a group of the blocks you saw before. "
+                    "One small map per block, in red:"
                 ),
                 finish(_fig),
             ]
@@ -1612,40 +1622,49 @@ def _(hier_fit):
 
 
 @app.cell(hide_code=True)
-def _():
-    top_kind = mo.ui.radio(
-        options={
-            "Alaska, and the rest of the country": "alaska",
-            "The East and the West": "eastwest",
-            "Big airports and small airports": "size",
-        },
-        value="Alaska, and the rest of the country" if SHOW_ANSWERS else None,
-        label="✍️ Look at the map. What separates the red block from the blue block?",
-    )
-    top_kind
-    return (top_kind,)
+def _(hier_fit):
+    if hier_fit is None:
+        top_pick = None
+        _out = WAITING
+    else:
+        _deg = edge_matrix(AIR_N, AIR_EDGES).sum(axis=1)
+        _lv = rank_blocks(hier_fit["levels"][min(1, len(hier_fit["levels"]) - 1)], _deg)
+        _names = block_names_by(_lv, _deg, [a[0] for a in AIR])
+        _alaska = [int(AIR_ALASKA[_lv == k].sum()) for k in range(_lv.max() + 1)]
+        top_pick = mo.ui.radio(
+            options={name: str(k) for k, name in enumerate(_names)},
+            value=_names[int(np.argmax(_alaska))] if SHOW_ANSWERS else None,
+            label="✍️ Look at the maps. Which block holds Alaska's airports?",
+        )
+        _out = top_pick
+    _out
+    return (top_pick,)
 
 
 @app.cell(hide_code=True)
-def _(hier_fit, top_kind):
-    if hier_fit is None or top_kind.value is None:
+def _(hier_fit, top_pick):
+    if hier_fit is None or top_pick is None or top_pick.value is None:
         _out = mo.md("")
     else:
-        _lv = np.array(hier_fit["levels"][1])
-        _ids = sorted(set(_lv.tolist()), key=lambda r: -(_lv == r).sum())
-        _small = _lv == _ids[-1]
-        _share = AIR_ALASKA[_small].mean()
+        _deg = edge_matrix(AIR_N, AIR_EDGES).sum(axis=1)
+        _lv = rank_blocks(hier_fit["levels"][min(1, len(hier_fit["levels"]) - 1)], _deg)
+        _alaska = [int(AIR_ALASKA[_lv == k].sum()) for k in range(_lv.max() + 1)]
+        _best = int(np.argmax(_alaska))
+        _picked = int(top_pick.value)
         _ak = [(i, j) for i, j in AIR_EDGES if AIR_ALASKA[i] or AIR_ALASKA[j]]
         _inside = sum(1 for i, j in _ak if AIR_ALASKA[i] and AIR_ALASKA[j]) / len(_ak)
         _out = verdict(
-            top_kind.value == "alaska",
-            f"<b>Yes.</b> {int(AIR_ALASKA[_small].sum())} of the {int(_small.sum())} "
-            f"airports in the red block are in Alaska. {pct(_inside)} of the "
-            "routes that touch Alaska stay inside Alaska. Many Alaskan towns have "
-            "no road to the rest of the state, so people fly between them. The "
-            "first split of the hierarchy is the biggest gap in the network.",
-            f"Not that one. Look at where the red dots are. "
-            f"{pct(_share)} of the red block is in Alaska.",
+            _picked == _best,
+            f"<b>Yes.</b> {_alaska[_best]} of Alaska's {int(AIR_ALASKA.sum())} "
+            f"airports are in block {_best + 1}, among its "
+            f"{int((_lv == _best).sum())} airports. {pct(_inside)} of the routes "
+            "that touch Alaska stay inside Alaska. Many Alaskan towns have no "
+            "road to the rest of the state, so people fly between them. "
+            "graph-tool found this without being told where anything is. "
+            "Its inputs were the links and nothing else.",
+            f"Not that one. Block {_picked + 1} holds {_alaska[_picked]} of "
+            f"Alaska's {int(AIR_ALASKA.sum())} airports. Look at the maps again: "
+            "which block is red over the top-left corner?",
         )
     _out
     return
@@ -1776,11 +1795,17 @@ def _(samp_fit):
                     f'font-size:14px;color:{INK}">{"".join(_lines)}</table>'
                 ),
                 note(
-                    f"{_indep} of them play in the <i>Independents</i>, the teams "
-                    "with no conference. Look at Notre Dame: it has no conference, "
-                    "so its games point in several directions, and graph-tool "
-                    "hesitates between blocks. That is the right thing to do. "
-                    "The football network is clean, so only a few teams are in "
+                    (
+                        f"{_indep} of them play in the <i>Independents</i>, the "
+                        "teams with no conference. A team with no conference has "
+                        "its games spread over several blocks, so graph-tool "
+                        "hesitates between them. That is the right thing to do. "
+                        if _indep
+                        else "Their games are spread over several blocks, so "
+                        "graph-tool hesitates between them. That is the right "
+                        "thing to do. "
+                    )
+                    + "The football network is clean, so only a few teams are in "
                     "doubt. A messier network has many more."
                 ),
             ]

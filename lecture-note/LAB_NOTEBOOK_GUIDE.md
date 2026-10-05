@@ -198,18 +198,28 @@ puts it back, so the notebook has to install it itself:
   file like the CSS does: `python tools/build_m05_lab_data.py` (needs the
   network; OpenFlights is ODbL, Natural Earth is public domain).
 
-Verified on macOS arm64: the installer from an empty directory, the state
-change reaching the page in a headless Chrome, every figure, the blank copy and
-the answer copy. For Linux the same `micromamba create` was only *solved*, not
-run (`--dry-run --platform linux-64`, with `CONDA_OVERRIDE_GLIBC` set because the
-host was a Mac): it resolves to 150 packages, about 250 MB to download.
-conda-forge builds graph-tool 3.9 for `linux-64` and `osx-arm64` only. Intel
-Macs and ARM Linux stop at 2.98, so the notebook stops there with a plain
-sentence rather than a solver log. **Not verified on molab itself.** Whether molab lets a notebook
-download an installer and write 1.4 GB, and whether its Linux image resolves the
-same conda-forge build, has to be tried once on molab before class. If it does
-not work, the failure is a red bar at the top with the installer's own log, not a
-traceback.
+**Checked on molab** (October 2026, opened from the GitHub branch through
+`molab.marimo.io/github/<owner>/<repo>/blob/<branch>/<path>`, then "Run it now"):
+the installer downloads and runs, graph-tool 3.9 installs in roughly a minute
+or a little more, the bar at the top turns to "ready" by itself, and every
+graph-tool figure draws, including graph-tool's own radial drawing. molab asks
+for a sign-in before it runs an unverified notebook, and it does not run one
+until "run all" is pressed. The platform there is Linux x86-64.
+
+Also checked on macOS arm64, from an empty install directory, in a headless
+Chrome. conda-forge builds graph-tool 3.9 for `linux-64` and `osx-arm64` only.
+Intel Macs and ARM Linux stop at 2.98, so the notebook stops there with a plain
+sentence rather than a solver log.
+
+**The answers differ between machines.** On the same data and the same seed,
+the airport fit gave 13 blocks on a Mac and 8 on molab, the airlines-and-airports
+fit gave 5 blocks and 2, and the hierarchy was 17 to 2 to 1 on one and 13 to 3 to
+1 on the other. Even the number of threads changes it, so the worker pins graph-tool
+to one thread. Nothing in the notebook may therefore say how many blocks there
+are or which block is which. Every sentence under a figure is computed from the
+fit (`pct(...)`, `argmax`, counts), and the "which block holds Alaska" question
+is marked against the fit that was drawn. Keep it that way, and look at what molab
+draws before class, because that is what the students see.
 
 ## Checking a notebook before calling it done
 
