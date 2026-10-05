@@ -4,31 +4,41 @@ import {Frame} from '../components/Frame';
 import {Fade} from '../components/Fade';
 import {Box} from '../components/Text';
 import {Tex} from '../components/Tex';
-import {C} from '../theme';
-import {betweenStages, prog, stageStart} from '../lib/anim';
+import {C, F} from '../theme';
+import {prog, stageStart} from '../lib/anim';
+import {lerp} from '../lib/plot';
 
 /**
  * The likelihood of a network, built up one formula at a time (the lecturer explains each one).
  * p_rs is NOT given: the formulas use p_rs and 1 - p_rs in general form.
  * 0: the definitions, and L(c, p) = P(A | c, p).
  * 1: one pair of nodes: an edge with probability p, no edge with probability 1 - p.
- * 2: the same in one expression.
+ * 2: the same in one expression, its = under the = of the line above.
  * 3: the product over all pairs of nodes: the likelihood.
  * 4: the pairs grouped by block (r, s): m_rs edges and n_rs pairs of nodes.
- * 5: the log-likelihood.
- * No formula is removed: they all stay on the slide to the end.
+ * 5: the log-likelihood (on two lines, to be large enough).
+ * No formula is removed: they all stay on the slide to the end. The newest formula is large, the older ones a little smaller
+ * (no marker). Lines 1 and 2 are one step and change size together, so that their = signs stay one under the other.
  */
 export const marks = [44, 96, 148, 204, 268, 328];
 
 const FX = 640; // left edge of the formulas
-const FS = 36;
-const ITEMS = [
-  {y: 205, h: 70, tex: 'L(c,p)=P(A\\mid c,p)'},
-  {y: 295, h: 130, tex: 'P(A_{ij}\\mid c,p)=\\begin{cases}p_{c_ic_j} & A_{ij}=1\\\\[2pt] 1-p_{c_ic_j} & A_{ij}=0\\end{cases}'},
-  {y: 440, h: 80, tex: '=\\;p_{c_ic_j}^{\\,A_{ij}}\\,\\big(1-p_{c_ic_j}\\big)^{1-A_{ij}}'},
-  {y: 540, h: 100, tex: 'L(c,p)=\\prod_{i<j}p_{c_ic_j}^{\\,A_{ij}}\\,\\big(1-p_{c_ic_j}\\big)^{1-A_{ij}}'},
-  {y: 660, h: 100, tex: 'L(c,p)=\\prod_{r\\le s}p_{rs}^{\\,m_{rs}}\\,\\big(1-p_{rs}\\big)^{n_{rs}-m_{rs}}'},
-  {y: 790, h: 120, tex: '\\log L(c,p)=\\sum_{r\\le s}\\Big[m_{rs}\\log p_{rs}+\\big(n_{rs}-m_{rs}\\big)\\log\\big(1-p_{rs}\\big)\\Big]'},
+const TOP0 = 196;
+const NEW = 50; // size of the newest formula
+const OLD = 40; // size of the older ones
+const GAP = 20;
+
+const LHS = 'P(A_{ij}\\mid c,p)';
+const ROWS = [
+  {group: 0, tex: 'L(c,p)=P(A\\mid c,p)'},
+  {group: 1, tex: `${LHS}=\\begin{cases}p_{c_ic_j} & A_{ij}=1\\\\[2pt] 1-p_{c_ic_j} & A_{ij}=0\\end{cases}`},
+  {group: 1, tex: `\\phantom{${LHS}}=p_{c_ic_j}^{\\,A_{ij}}\\,\\big(1-p_{c_ic_j}\\big)^{1-A_{ij}}`},
+  {group: 2, tex: 'L(c,p)=\\prod_{i<j}p_{c_ic_j}^{\\,A_{ij}}\\,\\big(1-p_{c_ic_j}\\big)^{1-A_{ij}}'},
+  {group: 3, tex: 'L(c,p)=\\prod_{r\\le s}p_{rs}^{\\,m_{rs}}\\,\\big(1-p_{rs}\\big)^{n_{rs}-m_{rs}}'},
+  {
+    group: 4,
+    tex: '\\begin{aligned}\\textstyle\\log L(c,p)&\\textstyle=\\sum_{r\\le s}\\Big[m_{rs}\\log p_{rs}\\\\&\\textstyle\\qquad+\\big(n_{rs}-m_{rs}\\big)\\log\\big(1-p_{rs}\\big)\\Big]\\end{aligned}',
+  },
 ] as const;
 
 const DEFS = [
@@ -43,8 +53,13 @@ export const S29: React.FC = () => {
   const frame = useCurrentFrame();
 
   const item = (k: number) => prog(frame, stageStart(marks, k) + (k === 0 ? 6 : 4), stageStart(marks, k) + (k === 0 ? 24 : 22));
-  const bar = (k: number) => betweenStages(frame, marks, k, k);
   const def = (from: number) => prog(frame, stageStart(marks, from) + (from === 0 ? 14 : 4), stageStart(marks, from) + (from === 0 ? 32 : 22));
+  // a step is large from the moment its first line appears until the first line of the next step appears
+  const first = (g: number) => ROWS.findIndex((r) => r.group === g);
+  const big = (g: number) => {
+    const next = first(g + 1);
+    return next < 0 ? 1 : 1 - prog(frame, stageStart(marks, next) + 4, stageStart(marks, next) + 22);
+  };
 
   return (
     <Frame n={29}>
@@ -57,20 +72,14 @@ export const S29: React.FC = () => {
           </Box>
         </Fade>
       ))}
-      {/* the formulas, each added under the last */}
-      {ITEMS.map((it, k) => (
-        <React.Fragment key={k}>
-          <Fade o={item(k)} dy={14}>
-            <Box x={FX} y={it.y} w={1160} size={FS}>
-              <Tex tex={it.tex} />
-            </Box>
-          </Fade>
-          {/* a blue bar marks the formula that was just added */}
-          <Fade o={bar(k) * item(k)}>
-            <div style={{position: 'absolute', left: FX - 22, top: it.y + 4, width: 7, height: it.h, background: C.blue}} />
-          </Fade>
-        </React.Fragment>
-      ))}
+      {/* the formulas, each added under the last; the lines below move as the ones above change size */}
+      <div style={{position: 'absolute', left: FX, top: TOP0, width: 1180, fontFamily: F.serif, color: C.ink, lineHeight: 1.3}}>
+        {ROWS.map((r, k) => (
+          <div key={k} style={{opacity: item(k), marginBottom: GAP, fontSize: lerp(OLD, NEW, big(r.group)), transform: `translateY(${(1 - item(k)) * 14}px)`}}>
+            <Tex tex={r.tex} />
+          </div>
+        ))}
+      </div>
     </Frame>
   );
 };

@@ -21,6 +21,9 @@ export const AB: Ranges = [
 /** The found split of S19: every node alone. */
 export const ALONE: Ranges = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => [i, i] as const);
 
+/** The rows as S12 leaves them (Rand 0.75, ARI 0.49); S13 starts from the same picture and sends the nodes into a table. */
+export const G_ARI: RowGeom = {x0: 540, pitch: 120, d: 70, yTrue: 350, yFound: 550};
+
 export const nodeX = (g: RowGeom, i: number): number => g.x0 + i * g.pitch;
 export const rowCentre = (g: RowGeom): number => g.x0 + 3.5 * g.pitch;
 export const boxPad = (g: RowGeom): number => 0.7 * g.d;

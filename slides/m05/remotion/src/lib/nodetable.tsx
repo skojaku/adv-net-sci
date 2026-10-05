@@ -1,6 +1,7 @@
 import React from 'react';
 import {C, F} from '../theme';
 import {LOOK} from '../lib/look';
+import {mix} from './network';
 import {FOUND8, TRUTH8} from './metrics';
 import {Disc} from './eight';
 
@@ -31,9 +32,13 @@ export const NodeTable: React.FC<{
   cols: number;
   order: [number[], number[]];
   slide: number;
-  diag: boolean;
+  /** true or 1 shades and outlines the diagonal; a number in [0, 1] brings it in gradually */
+  diag: boolean | number;
   op: number;
-}> = ({counts: tb, cols, order, slide, diag, op}) => {
+  /** opacity of the counts in the cells (default 1) */
+  numOp?: number;
+}> = ({counts: tb, cols, order, slide, diag, op, numOp = 1}) => {
+  const dg = diag === true ? 1 : diag === false ? 0 : diag;
   const left = CX - (cols * CW) / 2;
   const slot = (g: number) => {
     const a = order[0].indexOf(g);
@@ -43,9 +48,10 @@ export const NodeTable: React.FC<{
   return (
     <g opacity={op}>
       {[0, 1].map((r) =>
-        Array.from({length: cols}, (_, c) => (
-          <rect key={`${r}${c}`} x={left + c * CW} y={TOP + r * CH} width={CW} height={CH} fill={diag && r === c ? C.blueSoft : '#fff'} stroke={diag && r === c ? C.blue : C.faint} strokeWidth={diag && r === c ? 7 : 3} />
-        )),
+        Array.from({length: cols}, (_, c) => {
+          const d = r === c ? dg : 0;
+          return <rect key={`${r}${c}`} x={left + c * CW} y={TOP + r * CH} width={CW} height={CH} fill={mix('#ffffff', C.blueSoft, d)} stroke={mix(C.faint, C.blue, d)} strokeWidth={3 + 4 * d} />;
+        }),
       )}
       {[0, 1].map((r) => (
         <Disc key={r} x={left - 70} y={TOP + r * CH + CH / 2} d={64} look={LOOK[r]} />
@@ -59,7 +65,7 @@ export const NodeTable: React.FC<{
               {LETTERS[g]}
             </text>
             {[0, 1].map((r) => (
-              <text key={r} x={x} y={TOP + r * CH + CH / 2 + 28} textAnchor="middle" fontFamily={F.serif} fontSize={84} fill={C.ink}>
+              <text key={r} x={x} y={TOP + r * CH + CH / 2 + 28} textAnchor="middle" fontFamily={F.serif} fontSize={84} fill={C.ink} opacity={numOp}>
                 {tb[r][g]}
               </text>
             ))}

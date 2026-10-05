@@ -9,7 +9,7 @@ import {clamp, lerp} from '../lib/plot';
 import {EXPECTED_RAND, SHUFFLES, SHUFFLE_RAND} from '../data/data';
 import {NDOT, NodeDot, dotCentre} from '../lib/dots30';
 import {FOUND8, TRUTH8, ari, expectedRand, randIndex} from '../lib/metrics';
-import {EightRows, Frac, RowGeom} from '../lib/eight';
+import {EightRows, Frac, G_ARI, RowGeom} from '../lib/eight';
 
 /**
  * 0: the 40 shuffles replay; each Rand index drops as a dot on a 0 to 1 number line and stacks.
@@ -53,7 +53,7 @@ const MPITCH = 46;
 const MSTRIDE = 152;
 
 // stage 3
-const G3: RowGeom = {x0: 540, pitch: 120, d: 70, yTrue: 350, yFound: 550};
+const G3: RowGeom = G_ARI;
 
 const R8 = randIndex(TRUTH8, FOUND8);
 const E8 = expectedRand(TRUTH8, FOUND8);

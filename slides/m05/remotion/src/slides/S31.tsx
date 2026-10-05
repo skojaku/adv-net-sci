@@ -7,7 +7,7 @@ import {Tex} from '../components/Tex';
 import {BlockTable} from '../components/BlockTable';
 import {Network} from '../lib/network';
 import {C} from '../theme';
-import {betweenStages, prog, stageStart} from '../lib/anim';
+import {prog, stageStart} from '../lib/anim';
 import {SBM_GROUP, SBM_LOOK, sbmEdges} from '../lib/sbm';
 import {arcs8} from '../lib/sbmLayout';
 import {blocksOf} from '../lib/sbmscore';
@@ -65,7 +65,6 @@ export const S31: React.FC = () => {
   const recap = prog(frame, 0, 18);
   const net = prog(frame, 4, 22);
   const item = (k: number) => prog(frame, stageStart(marks, k) + 4, stageStart(marks, k) + 24);
-  const bar = (k: number) => betweenStages(frame, marks, k, k);
   const tableIn = prog(frame, marks[0] + 6, marks[0] + 24);
   const only = prog(frame, marks[0] + 8, marks[0] + 24) * (1 - prog(frame, marks[1], marks[1] + 10));
   const last = prog(frame, marks[1] + 8, marks[1] + 26);
@@ -92,9 +91,6 @@ export const S31: React.FC = () => {
             <Box x={FX} y={it.y} w={1000} size={40}>
               <Tex tex={it.tex} />
             </Box>
-          </Fade>
-          <Fade o={bar(k) * item(k)}>
-            <div style={{position: 'absolute', left: FX - 22, top: it.y + 4, width: 7, height: it.h, background: C.blue}} />
           </Fade>
         </React.Fragment>
       ))}

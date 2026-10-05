@@ -19,8 +19,10 @@ export const marks = [50, 112, 172, 226];
 export const S14: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const head = prog(frame, 0, 16);
-  const t2 = betweenStages(frame, marks, 0, 1) * (1 - 0);
+  // the table is already there when the slide opens: S13 ends with it
+  const head = prog(frame, 6, 22);
+  const t2 = 1 - prog(frame, marks[1], marks[1] + 12);
+  const diag = prog(frame, 22, 40);
   const t3 = betweenStages(frame, marks, 2, 3);
   const slide = smooth(frame, 56, 84);
   const sum0 = betweenStages(frame, marks, 0, 0);
@@ -31,7 +33,7 @@ export const S14: React.FC = () => {
   return (
     <Frame n={14} zoom={1.15} top={245}>
       <Canvas>
-        <NodeTable counts={T2} cols={2} order={[[0, 1], [1, 0]]} slide={slide} diag op={t2 * head} />
+        <NodeTable counts={T2} cols={2} order={[[0, 1], [1, 0]]} slide={slide} diag={diag} op={t2} />
         <NodeTable counts={T3} cols={3} order={[[0, 1, 2], [0, 1, 2]]} slide={0} diag={false} op={t3} />
       </Canvas>
       <Fade o={sum0 * head} dy={14}>

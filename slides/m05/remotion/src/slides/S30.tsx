@@ -8,7 +8,7 @@ import {BlockTable} from '../components/BlockTable';
 import {Network} from '../lib/network';
 import {C} from '../theme';
 import {HOLLOW} from '../lib/look';
-import {betweenStages, prog, stageStart} from '../lib/anim';
+import {prog, stageStart} from '../lib/anim';
 import {SBM_GROUP, SBM_LOOK, sbmEdges} from '../lib/sbm';
 import {arcs8} from '../lib/sbmLayout';
 import {blocksOf} from '../lib/sbmscore';
@@ -70,7 +70,6 @@ export const S30: React.FC = () => {
   const net = prog(frame, 6, 26);
   const colour = prog(frame, marks[0] + 6, marks[0] + 30);
   const item = (k: number) => prog(frame, stageStart(marks, k) + 4, stageStart(marks, k) + 22);
-  const bar = (k: number) => betweenStages(frame, marks, k, k);
   const tableIn = prog(frame, marks[0] + 24, marks[0] + 42);
   const swap = prog(frame, marks[2] + 6, marks[2] + 24);
 
@@ -102,9 +101,6 @@ export const S30: React.FC = () => {
             <Box x={FX} y={it.y} w={1000} size={40}>
               <Tex tex={it.tex} />
             </Box>
-          </Fade>
-          <Fade o={bar(k) * item(k)}>
-            <div style={{position: 'absolute', left: FX - 22, top: it.y + 4, width: 7, height: it.h, background: C.blue}} />
           </Fade>
         </React.Fragment>
       ))}

@@ -141,9 +141,9 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | S12 `Adjusted Rand index` | 0 | シャッフルが 40 回、速く繰り返され、毎回の Rand 指数が数直線に点で積もる。`Random labels: about 0.71` | 数直線 + 40 点 |
 | | 1 | `ARI = (Rand - expected Rand) / (1 - expected Rand)`、`expected Rand = 0.715`。目盛りが ARI に切り替わり、点群が 0 のまわりへ。`0 = chance, 1 = identical` | ARI の数直線 + 式 |
 | | 2 | 8 ノードの例に戻る: `Rand 0.75, expected 0.51, ARI 0.49` | 数字 3 つ |
-| S13 `Nodes or pairs?` | 0 | 8 ノードの 2 段 (真の色と見つけた箱) の 1 ノードが光る。`Why not count nodes, one at a time?` ("NMI" の語は出さない) | 1 ノードが光る |
-| | 1 | ノードの分割表 (行: 真の群、列: A と B): 4, 0, 1, 3。`Count the nodes in each cell.` | ノード数の表 |
-| S14 `Can we count the diagonal?` | 0 | 2 x 2 の表で、A を青に、B をオレンジに対応させると対角に 4 + 3 = 7 of 8 nodes | 升目 + 対角 |
+| S13 `Nodes or pairs?` | 0 | S12 の最後の絵 (上: 真の色の 8 ノード、下: 見つけた箱 A と B の中の 8 ノード) からそのまま始まり、`Rand 0.75 / expected 0.51 / ARI 0.49` の札が消える。箱に A, B の名前。ノード 3 に輪。`Why not count nodes, one at a time?` ("NMI" の語は出さない) | 2 段の 8 ノード |
+| | 1 | 上の段が消え、下の段 (箱ごと) が下がって、上に 2 x 2 の表が出る。下の段のノード (色 = 真の群、箱 = 見つけた群) が 1 つずつ表の升 (色, 箱) へ飛び込んで積もる (青 A に 1 から 4、オレンジ A に 5、オレンジ B に 6 から 8、青 B には 0)。空になった箱は消える。積もったノードが数 4, 0, 1, 3 に替わる。`Count the nodes in each cell.` 表は S14 の始まりと同じ大きさと位置で終わる | ノード数の表 |
+| S14 `Can we count the diagonal?` | 0 | S13 の表がそのまま (開いた時からある) 出ていて、A を青に、B をオレンジに対応させると対角が色づく。4 + 3 = 7 of 8 nodes | 升目 + 対角 |
 | | 1 | 列の並びだけ入れ替える (B, A)。対角は 0 + 1 = 1 of 8 nodes。`same split, columns in another order` | 入れ替えた升目 |
 | | 2 | 見つけた群が 3 つ (2 x 3 の表)。`3 found groups, 2 true groups`、`no diagonal to count` | 2 x 3 の表 |
 | | 3 | `We need a score that ignores the names and the order.` (次の NMI へつなぐ) | 同上 + 1 行 |
@@ -197,10 +197,10 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 3 | 真の分け方 (5/6、6/6、1/16): -6.4 で最高。黒い点、赤い文字 | 点 5 つ |
 | S29 `The likelihood of a network` | 0 | 左の列に記号の定義 (`A_ij`、`c_i`、`p_rs`)。右に `L(c, p) = P(A given c, p)`。**p_rs の値は与えない** | 定義 + L の定義 |
 | | 1 | 1 組のノード (i, j): 辺があれば確率 p_{c_i c_j}、なければ 1 - p_{c_i c_j} (場合分けの式) | + 場合分け |
-| | 2 | 1 つの式にまとめる: `p^{A_ij} (1 - p)^{1 - A_ij}` | + べき乗の式 |
+| | 2 | 1 つの式にまとめる: `p^{A_ij} (1 - p)^{1 - A_ij}`。この式の `=` は、1 つ上の式の `=` の真下に揃える (TeX の `\phantom` で左辺と同じ幅をあける) | + べき乗の式 |
 | | 3 | すべての組の積: `L(c, p) = product over i < j of p^{A_ij} (1 - p)^{1 - A_ij}` (尤度) | + 積 |
 | | 4 | ブロック (r, s) ごとにまとめる: `L(c, p) = product over r <= s of p_rs^{m_rs} (1 - p_rs)^{n_rs - m_rs}`。左の列に m_rs と n_rs の定義が加わる | + ブロックの式 |
-| | 5 | 対数をとる: `log L(c, p) = sum over r <= s of [m_rs log p_rs + (n_rs - m_rs) log(1 - p_rs)]` | + 対数尤度。式はどれも消さず、最後まで残す |
+| | 5 | 対数をとる: `log L(c, p) = sum over r <= s of [m_rs log p_rs + (n_rs - m_rs) log(1 - p_rs)]` (2 行に分ける) | + 対数尤度。式はどれも消さず、最後まで残す。**一番新しい式を大きく (50px)、古い式を少し小さく (40px)** 。印の青い縦線は付けない (S30, S31 も同じ)。2 行目と 3 行目は 1 つの段階として同時に大小が変わる |
 | S30 `Fix c, find p` | 0 | 上の帯に前の式 (L と log L) を小さく残す。`(c-hat, p-hat) = argmax of log L(c, p)` (尤度の最大化) | 帯 + 最大化の式 |
 | | 1 | c を固定する: ネットワークが c の色に塗られ、ブロックごとの m / n の表が出る。`fix c: p-hat = argmax over p of log L(c, p)` | 色つきの網 + 表 (5/6、1/16、6/6) |
 | | 2 | log L を p_rs で微分して 0 とおく: `m / p - (n - m) / (1 - p) = 0` | + 微分の式 |
