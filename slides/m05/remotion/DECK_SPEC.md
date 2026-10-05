@@ -127,10 +127,10 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 1 | 同じ分け方で、列の並びだけ入れ替える (B, A)。対角は 0 + 1 = 1。`0 + 1 = 1 of 8 nodes`、`same split, columns in another order` | 入れ替えた升目 |
 | | 2 | 見つけた群が 3 つ (2 x 3 の升目)。`3 found groups, 2 true groups`、`no one-to-one match` | 2 x 3 の升目 |
 | | 3 | 丸い枠の中にノード 2 つ。`A pair is together or apart.`、`No group names to match.` | 組の絵 |
-| S11 `Rand index: pairs of nodes` | 0 | ノード 1 から 8 を縦横に並べた行列 (28 セル)。上はノードの真の色、左は見つけた群の箱。`8 nodes make 28 pairs of nodes.`、`One cell is one pair.` | 空の行列 |
-| | 1 | 各セルの上半分: 真の分け方で同じ色なら青、違えば白。`Upper half: the true split` と凡例 | 上半分が塗られた行列 |
-| | 2 | 各セルの下半分: 見つけた分け方で同じ箱なら青、違えば白。`Lower half: the found split` | 両方の半分 |
-| | 3 | 2 つの半分が同じなら青のチェック (agree)、違えば赤の x (disagree)。`21 agree, 7 disagree` | チェックと x |
+| S11 `Rand index: pairs of nodes` | 0 | ノード 1 から 8 を縦横に並べた「真の分け方」の行列 (28 セル、空)。`8 nodes make 28 pairs of nodes. One cell is one pair.` | 空の行列 1 つ |
+| | 1 | 同じ色の 2 ノードのセルを塗る (真の分け方)。`True split: shaded = the two nodes have the same color` | 真の行列 |
+| | 2 | 隣に「見つけた分け方」の行列 (見つけた群の箱つき)。同じ箱の 2 ノードのセルを塗る。`Found split: shaded = the two nodes are in the same box` | 行列 2 つ |
+| | 3 | 右に 3 つ目の行列: 2 つの行列で同じ判定 (どちらも塗る、またはどちらも白) なら青のチェック (agree)、違えば赤の x (disagree)。`Alike in both: agree. Different: disagree. 21 of 28 agree.` | 行列 3 つ |
 | | 4 | `Rand index = agreeing pairs of nodes / all pairs of nodes = 21 / 28 = 0.75` | 式 |
 | S12 `Shuffle the labels` (問い) | 0 | 30 ノードが 5 群 (各 6) にまとまる。字幕 `true groups: 5 groups of 6 nodes` | 5 色のノード |
 | | 1 | ノードの色が一度シャッフルされ、別の色分けが下の段に現れる。問い `What Rand index do we expect for random labels?` | 上下 2 段 + 問い。答えは出さない |
