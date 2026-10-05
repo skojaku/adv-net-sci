@@ -72,7 +72,7 @@
         <button role="tab" data-tab="random">2. A random network</button>
     </div>
 
-    <section id="resolution" role="tabpanel" hidden>
+    <section id="tab-resolution" role="tabpanel" hidden>
         <p class="prompt">
             Two groups of 5 and one group of 40. Color them as three groups, then find a coloring the game rates higher.
             <button class="restart">↻ start over</button>
@@ -80,7 +80,7 @@
         <iframe data-src="index.html?scoreType=modularity&numCommunities=3&randomness=0.9&dataFile=two-cliques-big-clique.json" title="Resolution limit demo"></iframe>
     </section>
 
-    <section id="random" role="tabpanel" hidden>
+    <section id="tab-random" role="tabpanel" hidden>
         <p class="prompt">
             The edges of this network were placed at random. How high can you push Q? The karate club's best is 0.42.
             <button class="restart">↻ start over</button>
@@ -91,7 +91,9 @@
     <script>
         // Each tab holds last year's game (index.html) with its original URL
         // parameters. A game loads the first time its tab opens and keeps its
-        // state when the student switches tabs.
+        // state when the student switches tabs. The URL hash names the tab;
+        // the panels' ids differ from it so the browser does not scroll the
+        // tabs out of view when the page opens on #resolution or #random.
         const buttons = document.querySelectorAll(".tabs button");
         const panels = document.querySelectorAll("[role=tabpanel]");
 
@@ -109,10 +111,10 @@
         }
 
         function show(id) {
-            if (!document.getElementById(id)) id = panels[0].id;
+            if (!document.getElementById("tab-" + id)) id = buttons[0].dataset.tab;
             buttons.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === id));
             panels.forEach(p => {
-                p.hidden = p.id !== id;
+                p.hidden = p.id !== "tab-" + id;
                 const frame = p.querySelector("iframe");
                 if (!p.hidden && !frame.getAttribute("src")) load(frame);
             });
