@@ -2,258 +2,131 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box} from '../components/Text';
-import {C, F} from '../theme';
-import {LOOK, type Look} from '../lib/look';
-import {betweenStages, prog, smooth} from '../lib/anim';
-import {KARATE_EDGES, KARATE_FOUR, KARATE_POS, KARATE_REAL, KARATE_THREE} from '../data/data';
-import {Network, mix, toCanvas} from '../lib/network';
-import {ari, nmi} from '../lib/metrics';
+import {Box, Cap, Tag} from '../components/Text';
+import {C} from '../theme';
+import {betweenStages, prog} from '../lib/anim';
+import {SHUFFLES} from '../data/data';
+import {ALONE8, TRUTH8, ari, nmi, randIndex} from '../lib/metrics';
+import {ALONE, EightRows, RowGeom} from '../lib/eight';
+import {NodeDot, TRUE30, dotCentre} from '../lib/dots30';
 
 /**
- * 0: the club drawn in its real split (blue: Mr. Hi's side, red: the Officer's side).
- * 1: the colours become the four groups (Q = 0.407); the table of real x found counts and the two scores appear.
- * 2: the colours become the three groups (Q = 0.402); a second table and its scores.
- * 3: the larger score of each pair in red: NMI prefers four groups, ARI prefers three.
- * 4: four groups against three groups: NMI 0.768, ARI 0.626.
+ * 0: the eight nodes with the found split "every node alone" (8 boxes).
+ * 1: Rand 0.57, NMI 0.50, ARI 0.00: this split says nothing about the groups.
+ * 2: back to the 30 nodes with random labels: NMI is not zero for them, ARI is about 0.
  */
-export const marks = [45, 105, 165, 210, 255];
+export const marks = [50, 100, 160];
 
-// ---- numbers, all computed from the data
-const f3 = (x: number) => x.toFixed(3);
-type Table = number[][];
-const table = (found: ReadonlyArray<number>, cols: number): Table =>
-  [0, 1].map((r) => Array.from({length: cols}, (_, c) => KARATE_REAL.filter((v, i) => v === r && found[i] === c).length));
-const T4 = table(KARATE_FOUR, 4);
-const T3 = table(KARATE_THREE, 3);
-const same = (a: number[][], b: number[][]) => JSON.stringify(a) === JSON.stringify(b);
-if (!same(T4, [[11, 5, 1, 0], [0, 0, 9, 8]]) || !same(T3, [[11, 5, 1], [1, 0, 16]])) throw new Error(`S20: tables ${JSON.stringify(T4)} ${JSON.stringify(T3)}`);
+// ---- numbers: the eight-node ones come from metrics.ts
+const RAND = randIndex(TRUTH8, ALONE8);
+const NMI = nmi(TRUTH8, ALONE8);
+const ARI = ari(TRUTH8, ALONE8);
+const f2 = (x: number) => (Math.abs(x) < 5e-3 ? '0.00' : x.toFixed(2));
+if (f2(RAND) !== '0.57' || f2(NMI) !== '0.50' || f2(ARI) !== '0.00') throw new Error(`S20: ${RAND} ${NMI} ${ARI}`);
 
-const NMI4 = nmi(KARATE_REAL, KARATE_FOUR);
-const ARI4 = ari(KARATE_REAL, KARATE_FOUR);
-const NMI3 = nmi(KARATE_REAL, KARATE_THREE);
-const ARI3 = ari(KARATE_REAL, KARATE_THREE);
-const NMI43 = nmi(KARATE_FOUR, KARATE_THREE);
-const ARI43 = ari(KARATE_FOUR, KARATE_THREE);
-const expectScores: Array<[number, string]> = [
-  [NMI4, '0.586'],
-  [ARI4, '0.450'],
-  [NMI3, '0.568'],
-  [ARI3, '0.591'],
-  [NMI43, '0.768'],
-  [ARI43, '0.626'],
-];
-expectScores.forEach(([v, s]) => {
-  if (f3(v) !== s) throw new Error(`S20: score ${v} should print as ${s}`);
-});
-// the larger of each pair is the one marked in red
-const NMI_WINNER_IS_FOUR = NMI4 > NMI3;
-const ARI_WINNER_IS_THREE = ARI3 > ARI4;
-if (!NMI_WINNER_IS_FOUR || !ARI_WINNER_IS_THREE) throw new Error('S20: NMI and ARI no longer disagree');
+// ---- the shuffled nodes. The mean NMI of 0.215 is over 2000 shuffles (scripts/verify_numbers.py asserts it);
+// data.ts keeps 40 shuffles, whose mean must land close to it.
+const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+const MEAN_NMI_2000 = 0.215;
+{
+  const nmi40 = mean(SHUFFLES.map((s) => nmi(TRUE30, s)));
+  const ari40 = mean(SHUFFLES.map((s) => ari(TRUE30, s)));
+  if (Math.abs(nmi40 - MEAN_NMI_2000) > 5e-3) throw new Error(`S20: mean NMI of the stored shuffles is ${nmi40}`);
+  if (Math.abs(ari40) > 1e-2) throw new Error(`S20: mean ARI of the stored shuffles is ${ari40}`);
+}
+const RANDOM_LABELS = SHUFFLES[0];
 
-// ---- the club
-const CLUB = toCanvas(KARATE_POS, 150, 225, 720, 590);
-const CLUB_EDGES = KARATE_EDGES as unknown as ReadonlyArray<readonly [number, number]>;
-const NODE_D = 44;
-// a group is told apart by its fill: solid, hollow, stripes, black (src/lib/look.ts)
-const REAL_LOOK = KARATE_REAL.map((g) => LOOK[g]);
-const FOUR_LOOK = KARATE_FOUR.map((g) => LOOK[g]);
-const THREE_LOOK = KARATE_THREE.map((g) => LOOK[g]);
+// ---- layout
+const G: RowGeom = {x0: 470, pitch: 140, d: 80, yTrue: 300, yFound: 500};
 
-// ---- the tables on the right
-const GX = 1010; // x of the row-header discs
-const colX = (j: number) => 1130 + j * 100;
-const BLOCK_A = 195;
-const BLOCK_B = 480;
-const BLOCK_C = 770;
-const SCORE_X = 1540;
-
-type BlockProps = {
-  y0: number;
-  t: Table;
-  /** the looks of the found groups, in column order */
-  cols: ReadonlyArray<Look>;
-  o: number;
-  cells: number;
-};
-
-/** A found group as a circle chip. */
-const Chip: React.FC<{x: number; y: number; look: Look}> = ({x, y, look}) => (
-  <circle cx={x} cy={y} r={NODE_D / 2 - look.sw / 2} fill={look.fill} stroke={look.stroke} strokeWidth={look.sw} />
-);
-
-/** A real group as a square chip: solid or hollow. */
-const SquareChip: React.FC<{x: number; y: number; look: Look}> = ({x, y, look}) => {
-  const h = 25;
-  return <rect x={x - h + look.sw / 2} y={y - h + look.sw / 2} width={2 * h - look.sw} height={2 * h - look.sw} rx={6} fill={look.fill} stroke={look.stroke} strokeWidth={look.sw} />;
-};
-
-/** A 2 x k table of counts. Rows: the real split (square chips); columns: the found groups (circle chips, same fill as in the club). */
-const BlockSvg: React.FC<BlockProps> = ({y0, t, cols, o, cells}) => {
-  const yh = y0 + 100;
-  const rows = [y0 + 160, y0 + 220];
-  const right = colX(cols.length - 1) + 50;
-  return (
-    <g opacity={o}>
-      {cols.map((c, j) => (
-        <Chip key={j} x={colX(j)} y={yh} look={c} />
-      ))}
-      {[LOOK[0], LOOK[1]].map((l, r) => (
-        <SquareChip key={r} x={GX} y={rows[r]} look={l} />
-      ))}
-      <line x1={GX + 40} y1={yh + 36} x2={right} y2={yh + 36} stroke={C.rule} strokeWidth={3} />
-      {t.map((row, r) =>
-        row.map((v, j) => {
-          const k = r * cols.length + j;
-          const a = prog(cells, k * 0.08, k * 0.08 + 0.4);
-          return (
-            <text key={`${r}-${j}`} x={colX(j)} y={rows[r] + 16} textAnchor="middle" fontFamily={F.serif} fontSize={45} fill={v === 0 ? C.soft : C.ink} opacity={a}>
-              {v}
-            </text>
-          );
-        }),
-      )}
-    </g>
-  );
-};
-
-const Score: React.FC<{x: number; y: number; label: string; v: number; hot: number}> = ({x, y, label, v, hot}) => (
-  <Box x={x} y={y} w={300} size={45} style={{color: mix(C.ink, C.red, hot), whiteSpace: 'nowrap'}}>
-    {label} {f3(v)}
-  </Box>
-);
+const D30 = 46;
+const PITCH30 = 58;
+const STRIDE30 = 250;
+const X30 = 402;
+const Y30_TOP = 285;
+const Y30_BOT = 480;
+const ROW = [...Array(30).keys()];
 
 export const S20: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // the club's colours: real, then four groups, then three groups
-  const t1 = smooth(frame, marks[0] + 6, marks[0] + 34);
-  const t2 = smooth(frame, marks[1] + 6, marks[1] + 34);
-  const clubFrom: ReadonlyArray<Look> = frame < marks[1] ? REAL_LOOK : FOUR_LOOK;
-  const clubTo: ReadonlyArray<Look> = frame < marks[1] ? FOUR_LOOK : THREE_LOOK;
-  const clubT = frame < marks[1] ? t1 : t2;
-  const edgeIn = prog(frame, 0, 22);
+  // stages 0 and 1
+  const eight = betweenStages(frame, marks, 0, 1);
+  const labels = prog(frame, 6, 22);
+  const boxes = prog(frame, 28, 44);
+  const alone = prog(frame, 36, 50);
+  const t1 = prog(frame, 56, 70);
+  const t2 = prog(frame, 64, 78);
+  const t3 = prog(frame, 72, 86);
+  const says = prog(frame, 84, 98);
 
-  // captions under the club
-  const cap0 = betweenStages(frame, marks, 0, 0);
-  const cap1 = betweenStages(frame, marks, 1, 1);
-  const cap2 = betweenStages(frame, marks, 2, 2);
-  const cap3 = betweenStages(frame, marks, 3, 4);
-  const legend = betweenStages(frame, marks, 0, 0);
-
-  // stage 1: table A
-  const aIn = prog(frame, 60, 76);
-  const aCells = prog(frame, 70, 92);
-  const aTitle = aIn;
-  const aScores = prog(frame, 88, 102);
-
-  // stage 2: table B
-  const bIn = prog(frame, 124, 140);
-  const bCells = prog(frame, 132, 152);
-  const bScores = prog(frame, 148, 162);
-
-  // stage 3: the higher of each pair in red
-  const hot = prog(frame, 172, 192);
-
-  // stage 4: four against three
-  const cIn = prog(frame, 216, 234);
-  const cScores = prog(frame, 230, 248);
+  // stage 2
+  const nodes = betweenStages(frame, marks, 2, 2);
+  const tag1 = prog(frame, 132, 146);
+  const tag2 = prog(frame, 136, 150);
+  const last = prog(frame, 144, 158);
 
   return (
-    <Frame n={20} title="Which split is closer to the real one?">
+    <Frame n={20} title="Many tiny groups">
       <Canvas>
-        <Network
-          pos={CLUB}
-          edges={CLUB_EDGES}
-          look={clubFrom}
-          lookTo={clubTo}
-          t={clubT}
-          nodeD={NODE_D}
-          edgeW={3}
-          edgeOp={edgeIn}
-          nodeOp={(i) => prog(frame, 2 + i * 0.5, 16 + i * 0.5)}
-        />
-        {/* legend of stage 0 */}
-        <g opacity={legend * prog(frame, 22, 38)}>
-          <Chip x={GX + 20} y={450} look={LOOK[0]} />
-          <Chip x={GX + 20} y={540} look={LOOK[1]} />
+        <g opacity={eight}>
+          <EightRows
+            g={G}
+            found={ALONE}
+            names={false}
+            boxOp={boxes}
+            trueOp={(i) => prog(frame, i * 1.5, i * 1.5 + 14)}
+            foundOp={(i) => prog(frame, 12 + i * 1.5, 26 + i * 1.5)}
+          />
         </g>
-        <BlockSvg y0={BLOCK_A} t={T4} cols={[LOOK[0], LOOK[1], LOOK[2], LOOK[3]]} o={aIn} cells={aCells} />
-        <BlockSvg y0={BLOCK_B} t={T3} cols={[LOOK[0], LOOK[1], LOOK[2]]} o={bIn} cells={bCells} />
+        <g opacity={nodes}>
+          {ROW.map((j) => {
+            const [x, y] = dotCentre(j, X30, Y30_TOP, PITCH30, STRIDE30);
+            return <NodeDot key={`a${j}`} x={x} y={y} d={D30} g={TRUE30[j]} op={prog(frame, 106 + j * 0.4, 118 + j * 0.4)} />;
+          })}
+          {ROW.map((j) => {
+            const [x, y] = dotCentre(j, X30, Y30_BOT, PITCH30, STRIDE30);
+            return <NodeDot key={`b${j}`} x={x} y={y} d={D30} g={RANDOM_LABELS[j]} op={prog(frame, 116 + j * 0.4, 128 + j * 0.4)} />;
+          })}
+        </g>
       </Canvas>
 
-      {/* captions under the club */}
-      <Fade o={cap0}>
-        <Box x={510} y={858} w={800} align="center" size={45} color={C.soft} hand>
-          the real split
-        </Box>
+      {/* stages 0 and 1 */}
+      <Fade o={eight * labels} dy={10}>
+        <Box x={120} y={G.yTrue - 30} w={260} size={45} color={C.soft} hand>true</Box>
+        <Box x={120} y={G.yFound - 30} w={260} size={45} color={C.soft} hand>found</Box>
       </Fade>
-      <Fade o={cap1}>
-        <Box x={510} y={858} w={800} align="center" size={45} color={C.soft} hand>
-          Q = 0.407
-        </Box>
+      <Fade o={eight * alone} dy={12}>
+        <Cap x={960} y={G.yFound + 56 + 22} w={1000}>
+          every node alone
+        </Cap>
       </Fade>
-      <Fade o={cap2}>
-        <Box x={510} y={858} w={800} align="center" size={45} color={C.soft} hand>
-          Q = 0.402
-        </Box>
+      <Fade o={eight * t1} dy={14}>
+        <Tag x={540} y={700}>Rand {f2(RAND)}</Tag>
       </Fade>
-      <Fade o={cap3}>
-        <Box x={510} y={858} w={800} align="center" size={45} color={C.soft} hand>
-          NMI and ARI can disagree
-        </Box>
+      <Fade o={eight * t2} dy={14}>
+        <Tag x={960} y={700}>NMI {f2(NMI)}</Tag>
       </Fade>
-
-      {/* stage 0: what blue and red mean */}
-      <Fade o={legend * prog(frame, 22, 38)} dy={12}>
-        <Box x={GX + 70} y={420} w={700} size={45}>
-          Mr. Hi&apos;s side: 17
-        </Box>
-        <Box x={GX + 70} y={510} w={700} size={45}>
-          the Officer&apos;s side: 17
-        </Box>
+      <Fade o={eight * t3} dy={14}>
+        <Tag x={1380} y={700} hot>ARI {f2(ARI)}</Tag>
+      </Fade>
+      <Fade o={eight * says} dy={14}>
+        <Cap x={960} y={830} w={1300}>
+          This split says nothing about the groups.
+        </Cap>
       </Fade>
 
-      {/* stage 1: four groups */}
-      <Fade o={aTitle} dy={12}>
-        <Box x={GX - 20} y={BLOCK_A} w={800} size={45} color={C.soft} hand>
-          four groups
-        </Box>
-        <Box x={GX - 25} y={BLOCK_A + 70} w={120} size={40} color={C.soft} hand>
-          real
-        </Box>
+      {/* stage 2 */}
+      <Fade o={nodes * tag1} dy={14}>
+        <Tag x={700} y={660}>average NMI {MEAN_NMI_2000.toFixed(3)}</Tag>
       </Fade>
-      <Fade o={aScores} dy={12}>
-        <Score x={SCORE_X} y={BLOCK_A + 128} label="NMI" v={NMI4} hot={hot} />
-        <Score x={SCORE_X} y={BLOCK_A + 190} label="ARI" v={ARI4} hot={0} />
+      <Fade o={nodes * tag2} dy={14}>
+        <Tag x={1270} y={660}>average ARI about 0</Tag>
       </Fade>
-
-      {/* stage 2: three groups */}
-      <Fade o={bIn} dy={12}>
-        <Box x={GX - 20} y={BLOCK_B} w={800} size={45} color={C.soft} hand>
-          three groups
-        </Box>
-        <Box x={GX - 25} y={BLOCK_B + 70} w={120} size={40} color={C.soft} hand>
-          real
-        </Box>
-      </Fade>
-      <Fade o={bScores} dy={12}>
-        <Score x={SCORE_X} y={BLOCK_B + 128} label="NMI" v={NMI3} hot={0} />
-        <Score x={SCORE_X} y={BLOCK_B + 190} label="ARI" v={ARI3} hot={hot} />
-      </Fade>
-
-      {/* stage 4: four against three */}
-      <Fade o={cIn} dy={12}>
-        <Box x={GX - 20} y={BLOCK_C} w={800} size={45} color={C.soft} hand>
-          four vs three groups
-        </Box>
-      </Fade>
-      <Fade o={cScores} dy={12}>
-        <Box x={GX - 20} y={BLOCK_C + 68} w={760} size={45} style={{whiteSpace: 'nowrap'}}>
-          NMI {f3(NMI43)}
-          <span style={{display: 'inline-block', width: 60}} />
-          ARI {f3(ARI43)}
-        </Box>
+      <Fade o={nodes * last} dy={14}>
+        <Cap x={960} y={800} w={1500}>
+          NMI is not zero for random labels.
+        </Cap>
       </Fade>
     </Frame>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import {LOOK} from './look';
 
 // The 30 nodes of S11, S12 and S19: 5 true groups of 6 nodes, each drawn as a block of 3 x 2 nodes.
-// The groups are told apart by the fill (LOOK[0..4]).
+// The groups are told apart by colour (LOOK[0..4]).
 
 export const NDOT = 30;
 

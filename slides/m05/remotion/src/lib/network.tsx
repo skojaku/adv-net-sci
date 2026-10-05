@@ -35,7 +35,7 @@ const val = <T,>(v: Num<T> | undefined, i: number, item: T, dflt: number) => (v 
 export const Network: React.FC<{
   pos: ReadonlyArray<Pt>;
   edges: ReadonlyArray<Edge>;
-  /** one Look for all nodes, or one per node (see lib/look.ts); default: solid blue */
+  /** one Look for all nodes, or one per node (see lib/look.ts); default: blue */
   look?: Look | ReadonlyArray<Look>;
   /** a second look per node, cross-faded in by `t` (0 = look only, 1 = lookTo only) */
   lookTo?: ReadonlyArray<Look>;

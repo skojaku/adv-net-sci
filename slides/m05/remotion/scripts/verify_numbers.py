@@ -254,4 +254,64 @@ assert (cnt(True, True), cnt(False, False), len(e1) - cnt(True, True) - cnt(Fals
 print("6 SBM seed 901: Q(true) 0.413 / -0.436 / 0.000; block counts 5/6, 6/6, 1/16;"
       " log-likelihoods true -6.4, one moved -15.5, stripes -17.5, two moved -18.4, all -19.1")
 
+
+# ---------------------------------------------------------------- 7. the SBM score for every K (S29 to S31)
+# best log L and a simple Bayesian score (uniform prior on each block probability, integrated out;
+# P(K) = 1/8, P(c | K) uniform) over all 4140 groupings of the 8 nodes, by K
+from math import lgamma, log, comb, factorial
+
+def _partitions(n):
+    def rec(i, m, cur):
+        if i == n:
+            yield tuple(cur)
+            return
+        for g in range(m + 1):
+            cur.append(g)
+            yield from rec(i + 1, max(m, g + 1), cur)
+            cur.pop()
+    yield from rec(0, 0, [])
+
+
+_E = set(e1)
+
+
+def _blocks(c):
+    K = max(c) + 1
+    m, nn = {}, {}
+    for a, b in sp:
+        r, s = sorted((c[a], c[b]))
+        nn[(r, s)] = nn.get((r, s), 0) + 1
+        m[(r, s)] = m.get((r, s), 0) + ((a, b) in _E)
+    return m, nn
+
+
+def _ll(c):
+    m, nn = _blocks(c)
+    return sum(m[k] * log(m[k] / nn[k]) + (nn[k] - m[k]) * log(1 - m[k] / nn[k]) for k in nn if 0 < m[k] < nn[k])
+
+
+def _bayes(c):
+    m, nn = _blocks(c)
+    return sum(lgamma(m[k] + 1) + lgamma(nn[k] - m[k] + 1) - lgamma(nn[k] + 2) for k in nn)
+
+
+def _s2(n, k):
+    return sum((-1) ** (k - j) * comb(k, j) * j ** n for j in range(k + 1)) // factorial(k)
+
+
+best_ll, best_b = {}, {}
+for c in _partitions(8):
+    K = max(c) + 1
+    best_ll[K] = max(best_ll.get(K, -1e9), _ll(c))
+    best_b[K] = max(best_b.get(K, -1e9), _bayes(c) - log(_s2(8, K)) - log(8))
+assert len(best_ll) == 8
+for K, want in zip(range(1, 9), [-19.121, -6.444, -3.014, -1.386, 0, 0, 0, 0]):
+    near(best_ll[K], want, 2e-3)
+for K, want in zip(range(1, 9), [-22.677, -18.213, -20.330, -21.850, -22.596, -22.912, -23.094, -21.488]):
+    near(best_b[K], want, 2e-3)
+assert all(best_ll[K + 1] >= best_ll[K] - 1e-12 for K in range(1, 8))          # log L never decreases with K
+assert max(best_b, key=best_b.get) == 2                                          # the Bayesian score peaks at K = 2
+print("7 SBM by K: best log L", [round(best_ll[K], 3) for K in range(1, 9)], "never decreases;",
+      "Bayesian score peaks at K = 2:", [round(best_b[K], 2) for K in range(1, 9)])
+
 print("\nall assertions passed")

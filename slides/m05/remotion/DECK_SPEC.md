@@ -2,15 +2,16 @@
 
 2026-10-05。設計表。
 
-**改訂 (同日、講師の指摘のあと)**: 27 枚 (最初の案は 23 枚)。
+**改訂 (同日、講師の指摘のあと)**: 32 枚 (最初の案は 23 枚)。
 
-- 相互情報量の説明を厚くした。S13 から S17 に分け、1 枚 1 つの考えにした
-  (数える単位、yes/no の質問、ヒントなし、ヒントあり、節約できた質問)。
-- 「ペアか、ノードか」を明示した。Rand 指数と ARI は **ノードの組** を数え、NMI は **ノード 1 つ** を見る。
-  S13 でその違いを絵で見せ、以後の字幕でも単位を書く。
-- 文字を減らした。1 段階に短い字幕 1 つまで。
-- 色は **白、黒、青** を基本にした。群の区別は色相ではなく塗り方 (べた、中抜き、ストライプ、黒、ドット)。
-  **赤は強調する文字だけ。**
+- Rand 指数は、ノードの組を **行列のセル** で見せる (S11)。ノード 2 つを線で結ぶ絵は、ネットワークの辺に見えるので使わない。
+  なぜ組を数えるかは、ノードを数える案と反例で示す (S10)。
+- 相互情報量は、質問の数 (エントロピー) ではなく **確率の式** で説明する (S15 から S19)。
+  同時確率を分子に、周辺確率どうしの積を分母にした比で決まる。
+- **群の色は、青、オレンジ、茶色、紫、濃い灰色。赤は文字だけ。** ストライプ (茶色) は、帯と円の重なりにだけ使う。
+- 乱数 u は見せない (S23)。確率は 10 枚のくじで説明する。
+- 最後に、SBM の推定の式 (S29)、尤度が K とともに増えること (S30)、Peixoto のベイズ流 SBM (S31)、graph-tool (S32) を足した。
+- 字幕は 1 段階に短いもの 1 つまで。数える単位 (ノードの組か、ノード 1 つか) を明示する。
 
 ## 何を作るか
 
@@ -25,8 +26,8 @@ Marp デッキ `../m05-clustering.md` のモジュラリティの導出まで (�
 | --- | --- |
 | A ring of triangles / Q merges neighbors | S02 から S04 |
 | Similar Q, different groups (2枚) | S05 |
-| (なし。デッキを作り直したときに落ちた) | S06 から S07 (ノイズ)、S08 から S20 (Rand、ARI、NMI) |
-| Turn it around から Finding the groups is inference まで (8枚) | S21 から S27 |
+| (なし。デッキを作り直したときに落ちた) | S06 から S07 (ノイズ)、S08 から S21 (Rand、ARI、NMI) |
+| Turn it around から Finding the groups is inference まで (8枚) | S22 から S28。そのあとに S29 から S32 を追加 |
 
 スライドの文字は英語にする。Marp デッキと同じで、手順書が前提にしている日本語ではない。
 この文書の説明は日本語、`like this` の引用がスライド上の文字。
@@ -38,8 +39,8 @@ Marp デッキ `../m05-clustering.md` のモジュラリティの導出まで (�
 2. **順序。** 限界 → 比較 (Rand、ARI、NMI の順) → SBM。ノートは NMI を先に書いているが、
    組を数えるだけの Rand のほうが具体的なので先にした。限界の最後の「Q が同点でも分割は別」から
    「では2つの分割はどれだけ違うか」へ自然につながる。
-3. **任意の3枚。** S06 から S07 (ノイズで Q が高い、2枚) と S19 (全員ひとりの分割、1枚) は
-   入れなくても話は通る。外すと 27 枚が 24 枚になる。外すかどうか。
+3. **任意の3枚。** S06 から S07 (ノイズで Q が高い、2枚) と S20 (全員ひとりの分割、1枚) は
+   入れなくても話は通る。外すと 32 枚が 29 枚になる。外すかどうか。
    S06 から S07 は、Marp の直前にある「Game: where Q goes wrong」の第 2 タブ (2024 年のゲーム。
    40 節点 41 辺の無作為ネットワークで、3 色で Q = 0.57、Louvain で 0.66) の解説と重なる。
    残す場合、ゲームの網そのものを使うか (数字を入れ替える)、クラブと同じ大きさ (34 節点 78 辺) で
@@ -64,12 +65,12 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | 章の扉 | 青い帯 `#3959A6`、見出し 67px | 見出し 100px |
 
 - 背景は白 (`#ffffff`)、文字は黒。手順書の `theme.ts` (クリーム色の紙) は使わない。
-- **色は白、黒、青 `#3959A6` を基本にする。** 描くものはすべて青 (節点、帯、線)、小さな注は灰 `#6b6b6b`。
-  **赤 `#B14434` は強調する文字だけ** (用語、「高いほう」、「disagree」)。塗りにも群にも線にも使わない。
-  **ストライプだけは茶色** (青のストライプは、青いノードの隣で見にくいため)。**緑、金、紫は使わない。棒グラフは使わない。**
-- **群の区別は塗り方で行う**: 1 群目はべた青、2 群目は中抜き (白地に青の輪)、3 群目は茶色のストライプ、
-  4 群目は黒、5 群目は青のドット。群を囲む帯は、淡い青のべたか、淡い茶色のストライプ。
-  プロット上で強調する点や線は黒、その名札は赤い文字。
+- **色は、白、黒、青 `#3959A6` を基本にする。** 描くものの既定は青、小さな注は灰 `#6b6b6b`。
+  **赤 `#B14434` は強調する文字だけ** (用語、「高いほう」、「disagree」)。塗りにも群にも線にも使わない。緑は使わない。棒グラフは使わない。
+- **群 (コミュニティ) の塗り分けは色で行う**: 青 `#3959A6`、オレンジ `#E69F00`、茶色 `#8B5E34`、紫 `#6A3D9A`、
+  濃い灰色 `#3a3a3a` の順。赤は使わない。群に属さないノードや不明のノード (`?`) は黒。
+- **ストライプは茶色** で、群の塗り分けには使わない。群を囲む帯 (S02 から S04) と、NMI の円の重なり (S19) にだけ使う。
+  群を囲む帯は、淡い青のべたか、淡い茶色のストライプ。プロット上で強調する点や線は黒、その名札は赤い文字。
 - 書体: 本文は Libre Baskerville (見出しは太字)、手書きの注は Caveat。式は KaTeX。
   フォントは Marp と同じく Google Fonts から読む。教室がオフラインならファイルを同梱する (実装時に決める)。
 - 見出しは `Frame` から kicker を外し、見出し 1 行と線だけにする。フッターは右のページ番号だけ。
@@ -119,72 +120,87 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | スライド | 段階 | 見せるもの | 段階の終わりに残る絵 |
 | --- | --- | --- | --- |
 | S08 `Comparing two splits` (扉) | 0 | 帯、見出し、`Let's compare two splits with a number.` | 扉 |
-| S09 `Two splits of eight nodes` | 0 | 8 節点が横一列に現れる。節点 1 から 4 が青、5 から 8 が赤。字幕 `true groups` | 色つきの 8 節点 |
-| | 1 | 下の段に同じ 8 節点と、枠が 2 つ (A = 節点 1 から 5、B = 節点 6 から 8)。字幕 `found groups`。A に入った赤の節点 5 に輪 | 上: 真の色、下: 枠、5 番に輪 |
-| | 2 | 節点が 1 つずつ、(真の色 x 枠) の 2 x 2 の升に飛び込む。升の数: 青 A = 4、青 B = 0、赤 A = 1、赤 B = 3 | 節点列 (縮小) + 升目 |
-| S10 `Rand index: pairs of nodes` | 0 | 上下 2 段の絵はそのまま。`8 nodes make 28 pairs of nodes` | + 数字 |
-| | 1 | 節点 1 と 2 の組。両方の段で 2 点を線で結ぶ。どちらでも同じ群なので `agree` (青のチェック) | 1 組が agree |
-| | 2 | 節点 4 と 5 の組。真では別の群、found では同じ枠なので `disagree` (赤の x) | 1 組が disagree |
-| | 3 | 28 組が全部、4 つの山に分かれて入る: 両方で同じ 9、真だけ同じ 3、found だけ同じ 4、両方で別 12。`agree` は 9 + 12 | 2 x 2 の山 + 数 |
-| | 4 | `Rand index = agreeing pairs / all pairs = 21 / 28 = 0.75` | 山 + 分数 |
-| S11 `Shuffle the labels` (問い) | 0 | 30 個の点が 5 色 (各 6 個) にまとまる。字幕 `true groups: 5 groups of 6` | 5 色の点 |
-| | 1 | 点の色が一度シャッフルされ、別の色分けが下の段に現れる (`random labels`、群の大きさは同じ)。問い `What Rand index do we expect for random labels?` | 上下 2 段 + 問い。答えは出さない |
-| S12 `Adjusted Rand index` | 0 | シャッフルが 40 回、速く繰り返され、毎回の Rand 指数が数直線 (0 から 1) に点で積もる。点群は 0.71 付近。字幕 `Random labels score about 0.71.` | 数直線 + 40 点 |
-| | 1 | 理由。`360 of 435 pairs are apart in the true split. A random split also puts most pairs apart, so they agree.` | + 字幕 |
-| | 2 | 式 `ARI = (Rand - expected Rand) / (1 - expected Rand)`、`expected Rand = 0.715`。目盛りが Rand から ARI に切り替わり、点群が 0 のまわりへ、1 は右端。字幕 `0: no better than chance. 1: identical.` | ARI の数直線 + 式 |
-| | 3 | 8 節点の例に戻る: `Rand 0.75, expected 0.51, ARI 0.49` | 数字 3 つ |
-| S13 `Pairs or nodes?` | 0 | 8 ノード (べた青 4、中抜き 4)。2 つのノードが光って線で結ばれる。字幕 `Rand index: a pair of nodes` | 1 組が光る |
-| | 1 | 組が消え、1 つのノードが光る。字幕 `NMI: one node` | 1 ノードが光る |
-| S14 `How many yes/no questions?` | 0 | 同数の 2 群にいる、隠れたノード `?`。1 つの質問で 2 群に分かれる木。字幕 `1 question` | 深さ 1 の木 |
-| | 1 | 同数の 4 群。質問 2 つ。字幕 `2 questions` | 深さ 2 の木 |
-| | 2 | 同数の 8 群 (全員ひとり)。質問 3 つ。字幕 `3 questions`、`entropy: the average number of yes/no questions` | 深さ 3 の木 + 定義 |
-| S15 `Guess the true group of a node` | 0 | 8 ノードのうち 1 つが `?`。`solid or hollow?` (4 と 4) | 隠れたノード + 問い |
-| | 1 | `H(true) = 1.000` と `1 question` | + 数 |
-| S16 `Now we see the found group` | 0 | `?` のノードが found の枠 A にいると分かる。A は べた 4、中抜き 1 なので、まだ迷う。`0.722 questions left` | 枠 A の場合 |
-| | 1 | 枠 B なら全員中抜きで `0 questions left` | A と B の 2 つの場合 |
-| | 2 | ノード全体で平均する。`H(true given found) = 5/8 x 0.722 + 3/8 x 0 = 0.451` | 式 |
-| S17 `Mutual information: questions saved` | 0 | ヒントの前 `1.000` から、後 `0.451` へ矢印 | 2 つの数 |
-| | 1 | `I = 1.000 - 0.451 = 0.549`。字幕 `mutual information: questions saved` | + I |
-| S18 `Normalized mutual information` | 0 | 円が 2 つ離れて現れる。面積が各エントロピー: 真 1.000、found 0.954 | 円 2 つ |
-| | 1 | 円が重なる。重なりの面積が `I = 0.549` (金)。真の円の重ならない部分が `H(true given found) = 0.451` | 重なった円 |
-| | 2 | `NMI = 2I / (H(true) + H(found)) = 2 x 0.549 / (1.000 + 0.954) = 0.562`。重なりを両方の円から数えて、2 つの円の面積の和で割る | + 式 |
-| | 3 | 両端を並べる: 同じ分け方は円が一致して `NMI = 1`、無関係な分け方は円が離れて `NMI = 0`。真ん中がこの例の 0.562 | 3 つの状態 |
-| S19 `Many tiny groups` (任意) | 0 | found を「全員ひとり」(8 個の枠) にする。真の 2 色はそのまま | 8 個の枠 |
+| S09 `Two splits of eight nodes` | 0 | 8 ノードが横一列に現れる。ノード 1 から 4 が青、5 から 8 がオレンジ。字幕 `true groups` | 色つきの 8 ノード |
+| | 1 | 下の段に同じ 8 ノードと、枠が 2 つ (A = ノード 1 から 5、B = ノード 6 から 8)。A に入ったオレンジのノード 5 に輪 | 上: 真の色、下: 枠 |
+| | 2 | ノードが 1 つずつ、(真の群 x 見つけた群) の 2 x 2 の升に飛び込む。数: 青 A = 4、青 B = 0、オレンジ A = 1、オレンジ B = 3 | ノード列 (縮小) + 升目 |
+| S10 `Why not count nodes?` | 0 | 升目 (行: 真の群、列: A と B)。A を青に、B をオレンジに対応させると、対角に 4 + 3 = 7。`4 + 3 = 7 of 8 nodes` | 升目 + 対角 |
+| | 1 | 同じ分け方で、列の並びだけ入れ替える (B, A)。対角は 0 + 1 = 1。`0 + 1 = 1 of 8 nodes`、`same split, columns in another order` | 入れ替えた升目 |
+| | 2 | 見つけた群が 3 つ (2 x 3 の升目)。`3 found groups, 2 true groups`、`no one-to-one match` | 2 x 3 の升目 |
+| | 3 | 丸い枠の中にノード 2 つ。`A pair is together or apart.`、`No group names to match.` | 組の絵 |
+| S11 `Rand index: pairs of nodes` | 0 | ノード 1 から 8 を縦横に並べた行列 (28 セル)。上はノードの真の色、左は見つけた群の箱。`8 nodes make 28 pairs of nodes.`、`One cell is one pair.` | 空の行列 |
+| | 1 | 各セルの上半分: 真の分け方で同じ色なら青、違えば白。`Upper half: the true split` と凡例 | 上半分が塗られた行列 |
+| | 2 | 各セルの下半分: 見つけた分け方で同じ箱なら青、違えば白。`Lower half: the found split` | 両方の半分 |
+| | 3 | 2 つの半分が同じなら青のチェック (agree)、違えば赤の x (disagree)。`21 agree, 7 disagree` | チェックと x |
+| | 4 | `Rand index = agreeing pairs of nodes / all pairs of nodes = 21 / 28 = 0.75` | 式 |
+| S12 `Shuffle the labels` (問い) | 0 | 30 ノードが 5 群 (各 6) にまとまる。字幕 `true groups: 5 groups of 6 nodes` | 5 色のノード |
+| | 1 | ノードの色が一度シャッフルされ、別の色分けが下の段に現れる。問い `What Rand index do we expect for random labels?` | 上下 2 段 + 問い。答えは出さない |
+| S13 `Adjusted Rand index` | 0 | シャッフルが 40 回、速く繰り返され、毎回の Rand 指数が数直線に点で積もる。`Random labels: about 0.71` | 数直線 + 40 点 |
+| | 1 | `Most pairs of nodes are apart in both splits: 360 of 435.` | + 字幕 |
+| | 2 | `ARI = (Rand - expected Rand) / (1 - expected Rand)`、`expected Rand = 0.715`。目盛りが ARI に切り替わり、点群が 0 のまわりへ | ARI の数直線 + 式 |
+| | 3 | 8 ノードの例に戻る: `Rand 0.75, expected 0.51, ARI 0.49` | 数字 3 つ |
+| S14 `Pairs or nodes?` | 0 | ノードを縦横に並べた行列の 1 セルが光り、そのセルの両側のノード 2 つに輪。`Rand index: a pair of nodes`、`One cell is one pair.` | 行列 + 1 セル |
+| | 1 | 行列が消え、1 つのノードが光る。`NMI: one node` | 1 ノードが光る |
+| S15 `Joint probability` | 0 | 表 (行: 真の群、列: 見つけた群) に、セルごとのノード数 4, 0, 1, 3。`Count the nodes in each cell.` | ノード数の表 |
+| | 1 | 8 で割る。0.5, 0, 0.125, 0.375。`Divide by 8: joint probability` | 同時確率の表 |
+| S16 `Marginal probability` | 0 | 行を足す: 右の余白に 0.5, 0.5。`Add up each row: marginal probability` | + 行の和 |
+| | 1 | 列を足す: 下の余白に 0.625, 0.375。`Add up each column: marginal probability` | + 列の和 |
+| S17 `Joint against marginals` | 0 | 余白の周辺確率を残し、セルに 2 つの周辺確率の積 (0.3125, 0.1875, ...)。`Unrelated splits: joint = marginal x marginal` | 積の表 |
+| | 1 | セルが比 `joint / (marginal x marginal)` に変わる: 1.6, 0, 0.4, 2。1 より大きいセルを囲む。`above 1: more often than chance. below 1: less often.` | 比の表 |
+| S18 `Mutual information` | 0 | セルに比。式 `I = sum p(t, f) log2 [ p(t, f) / (p(t) p(f)) ]` | 比の表 + 式 |
+| | 1 | セルが、同時確率 x 比の対数に変わる: 0.339, 0, -0.165, 0.375 | 各セルの寄与 |
+| | 2 | `I = 0.339 + 0 - 0.165 + 0.375 = 0.549`。`unrelated splits: every ratio is 1, log 1 = 0, so I = 0` | 和 |
+| S19 `Normalized mutual information` | 0 | 円が 2 つ離れて現れる。面積が H (その分け方の、自分自身との相互情報量): 真 1.000、found 0.954 | 円 2 つ |
+| | 1 | 円が重なる。重なりの面積が `I = 0.549` (茶色のストライプ) | 重なった円 |
+| | 2 | `NMI = 2I / (H(true) + H(found)) = 2 x 0.549 / (1.000 + 0.954) = 0.562` | + 式 |
+| | 3 | 両端を並べる: 同じ分け方は `NMI = 1`、無関係な分け方は `NMI = 0`、真ん中がこの例の 0.562 | 3 つの状態 |
+| S20 `Many tiny groups` (任意) | 0 | found を「全員ひとり」にする | 8 個の枠 |
 | | 1 | `Rand 0.57, NMI 0.50, ARI 0.00`。字幕 `This split says nothing about the groups.` | + 数字 3 つ |
-| | 2 | S12 のシャッフル (30 点、5 群) に戻る: ランダムな色分けの平均 `NMI 0.215, ARI about 0`。字幕 `NMI is not zero for random labels. We report ARI with NMI.` | + 字幕 |
-| S20 `Which split is closer to the real one?` | 0 | カラテクラブを実際の分裂 (17 人と 17 人、青と赤) で塗る。字幕 `the real split: 17 and 17` | クラブ (2 色) |
-| | 1 | 色が 4 グループの分け方 (Q = 0.407) に変わる。右に升目 (行: 実際の青と赤、列: 見つけた 4 群): 青 [11, 5, 1, 0]、赤 [0, 0, 9, 8]。その下に `NMI 0.586, ARI 0.450` | クラブ (4 色) + 升目 + 数字 |
-| | 2 | 色が 3 グループの分け方 (Q = 0.402) に変わる。升目: 青 [11, 5, 1]、赤 [1, 0, 16]。`NMI 0.568, ARI 0.591`。4 群の行は小さく残る | クラブ (3 色) + 2 行 |
-| | 3 | 2 行を比べる。NMI は 4 群が高く (0.586 > 0.568)、ARI は 3 群が高い (0.591 > 0.450)。高いほうを赤。字幕 `NMI and ARI can disagree. We report both.` | 2 行 + 赤 |
-| | 4 | S05 の問いに答える行が加わる: `four groups vs three groups: NMI 0.768, ARI 0.626` | 3 行 |
-
+| | 2 | S13 のシャッフル (30 ノード、5 群): `average NMI 0.215, average ARI about 0`。`NMI is not zero for random labels.` | + 字幕 |
+| S21 `Which split is closer to the real one?` | 0 | カラテクラブを実際の分裂 (17 人と 17 人) で塗る。左のスロット。`the real split` と凡例 | クラブ 1 つ |
+| | 1 | 中央に 4 グループの分け方 (Q = 0.407) が並ぶ。下に `NMI 0.586`、`ARI 0.450` | クラブ 2 つ |
+| | 2 | 右に 3 グループの分け方 (Q = 0.402)。下に `NMI 0.568`、`ARI 0.591` | クラブ 3 つ |
+| | 3 | NMI は 4 群が高く (0.586 > 0.568)、ARI は 3 群が高い (0.591 > 0.450)。高いほうを赤い文字に。`NMI and ARI can disagree` | 3 つ + 赤 |
+| | 4 | `four vs three groups: NMI 0.768, ARI 0.626` | + 1 行 |
 
 ### 3. Turn it around (SBM)
 
-8 節点 (青 4、赤 4、28 組) で通す。確率は群内 0.9 と群間 0.1。組ごとに乱数 u を 1 つ固定し、
-`u < p` なら辺が出る。そのため確率を変えると辺が足されるか消えるかだけで、別の網に入れ替わらない。
+8 ノード (青 4、オレンジ 4、28 組) で通す。確率は群内 0.9 と群間 0.1。組ごとに乱数を 1 つ固定し、
+その乱数が確率より小さければ辺が出る (スライドには出さない)。確率を変えても、辺が足されるか消えるかだけで、別の網に入れ替わらない。
 
 | スライド | 段階 | 見せるもの | 段階の終わりに残る絵 |
 | --- | --- | --- | --- |
-| S21 `Turn it around` (扉) | 0 | 帯、見出し、`Let's build a network from the groups` | 扉 |
-| S22 `Groups first, then edges` | 0 | 8 節点が 2 群 (青 4、赤 4) で現れる。辺はない | 2 群の節点 |
-| | 1 | 右に 2 x 2 の確率表: 青青 0.9、赤赤 0.9、青赤 0.1 (高い升は金)。式 `p_{c_i c_j}`、字幕 `one probability for each pair of groups` | + 確率表 |
-| | 2 | 節点 1 と 2 (どちらも青) を選ぶ。升は 0.9。乱数 `u = 0.72` を引く。`u < 0.9` なので辺が引かれる | 辺が 1 本 |
-| | 3 | 節点 1 と 6 (青と赤) を選ぶ。升は 0.1。`u = 0.59`。`u >= 0.1` なので辺は引かれない | 辺は 1 本のまま、1-6 に x |
-| | 4 | 残りの組が順に処理され、ネットワークができる (12 辺。群内 11、群間 1) | 完成したネットワーク |
-| S23 `Can we see the groups?` (問い) | 0 | 同じネットワークを色なしで円形に置く (左)。右に隣接行列 (8 x 8、辺は塗り)、行と列は乱れた順。問い `Where are the two groups?` | 灰色の網 + 乱れた行列 |
-| S24 `Sort by group, and blocks appear` | 0 | S19 と同じ絵 | 乱れた行列 |
-| | 1 | 行と列が同時に群の順へ滑って並び替わる。対角に 4 x 4 の濃いブロックが 2 つ現れる | 並び替えた行列 |
-| | 2 | ブロックに赤い枠。左の節点が群の色に塗られる。字幕 `Nothing changed but the order.` | 行列 + 枠 + 色つきの網 |
-| S25 `What if edges between groups are more likely?` (問い) | 0 | 確率表が入れ替わる (青青 0.1、赤赤 0.1、青赤 0.9)。節点は 2 群で辺はない。問い `What does the network look like?` | 確率表 + 辺のない節点 |
-| S26 `Groups can also connect outward` | 0 | 群内が高い (0.9 / 0.1) の確率表と網 (12 辺、群内 11)。字幕 `Q of the true groups: 0.413` | 表 + 網 |
-| | 1 | ダイヤルが 0.1 / 0.9 へ回る。表の色が入れ替わり、群内の辺が消えて群間の辺が現れる (15 辺、群内 1)。字幕 `Q of the true groups: -0.436` | 表 + 網 |
-| | 2 | ダイヤルが 0.45 / 0.45 へ。表が一色になる (12 辺、群内 6)。字幕 `no difference: a random network. Q of the true groups: 0.000` | 表 + 網 |
-| | 3 | 3 つの状態が横に 3 枚並ぶ (各: 確率表 + 網)。字幕 `One model: a table of probabilities. Members of a group connect to the rest in the same way. They need not connect to each other.` | 3 枚 |
-| S27 `Finding the groups is inference` | 0 | 左に観測されたネットワーク (色なし、12 辺)。1 つ目の推測 (奇数番と偶数番の縞) で節点が塗られ、2 x 2 の升に `edges / pairs` が入る。各升の確率はその割り算 | 網 + 推測 + 升 |
-| | 1 | その推測のもとで、この網がそのまま生まれる確率の対数 (`score`) を数直線 (-20 から -5) に点で置く: -17.5。`score: the log of the probability of this exact network (higher is better)` | 数直線 + 点 1 つ |
-| | 2 | 推測を 3 つ足す: 1 人だけ動かした -15.5、2 人動かした -18.4、全員 1 群 -19.1 | 点 4 つ |
-| | 3 | 真の分け方 (青 4、赤 4)。升は 5/6、6/6、1/16 で、score は -6.4 と最高。赤い点。字幕 `We choose the grouping with the highest score.` | 点 5 つ、最高が赤 |
+| S22 `Turn it around` (扉) | 0 | 帯、見出し、`Let's build a network from the groups` | 扉 |
+| S23 `Groups first, then edges` | 0 | 8 ノードが 2 群で現れる。辺はない | 2 群のノード |
+| | 1 | 右に 2 x 2 の確率表 (青青 0.9、オレンジオレンジ 0.9、青オレンジ 0.1)。`Nodes i and j connect with probability p_{c_i c_j}`、`one probability per block` | + 確率表 |
+| | 2 | ノード 1 と 2 (どちらも青)。升は 0.9。10 枚のくじのうち 9 枚が青 (edge)。1 枚引く。`9 of 10 tickets say edge`、`Draw one ticket: edge`。辺が引かれる | 辺が 1 本 |
+| | 3 | ノード 1 と 6。升は 0.1。10 枚のうち 1 枚だけが青。引いた 1 枚は白。`Draw one ticket: no edge` | 辺は 1 本のまま、1-6 に x |
+| | 4 | 残りの組が順に処理され、ネットワークができる。`12 edges` | 完成した網 |
+| S24 `Can we see the groups?` (問い) | 0 | 同じ網を色なしで円形に置く (左)。右に隣接行列 (8 x 8)、行と列は乱れた順。問い `Where are the two groups?` | 網 + 乱れた行列 |
+| S25 `Sort by group, and blocks appear` | 0 | S24 と同じ絵 | 乱れた行列 |
+| | 1 | 行と列が 1 ノードずつ群の順へ並び替わる。対角に 4 x 4 の濃いブロックが 2 つ現れる | 並び替えた行列 |
+| | 2 | ブロックに黒い枠。左のノードが群の色に塗られる。`Nothing changed but the order.` | 行列 + 枠 |
+| S26 `What if edges between groups are more likely?` (問い) | 0 | 確率表が入れ替わる (群内 0.1、群間 0.9)。辺のない節点。問い `What does the network look like?` | 確率表 + 辺のないノード |
+| S27 `Groups can also connect outward` | 0 | 群内が高い (0.9 / 0.1) の確率表と網 (12 辺、群内 11)。`Q of the true groups: 0.413` | 表 + 網 |
+| | 1 | ダイヤルが 0.1 / 0.9 へ。群内の辺が消え、群間の辺が現れる (15 辺、群内 1)。`Q of the true groups: -0.436` | 表 + 網 |
+| | 2 | ダイヤルが 0.45 / 0.45 へ (12 辺、群内 6)。`A random network. Q of the true groups: 0.000` | 表 + 網 |
+| | 3 | 3 つの状態が横に並ぶ。`One model: a table of probabilities.` | 3 枚 |
+| S28 `Finding the groups is inference` | 0 | 観測されたネットワーク (色なし) に 1 つ目の推測 (奇数番と偶数番)。2 x 2 の升に `edges / pairs of nodes` | 網 + 推測 + 升 |
+| | 1 | その推測のもとで、この網がそのまま生まれる確率の対数 (`score`) を数直線に置く: -17.5 | 点 1 つ |
+| | 2 | 推測を 3 つ足す: 1 ノード動かした -15.5、他 2 つ、全員 1 群 -19.1 | 点 4 つ |
+| | 3 | 真の分け方 (5/6、6/6、1/16): -6.4 で最高。黒い点、赤い文字 | 点 5 つ |
+| S29 `The SBM estimate, step by step` | 0 | 8 ノードの網と群 c。`1 A grouping c` | 網 + 群 |
+| | 1 | ブロックごとに辺 m と組 n を数える: 5/6、6/6、1/16。`2 Count edges m and pairs of nodes n` | 升に m / n |
+| | 2 | `p_rs = m_rs / n_rs`: 0.83、1.00、0.06 | 升に p |
+| | 3 | ブロックの寄与 -2.70、0、-3.74。式 `log L(c) = sum over r <= s of [ m log p + (n - m) log(1 - p) ]`、`log L = -2.70 - 3.74 + 0 = -6.44` | 式 + 和 |
+| | 4 | `5 Keep the largest log L`。`the grouping that makes the network most likely` | 結び |
+| S30 `More groups always fit better` | 0 | グループ数 K = 1 から 8 の、最良の log L: -19.1, -6.4, -3.0, -1.4, 0, 0, 0, 0 の折れ線。`log L never decreases as K grows` | 折れ線 |
+| | 1 | `More groups, more parameters, a better fit`。K = 5 から 8 は 0 (完全に当てはまる) | + 破線 |
+| | 2 | K = 8 (全員ひとり) に輪。`A large K overfits: the groups mean nothing`、`K = 8: every node alone, a perfect fit` | 結び |
+| S31 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: ベイズ `P(c given A) is proportional to P(c) times the integral of P(A given c, p) P(p) dp` ("p is integrated out: more groups must pay for themselves") | 2 つの式 |
+| | 1 | 簡単なベイズ流のスコア (一様な事前分布) の K ごとの最良値の折れ線。K = 2 で最高。`The score peaks at K = 2`、`uniform priors, 8 nodes` | 折れ線 + 輪 |
+| | 2 | `K is inferred`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
+| S32 `graph-tool` | 0 | `A Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
+| | 1 | 関数名 `minimize_nested_blockmodel_dl`、`graph-tool.skewed.de` | 結び |
 
 ## 検算した数字
 
@@ -211,6 +227,12 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
   全部 0.3 より上で、クラブの 0.420 より下。種 0 は 5 群で Q = 0.346。100 節点 (確率 0.05) 100 個は
   平均 0.417 (0.362 から 0.471) で、クラブの 0.420 はこの範囲の中。ゲームと同じ大きさの 40 節点 41 辺
   (平均次数 2.05) は 200 個で平均 0.592 (0.465 から 0.681)。疎い網ほど Q は高くなる。
+- **SBM の K ごと** (S30、S31): 8 ノードの網で、全 4140 通りの分け方のうち K 個の群への最良値。最尤の log L は
+  K = 1 から 8 で -19.121、-6.444、-3.014、-1.386、0、0、0、0 (K とともに減らない)。簡単なベイズ流のスコア
+  (各ブロックの確率に一様な事前分布を置いて積分し、P(K) = 1/8、P(c | K) は K 個の群への分け方の上で一様) は
+  -22.68、-18.21、-20.33、-21.85、-22.60、-22.91、-23.09、-21.49 で、K = 2 で最高。
+- **確率の表** (S15 から S18): 同時確率 0.5, 0, 0.125, 0.375。周辺確率は真 0.5, 0.5、found 0.625, 0.375。
+  積 0.3125, 0.1875。比 1.6, 0, 0.4, 2。寄与 0.339, 0, -0.165, 0.375。和 0.549。
 - **SBM** (8 節点、固定乱数の種 901): 辺は 12 本 (群内 11)、15 本 (群内 1)、12 本 (群内 6)。
   真の分け方の Q は 0.413、-0.436、0.000。確率 0.9 / 0.1 の網の升は 5/6、6/6、1/16。
   対数尤度は真 -6.4、1 人動かす -15.5、縞 -17.5、2 人動かす -18.4、全員 1 群 -19.1。
@@ -220,7 +242,7 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 
 - S04: Fortunato と Barthelemy (2007)。しきい値は √(2m) で、群の運命が、その群ではなく網全体の辺数 m で決まる。
 - S07: 「Q > 0.3 を意味のある構造の目安とする」は講義ノートの記述と同じ。
-- S20: 実際の分裂の Q は 0.358 で、上の 2 つの分け方 (0.407、0.402) より低い。Q を最大にしても
+- S21: 実際の分裂の Q は 0.358 で、上の 2 つの分け方 (0.407、0.402) より低い。Q を最大にしても
   実際に起きたことには戻らない。属性は必ずしも正解ではない (Peel, Larremore, Clauset 2017)。
 - S27: 最良の分け方を探すのは Q を最大にするのと同じくらい難しく、実際の手法も発見的。
   尤度なら群の数も比べられる。式の詳細は講義ノートと付録。
@@ -238,15 +260,15 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 ## 確認できたこと、できていないこと
 
 - 確認できた (2026-10-05):
-  - 上の数字。すべて `scripts/verify_numbers.py` で assert が通った。
+  - 上の数字。すべて `scripts/verify_numbers.py` で assert が通った (K ごとの SBM のスコアを含む)。
   - `npm run build` (型チェックとビルド)。
-  - 27 枚の全段階 (77 枚) の静止画。`npm run review` で作り、全部を目で見て、重なり、欠け、文字の切れがないこと、
-    色が白、黒、青で、赤は強調する文字だけであることを確かめた。
-  - headless Chrome でキーボード操作 (→ で進む、← で戻る) を 27 枚目の最後の段階まで通し、段階の表示が正しく進むこと、
-    スクリプトのエラーがないことを確かめた。
+  - 32 枚の全段階の静止画。`npm run review` で作り、全部を目で見て、重なり、欠け、文字の切れがないことを確かめた。
+  - headless Chrome でキーボード操作 (→ で進む、← で戻る) を最後の段階まで通し、段階の表示が正しく進むこと、
+    スクリプトのエラーがないことを確かめた (27 枚の版で。その後に追加した分は静止画だけ)。
 - 確認できていない:
   - 動きの滑らかさ。静止画 (各段階の終点と途中の数枚) だけを見ている。
-  - 段階が切り替わる約 10 フレームの間、前の絵が薄く重なる (S14 など)。
-  - 実際の Chrome で全画面にしたときの文字の見え方、投影したときの縞とドットの見え方。
+  - 段階が切り替わる約 10 フレームの間、前の絵が薄く重なる (S15 など)。
+  - 実際の Chrome で全画面にしたときの文字の見え方、投影したときの色の見分けやすさ。
   - 動画の書き出し (`npx remotion render`)。
   - Remotion のライセンス (営利企業は有料になりうる。教育目的の扱いは公式の License ページで確認)。
+  - Peixoto の文献と graph-tool の関数名、URL は手元の記憶で書いた。授業の前に原典で確認すること。

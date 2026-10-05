@@ -5,19 +5,21 @@ import {Canvas, Fade} from '../components/Fade';
 import {Box, Cap, Tag} from '../components/Text';
 import {C, F} from '../theme';
 import {LOOK} from '../lib/look';
-import {betweenStages, prog, smooth} from '../lib/anim';
+import {prog} from '../lib/anim';
 import {Network, toCanvas} from '../lib/network';
 import {stackDots} from '../lib/dotstack';
 import {KARATE_EDGES, KARATE_FOUR, KARATE_LOUVAIN_Q, KARATE_POS, KARATE_THREE} from '../data/data';
 
 /**
  * 0: the club in four groups, Q = 0.407.
- * 1: the colours change to three groups (grey joins red, node 9 moves to blue), Q = 0.402.
- * 2: the club goes; the 16 Q values of 400 Louvain runs sit on a number line.
+ * 1: the same club in three groups beside it, Q = 0.402: both colourings are on the screen at once, so they can be
+ *    compared. The nodes whose group differs (the purple group joins brown, one node moves to blue) are ringed in both.
+ * 2: the clubs go; the 16 Q values of 400 Louvain runs sit on a number line.
  */
 export const marks = [60, 110, 172];
 
-const POS = toCanvas(KARATE_POS, 160, 205, 900, 760);
+const POS_L = toCanvas(KARATE_POS, 135, 285, 750, 540);
+const POS_R = toCanvas(KARATE_POS, 1035, 285, 750, 540);
 const EDGES = KARATE_EDGES as unknown as [number, number][];
 const LOOK_FOUR = KARATE_FOUR.map((g) => LOOK[g]);
 const LOOK_THREE = KARATE_THREE.map((g) => LOOK[g]);
@@ -37,18 +39,17 @@ const DOTS = stackDots(KARATE_LOUVAIN_Q, xOf, PITCH);
 export const S05: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // the club, stages 0 and 1
-  const club = 1 - prog(frame, marks[1], marks[1] + 14);
-  const nodeOp = (i: number) => prog(frame, 0.4 * i, 0.4 * i + 10);
-  const edgeOp = (i: number) => prog(frame, 6 + 0.28 * i, 6 + 0.28 * i + 10);
-  const paint = smooth(frame, 26, 46); // all nodes alike to four groups
-  const merge = smooth(frame, 66, 94); // four groups to three
-  const pulse = prog(frame, 62, 72) * (1 - prog(frame, 90, 106));
+  // the two clubs, stages 0 and 1
+  const clubs = 1 - prog(frame, marks[1], marks[1] + 14);
+  const leftIn = (i: number) => prog(frame, 0.4 * i, 0.4 * i + 12);
+  const rightIn = (i: number) => prog(frame, marks[0] + 2 + 0.4 * i, marks[0] + 2 + 0.4 * i + 12);
+  const edgeL = (i: number) => prog(frame, 6 + 0.28 * i, 6 + 0.28 * i + 10);
+  const edgeR = (i: number) => prog(frame, marks[0] + 8 + 0.28 * i, marks[0] + 8 + 0.28 * i + 10);
+  const pulse = prog(frame, marks[0] + 40, marks[0] + 50);
   const ring = CHANGED.map((c) => (c && pulse > 0.02 ? `rgba(0, 0, 0, ${pulse.toFixed(3)})` : null));
 
-  const cap0 = betweenStages(frame, marks, 0, 0);
-  const capIn0 = prog(frame, 40, 58);
-  const cap1 = betweenStages(frame, marks, 1, 1);
+  const capL = prog(frame, 18, 36) * clubs;
+  const capR = prog(frame, marks[0] + 18, marks[0] + 36) * clubs;
 
   // the number line, stage 2
   const axis = prog(frame, 116, 132);
@@ -59,19 +60,8 @@ export const S05: React.FC = () => {
   return (
     <Frame n={5} title="Similar Q, different groups">
       <Canvas>
-        <Network
-          pos={POS}
-          edges={EDGES}
-          look={merge > 0 ? LOOK_FOUR : LOOK[0]}
-          lookTo={merge > 0 ? LOOK_THREE : LOOK_FOUR}
-          t={merge > 0 ? merge : paint}
-          nodeD={46}
-          nodeOp={nodeOp}
-          edgeOp={edgeOp}
-          ring={ring}
-          ringW={7}
-          opacity={club}
-        />
+        <Network pos={POS_L} edges={EDGES} look={LOOK_FOUR} nodeD={40} edgeW={2.5} nodeOp={leftIn} edgeOp={edgeL} ring={ring} ringW={6} opacity={clubs} />
+        <Network pos={POS_R} edges={EDGES} look={LOOK_THREE} nodeD={40} edgeW={2.5} nodeOp={rightIn} edgeOp={edgeR} ring={ring} ringW={6} opacity={clubs} />
         <g opacity={axis}>
           <line x1={X0 - 20} y1={LY} x2={X1 + 20} y2={LY} stroke={C.soft} strokeWidth={3} />
           {[0.38, 0.39, 0.4, 0.41, 0.42].map((q) => (
@@ -91,14 +81,14 @@ export const S05: React.FC = () => {
         ))}
       </Canvas>
 
-      {/* stages 0 and 1: the captions */}
-      <Fade o={cap0 * capIn0} dy={16}>
-        <Tag x={1470} y={440}>Q = 0.407</Tag>
-        <Cap x={1470} y={528} w={600}>four groups</Cap>
+      {/* stages 0 and 1: under each club */}
+      <Fade o={capL} dy={16}>
+        <Cap x={510} y={212} w={800}>four groups</Cap>
+        <Tag x={510} y={850}>Q = 0.407</Tag>
       </Fade>
-      <Fade o={cap1} dy={16}>
-        <Tag x={1470} y={440}>Q = 0.402</Tag>
-        <Cap x={1470} y={528} w={600}>three groups</Cap>
+      <Fade o={capR} dy={16}>
+        <Cap x={1410} y={212} w={800}>three groups</Cap>
+        <Tag x={1410} y={850}>Q = 0.402</Tag>
       </Fade>
 
       {/* stage 2 */}

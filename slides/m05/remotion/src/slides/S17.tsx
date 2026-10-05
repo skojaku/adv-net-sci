@@ -2,71 +2,70 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Cap, Term} from '../components/Text';
+import {Box, Cap} from '../components/Text';
 import {Tex} from '../components/Tex';
 import {C, F} from '../theme';
-import {prog} from '../lib/anim';
-import {H_GIVEN, H_TRUE, I_TF, f3} from '../lib/entropy8';
+import {betweenStages, fromStage, prog} from '../lib/anim';
+import {GX, GY, CH, CW, MARG, Num, ProbGrid, cellC, colSumC, rowSumC} from '../components/ProbGrid';
+import {P_FOUND, P_TRUE, PRODUCT, RATIO, fmt} from '../lib/prob';
 
 /**
- * 0: the number of questions before the hint (1.000) and after it (0.451), joined by an arrow.
- * 1: I = 1.000 - 0.451 = 0.549: mutual information, the questions saved.
+ * The marginals stay on the table.
+ * 0: if the two splits were unrelated, a cell's joint probability would be its two marginals multiplied.
+ * 1: the ratio joint / (marginal x marginal): above 1 the pair of groups occurs more often than chance, below 1 less often.
  */
-export const marks = [50, 100];
-
-const LX = 480; // centre of the "before" block
-const RX = 1440; // centre of the "after" block
-const NUM_Y = 330;
-
-const Block: React.FC<{x: number; label: string; value: string; op: number}> = ({x, label, value, op}) => (
-  <Fade o={op} dy={14}>
-    <Box x={x} y={NUM_Y - 70} w={760} align="center" size={45} color={C.soft} hand>
-      {label}
-    </Box>
-    <Box x={x} y={NUM_Y} w={760} align="center" size={120} style={{lineHeight: 1.1}}>
-      {value}
-    </Box>
-    <Box x={x} y={NUM_Y + 140} w={760} align="center" size={40} color={C.soft}>
-      questions
-    </Box>
-  </Fade>
-);
+export const marks = [60, 124];
 
 export const S17: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const before = prog(frame, 0, 18);
-  const arrow = prog(frame, 14, 32);
-  const after = prog(frame, 26, 44);
-  const eq = prog(frame, 56, 76);
-  const saved = prog(frame, 76, 94);
-
-  const ax0 = LX + 330;
-  const ax1 = RX - 330;
-  const ay = NUM_Y + 80;
-  const ax = ax0 + (ax1 - ax0) * arrow;
+  const grid = prog(frame, 0, 16);
+  const prod = betweenStages(frame, marks, 0, 0) * prog(frame, 18, 34);
+  const ratio = fromStage(frame, marks, 1, 16);
+  const cap0 = betweenStages(frame, marks, 0, 0) * prog(frame, 34, 50);
+  const hot: [number, number][] = [
+    [0, 0],
+    [1, 1],
+  ];
 
   return (
-    <Frame n={17} title="Mutual information: questions saved">
+    <Frame n={17} title="Joint against marginals">
       <Canvas>
-        <g opacity={arrow}>
-          <line x1={ax0} y1={ay} x2={ax} y2={ay} stroke={C.blue} strokeWidth={9} strokeLinecap="round" />
-          <path d={`M ${ax - 30} ${ay - 30} L ${ax + 4} ${ay} L ${ax - 30} ${ay + 30}`} fill="none" stroke={C.blue} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
+        <ProbGrid rowsOp={1} colsOp={1} op={grid} hot={frame >= marks[0] + 6 ? hot.filter(([r, c]) => RATIO[r][c] > 1) : []} />
+        {[0, 1].map((r) => (
+          <Num key={`r${r}`} at={rowSumC(r)} text={fmt(P_TRUE[r], 3)} size={56} color={C.soft} op={grid} />
+        ))}
+        {[0, 1].map((c) => (
+          <Num key={`c${c}`} at={colSumC(c)} text={fmt(P_FOUND[c], 3)} size={56} color={C.soft} op={grid} />
+        ))}
+        {[0, 1].map((r) =>
+          [0, 1].map((c) => (
+            <g key={`${r}${c}`}>
+              <Num at={cellC(r, c)} text={fmt(PRODUCT[r][c], 4)} size={58} op={prod} />
+              <Num at={cellC(r, c)} text={fmt(RATIO[r][c], 2)} size={72} bold={RATIO[r][c] > 1} color={RATIO[r][c] < 1 ? C.soft : C.ink} op={ratio} />
+            </g>
+          )),
+        )}
+        <g fontFamily={F.hand} fontSize={45} fill={C.soft} textAnchor="middle" opacity={grid}>
+          <text x={GX + 2 * CW + 20 + MARG / 2} y={GY - 30}>
+            true
+          </text>
+          <text x={GX - 80} y={GY + 2 * CH + 96}>
+            found
+          </text>
         </g>
       </Canvas>
-      <Block x={LX} label="without the found groups" value={f3(H_TRUE)} op={before} />
-      <Block x={RX} label="with the found groups" value={f3(H_GIVEN)} op={after} />
-      <Fade o={eq} dy={14}>
-        <div style={{position: 'absolute', left: 120, top: 640, width: 1680, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 44, fontFamily: F.serif}}>
-          <span style={{fontSize: 52}}>
-            <Term>mutual information</Term>
-          </span>
-          <Tex tex={`I = ${f3(H_TRUE)} - ${f3(H_GIVEN)} = ${f3(I_TF)}`} style={{fontSize: 64}} />
-        </div>
+      <Fade o={cap0} dy={14}>
+        <Box x={960} y={830} w={1600} align="center" size={50}>
+          Unrelated splits: joint = marginal × marginal
+        </Box>
       </Fade>
-      <Fade o={saved} dy={12}>
-        <Cap x={960} y={790} w={1400}>
-          questions saved
+      <Fade o={ratio} dy={14}>
+        <Box x={960} y={812} w={1600} align="center" size={56}>
+          <Tex tex={'\\text{joint}\\ /\\ (\\text{marginal} \\times \\text{marginal})'} />
+        </Box>
+        <Cap x={960} y={900} w={1600}>
+          above 1: more often than chance. below 1: less often.
         </Cap>
       </Fade>
     </Frame>

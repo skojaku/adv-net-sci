@@ -2,74 +2,103 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box} from '../components/Text';
-import {C} from '../theme';
-import {prog, smooth} from '../lib/anim';
-import {lerp} from '../lib/plot';
-import {SHUFFLES} from '../data/data';
-import {NDOT, NodeDot, TRUE30, dotCentre, scatter} from '../lib/dots30';
+import {Box, Term} from '../components/Text';
+import {C, F} from '../theme';
+import {betweenStages, fromStage, prog} from '../lib/anim';
+import {Frac} from '../lib/eight';
+import {N_AGREE, PAIRS8, PairMatrix, TOGETHER} from '../lib/pairmatrix';
 
 /**
- * 0: 30 nodes gather into 5 groups of 6 (true groups).
- * 1: the same nodes again below, labelled by a random relabeling with the same group sizes; the question.
- * A question slide: no number and no answer anywhere on it.
+ * The 28 pairs of nodes are the cells of a matrix. Nodes 1 to 8 run along both sides: the top shows their true
+ * colours, the left shows their found boxes. A pair is never drawn as two nodes joined by a line.
+ * 0: the empty matrix. "8 nodes make 28 pairs of nodes".
+ * 1: the upper half of every cell: are the two nodes together in the true split (the same colour)?
+ * 2: the lower half: together in the found split (the same box)?
+ * 3: where the two halves match the pair agrees (check), where they differ it disagrees (cross).
+ * 4: Rand index = agreeing pairs of nodes / all pairs of nodes = 21 / 28.
  */
-export const marks = [52, 112];
+export const marks = [44, 100, 170, 230, 292];
 
-const D = 56;
-const PITCH = 70;
-const STRIDE = 290;
-const X0 = 310;
-const Y_TOP = 330;
-const Y_BOT = 620;
-const ROW = [...Array(NDOT).keys()];
+const MX = 340;
+const MY = 350;
+const CELL = 76;
+
+const reveal = (frame: number, start: number, dur = 12) => (k: number) => prog(frame, start + k * 1.1, start + k * 1.1 + dur);
 
 export const S11: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // stage 0: nodes appear scattered, then gather group by group
-  const appear = prog(frame, 0, 12);
-  const gather = (i: number) => smooth(frame, 12 + 3 * Math.floor(i / 6), 36 + 3 * Math.floor(i / 6));
-  const cap0 = prog(frame, 38, 52);
+  const head = prog(frame, 0, 16);
+  const cap0 = betweenStages(frame, marks, 0, 0);
+  const cap1 = betweenStages(frame, marks, 1, 1);
+  const cap2 = betweenStages(frame, marks, 2, 2);
+  const cap3 = betweenStages(frame, marks, 3, 3);
+  const cap4 = fromStage(frame, marks, 4);
 
-  // stage 1: copies slide down and change their fill on the way (a cross-fade, never a blend)
-  const start = (i: number) => 56 + 0.5 * i;
-  const slide = (i: number) => smooth(frame, start(i), start(i) + 30);
-  const refill = (i: number) => smooth(frame, start(i) + 8, start(i) + 22);
-  const cap1 = prog(frame, 58, 74);
-  const q = prog(frame, 94, 110);
+  const trueHalf = (k: number) => reveal(frame, 46, 10)(k);
+  const foundHalf = (k: number) => reveal(frame, 102, 10)(k);
+  const mark = (k: number) => reveal(frame, 172, 10)(k);
+
+  const swatch = (fill: string, y: number, label: string) => (
+    <>
+      <rect x={1050} y={y} width={52} height={52} fill={fill} stroke={C.soft} strokeWidth={3} />
+      <text x={1126} y={y + 40} fontFamily={F.serif} fontSize={40} fill={C.ink}>
+        {label}
+      </text>
+    </>
+  );
 
   return (
-    <Frame n={11} title="Shuffle the labels">
+    <Frame n={11} title="Rand index: pairs of nodes">
       <Canvas>
-        {ROW.map((i) => {
-          const [hx, hy] = dotCentre(i, X0, Y_TOP, PITCH, STRIDE);
-          const [sx, sy] = scatter(i, 200, 300, 1520, 150);
-          const t = gather(i);
-          return <NodeDot key={`t${i}`} x={lerp(sx, hx, t)} y={lerp(sy, hy, t)} d={D} g={TRUE30[i]} op={appear} />;
-        })}
-        {ROW.map((i) => {
-          if (frame < start(i)) return null;
-          const [x, y] = dotCentre(i, X0, Y_TOP, PITCH, STRIDE);
-          const [bx, by] = dotCentre(i, X0, Y_BOT, PITCH, STRIDE);
-          const s = slide(i);
-          return <NodeDot key={`b${i}`} x={lerp(x, bx, s)} y={lerp(y, by, s)} d={D} g={TRUE30[i]} gTo={SHUFFLES[0][i]} t={refill(i)} />;
-        })}
+        <PairMatrix x={MX} y={MY} c={CELL} headerOp={head} trueHalf={trueHalf} foundHalf={foundHalf} mark={mark} />
+        {/* the key to the halves */}
+        <g opacity={cap1}>
+          {swatch(TOGETHER, 560, 'together: same color')}
+          {swatch('#fff', 640, 'apart: different colors')}
+        </g>
+        <g opacity={cap2}>
+          {swatch(TOGETHER, 560, 'together: same box')}
+          {swatch('#fff', 640, 'apart: different boxes')}
+        </g>
       </Canvas>
       <Fade o={cap0} dy={14}>
-        <Box x={960} y={205} w={1200} align="center" size={45} color={C.soft} hand>
-          true groups: 5 groups of 6 nodes
+        <Box x={1050} y={400} w={740} size={45}>
+          8 nodes make 28 pairs of nodes.
+        </Box>
+        <Box x={1050} y={520} w={740} size={45} color={C.soft}>
+          One cell is one pair.
         </Box>
       </Fade>
       <Fade o={cap1} dy={14}>
-        <Box x={960} y={500} w={1200} align="center" size={45} color={C.soft} hand>
-          random labels
+        <Box x={1050} y={420} w={740} size={45}>
+          Upper half: the true split
         </Box>
       </Fade>
-      <Fade o={q} dy={16}>
-        <Box x={960} y={850} w={1680} align="center" size={45}>
-          What Rand index do we expect for random labels?
+      <Fade o={cap2} dy={14}>
+        <Box x={1050} y={420} w={740} size={45}>
+          Lower half: the found split
         </Box>
+      </Fade>
+      <Fade o={cap3} dy={14}>
+        <Box x={1050} y={400} w={740} size={45}>
+          Both halves alike: <span style={{color: C.blue}}>agree</span>
+        </Box>
+        <Box x={1050} y={480} w={740} size={45}>
+          Halves differ: <Term>disagree</Term>
+        </Box>
+        <Box x={1050} y={600} w={740} size={45} color={C.soft}>
+          {N_AGREE} agree, {PAIRS8.length - N_AGREE} disagree
+        </Box>
+      </Fade>
+      <Fade o={cap4} dy={14}>
+        <div style={{position: 'absolute', left: 1030, top: 430, width: 770, background: C.panel, padding: '26px 30px', fontFamily: F.serif, fontSize: 45, lineHeight: 1.5}}>
+          <Term>Rand index</Term> ={' '}
+          <Frac top="agreeing pairs of nodes" bottom="all pairs of nodes" />
+          <div>
+            = <Frac top={N_AGREE} bottom={PAIRS8.length} /> = {(N_AGREE / PAIRS8.length).toFixed(2)}
+          </div>
+        </div>
       </Fade>
     </Frame>
   );

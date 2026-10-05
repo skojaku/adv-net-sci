@@ -2,11 +2,11 @@ import React from 'react';
 import {C, F} from '../theme';
 import {TRUTH8} from './metrics';
 import {lerp} from './plot';
-import {BAND_SOLID, LOOK, type Look} from './look';
+import {BAND_SOLID, HOLLOW, LOOK, type Look} from './look';
 
 // The eight-node example drawn as two rows (the true groups on top, the found groups below as boxes).
 // Used by S09, S10, S12 and S19. Node i (0-based) is labelled i + 1.
-// True groups are told apart by the fill: nodes 1 to 4 solid, nodes 5 to 8 hollow.
+// True groups: nodes 1 to 4 are group 0 (blue), nodes 5 to 8 group 1 (orange).
 
 export const trueLook = (i: number): Look => (TRUTH8[i] === 0 ? LOOK[0] : LOOK[1]);
 
@@ -125,7 +125,7 @@ export const EightRows: React.FC<{
 /**
  * A pair of nodes as an icon: two white discs joined by a black line, centred on (x, y). The verdict is the
  * edge (outline) of the two discs: blue when the two splits agree about the pair, red when they disagree.
- * Without `agree` the discs are plain hollow nodes. Pass `looks` to draw the nodes in their true looks.
+ * Without `agree` the discs are plain white nodes with a blue edge. Pass `looks` to draw the nodes in their true looks.
  */
 export const PairIcon: React.FC<{x: number; y: number; agree?: boolean; a?: number; b?: number; looks?: boolean; d?: number; gap?: number}> = ({x, y, agree, a = 0, b = 0, looks = false, d = 26, gap = 42}) => (
   <g>
@@ -134,7 +134,7 @@ export const PairIcon: React.FC<{x: number; y: number; agree?: boolean; a?: numb
       [a, -gap / 2],
       [b, gap / 2],
     ].map(([i, dx]) => {
-      const lk = looks ? trueLook(i) : LOOK[1];
+      const lk = looks ? trueLook(i) : HOLLOW;
       const edge = agree === undefined ? (lk.stroke === '#fff' ? C.blue : lk.stroke) : agree ? C.blue : C.red;
       const sw = agree === undefined ? Math.min(lk.sw, 4) : 7;
       return <circle key={dx} cx={x + dx} cy={y} r={d / 2 - sw / 2} fill={agree === undefined ? lk.fill : '#fff'} stroke={edge} strokeWidth={sw} />;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {C, F} from '../theme';
-import {LOOK, type Look} from './look';
+import {LOOK, UNKNOWN, type Look} from './look';
 import {FOUND8, TRUTH8, entropy, mutualInfo} from './metrics';
 
 /**
@@ -51,7 +51,7 @@ export const NodeDisc: React.FC<{x: number; y: number; d?: number; look: Look; l
 
 /** The node whose group we do not know: black, with a white question mark. */
 export const HiddenNode: React.FC<{x: number; y: number; d?: number; halo?: number; op?: number}> = ({x, y, d = 96, halo = 1, op = 1}) => (
-  <NodeDisc x={x} y={y} d={d} look={LOOK[3]} label="?" halo={halo} op={op} fs={d * 0.62} />
+  <NodeDisc x={x} y={y} d={d} look={UNKNOWN} label="?" halo={halo} op={op} fs={d * 0.62} />
 );
 
 type Num = number | ((i: number) => number);

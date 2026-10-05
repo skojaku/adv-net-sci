@@ -59,7 +59,7 @@ export const AdjMatrix: React.FC<{
   pos: ReadonlyArray<number>;
   /** opacity of each edge's two cells */
   edgeOp?: (i: number, e: Edge) => number;
-  /** the look of the label discs: one for all nodes, or one per node (default: solid blue) */
+  /** the look of the label discs: one for all nodes, or one per node (default: blue) */
   look?: Look | ReadonlyArray<Look>;
   lookTo?: ReadonlyArray<Look>;
   t?: number;

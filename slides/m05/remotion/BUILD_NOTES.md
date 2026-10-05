@@ -42,14 +42,17 @@ Do not change an existing shared file to suit one slide. Put a slide's own helpe
 ## Style (the Marp deck at 1.5x)
 
 - Canvas 1920 x 1080. Content region x 120 to 1800, y 190 to 990. Title and page number come from `Frame`.
-- **Colour: black, white and blue.** `C.blue` for everything that is drawn, `C.ink` black, `C.soft` grey for small notes.
-  **Red (`C.red`) is for emphasised text only** (a key term via `Term`, the higher value in a `Tag hot`, a "disagree").
-  Never a fill, a group, a band or a line. **No green, no gold, no purple. No bar charts.**
-- **Groups are told apart by how they are filled, not by hue** (`src/lib/look.ts`): `LOOK[0]` solid blue, `LOOK[1]` hollow
-  (white with a blue ring), `LOOK[2]` brown stripes, `LOOK[3]` black, `LOOK[4]` blue dots. `Network` takes `look` (one or one per
-  node) and `lookTo` + `t` to cross-fade from one look to another; never blend colours. Bands around a group: `BAND_SOLID`
-  (light blue) or `BAND_HATCH` (light-brown stripes). The stripes (brown: blue stripes were hard to see next to blue nodes) and the dots are SVG patterns defined by `Frame`.
-  A highlighted dot or line on a plot is black; its label may be red text.
+- **Colour.** Everything drawn is `C.blue` by default; small notes are `C.soft` grey, black is `C.ink`. **Red (`C.red`) is for
+  emphasised text only** (a key term via `Term`, the higher value, "disagree"). Never a fill, a group, a band or a line. No green.
+  No bar charts.
+- **Groups (communities) are told apart by hue**, never red (`src/lib/look.ts`): `LOOK[0]` blue, `LOOK[1]` orange, `LOOK[2]` brown,
+  `LOOK[3]` purple, `LOOK[4]` dark grey. `UNKNOWN` (black) is a node with no group yet or a "?". `HOLLOW` is a plain white node.
+  `Network` takes `look` (one or one per node) and `lookTo` + `t` to cross-fade one colouring into another (never blend colours).
+  Stripes (brown) are not a group colour: they fill bands (`BAND_HATCH`) and the overlap of the NMI discs. When two colourings
+  of the same network are to be compared, draw both at once, side by side (S05, S21).
+- **A pair of nodes is never drawn as two nodes joined by a line** (it reads as a network edge). Pairs are the cells of a matrix
+  (`src/lib/pairmatrix.tsx`).
+- Do not show a random number `u` or any internal step of the computer: say "10 tickets, 9 say edge, draw one".
 - Text sizes: body 45, grey notes 40, in-figure labels and axis numbers 36 or more (never below 34), handwriting labels
   (`Cap`, font `F.hand`) 45. A disc is 39 px across or more.
 - **Few words.** At most one short caption per stage (about 8 words, 12 at the very most), no sentence repeated in two places, no

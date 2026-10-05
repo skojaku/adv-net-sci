@@ -2,47 +2,51 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Cap} from '../components/Text';
-import {Tex} from '../components/Tex';
-import {prog} from '../lib/anim';
-import {H_TRUE, HiddenNode, Row8, f3} from '../lib/entropy8';
+import {Box, Cap, Term} from '../components/Text';
+import {C} from '../theme';
+import {betweenStages, fromStage, prog} from '../lib/anim';
+import {Num, ProbGrid, cellC} from '../components/ProbGrid';
+import {COUNT, JOINT, fmt} from '../lib/prob';
 
 /**
- * 0: eight nodes (4 solid, 4 hollow) and one node picked at random, its look hidden: solid or hollow?
- * 1: H(true) = 1.000, which is 1 question.
+ * The table of S09 as probabilities.
+ * 0: the number of nodes in each cell.
+ * 1: divided by 8, each cell is a joint probability: a node is in this true group AND this found group.
  */
-export const marks = [50, 100];
-
-const CX = 960;
-const ROW_Y = 610;
+export const marks = [50, 110];
 
 export const S15: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const pick = prog(frame, 16, 32);
-  const ask = prog(frame, 28, 44);
-  const eq = prog(frame, 56, 74);
-  const q1 = prog(frame, 72, 90);
+  const grid = prog(frame, 0, 16);
+  const counts = betweenStages(frame, marks, 0, 0);
+  const probs = fromStage(frame, marks, 1, 16);
+  const cap0 = betweenStages(frame, marks, 0, 0) * prog(frame, 24, 40);
 
   return (
-    <Frame n={15} title="Guess the true group of a node">
+    <Frame n={15} title="Joint probability">
       <Canvas>
-        <Row8 cx={CX} y={ROW_Y} gap={150} nodeOp={(i) => prog(frame, i * 1.5, i * 1.5 + 14)} />
-        <HiddenNode x={CX} y={320} halo={1} op={pick} />
+        <ProbGrid op={grid} />
+        {[0, 1].map((r) =>
+          [0, 1].map((c) => (
+            <g key={`${r}${c}`}>
+              <Num at={cellC(r, c)} text={String(COUNT[r][c])} size={72} op={counts * grid} />
+              <Num at={cellC(r, c)} text={fmt(JOINT[r][c], 3)} size={64} op={probs} />
+            </g>
+          )),
+        )}
       </Canvas>
-      <Fade o={ask} dy={12}>
-        <Box x={CX} y={400} w={1200} align="center" size={48}>
-          A random node: solid or hollow?
+      <Fade o={cap0} dy={14}>
+        <Box x={960} y={760} w={1500} align="center" size={54}>
+          Count the nodes in each cell.
         </Box>
       </Fade>
-      <Fade o={eq} dy={14}>
-        <Box x={CX} y={742} w={1200} align="center" size={64}>
-          <Tex tex={`H(\\text{true}) = ${f3(H_TRUE)}`} />
+      <Fade o={probs} dy={14}>
+        <Box x={960} y={760} w={1500} align="center" size={54}>
+          Divide by 8: <Term>joint probability</Term>
         </Box>
-      </Fade>
-      <Fade o={q1} dy={14}>
-        <Cap x={CX} y={850} w={1200}>
-          1 question
+        <Cap x={960} y={850} w={1500}>
+          a node is in this row and this column
         </Cap>
       </Fade>
     </Frame>

@@ -7,7 +7,7 @@ export const SBM_PAIRS: Edge[] = [];
 for (let a = 0; a < 8; a++) for (let b = a + 1; b < 8; b++) SBM_PAIRS.push([a, b]);
 
 export const SBM_GROUP = [0, 0, 0, 0, 1, 1, 1, 1] as const;
-/** The two groups of the 8-node model: group 0 solid blue, group 1 hollow (LOOK[0], LOOK[1]). */
+/** The two groups of the 8-node model: group 0 blue, group 1 orange (LOOK[0], LOOK[1]). */
 export const SBM_LOOK = [LOOK[0], LOOK[1]] as const;
 export const sbmInside = (a: number, b: number) => SBM_GROUP[a] === SBM_GROUP[b];
 

@@ -14,7 +14,10 @@ export const C = {
   blue: '#3959A6', // everything that is drawn: nodes, bands, lines
   blueSoft: '#e7ecf7',
   blueMid: '#cdd7ee',
-  brown: '#8B5E34', // stripes only (they are hard to see in blue next to blue nodes)
+  brown: '#8B5E34', // a group colour, and the colour of stripes
+  orange: '#E69F00', // group colour
+  purple: '#6A3D9A', // group colour
+  gray5: '#3a3a3a', // fifth group colour
   brownMid: '#dcc7ad',
   red: '#B14434', // emphasised text only (key terms, the higher value). Never a fill or a group.
 } as const;

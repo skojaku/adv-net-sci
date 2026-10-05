@@ -26,6 +26,11 @@ import {S24, marks as marks24} from './S24';
 import {S25, marks as marks25} from './S25';
 import {S26, marks as marks26} from './S26';
 import {S27, marks as marks27} from './S27';
+import {S28, marks as marks28} from './S28';
+import {S29, marks as marks29} from './S29';
+import {S30, marks as marks30} from './S30';
+import {S31, marks as marks31} from './S31';
+import {S32, marks as marks32} from './S32';
 
 export type SlideDef = {
   /** the slide's number in DECK_SPEC.md */
@@ -46,22 +51,27 @@ export const slides: SlideDef[] = [
   {n: 7, id: 'noise', marks: marks07, Component: S07},
   {n: 8, id: 'compare', marks: marks08, Component: S08},
   {n: 9, id: 'eight-nodes', marks: marks09, Component: S09},
-  {n: 10, id: 'rand-index', marks: marks10, Component: S10},
-  {n: 11, id: 'shuffle', marks: marks11, Component: S11},
-  {n: 12, id: 'ari', marks: marks12, Component: S12},
-  {n: 13, id: 'pairs-or-nodes', marks: marks13, Component: S13},
-  {n: 14, id: 'yes-no-questions', marks: marks14, Component: S14},
-  {n: 15, id: 'guess-the-group', marks: marks15, Component: S15},
-  {n: 16, id: 'found-group-hint', marks: marks16, Component: S16},
-  {n: 17, id: 'mutual-information', marks: marks17, Component: S17},
-  {n: 18, id: 'nmi', marks: marks18, Component: S18},
-  {n: 19, id: 'tiny-groups', marks: marks19, Component: S19},
-  {n: 20, id: 'karate-compare', marks: marks20, Component: S20},
-  {n: 21, id: 'turn-it-around', marks: marks21, Component: S21},
-  {n: 22, id: 'groups-first', marks: marks22, Component: S22},
-  {n: 23, id: 'see-groups', marks: marks23, Component: S23},
-  {n: 24, id: 'sort-blocks', marks: marks24, Component: S24},
-  {n: 25, id: 'outward-question', marks: marks25, Component: S25},
-  {n: 26, id: 'outward', marks: marks26, Component: S26},
-  {n: 27, id: 'inference', marks: marks27, Component: S27},
+  {n: 10, id: 'why-pairs', marks: marks10, Component: S10},
+  {n: 11, id: 'rand-index', marks: marks11, Component: S11},
+  {n: 12, id: 'shuffle', marks: marks12, Component: S12},
+  {n: 13, id: 'ari', marks: marks13, Component: S13},
+  {n: 14, id: 'pairs-or-nodes', marks: marks14, Component: S14},
+  {n: 15, id: 'yes-no-questions', marks: marks15, Component: S15},
+  {n: 16, id: 'guess-the-group', marks: marks16, Component: S16},
+  {n: 17, id: 'found-group-hint', marks: marks17, Component: S17},
+  {n: 18, id: 'mutual-information', marks: marks18, Component: S18},
+  {n: 19, id: 'nmi', marks: marks19, Component: S19},
+  {n: 20, id: 'tiny-groups', marks: marks20, Component: S20},
+  {n: 21, id: 'karate-compare', marks: marks21, Component: S21},
+  {n: 22, id: 'turn-it-around', marks: marks22, Component: S22},
+  {n: 23, id: 'groups-first', marks: marks23, Component: S23},
+  {n: 24, id: 'see-groups', marks: marks24, Component: S24},
+  {n: 25, id: 'sort-blocks', marks: marks25, Component: S25},
+  {n: 26, id: 'outward-question', marks: marks26, Component: S26},
+  {n: 27, id: 'outward', marks: marks27, Component: S27},
+  {n: 28, id: 'inference', marks: marks28, Component: S28},
+  {n: 29, id: 'sbm-estimate', marks: marks29, Component: S29},
+  {n: 30, id: 'more-groups', marks: marks30, Component: S30},
+  {n: 31, id: 'bayesian-sbm', marks: marks31, Component: S31},
+  {n: 32, id: 'graph-tool', marks: marks32, Component: S32},
 ];

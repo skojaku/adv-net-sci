@@ -1,6 +1,6 @@
 # M05 アニメーションスライド (Remotion)
 
-Marp デッキ `../m05-clustering.md` の続きを、クリックで段階的に進むアニメーションで見せる 27 枚。
+Marp デッキ `../m05-clustering.md` の続きを、クリックで段階的に進むアニメーションで見せる 32 枚。
 設計は `DECK_SPEC.md`、作り方と確認の手順は `BUILD_NOTES.md`。
 
 ## 動かす

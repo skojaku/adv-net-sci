@@ -10,7 +10,7 @@ import {Disc, EightRows, RowGeom, boxPad, mixGeom, nodeX, rowCentre, trueLook} f
 import {BAND_SOLID, LOOK} from '../lib/look';
 
 /**
- * 0: eight nodes in a row, 1 to 4 solid and 5 to 8 hollow ("true groups").
+ * 0: eight nodes in a row, 1 to 4 blue and 5 to 8 orange ("true groups").
  * 1: the same nodes again below, with the found groups as two boxes A and B; node 5 is ringed.
  * 2: the rows shrink to the left; the nodes fly one by one into a 2 x 2 table (true fill x found box); we count nodes.
  */
@@ -94,7 +94,7 @@ export const S09: React.FC = () => {
             </g>
           ))}
           {[0, 1].map((r) => (
-            <rect key={r} x={cellX(0) - 28} y={cellY(r)} width={16} height={CH} rx={8} fill={LOOK[r].fill} stroke={C.blue} strokeWidth={r === 0 ? 0 : 4} />
+            <rect key={r} x={cellX(0) - 28} y={cellY(r)} width={16} height={CH} rx={8} fill={LOOK[r].fill} stroke="none" strokeWidth={0} />
           ))}
           {[0, 1].map((r) =>
             [0, 1].map((c) => {
