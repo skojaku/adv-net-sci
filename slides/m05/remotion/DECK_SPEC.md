@@ -220,7 +220,6 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 2 | `In an SBM, every node of a group has the same expected degree.`、`To fit the hubs, the SBM makes a group of hubs.` | + 2 行 |
 | S35 `Degree-corrected model` | 0 | SBM: `P(A_ij = 1 given c, p) = p_{c_i c_j}` (ラベル `SBM`) | 式 1 |
 | | 1 | `A_ij ~ Poisson(theta_i theta_j omega_{c_i c_j})` (ラベル `degree-corrected SBM`)。新しい式を大きく、古い式を少し小さく。定義: `A_ij` (i と j の間の辺の数)、`theta_i` (節点 i が辺を作りやすい度合い)、`omega_rs` | + 式 2 と定義 |
-| | 2 | 同じ群の 3 組の節点 (円の面積 = θ。大と大、大と小、小と小)。`the area of a disc is theta: two nodes with a large theta share more edges`。数字は載せない | + 3 組 |
 | S36 `Fix c (degree-corrected)` | 0 | 8 ノードの網 (白抜き)。`log L(c, theta, omega) = sum_i k_i log theta_i + 1/2 sum_{r,s} (m_rs log omega_rs - omega_rs theta_r theta_s)` (2 行)。定義 `k_i`、`m_rs` (群内の辺は 2 回数える)、`theta_r` (群の θ の和、1 に固定) | 式 + 定義 |
 | | 1 | c を固定: 網が c の色に塗られる。`fix c: (theta-hat, omega-hat) = argmax over theta, omega of log L(c, theta, omega)` | + 式 |
 | | 2 | `theta-hat_i = k_i / kappa_{c_i}`、`omega-hat_rs = m_rs`、`kappa_r` (群の次数の和)。節点の大きさが θ-hat に。`node size: its share of the group's degree` | + 結果 |
