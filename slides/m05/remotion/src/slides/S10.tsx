@@ -162,7 +162,7 @@ export const S10: React.FC = () => {
           const p = landed(n);
           return (
             <g key={n} opacity={chipsIn}>
-              <PairIcon x={lerp(ch.sx, tx, p)} y={lerp(ch.sy, ty, p)} a={ch.a} b={ch.b} d={32} gap={46} />
+              <PairIcon x={lerp(ch.sx, tx, p)} y={lerp(ch.sy, ty, p)} d={32} gap={46} />
             </g>
           );
         })}
