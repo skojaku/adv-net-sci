@@ -294,13 +294,18 @@ if __name__ == "__main__":
         return done.returncode == 0
 
     def mamba_platform():
+        """Which conda platform this computer is, or why graph-tool 3.9 has no
+        build for it. conda-forge builds 3.9 for these two only; Intel Macs and
+        ARM Linux stop at 2.98, whose API is not the one the worker uses."""
         system, machine = platform.system(), platform.machine().lower()
-        if system == "Linux":
-            return "linux-aarch64" if machine in ("aarch64", "arm64") else "linux-64"
-        if system == "Darwin":
-            return "osx-arm64" if machine == "arm64" else "osx-64"
+        if system == "Linux" and machine in ("x86_64", "amd64"):
+            return "linux-64"
+        if system == "Darwin" and machine == "arm64":
+            return "osx-arm64"
         raise RuntimeError(
-            "graph-tool has no Windows build. Open this notebook on molab instead."
+            f"graph-tool {GT_VERSION} is built for 64-bit Linux (Intel or AMD) "
+            f"and for Macs with Apple silicon. This computer is {system} "
+            f"{machine}. Open the notebook on molab instead."
         )
 
     def install_graph_tool(say):
@@ -315,10 +320,11 @@ if __name__ == "__main__":
         GT_WORKER.write_text(GT_WORKER_SRC)
         if gt_works():
             return
+        plat = mamba_platform()  # raises, with a reason, before any download
         exe = GT_DIR / "micromamba"
         if not exe.exists():
             say("download")
-            url = f"https://micro.mamba.pm/api/micromamba/{mamba_platform()}/latest"
+            url = f"https://micro.mamba.pm/api/micromamba/{plat}/latest"
             with urllib.request.urlopen(url, timeout=120) as reply:
                 blob = reply.read()
             with tarfile.open(fileobj=io.BytesIO(blob), mode="r:bz2") as tar:

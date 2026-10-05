@@ -199,8 +199,13 @@ puts it back, so the notebook has to install it itself:
   network; OpenFlights is ODbL, Natural Earth is public domain).
 
 Verified on macOS arm64: the installer from an empty directory, the state
-change reaching the page in a real browser, every figure, the blank copy and the
-answer copy. **Not verified on molab itself.** Whether molab lets a notebook
+change reaching the page in a headless Chrome, every figure, the blank copy and
+the answer copy. For Linux the same `micromamba create` was only *solved*, not
+run (`--dry-run --platform linux-64`, with `CONDA_OVERRIDE_GLIBC` set because the
+host was a Mac): it resolves to 150 packages, about 250 MB to download.
+conda-forge builds graph-tool 3.9 for `linux-64` and `osx-arm64` only. Intel
+Macs and ARM Linux stop at 2.98, so the notebook stops there with a plain
+sentence rather than a solver log. **Not verified on molab itself.** Whether molab lets a notebook
 download an installer and write 1.4 GB, and whether its Linux image resolves the
 same conda-forge build, has to be tried once on molab before class. If it does
 not work, the failure is a red bar at the top with the installer's own log, not a
