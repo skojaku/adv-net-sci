@@ -78,7 +78,7 @@ const Pair: React.FC<{x1: number; y: number; r1: number; x2: number; r2: number;
     <g>
       <circle cx={x1} cy={y} r={r1} fill={C.blueSoft} />
       <circle cx={x2} cy={y} r={r2} fill="#fff" />
-      {x2 - x1 < 1e-6 ? <circle cx={x1} cy={y} r={r1} fill="url(#hatch-blue)" /> : lens && <path d={lens} fill="url(#hatch-blue)" stroke={C.blue} strokeWidth={sw * 0.7} strokeLinejoin="round" />}
+      {x2 - x1 < 1e-6 ? <circle cx={x1} cy={y} r={r1} fill="url(#hatch-brown)" /> : lens && <path d={lens} fill="url(#hatch-brown)" stroke={C.brown} strokeWidth={sw * 0.7} strokeLinejoin="round" />}
       <circle cx={x1} cy={y} r={r1} fill="none" stroke={C.blue} strokeWidth={sw} />
       <circle cx={x2} cy={y} r={r2} fill="none" stroke={C.ink} strokeWidth={sw * 0.7} />
     </g>
@@ -130,13 +130,13 @@ export const S18: React.FC = () => {
           <text x={xTrueCrescent} y={CY + 13} textAnchor="middle" fontFamily={F.serif} fontSize={38} fill={C.ink} stroke="#fff" strokeWidth={9} paintOrder="stroke">
             {f3(H_GIVEN)}
           </text>
-          <text x={xLens} y={CY + 13} textAnchor="middle" fontFamily={F.serif} fontSize={38} fontWeight={700} fill={C.ink} stroke="#fff" strokeWidth={9} paintOrder="stroke">
+          <text x={xLens} y={CY + 13} textAnchor="middle" fontFamily={F.serif} fontSize={38} fontWeight={700} fill={C.ink} stroke="#fff" strokeWidth={16} paintOrder="stroke">
             {f3(I_TF)}
           </text>
         </g>
         {/* legend swatches of stage 1 */}
         <g opacity={big * leg1}>
-          <rect x={850} y={246} width={52} height={52} fill="url(#hatch-blue)" stroke={C.blue} strokeWidth={3} />
+          <rect x={850} y={246} width={52} height={52} fill="url(#hatch-brown)" stroke={C.brown} strokeWidth={3} />
         </g>
         <g opacity={big * leg2}>
           <rect x={850} y={346} width={52} height={52} fill={C.blueSoft} stroke={C.blue} strokeWidth={3} />

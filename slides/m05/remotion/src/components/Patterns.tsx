@@ -5,9 +5,9 @@ import {C} from '../theme';
 export const PatternDefs: React.FC = () => (
   <svg width={1} height={1} style={{position: 'absolute', left: 0, top: 0, pointerEvents: 'none'}}>
     <defs>
-      <pattern id="hatch-blue" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <pattern id="hatch-brown" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <rect width={9} height={9} fill="#fff" />
-        <rect width={4.5} height={9} fill={C.blue} />
+        <rect width={4.5} height={9} fill={C.brown} />
       </pattern>
       <pattern id="dots-blue" width={10} height={10} patternUnits="userSpaceOnUse">
         <rect width={10} height={10} fill="#fff" />
@@ -15,7 +15,7 @@ export const PatternDefs: React.FC = () => (
       </pattern>
       <pattern id="hatch-band" width={16} height={16} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <rect width={16} height={16} fill="#fff" />
-        <rect width={7} height={16} fill={C.blueMid} />
+        <rect width={7} height={16} fill={C.brownMid} />
       </pattern>
       <pattern id="hatch-ink" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
         <rect width={9} height={9} fill="#fff" />
