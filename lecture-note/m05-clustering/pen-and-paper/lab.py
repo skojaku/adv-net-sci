@@ -250,8 +250,9 @@ def sample_partitions(g, deg_corr, n_samples):
     samples = []
     gt.mcmc_equilibrate(
         state,
+        wait=10,  # do not wait long for the chain to settle: it starts at the best fit
         force_niter=n_samples,
-        mcmc_args=dict(niter=10),
+        mcmc_args=dict(niter=1),  # one sweep between draws
         callback=lambda s: samples.append(s.get_blocks().a.copy()),
     )
     mode = gt.PartitionModeState(samples, converge=True)
@@ -1701,10 +1702,10 @@ def _(foot_edges, foot_ready, gt_state):
                 n=FOOT_N,
                 edges=[[int(a), int(b)] for a, b in foot_edges],
                 deg_corr=True,
-                n_samples=1000,
+                n_samples=300,
             )
         )
-        _out = mo.md("graph-tool drew 1,000 answers.")
+        _out = mo.md("graph-tool drew 300 answers.")
     _out
     return (samp_fit,)
 
@@ -1813,7 +1814,7 @@ def _():
     ### The airports again
 
     The airport network is messier. Same question: how often was each airport
-    put in a block **other than** its usual one? We draw 300 answers.
+    put in a block **other than** its usual one? We draw 150 answers.
     """)
     return
 
@@ -1825,9 +1826,9 @@ def _(gt_state):
         _out = gt_waiting(gt_state())
     else:
         air_samp = run_graph_tool(
-            dict(kind="sample", n=AIR_N, edges=AIR_EDGES, deg_corr=True, n_samples=300)
+            dict(kind="sample", n=AIR_N, edges=AIR_EDGES, deg_corr=True, n_samples=150)
         )
-        _out = mo.md("graph-tool drew 300 answers for the airport network.")
+        _out = mo.md("graph-tool drew 150 answers for the airport network.")
     _out
     return (air_samp,)
 

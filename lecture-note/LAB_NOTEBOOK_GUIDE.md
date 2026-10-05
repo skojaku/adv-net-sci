@@ -211,6 +211,16 @@ Chrome. conda-forge builds graph-tool 3.9 for `linux-64` and `osx-arm64` only.
 Intel Macs and ARM Linux stop at 2.98, so the notebook stops there with a plain
 sentence rather than a solver log.
 
+**molab is slow for graph-tool's sampler: about 35 times slower than a laptop.**
+Measured in molab's own terminal (20 CPUs shown, x86-64, and the thread count made
+no difference): 20 sampling draws of 10 sweeps took 14 s on the airport network,
+against 0.4 s on a Mac. The first version asked for 300 draws of 10 sweeps, which
+ran for more than two minutes and then the kernel dropped. The sampler now takes
+a draw after every sweep and does not wait for the chain to settle (150 draws on
+the airports, 300 on football): about 0.4 s on a Mac, and about 10 s on molab. A
+cell that runs for minutes on molab is a cell that loses the room, so time any
+new graph-tool call there, not on a laptop.
+
 **The answers differ between machines.** On the same data and the same seed,
 the airport fit gave 13 blocks on a Mac and 8 on molab, the airlines-and-airports
 fit gave 5 blocks and 2, and the hierarchy was 17 to 2 to 1 on one and 13 to 3 to
