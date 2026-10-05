@@ -1,0 +1,193 @@
+% The M05 code sheet: a paper handout, separate from the pen-and-paper exercise.
+% A student types each framed box into the matching empty cell of a Colab
+% notebook and looks at what comes out. The sheet is about how to use the tools.
+%
+% Compile with: xelatex -interaction=nonstopmode code-sheet.tex   (run twice)
+%
+% The boxes (boxes/box*.tex) are GENERATED, together with the notebooks, from
+% one list in tools/build_m05_code_sheet.py, so that the code on the paper is
+% the code that was run. Edit the list, not the files:
+%
+%     python tools/build_m05_code_sheet.py
+\documentclass[a4paper, 12pt]{extarticle}
+\usepackage[top=0.7in, bottom=0.65in, left=0.75in, right=0.75in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% Body face: Charter, asked for the way exercise.tex asks for it.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Code face: one that tells 0 from O and l from 1, because it is copied by hand.
+% A chain, not a name: naming a font that is not installed is a hard error.
+\IfFontExistsTF{JetBrains Mono}{\setmonofont{JetBrains Mono}[Scale=0.92]}{
+  \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}[Scale=0.9]}{
+    \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.92]}{}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left (needspace's glue trick, written out
+% because needspace.sty is not in a BasicTeX install; see exercise.tex).
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. It may not be the last thing on a page, but it is not made to
+% pull a whole part after it: a part is a heading, a box and its notes.
+\newcommand{\parthead}[2]{%
+  \needroom{5\baselineskip}%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% The framed code. The student types what is inside, and only that. Line numbers
+% are in the margin so that the notes under the box can point at a line.
+\lstset{
+  basicstyle=\ttfamily\fontsize{10.5}{14}\selectfont,
+  columns=fixed, keepspaces=true, showstringspaces=false, upquote=true,
+  numbers=left, numberstyle=\ttfamily\tiny\color{black!55}, numbersep=7pt,
+  xleftmargin=1.4em, tabsize=4,
+}
+\newtcblisting{codebox}[2]{
+  listing only, colback=white, colframe=black, boxrule=1.1pt, arc=2pt,
+  top=2pt, bottom=2pt, left=2pt, right=2pt, boxsep=2pt,
+  title={\bfseries #1\hspace{0.9em}\mdseries #2},
+  coltitle=black, colbacktitle=black!9, fonttitle=\normalsize,
+  before skip=0.5em, after skip=0.1em, nobeforeafter,
+}
+\newenvironment{linenotes}{%
+  \small
+  \begin{description}[font=\bfseries\ttfamily\footnotesize, leftmargin=2.9em,
+    labelwidth=2.4em, labelsep=0.3em, itemsep=0.12em, parsep=0pt, topsep=0.25em]}%
+  {\end{description}}
+
+% The play button of a Colab cell, drawn, because no text font here has the glyph.
+\newcommand{\playbutton}{\tikz[baseline=-0.55ex]{\draw[fill=black!80] (0,0) circle (1.05ex);\fill[white] (-0.3ex,-0.55ex) -- (0.6ex,0) -- (-0.3ex,0.55ex) -- cycle;}}
+
+% The lab. Both the QR code and the printed address are the course's own short
+% link, never the notebook's: paper outlives any one upload (see exercise.tex).
+\newcommand{\labaddress}{go.skojaku.com/m05lab}
+\newcommand{\labtarget}{https://go.skojaku.com/m05lab}
+
+\begin{document}
+
+{\LARGE\bfseries Lab \textperiodcentered{} Find the blocks}\hfill{\large the code sheet}
+
+\vspace{0.3em}
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.2\textwidth}
+\begin{center}
+\includegraphics[width=2.6cm]{m05lab-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.77\textwidth}
+\textbf{Before you start.} Point a camera at the square, or type
+\href{\labtarget}{\texttt{\labaddress}}. It opens a notebook in Google Colab.
+Press the \playbutton{} button on each of its three \emph{setup} cells, in order. The first
+one restarts Colab by itself, which is meant to happen. The second takes a few
+minutes. Wait for the \texttt{\char"2713} under the third. You type nothing in the
+setup cells.
+\end{minipage}
+\end{tcolorbox}
+
+\textbf{How to use this sheet.} Each framed \textbf{Box} below goes into the
+matching empty cell of the notebook. \textbf{Type it by hand} rather than pasting it:
+writing a line is how you find out what it does. Press \textbf{Shift+Enter} to run
+a cell. The notes under a box say what each numbered line does.
+
+\textbf{Typing tips.} Spelling, capital letters, brackets and quotation marks all
+matter. Colab may add a closing bracket or quote for you; when you type the closing
+one yourself, it steps over the extra one. Indent with the Tab key.
+
+\parthead{1}{Meet the data}
+
+Zachary's karate club: 34 members of a university karate club, studied in the
+1970s. Two members are linked when they were friends outside class. During the
+study the club split in two after a quarrel between the instructor, \textbf{Mr.\ Hi}
+(node 0), and the administrator, \textbf{the Officer} (node 33). We know who went
+with whom, which makes this network the standard test case for community detection.
+
+\input{boxes/box1}
+
+\parthead{2}{Find communities with Leiden}
+
+Leiden is one of the methods from the lecture. In igraph, running it takes one call.
+
+\input{boxes/box2}
+
+\parthead{3}{The stochastic block model, with graph-tool}
+
+graph-tool is a second library, and it works on its own kind of network. This box
+moves the karate club over to it and fits the stochastic block model from the lecture.
+
+\input{boxes/box3}
+
+\parthead{4}{Put the results side by side}
+
+\input{boxes/box4}
+
+\textbf{What to look at.}
+\begin{itemize}[itemsep=0.1em, topsep=0.2em, leftmargin=1.4em]
+\item Find node 0 and node 33 in each picture. Which groupings keep them apart?
+\item Leiden and the stochastic block model look for different things. In the SBM
+picture, who ends up together, and how many friends do they have? (Bigger circles
+are members with more friends.)
+\end{itemize}
+
+\parthead{5}{If you have time: the US airports}
+
+The same recipe on a bigger network: 540 US airports, two linked when a flight
+connects them.
+
+\input{boxes/box5}
+
+\textbf{What to look at.} Do the groups follow regions of the map, or something
+else? Compare Leiden with the stochastic block model.
+
+\textbf{Then try your own.} Any igraph network goes through Boxes 2 and 3 in the
+same way: put its name where \texttt{karate} is. For a first try,
+\texttt{ig.Graph.Famous("Krackhardt\_Kite")} is a small network that igraph
+already has.
+
+\vspace{0.4em}
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt, title={\bfseries If something goes wrong}, coltitle=black, colbacktitle=black!9, fonttitle=\normalsize]
+\footnotesize
+\begin{itemize}[itemsep=0.05em, topsep=0.05em, leftmargin=1.2em]
+\item A red message ending in \texttt{NameError} means a name does not exist yet:
+you skipped an earlier box, or Colab was reset. Run the earlier boxes again, in order.
+\item \texttt{SyntaxError} means a typing slip. Look for a missing bracket or quote
+near the \texttt{\^{}} that the message points at.
+\item The \texttt{\char"2713} is gone, or Colab says it has disconnected: Colab forgets
+everything after a break. Run the three setup cells again.
+\item Anything else: raise your hand.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

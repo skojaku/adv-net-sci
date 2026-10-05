@@ -6,9 +6,12 @@ is `.claude/skills/pen-and-paper/SKILL.md`; this file is the notebook half of
 the same deliverable.
 
 A sheet's last part sends the student to a marimo notebook that runs, by
-machine, the thing they have just done in pencil. Two of them exist, under
-`lecture-note/m01-euler_tour/pen-and-paper/` and
-`lecture-note/m02-small-world/pen-and-paper/`, and each directory holds:
+machine, the thing they have just done in pencil. Three of them exist, under
+`lecture-note/m01-euler_tour/pen-and-paper/`,
+`lecture-note/m02-small-world/pen-and-paper/` and
+`lecture-note/m05-clustering/pen-and-paper/` (the last is not tied to a sheet;
+see [the graph-tool lab](#a-lab-that-needs-graph-tool-m05)), and each directory
+holds:
 
 - `lab.py` — the student's copy
 - `lecture-hall.css` — the look, copied verbatim from the mini-project's
@@ -167,6 +170,66 @@ notation.
 `lab.py` **exactly once**; if a blank moves or a hint is reworded, the script
 stops rather than writing an answer copy that is a version behind. It also
 asserts no `TASK` survives, and stamps a do-not-edit banner into the output.
+
+## A lab that needs graph-tool (m05)
+
+`m05-clustering/pen-and-paper/lab.py` is the one lab that cannot be pure PyPI.
+graph-tool is a C++ library that only conda packages (the `graph-tool` on PyPI
+is an empty placeholder), and molab installs from PyPI. m05's own coding
+notebook dropped graph-tool for exactly this reason (commit `3ad30496`). The lab
+puts it back, so the notebook has to install it itself:
+
+- **Installer.** A cell starts a `mo.Thread` at once. It downloads `micromamba`
+  (one file, from micro.mamba.pm), creates a private environment in the system
+  temp directory with `graph-tool=3.9 python=3.12` from conda-forge, and checks
+  that it imports. About 70 seconds and 1.4 GB on a laptop; the student is in
+  Part 1 meanwhile, and the figures that need it show a waiting card until the
+  thread sets `gt_state` to `"ready"`. Already installed means ready at once.
+- **A separate process, not an import.** The conda build brings its own Python
+  and its own C++ runtime. Loading it into the Python that runs marimo is the
+  kind of thing that works on one machine and not the next. The notebook sends a
+  job (a JSON file) to `GT_WORKER_SRC` run by the environment's own `python`, and
+  reads an answer back. Same job twice is cached. The worker's functions are
+  shown to the student, unfolded, so what graph-tool is asked to do is on the
+  page.
+- **Pinned.** `GT_VERSION = "3.9"`. The worker calls graph-tool by name and the
+  API moves between releases (`get_nonempty_B` became `get_B`).
+- **Data.** Airports, airlines, football and the map outline travel inside the
+  file like the CSS does: `python tools/build_m05_lab_data.py` (needs the
+  network; OpenFlights is ODbL, Natural Earth is public domain).
+
+**Checked on molab** (October 2026, opened from the GitHub branch through
+`molab.marimo.io/github/<owner>/<repo>/blob/<branch>/<path>`, then "Run it now"):
+the installer downloads and runs, graph-tool 3.9 installs in roughly a minute
+or a little more, the bar at the top turns to "ready" by itself, and every
+graph-tool figure draws, including graph-tool's own radial drawing. molab asks
+for a sign-in before it runs an unverified notebook, and it does not run one
+until "run all" is pressed. The platform there is Linux x86-64.
+
+Also checked on macOS arm64, from an empty install directory, in a headless
+Chrome. conda-forge builds graph-tool 3.9 for `linux-64` and `osx-arm64` only.
+Intel Macs and ARM Linux stop at 2.98, so the notebook stops there with a plain
+sentence rather than a solver log.
+
+**molab is slow for graph-tool's sampler: about 35 times slower than a laptop.**
+Measured in molab's own terminal (20 CPUs shown, x86-64, and the thread count made
+no difference): 20 sampling draws of 10 sweeps took 14 s on the airport network,
+against 0.4 s on a Mac. The first version asked for 300 draws of 10 sweeps, which
+ran for more than two minutes and then the kernel dropped. The sampler now takes
+a draw after every sweep and does not wait for the chain to settle (150 draws on
+the airports, 300 on football): about 0.4 s on a Mac, and about 10 s on molab. A
+cell that runs for minutes on molab is a cell that loses the room, so time any
+new graph-tool call there, not on a laptop.
+
+**The answers differ between machines.** On the same data and the same seed,
+the airport fit gave 13 blocks on a Mac and 8 on molab, the airlines-and-airports
+fit gave 5 blocks and 2, and the hierarchy was 17 to 2 to 1 on one and 13 to 3 to
+1 on the other. Even the number of threads changes it, so the worker pins graph-tool
+to one thread. Nothing in the notebook may therefore say how many blocks there
+are or which block is which. Every sentence under a figure is computed from the
+fit (`pct(...)`, `argmax`, counts), and the "which block holds Alaska" question
+is marked against the fit that was drawn. Keep it that way, and look at what molab
+draws before class, because that is what the students see.
 
 ## Checking a notebook before calling it done
 
