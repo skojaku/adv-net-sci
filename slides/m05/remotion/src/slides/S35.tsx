@@ -7,15 +7,15 @@ import {Tex} from '../components/Tex';
 import {FormulaStack} from '../components/FormulaStack';
 import {C} from '../theme';
 import {LOOK} from '../lib/look';
-import {fromStage, prog} from '../lib/anim';
+import {fromStage} from '../lib/anim';
 
 /**
  * The degree-corrected SBM (Karrer and Newman 2011): every node gets a number theta_i.
  * 0: the SBM: the groups alone decide the probability of an edge.
  * 1: the degree-corrected SBM: the number of edges between i and j is Poisson with mean theta_i theta_j omega_{c_i c_j};
  *    theta_i: how many edges node i tends to make.
- * 2: same group (omega = 1): two nodes with large theta are expected to share more edges than two with small theta:
- *    2 x 2 x 1 = 4, 2 x 1/2 x 1 = 1, 1/2 x 1/2 x 1 = 1/4. The area of a disc is theta.
+ * 2: three pairs of nodes of one group (the area of a disc is theta): two nodes with large theta share more edges than two
+ *    with small theta. No numbers on the slide.
  */
 export const marks = [56, 112, 172];
 
@@ -43,18 +43,17 @@ const ROWS = [
 
 // three pairs of nodes of one group: the area of a disc is theta
 const PAIRS = [
-  {x: 480, a: 2, b: 2, tex: '2\\times 2\\times 1=4'},
-  {x: 960, a: 2, b: 0.5, tex: '2\\times \\tfrac12\\times 1=1'},
-  {x: 1440, a: 0.5, b: 0.5, tex: '\\tfrac12\\times \\tfrac12\\times 1=\\tfrac14'},
+  {x: 480, a: 2, b: 2},
+  {x: 960, a: 2, b: 0.5},
+  {x: 1440, a: 0.5, b: 0.5},
 ] as const;
 const D1 = 64; // diameter of a disc with theta = 1
-const PY = 770;
+const PY = 810;
 
 export const S35: React.FC = () => {
   const frame = useCurrentFrame();
 
   const pairs = fromStage(frame, marks, 2, 16);
-  const nums = prog(frame, marks[1] + 24, marks[1] + 42);
 
   return (
     <Frame n={35}>
@@ -80,18 +79,8 @@ export const S35: React.FC = () => {
         </g>
       </Canvas>
       <Fade o={pairs} dy={12}>
-        <Box x={960} y={665} w={1500} align="center" size={36} color={C.soft}>
-          nodes of one group, <Tex tex="\omega=1" />; the area of a disc is <Tex tex="\theta" />
-        </Box>
-      </Fade>
-      <Fade o={nums} dy={12}>
-        {PAIRS.map((p, k) => (
-          <Box key={k} x={p.x} y={845} w={460} align="center" size={46}>
-            <Tex tex={p.tex} />
-          </Box>
-        ))}
-        <Box x={960} y={918} w={1500} align="center" size={36} color={C.soft}>
-          expected edges between the two nodes
+        <Box x={960} y={665} w={1500} align="center" size={38} color={C.soft}>
+          the area of a disc is <Tex tex="\theta" />: two nodes with a large <Tex tex="\theta" /> share more edges
         </Box>
       </Fade>
     </Frame>
