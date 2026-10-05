@@ -1,9 +1,11 @@
 import React from 'react';
-import {Img, staticFile, useCurrentFrame} from 'remotion';
+import {Img, useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Fade} from '../components/Fade';
 import {Box, Cap, Tag} from '../components/Text';
 import {fromStage, prog} from '../lib/anim';
+import plainPng from '../assets/dcsbm-plain.png';
+import correctedPng from '../assets/dcsbm-corrected.png';
 
 /**
  * Back to the political blogs (Karrer and Newman 2011, Fig. 2): the plain SBM and the degree-corrected SBM side by side.
@@ -32,10 +34,10 @@ export const S38: React.FC = () => {
   return (
     <Frame n={38}>
       <Fade o={a}>
-        <Img src={staticFile('dcsbm-plain.png')} style={{position: 'absolute', left: X[0], top: PY, width: W, height: H}} />
+        <Img src={plainPng} style={{position: 'absolute', left: X[0], top: PY, width: W, height: H}} />
       </Fade>
       <Fade o={b}>
-        <Img src={staticFile('dcsbm-corrected.png')} style={{position: 'absolute', left: X[1], top: PY, width: W, height: H}} />
+        <Img src={correctedPng} style={{position: 'absolute', left: X[1], top: PY, width: W, height: H}} />
       </Fade>
       <Fade o={capA} dy={12}>
         <Cap x={X[0] + W / 2} y={PY + H + 8} w={W}>plain SBM</Cap>

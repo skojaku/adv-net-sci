@@ -1,10 +1,11 @@
 import React from 'react';
-import {Img, staticFile, useCurrentFrame} from 'remotion';
+import {Img, useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
 import {Box, Cap} from '../components/Text';
 import {C} from '../theme';
 import {betweenStages, fromStage, prog} from '../lib/anim';
+import plainPng from '../assets/dcsbm-plain.png';
 
 /**
  * Why the SBM needs a correction: the political blogs (Karrer and Newman 2011, Fig. 2a).
@@ -38,7 +39,7 @@ export const S33: React.FC = () => {
   return (
     <Frame n={33}>
       <Fade o={img}>
-        <Img src={staticFile('dcsbm-plain.png')} style={{position: 'absolute', left: IMG_X, top: IMG_Y, width: IMG_W, height: IMG_H}} />
+        <Img src={plainPng} style={{position: 'absolute', left: IMG_X, top: IMG_Y, width: IMG_W, height: IMG_H}} />
       </Fade>
       <Fade o={head} dy={14}>
         <Box x={RX} y={270} w={740} size={50}>

@@ -42,7 +42,7 @@ Do not change an existing shared file to suit one slide. Put a slide's own helpe
 ## Style (the Marp deck at 1.5x)
 
 - Canvas 1920 x 1080. Lay a slide out in the region x 120 to 1800, y 190 to 990 as before; with no title `Frame` moves it up by `zoom * top - 50` and enlarges it (default 1.08), so it ends up in y 50 to about 900. The band below y = 920 stays empty for subtitles; `scripts/check_bottom.py` enforces it. Slides with room use a larger `zoom` (S02, S09, S11 to S18, S26, S34), crowded ones a smaller one (S05, S07). The page number comes from `Frame`.
-- Images go in `public/` and are used with `<Img src={staticFile('name.png')} />` (S33, S38; `scripts/review.mjs` and `scripts/frames.mjs` pass `publicDir`). `src/components/FormulaStack.tsx` stacks formulas one per stage (newest large, older ones smaller, rows of one group change size together, optional `note` under a row); S29, S35 to S37 use it.
+- Images go in `src/assets/` and are imported (`import png from '../assets/x.png'`, then `<Img src={png} />`; S33, S38), so that the single-file build can put them inside the html. `src/components/FormulaStack.tsx` stacks formulas one per stage (newest large, older ones smaller, rows of one group change size together, optional `note` under a row); S29, S35 to S37 use it.
 - To look at an animation between the stage ends: `node scripts/frames.mjs <composition id> 0,30,60 <out dir>` renders those frames at half size. A slide that follows another one should open on the picture the previous slide ends with (S13 opens on S12's last picture; S14 opens on S13's table), so that the cut between them is not seen.
 - **Colour.** Everything drawn is `C.blue` by default; small notes are `C.soft` grey, black is `C.ink`. **Red (`C.red`) is for
   emphasised text only** (a key term via `Term`, the higher value, "disagree"). Never a fill, a group, a band or a line. No green.
@@ -80,3 +80,12 @@ wrapped unexpectedly, discs are not touching, the stage's end picture is complet
 already on screen in the previous stage.
 
 `out/` is not committed. Do not run git, `npm install`, or the dev server.
+
+## A single html file for students
+
+`npm run build:single` writes `out/m05-community-detection.html` (about 2.3 MB): the click-through deck with the scripts, styles, fonts and
+pictures all inside it, so it opens from the file system with no network (click or the right arrow: next, left arrow: back, `f`: full
+screen). `out/` is not committed (a build command produces it), so run the command again after any change. How it differs from `npm run build`:
+`scripts/build_single.mjs` swaps `@remotion/google-fonts` for `src/single/fonts-*.ts` (the `@fontsource` woff2 files, inlined), keeps only the
+woff2 of the KaTeX and font files, inlines every asset, and pastes the one script and the one stylesheet into the html. Checked from file://
+in headless Chrome: the fonts load, the picture shows, no request leaves the file, no script error.

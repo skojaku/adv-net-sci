@@ -36,3 +36,5 @@ uv run scripts/verify_numbers.py  # スライドに出る数字を全部計算�
 ```
 
 `scripts/check_metrics.mjs` は `src/lib/metrics.ts` (NMI、ARI など) の値を確かめる。
+
+For students: `npm run build:single` makes one self-contained html file, `out/m05-community-detection.html` (see BUILD_NOTES.md).

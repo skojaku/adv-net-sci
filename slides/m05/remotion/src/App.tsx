@@ -9,10 +9,24 @@ type Pos = {slide: number; stage: number};
 /** Going back plays the animation in reverse at this speed (1 = normal). */
 const BACK_SPEED = 2;
 
+const LABEL: React.CSSProperties = {
+  position: 'fixed',
+  bottom: 10,
+  font: '12px ui-monospace, Menlo, monospace',
+  color: '#fff',
+  background: 'rgba(0,0,0,0.6)',
+  padding: '3px 10px',
+  borderRadius: 6,
+  pointerEvents: 'none',
+  transition: 'opacity 400ms ease',
+};
+
 export const App: React.FC = () => {
   const [pos, setPos] = useState<Pos>({slide: 0, stage: 0});
   const posRef = useRef<Pos>(pos);
   const playerRef = useRef<PlayerRef>(null);
+  // the two small labels at the bottom show on load and whenever the mouse or a key moves, then fade after a few seconds
+  const [ui, setUi] = useState(true);
 
   // The frame currently shown (fractional) and the frame we are heading to.
   const frameRef = useRef(0);
@@ -71,6 +85,25 @@ export const App: React.FC = () => {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
+  }, []);
+
+  useEffect(() => {
+    let timer = 0;
+    const wake = () => {
+      setUi(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setUi(false), 4000);
+    };
+    wake();
+    window.addEventListener('mousemove', wake);
+    window.addEventListener('keydown', wake);
+    window.addEventListener('click', wake);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('mousemove', wake);
+      window.removeEventListener('keydown', wake);
+      window.removeEventListener('click', wake);
+    };
   }, []);
 
   useEffect(() => {
@@ -137,18 +170,10 @@ export const App: React.FC = () => {
           transition: 'width 300ms ease',
         }}
       />
-      <div
-        style={{
-          position: 'fixed',
-          right: 12,
-          bottom: 10,
-          font: '12px ui-monospace, Menlo, monospace',
-          color: 'rgba(255,255,255,0.45)',
-          pointerEvents: 'none',
-        }}
-      >
+      <div style={{...LABEL, right: 12, opacity: ui ? 1 : 0}}>
         slide {pos.slide + 1}/{slides.length} · step {pos.stage + 1}/{slide.marks.length}
       </div>
+      <div style={{...LABEL, left: 12, opacity: ui ? 1 : 0}}>click or → : next · ← : back · f : full screen</div>
     </>
   );
 };
