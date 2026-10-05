@@ -1,0 +1,53 @@
+import React from 'react';
+import {AbsoluteFill, Audio, Freeze, Sequence, staticFile, useCurrentFrame} from 'remotion';
+import {slides} from '../slides';
+import {Narrator} from './Narrator';
+import {SlideSeg, buildTimeline} from './timeline';
+import {narration} from './narration';
+
+/**
+ * The deck as a video: each slide plays stage by stage as in the click-through deck, the picture is held while the narrator types,
+ * then the next stage starts. The slides themselves are not touched: this file only plays them (a Sequence that starts at a negative
+ * frame makes a slide play from the middle; a Freeze holds the end of a stage).
+ */
+export const timeline = buildTimeline(
+  slides.map((s) => s.marks),
+  narration,
+);
+
+const SlidePlay: React.FC<{seg: SlideSeg}> = ({seg}) => {
+  const Comp = slides[seg.n - 1].Component;
+  return (
+    <>
+      {seg.stages.map((st) => (
+        <React.Fragment key={st.k}>
+          <Sequence from={st.from - seg.from} durationInFrames={Math.max(1, st.anim)}>
+            <Sequence from={-st.slideFrom}>
+              <Comp />
+            </Sequence>
+          </Sequence>
+          <Sequence from={st.from - seg.from + st.anim} durationInFrames={Math.max(1, st.hold)}>
+            <Freeze frame={st.slideTo}>
+              <Comp />
+            </Freeze>
+          </Sequence>
+        </React.Fragment>
+      ))}
+    </>
+  );
+};
+
+export const NarratedDeck: React.FC = () => {
+  const frame = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{background: '#ffffff'}}>
+      {timeline.slides.map((seg) => (
+        <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
+          <SlidePlay seg={seg} />
+        </Sequence>
+      ))}
+      <Narrator frame={frame} tl={timeline} />
+      <Audio src={staticFile('typing.wav')} volume={0.9} />
+    </AbsoluteFill>
+  );
+};
