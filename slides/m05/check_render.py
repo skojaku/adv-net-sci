@@ -8,6 +8,9 @@ run(
     deck="m05-clustering.md",
     node_fills=[(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)],
     fig_h={"": 380, "tight": 320, "stack": 190},
-    exempt_figures=["boruvka-portrait.png", "konigsberg-map.png"],
+    # modularity-bag*.png: raster illustrations (Gemini via OpenRouter) with no text in
+    # them, so the in-figure type checks have nothing to measure.
+    exempt_figures=["boruvka-portrait.png", "konigsberg-map.png", "modularity-bag.png",
+                    "modularity-bag-cut.png", "modularity-bag-pull.png"],
     content_bottom=660,
 )

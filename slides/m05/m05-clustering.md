@@ -641,7 +641,7 @@ A k-core does not have to be connected.
 
 ---
 
-## The karate club, peeled
+## A real network, peeled
 
 <hr>
 
@@ -650,12 +650,12 @@ The **core number** of a node is the largest $k$ whose k-core contains it.
 <div class="fig">
 
 ![w:1080](figures/karate-core.png)
-<figcaption>color: core number. Blue 4, red 3, gold 2, gray 1. The 4-core has 10 members.</figcaption>
+<figcaption>34 members of a karate club and their 78 friendships. Color: core number (blue 4, red 3, gold 2, gray 1).</figcaption>
 
 </div>
 
 <!--
-Counts: core number 4: 10 members, 3: 12, 2: 11, 1: 1. The k-cores are nested: the 4-core sits inside the 3-core, which sits inside the 2-core.
+We meet this club properly in Part Two. Counts: core number 4: 10 members, 3: 12, 2: 11, 1: 1. The k-cores are nested: the 4-core sits inside the 3-core, which sits inside the 2-core.
 -->
 
 ---
@@ -833,8 +833,22 @@ Wayne Zachary recorded friendships in a karate club, 1970 to 1972.
 
 <!--
 A university karate club. The instructor (Mr. Hi) wanted to raise the fees; the administrator (John A.) did not. The club split into two clubs, 17 members each. Zachary 1977, Journal of Anthropological Research 33(4): 452-473.
+-->
 
-Before the next three slides, ask: what will each of the three scores do on this network?
+---
+
+<!-- _class: mid -->
+
+## Game: find the smallest cut
+
+<hr>
+
+Let's split the club into two groups. Cut as few edges as you can.
+
+[Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
+
+<!--
+The page's target is a cut of 1: the one member with a single friend, alone. The next slide shows it. If someone paints everyone one color, the cut is 0 and the page says "even better". Ask whether that is a split: each group needs at least one member.
 -->
 
 ---
@@ -849,6 +863,10 @@ Before the next three slides, ask: what will each of the three scores do on this
 <figcaption>thick: the 1 edge we cut. One member against 33.</figcaption>
 
 </div>
+
+<!--
+The game's target. Before the next two slides, ask: what will ratio cut and normalized cut do on this network?
+-->
 
 ---
 
@@ -878,22 +896,6 @@ Before the next three slides, ask: what will each of the three scores do on this
 
 <!--
 10 edges cut. Each split is the best found by a random-restart local search (figs_sketch.py); finding the exact optimum is NP-hard.
--->
-
----
-
-<!-- _class: mid -->
-
-## Game: find the smallest cut
-
-<hr>
-
-Let's split the club into two groups. Cut as few edges as you can.
-
-[Open the game](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/index.html?scoreType=graphcut&numCommunities=2&randomness=0.25&dataFile=net_karate.json)
-
-<!--
-The page's target is 0: paint everyone one color and nothing is cut. That is the missing rule: each group needs at least one member. With both colors in use, the smallest cut is 1 (the lone member).
 -->
 
 ---
@@ -947,11 +949,180 @@ The stars on the last slide have density 0.33 or less. Any fixed density thresho
 
 ---
 
+## Every edge is a string with two balls
+
+<hr>
+
+<div class="cols">
+<div>
+
+A ball's color is the group of the node at that end.
+
+Let's put all the strings in a bag. A string with two matching balls is an edge inside a group.
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag.png)
+<figcaption>6 of the 8 strings have matching balls</figcaption>
+
+</div>
+</div>
+
+<!--
+The game from the lecture note. Pull a string from the bag: matching colors means an edge inside a group. Next we ask how many matches chance alone would give: cut every string, mix the balls, and draw two at random.
+-->
+
+---
+
+
+## Let's watch it: the two bags
+
+<hr>
+
+<figure class="anim-stage" id="mod-bags">
+  <div class="anim-bar">
+    <div class="anim-step" data-anim-step></div>
+    <div class="anim-dots" data-anim-dots></div>
+    <button class="anim-btn" type="button" data-anim-prev aria-label="Previous step">◀</button>
+    <button class="anim-btn" type="button" data-anim-next aria-label="Next step">▶</button>
+    <button class="anim-btn" type="button" data-anim-replay>↻ Replay</button>
+  </div>
+
+  <div class="anim-grid-2" data-anim-canvas>
+    <div data-anim-clear data-mb-draw></div>
+    <div data-anim-clear data-mb-side></div>
+  </div>
+
+  <figcaption class="anim-note" data-anim-note></figcaption>
+</figure>
+
+<!-- Deck-wide, and it must run before the first anim.js: the stage steps by
+     hand, so nothing advances while the room is talking. -->
+<script>window.animStepOnly = true;</script>
+<script src="../../lecture-note/assets/anim/mod-bags.js"></script>
+<script src="../../lecture-note/assets/anim.js"></script>
+
+<!--
+The stage from the lecture note, on a 12-node network: strings into the first bag; all twenty drawn, 18 match (0.900); strings cut, each node drops k balls (40); pairs drawn from the second bag (exact chance 0.500); Q is the gap, 0.400; then click nodes to recolor. Painting everything one color gives 1.000 minus 1.000, so Q = 0. One node at a time, watching Q, is Louvain's first step by hand.
+-->
+
+---
+
+## Pull one string. Do its balls match?
+
+<hr>
+
+<div class="cols">
+<div>
+
+What is the chance that the two balls on a random string have the same color?
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag-pull.png)
+<figcaption>one string, pulled out at random</figcaption>
+
+</div>
+</div>
+
+<!--
+Let them count on the picture before moving on.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Same color on one string: 6 of 8
+
+<hr>
+
+$A_{ij} = 1$ if a string joins $i$ and $j$. $\delta(c_i, c_j) = 1$ if $i$ and $j$ have the same color.
+
+<div class="formula">
+
+$$P_{\text{string}} = \frac{\text{matching strings}}{m} = \frac{1}{2m}\sum_{i,j} A_{ij}\,\delta(c_i, c_j)$$
+
+</div>
+
+The sum visits every string twice, once from each end, so we divide by $2m$. Our bag: $6/8 = 0.75$.
+
+<!--
+m is the number of strings, which is the number of edges.
+-->
+
+---
+
+## Cut every string and mix the balls
+
+<hr>
+
+<div class="cols">
+<div>
+
+We draw one ball, put it back, and draw again: **sampling with replacement**.
+
+What is the chance the two balls have the same color?
+
+</div>
+<div class="fig">
+
+![w:537](figures/modularity-bag-cut.png)
+<figcaption>the same 16 balls, no strings</figcaption>
+
+</div>
+</div>
+
+<!--
+As in the lecture note. Without putting the first ball back, the chance would be 2 x (8/16)(7/15) = 0.467, and the square in the next slide would not hold.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Same color by chance: 8/16 squared, twice
+
+<hr>
+
+The chance of drawing color $c$ is the share of balls with color $c$. The first ball goes back, so the second draw has the same chance: we square it, then add over the colors.
+
+<div class="formula">
+
+$$P_{\text{chance}} = \sum_{c} \left(\frac{\text{balls of color } c}{2m}\right)^2$$
+
+</div>
+
+Our bag: $(8/16)^2 + (8/16)^2 = 0.5$.
+
+---
+
+## One ball per edge end
+
+<hr>
+
+Node $i$ is at the end of $k_i$ strings, so $k_i$ of the $2m$ balls carry its color.
+
+<div class="fig">
+
+![w:1080](figures/bag-2m.png)
+<figcaption>the ringed node has degree 3, so 3 of the 14 balls are its</figcaption>
+
+</div>
+
+<!--
+So the number of balls of color c is the sum of the degrees of the nodes with color c: the sum over i of k_i times delta(c, c_i).
+-->
+
+---
+
 ## Chance: the configuration model
 
 <hr>
 
-Our **null model**, the **configuration model**, keeps every node's degree and pairs up edge ends at random.
+Cutting the strings and pairing the ends at random keeps every node's degree. This **null model** is the **configuration model**.
 
 <div class="fig tight">
 
@@ -962,7 +1133,53 @@ Our **null model**, the **configuration model**, keeps every node's degree and p
 
 <!--
 Exact expectation: sum over groups of vol^2 / 4m = (16^2 + 14^2) / 60 = 7.53.
+
+Pairing the ends of cut strings is drawing without replacement. Drawing with replacement, as on the last slides, is what gives k_i k_j / 2m in the formula; for a big bag the two are close.
 -->
+
+---
+
+<!-- _class: mid -->
+
+## Modularity is the gap
+
+<hr>
+
+Same color on a string, minus same color by chance.
+
+Our bag: $Q = 0.75 - 0.5 = 0.25$.
+
+<div class="formula">
+
+$$Q = \frac{1}{2m}\sum_{i,j} A_{ij}\,\delta(c_i, c_j) \;-\; \sum_{c} \left(\frac{1}{2m}\sum_{i} k_i\,\delta(c, c_i)\right)^2$$
+
+</div>
+
+<!--
+The second term counts balls of color c as the sum of degrees of the nodes with that color, from the last slide.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Expand the square
+
+<hr>
+
+We write the square as a sum over pairs $i, j$.
+
+<div class="formula">
+
+$$\begin{aligned}
+\sum_{c} \left(\frac{1}{2m}\sum_{i} k_i\,\delta(c, c_i)\right)^2
+&= \frac{1}{(2m)^2}\sum_{i,j} k_i k_j \sum_{c} \delta(c, c_i)\,\delta(c, c_j) \\
+&= \frac{1}{2m}\sum_{i,j} \frac{k_i k_j}{2m}\,\delta(c_i, c_j)
+\end{aligned}$$
+
+</div>
+
+$\sum_c \delta(c, c_i)\,\delta(c, c_j) = \delta(c_i, c_j)$: it is 1 only when $i$ and $j$ have the same color.
 
 ---
 
@@ -979,7 +1196,7 @@ $$Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(
 * $A_{ij}$: 1 if $i$ and $j$ are connected, else 0
 * $k_i k_j / 2m$: the expected number of edges between $i$ and $j$ by chance, where $k_i$ is the degree of $i$
 * $\delta(c_i, c_j)$: 1 if the groups $c_i$ and $c_j$ are the same
-* Our example, with $m = 15$ edges: $Q = (13 - 7.53)/15 = 0.36$
+* The 9-node network, with $m = 15$ edges: $Q = (13 - 7.53)/15 = 0.36$
 
 <!--
 Where k_i k_j / 2m comes from: node i has k_i edge ends. Each lands on one of j's k_j ends with probability k_j / 2m. The sum runs over ordered pairs, so every edge is counted twice; dividing by 2m turns the count into a fraction of the m edges. Q is at most 1; around 0.3 to 0.7 for real networks with clear groups.
@@ -1037,6 +1254,22 @@ Let's color the club with up to four groups. Get Q as high as you can.
 
 <!--
 The page's target is 0.37, a split into two groups. Four groups can reach 0.420, the best known Q for the club.
+-->
+
+---
+
+<!-- _class: mid -->
+
+## Game: where Q goes wrong
+
+<hr>
+
+Two more networks, same game. Get Q as high as you can, then look at the groups you made.
+
+[Open the games](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/modularity-limits.html)
+
+<!--
+Tab 1: two groups of 5 and one of 40. Three groups score Q = 0.1404; merging the two groups of 5 scores 0.1410, the page's target. The page rounds both to 0.14, so the "Congratulations" message is the only sign that the merge wins. Tab 2: 40 nodes, 41 edges placed at random. The page's target is 0.40 with two groups; three colors can reach 0.57, above the karate club's 0.42, and Louvain reaches 0.66 with six groups.
 -->
 
 ---
