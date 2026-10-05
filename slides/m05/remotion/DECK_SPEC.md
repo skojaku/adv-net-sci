@@ -106,7 +106,7 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 3 | 交点に `n = 8 = sqrt(2m)`。字幕 `The two triangles did not change. The rest of the network got bigger.` と `Q depends on the size of the whole network: the resolution limit.` (resolution limit は太字) | 折れ線 + 交点の注 + 字幕 2 行 |
 | S05 `Similar Q, different groups` | 0 | カラテクラブ (34 人、78 本) を 4 グループで塗る。字幕 `Q = 0.407: four groups` | クラブ (4 色) |
 | | 1 | 色が 3 グループに変わる。灰が赤に合流し、1 人が青へ移る (変わった節点に一瞬輪)。字幕 `Q = 0.402: three groups` | クラブ (3 色) |
-| | 2 | クラブが消え、Q の数直線 (0.38 から 0.42) に 16 個の点が並ぶ (Louvain を種を変えて 400 回走らせた結果の 16 通り)。字幕 `Louvain, 400 seeds: 16 different splits, Q from 0.385 to 0.420.` と `Q cannot tell us which split is right.` | 数直線 + 16 点 + 字幕 |
+| | 2 | クラブが消え、Q の数直線 (0.38 から 0.42) に 16 個の点が並ぶ (Louvain を種を変えて 400 回走らせた結果の 16 通り)。字幕 `400 Louvain runs, 16 different splits` と `Different splits, almost the same Q.` (Q は 0.385 から 0.420 で、軸で読める) | 数直線 + 16 点 + 字幕 |
 | S06 `A network with no groups` (問い、任意) | 0 | 34 節点、78 辺の無作為ネットワーク。辺が 1 本ずつ現れる。灰色の節点。字幕 `34 nodes, 78 edges, chosen at random.` | 灰色のネットワーク |
 | | 1 | 問い `We run Louvain on this network. What Q do we expect?` | + 問い。答えは出さない |
 | S07 `Q finds groups in noise` (任意) | 0 | Louvain が走る。節点の色が数回に分けて塗り替わり、5 グループになる。札 `Q = 0.346` | 5 色のネットワーク + 札 |

@@ -107,7 +107,7 @@ export const S05: React.FC = () => {
       </Fade>
       <Fade o={capB} dy={14}>
         <Box x={960} y={820} w={1500} align="center" size={45}>
-          Q cannot tell us which split is right.
+          Different splits, almost the same Q.
         </Box>
       </Fade>
     </Frame>
