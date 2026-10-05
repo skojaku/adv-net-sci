@@ -3,6 +3,7 @@
 
     python tools/build_m05_code_sheet.py          # notebooks + the sheet's boxes
     python tools/build_m05_code_sheet.py --test   # also run the worked notebook
+    python tools/build_m05_code_sheet.py --answers  # run it and keep the results in it
 
 The code sheet is a paper handout, separate from the pen-and-paper exercise. A
 student types each framed box of code from the paper into the matching empty
@@ -18,7 +19,9 @@ below:
                               code-sheet.tex \\input's.
   * colab-lab.ipynb           what the student opens: three setup cells that are
                               only run, then one empty cell per box.
-  * colab-lab-solutions.ipynb the same with every box typed in. --test runs it.
+  * colab-lab-solutions.ipynb the same with every box typed in. --test runs it;
+                              --answers runs it and saves the results into the file, so
+                              that the answers can be read without a Colab runtime.
 
 Everything the student does not type -- the install, the data, and the drawing
 functions `show` and `show_map` -- is in the three setup cells, so that no
@@ -425,8 +428,37 @@ def test() -> int:
     return 0
 
 
+def answers() -> int:
+    """Run the worked notebook here and keep what it printed and drew in the file.
+
+    The two Colab-only setup cells are not run (they install conda); they stay in
+    the file, empty of output, so that opened in Colab it runs as it always does.
+    The results are from this machine's run: Leiden uses chance, so a run in Colab
+    may count a group more or less.
+    """
+    import nbformat
+    from nbclient import NotebookClient
+
+    path = SHEET / "colab-lab-solutions.ipynb"
+    full = nbformat.read(path, as_version=4)
+    run = nbformat.v4.new_notebook(metadata=full.metadata)
+    run.cells = [c for c in full.cells if "colab-only" not in c.metadata.get("tags", [])]
+    NotebookClient(run, kernel_name="gtenv", timeout=600).execute()
+    done = {c.id: c for c in run.cells}
+    for c in full.cells:
+        if c.id in done and c.cell_type == "code":
+            c.outputs, c.execution_count = done[c.id].outputs, done[c.id].execution_count
+    nbformat.validate(full)
+    nbformat.write(full, path)
+    saved = sum(1 for c in full.cells if c.cell_type == "code" and c.outputs)
+    print(f"saved the results of {saved} cells into {path.relative_to(ROOT)}")
+    return 0
+
+
 if __name__ == "__main__":
     write_notebooks()
     write_boxes()
     if "--test" in sys.argv:
         sys.exit(test())
+    if "--answers" in sys.argv:
+        sys.exit(answers())
