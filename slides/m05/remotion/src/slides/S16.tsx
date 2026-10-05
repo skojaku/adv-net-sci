@@ -23,7 +23,7 @@ export const S16: React.FC = () => {
   const cap1 = betweenStages(frame, marks, 1, 1);
 
   return (
-    <Frame n={16} title="Marginal probability">
+    <Frame n={16} zoom={1.15} top={245}>
       <Canvas>
         <ProbGrid rowsOp={rows} colsOp={cols} />
         {[0, 1].map((r) =>

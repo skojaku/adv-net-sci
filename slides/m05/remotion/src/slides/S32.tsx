@@ -36,7 +36,7 @@ export const S32: React.FC = () => {
   const last = fromStage(frame, marks, 2, 14);
 
   return (
-    <Frame n={32} title="More groups always fit better">
+    <Frame n={32}>
       <Canvas>
         <g opacity={axes}>
           <line x1={X0} y1={Y0} x2={X1 + 30} y2={Y0} stroke={C.soft} strokeWidth={3} />

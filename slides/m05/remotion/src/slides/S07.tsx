@@ -96,7 +96,7 @@ export const S07: React.FC = () => {
   const rowY = (base: number, row: number) => base - DOT / 2 - 6 - row * PITCH;
 
   return (
-    <Frame n={7} title="Q finds groups in noise">
+    <Frame n={7} zoom={1.03} top={185}>
       {/* stage 0 */}
       <Canvas>
         <Network pos={POS} edges={EDGES} nodeD={46} opacity={net} />

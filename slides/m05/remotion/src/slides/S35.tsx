@@ -37,7 +37,7 @@ export const S35: React.FC = () => {
   const punch = fromStage(frame, marks, 2, 16);
 
   return (
-    <Frame n={35} title="The karate club, once more">
+    <Frame n={35}>
       <Canvas>
         <Network pos={POS_L} edges={EDGES} look={REAL} nodeD={40} edgeW={2.5} nodeOp={left} edgeOp={edgeL} />
         <Network pos={POS_R} edges={EDGES} look={ONE} nodeD={40} edgeW={2.5} nodeOp={right} edgeOp={edgeR} />

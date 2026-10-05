@@ -38,7 +38,7 @@ export const S02: React.FC = () => {
 
   const ones = [1, 1, 1, 1];
   return (
-    <Frame n={2} title="A ring of triangles">
+    <Frame n={2} zoom={1.15} top={250}>
       <Canvas>
         <Ring w={w} cx={CX_L} cy={CY} scale={SCALE} apart={bandL} />
         <Ring w={ones} cx={CX_R} cy={CY} scale={SCALE} pairs={bandR} opacity={ringR} />

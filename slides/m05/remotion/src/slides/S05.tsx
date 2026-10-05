@@ -58,7 +58,7 @@ export const S05: React.FC = () => {
   const capB = prog(frame, 150, 168);
 
   return (
-    <Frame n={5} title="Similar Q, different groups">
+    <Frame n={5} zoom={1.04}>
       <Canvas>
         <Network pos={POS_L} edges={EDGES} look={LOOK_FOUR} nodeD={40} edgeW={2.5} nodeOp={leftIn} edgeOp={edgeL} ring={ring} ringW={6} opacity={clubs} />
         <Network pos={POS_R} edges={EDGES} look={LOOK_THREE} nodeD={40} edgeW={2.5} nodeOp={rightIn} edgeOp={edgeR} ring={ring} ringW={6} opacity={clubs} />

@@ -8,7 +8,7 @@ import {trueLook} from './eight';
  * The pairs of the eight-node example as the cells of a full 8 x 8 matrix (nodes 1 to 8 along both sides).
  * A pair is never drawn as two nodes joined by a line: a line reads as a network edge.
  * Every pair (i, j) with i != j is in two cells ((i, j) and (j, i)) and the diagonal is a node with itself:
- * the diagonal always agrees and cancels out of the Rand index, (50 - 8) / (64 - 8) = 21 / 28.
+ * the diagonal is shown but is not a pair and is not counted.
  */
 export const PAIRS8: {i: number; j: number; k: number; trueSame: boolean; foundSame: boolean; agree: boolean}[] = [];
 for (let i = 0; i < 8; i++) {
@@ -18,14 +18,11 @@ for (let i = 0; i < 8; i++) {
     PAIRS8.push({i, j, k: PAIRS8.length, trueSame, foundSame, agree: trueSame === foundSame});
   }
 }
-/** pairs that agree, each counted once */
-export const N_AGREE = PAIRS8.filter((p) => p.agree).length;
-/** cells of the full matrix: every pair twice, plus the diagonal */
-export const N_CELLS = 64;
-export const N_DIAG = 8;
-/** agreeing cells of the full matrix: every agreeing pair twice, plus the diagonal */
-export const N_AGREE_CELLS = 2 * N_AGREE + N_DIAG;
-if (PAIRS8.length !== 28 || N_AGREE !== 21 || N_AGREE_CELLS !== 50 || Math.abs((N_AGREE_CELLS - N_DIAG) / (N_CELLS - N_DIAG) - randIndex(TRUTH8, FOUND8)) > 1e-9) {
+/** pairs together in both splits (the product of the two matrices is 1), and pairs apart in both (the product of the complements is 1) */
+export const N_BOTH = PAIRS8.filter((p) => p.trueSame && p.foundSame).length;
+export const N_APART = PAIRS8.filter((p) => !p.trueSame && !p.foundSame).length;
+export const N_PAIRS = PAIRS8.length;
+if (N_PAIRS !== 28 || N_BOTH !== 9 || N_APART !== 12 || Math.abs((N_BOTH + N_APART) / N_PAIRS - randIndex(TRUTH8, FOUND8)) > 1e-9) {
   throw new Error('pairmatrix: unexpected pair counts');
 }
 
@@ -40,15 +37,16 @@ const BOXES: ReadonlyArray<readonly [number, number]> = [
 
 /**
  * A matrix for ONE split: the cell of a pair is shaded when the two nodes are in the same group of that split
- * (`mode` 'true': the same colour, 'found': the same box). Mode 'agree' compares the two: a check where the true and the
- * found matrix are alike (both shaded or both white), a cross where they differ.
+ * (`mode` 'true': the same colour, 'found': the same box). The product of the two: mode 'both' puts a check on the cells
+ * shaded in both matrices (the pair is together in both splits); mode 'apart' puts a check on the cells white in both
+ * (the pair is apart in both splits). A cell that is not in the class has no mark.
  * `reveal(k)` is the opacity of the cell (row i, column j), k = 8 i + j. `hot` outlines cells, `ringNodes` rings nodes in the headers.
  */
 export const CoMatrix: React.FC<{
   x: number;
   y: number;
   c?: number;
-  mode: 'true' | 'found' | 'agree';
+  mode: 'true' | 'found' | 'both' | 'apart';
   reveal?: (k: number) => number;
   /** opacity of the frame, the headers and the label */
   frame?: number;
@@ -101,22 +99,21 @@ export const CoMatrix: React.FC<{
         if (r < 0.001) return null;
         const x0 = x + j * c;
         const y0 = y + i * c;
-        if (mode !== 'agree') {
+        if (mode === 'true' || mode === 'found') {
           return same(i, j, mode) ? <rect key={k} x={x0} y={y0} width={c} height={c} fill={TOGETHER} stroke={C.faint} strokeWidth={2} opacity={r} /> : null;
         }
-        const agree = same(i, j, 'true') === same(i, j, 'found');
+        const t = same(i, j, 'true');
+        const f = same(i, j, 'found');
+        if (mode === 'both' ? !(t && f) : t || f) return null;
         const diag = i === j;
-        const col = diag ? C.soft : agree ? C.blue : C.red;
+        const col = diag ? C.soft : C.blue;
         const gx = x0 + c / 2;
         const gy = y0 + c / 2;
         return (
           <g key={k} opacity={r}>
+            <rect x={x0} y={y0} width={c} height={c} fill={mode === 'both' ? TOGETHER : C.blueSoft} stroke={C.faint} strokeWidth={2} />
             <circle cx={gx} cy={gy} r={c * 0.34} fill="#fff" stroke={col} strokeWidth={3} />
-            {agree ? (
-              <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
-            ) : (
-              <path d={`M${gx - s * 0.8} ${gy - s * 0.8} L${gx + s * 0.8} ${gy + s * 0.8} M${gx + s * 0.8} ${gy - s * 0.8} L${gx - s * 0.8} ${gy + s * 0.8}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" />
-            )}
+            <path d={`M${gx - s} ${gy + s * 0.05} L${gx - s * 0.3} ${gy + s * 0.8} L${gx + s} ${gy - s * 0.7}`} fill="none" stroke={col} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
           </g>
         );
       })}

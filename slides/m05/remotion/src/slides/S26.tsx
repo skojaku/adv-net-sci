@@ -31,7 +31,7 @@ export const S26: React.FC = () => {
   const ask = prog(frame, 50, 66);
 
   return (
-    <Frame n={26} title="What if edges between groups are more likely?">
+    <Frame n={26} zoom={1.2} top={222}>
       <Canvas>
         <Network
           pos={POS}

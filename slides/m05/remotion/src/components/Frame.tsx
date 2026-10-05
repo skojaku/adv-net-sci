@@ -6,30 +6,65 @@ import {PatternDefs} from './Patterns';
 
 export const TOTAL = 35;
 
-/** A content slide: title, the rule under it, the page number. Same as the Marp theme at 1.5x. */
-export const Frame: React.FC<{n: number; title: string; children: React.ReactNode}> = ({n, title, children}) => {
+/**
+ * A content slide. Without a `title` (the usual case) there is no heading and no rule: the content, laid out for a canvas with
+ * a heading on it, is moved up and enlarged, which leaves the lower part of the canvas empty for subtitles.
+ *   zoom  how much the content is enlarged (default 1.08; raise it on slides with room to spare)
+ *   top   the y, in the layout coordinates of the slide, that lands at y = 50 (default 190, just under the old heading)
+ * Keep the content above y = SAFE_BOTTOM so that a two-line subtitle fits underneath (`scripts/check_bottom.py` checks it).
+ * With a `title`, the heading and the rule are drawn and nothing is moved.
+ */
+export const ZOOM = 1.08;
+export const TOP = 190;
+export const SAFE_BOTTOM = 920;
+const MARGIN_TOP = 50;
+
+export const Frame: React.FC<{n: number; title?: string; zoom?: number; top?: number; children: React.ReactNode}> = ({
+  n,
+  title,
+  zoom = ZOOM,
+  top = TOP,
+  children,
+}) => {
   const frame = useCurrentFrame();
   const a = prog(frame, 0, 14);
+  const untitled = title === undefined;
   return (
     <AbsoluteFill style={{background: C.paper, color: C.ink, fontFamily: F.serif}}>
+      {!untitled && (
+        <>
+          <div
+            style={{
+              position: 'absolute',
+              left: S.margin,
+              right: S.margin,
+              top: 60,
+              fontSize: S.title,
+              fontWeight: 700,
+              lineHeight: 1.12,
+              letterSpacing: '-0.02em',
+              opacity: a,
+            }}
+          >
+            {title}
+          </div>
+          <div style={{position: 'absolute', left: S.margin, right: S.margin, top: S.ruleY, height: 3, background: C.rule}} />
+        </>
+      )}
+      <PatternDefs />
       <div
         style={{
           position: 'absolute',
-          left: S.margin,
-          right: S.margin,
-          top: 60,
-          fontSize: S.title,
-          fontWeight: 700,
-          lineHeight: 1.12,
-          letterSpacing: '-0.02em',
-          opacity: a,
+          left: 0,
+          top: 0,
+          width: 1920,
+          height: 1080,
+          transformOrigin: '960px 0px',
+          transform: untitled ? `translateY(${MARGIN_TOP - zoom * top}px) scale(${zoom})` : undefined,
         }}
       >
-        {title}
+        {children}
       </div>
-      <div style={{position: 'absolute', left: S.margin, right: S.margin, top: S.ruleY, height: 3, background: C.rule}} />
-      <PatternDefs />
-      {children}
       <div style={{position: 'absolute', right: S.margin, bottom: 36, fontSize: S.page, color: C.page}}>{n}</div>
     </AbsoluteFill>
   );

@@ -22,7 +22,7 @@ before its mark.
 - `src/lib/anim.ts`: `prog` (ease-out 0 to 1), `smooth`, `lin`, `betweenStages(frame, marks, from, to)`
   (opacity of something shown in stages from..to), `fromStage` (appears at a stage, stays),
   `caption`, `reveal`, `piecewise`, `stepped`. `stageStart(marks, i)` is the first frame of stage i.
-- `src/components/Frame.tsx`: `Frame` (title + rule + page number; pass `n`) and `Part` (section divider).
+- `src/components/Frame.tsx`: `Frame` (page number; pass `n`; optional `title` + rule, normally none; `zoom` and `top` move and enlarge the content) and `Part` (section divider).
 - `src/components/Fade.tsx`: `Fade` (an HTML layer with opacity and slide-up), `Canvas` (an SVG at canvas
   coordinates), `FadeG`.
 - `src/components/Text.tsx`: `Box` (positioned text), `Cap` (grey handwriting caption), `Tag` (number tag),
@@ -41,7 +41,7 @@ Do not change an existing shared file to suit one slide. Put a slide's own helpe
 
 ## Style (the Marp deck at 1.5x)
 
-- Canvas 1920 x 1080. Content region x 120 to 1800, y 190 to 990. Title and page number come from `Frame`.
+- Canvas 1920 x 1080. Lay a slide out in the region x 120 to 1800, y 190 to 990 as before; with no title `Frame` moves it up by `zoom * top - 50` and enlarges it (default 1.08), so it ends up in y 50 to about 900. The band below y = 920 stays empty for subtitles; `scripts/check_bottom.py` enforces it. Slides with room use a larger `zoom` (S02, S09, S11 to S18, S26, S34), crowded ones a smaller one (S05, S07). The page number comes from `Frame`.
 - **Colour.** Everything drawn is `C.blue` by default; small notes are `C.soft` grey, black is `C.ink`. **Red (`C.red`) is for
   emphasised text only** (a key term via `Term`, the higher value, "disagree"). Never a fill, a group, a band or a line. No green.
   No bar charts.

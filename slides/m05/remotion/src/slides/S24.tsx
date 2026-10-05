@@ -18,7 +18,7 @@ const LABELS = Array.from({length: 8}, (_, i) => String(i + 1));
 export const S24: React.FC = () => {
   const frame = useCurrentFrame();
   return (
-    <Frame n={24} title="Can we see the groups?">
+    <Frame n={24}>
       <Canvas>
         <Network
           pos={POS}

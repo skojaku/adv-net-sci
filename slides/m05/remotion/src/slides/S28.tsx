@@ -101,7 +101,7 @@ export const S28: React.FC = () => {
   const cap3 = prog(frame, 222, 240);
 
   return (
-    <Frame n={28} title="Finding the groups is inference">
+    <Frame n={28}>
       <Canvas>
         <Network
           pos={POS}

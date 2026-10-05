@@ -120,7 +120,7 @@ export const S27: React.FC = () => {
   const cap3 = prog(frame, 224, 244);
 
   return (
-    <Frame n={27} title="Groups can also connect outward">
+    <Frame n={27}>
       <Canvas>
         <g opacity={main}>
           <Network

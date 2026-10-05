@@ -40,7 +40,7 @@ export const S33: React.FC = () => {
   const full = fromStage(frame, marks, 2, 14);
 
   return (
-    <Frame n={33} title="Bayesian SBM">
+    <Frame n={33}>
       {/* stage 0 */}
       <Fade o={left} dy={14}>
         <Cap x={120} y={250} w={760} align="left">maximum likelihood</Cap>
@@ -112,7 +112,7 @@ export const S33: React.FC = () => {
       {/* stage 2 */}
       <Fade o={full} dy={14}>
         <Box x={260} y={290} w={1400} size={54}>
-          <Term>K</Term> is inferred: the shortest description
+          <Tex tex="K" /> is inferred: <Term>Bayesian</Term> SBM
         </Box>
         <Box x={260} y={410} w={1400} size={54}>
           groups within groups: <Term>nested</Term> SBM

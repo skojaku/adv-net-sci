@@ -2,7 +2,7 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Tag} from '../components/Text';
+import {Box, Cap, Tag} from '../components/Text';
 import {Tex} from '../components/Tex';
 import {C, F} from '../theme';
 import {betweenStages, prog, smooth} from '../lib/anim';
@@ -121,7 +121,7 @@ export const S19: React.FC = () => {
   const xLens = (CT + D_FINAL - R_F + (CT + R_T)) / 2;
 
   return (
-    <Frame n={19} title="Normalized mutual information">
+    <Frame n={19}>
       <Canvas>
         <g opacity={big * discs}>
           <Pair x1={CT} y={CY} r1={R_T} x2={cF} r2={R_F} />
@@ -184,6 +184,9 @@ export const S19: React.FC = () => {
         <div style={{position: 'absolute', left: 840, top: 470, width: 940, background: C.panel, padding: '24px 44px 28px', fontFamily: F.serif, fontSize: 52}}>
           <Tex tex={texNmi} style={{fontSize: 52}} />
         </div>
+      </Fade>
+      <Fade o={big * panel} dy={14}>
+        <Cap x={1310} y={850} w={940}>NMI: normalized mutual information</Cap>
       </Fade>
       {/* stage 3 */}
       <Fade o={small} dy={12}>

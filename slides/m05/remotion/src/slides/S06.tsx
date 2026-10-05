@@ -24,12 +24,12 @@ export const S06: React.FC = () => {
   const capIn = prog(frame, 66, 84);
   const q = prog(frame, 94, 114);
   return (
-    <Frame n={6} title="A network with no groups">
+    <Frame n={6}>
       <Canvas>
         <Network pos={POS} edges={EDGES} nodeD={46} nodeOp={nodeOp} edgeOp={edgeOp} />
       </Canvas>
       <Fade o={cap * capIn} dy={14}>
-        <Cap x={1160} y={470} w={620} align="left">34 nodes, 78 edges, chosen at random.</Cap>
+        <Cap x={1160} y={470} w={620} align="left">34 nodes, 78 edges, chosen at random: no groups.</Cap>
       </Fade>
       <Fade o={q} dy={16}>
         <Box x={1160} y={440} w={620} size={45}>

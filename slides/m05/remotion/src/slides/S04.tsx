@@ -110,7 +110,7 @@ export const S04: React.FC = () => {
 
   const dotOp = o2;
   return (
-    <Frame n={4} title="Q merges neighbors: the resolution limit">
+    <Frame n={4}>
       {/* stage 0 */}
       <Canvas>
         <g opacity={o0}>

@@ -47,7 +47,7 @@ export const S29: React.FC = () => {
   const def = (from: number) => prog(frame, stageStart(marks, from) + (from === 0 ? 14 : 4), stageStart(marks, from) + (from === 0 ? 32 : 22));
 
   return (
-    <Frame n={29} title="The likelihood of a network">
+    <Frame n={29}>
       {/* the symbols, in a column of their own */}
       {DEFS.map((d) => (
         <Fade key={d.sym} o={def(d.from)} dy={12}>

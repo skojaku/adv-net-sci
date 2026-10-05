@@ -29,7 +29,7 @@ export const S18: React.FC = () => {
   const sum = fromStage(frame, marks, 2, 16);
 
   return (
-    <Frame n={18} title="Mutual information">
+    <Frame n={18} zoom={1.15} top={245}>
       <Canvas>
         <ProbGrid op={grid} />
         {[0, 1].map((r) =>
@@ -43,7 +43,7 @@ export const S18: React.FC = () => {
       </Canvas>
       <Fade o={formula} dy={14}>
         <Box x={960} y={662} w={1700} align="center" size={56}>
-          <Term>I</Term> = <Tex tex={'\\sum p(t,f)\\,\\log_2 \\dfrac{p(t,f)}{p(t)\\,p(f)}'} />
+          <Term>mutual information</Term> <Tex tex={'I'} /> = <Tex tex={'\\sum p(t,f)\\,\\log_2 \\dfrac{p(t,f)}{p(t)\\,p(f)}'} />
         </Box>
       </Fade>
       <Fade o={term * (1 - sum)} dy={14}>

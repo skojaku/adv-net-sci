@@ -38,7 +38,7 @@ export const S03: React.FC = () => {
   const stage1 = lin(frame, 68, 70);
 
   return (
-    <Frame n={3} title="Add triangles to the ring">
+    <Frame n={3}>
       <Canvas>
         <Ring w={w} cx={cxL} cy={CY} slot={SLOT} apart={bands} />
         <g opacity={copy * stage1}>

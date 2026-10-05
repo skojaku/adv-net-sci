@@ -17,7 +17,7 @@ const slides = [...index.matchAll(/\{n: (\d+), id: '([^']+)'/g)].map((m) => {
   const n = Number(m[1]);
   const file = fs.readFileSync(path.join(root, `src/slides/S${String(n).padStart(2, '0')}.tsx`), 'utf8');
   const marks = file.match(/export const marks = \[([\d,\s]+)\]/)[1].split(',').map((x) => Number(x.trim()));
-  return {n, id: m[2], marks, title: (file.match(/title="([^"]+)"/) || file.match(/title: ?'([^']+)'/) || [])[1] ?? ''};
+  return {n, id: m[2], marks, title: (file.match(/title="([^"]+)"/) || file.match(/title: ?'([^']+)'/) || [])[1] ?? m[2].replace(/-/g, ' ')};
 });
 
 const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts')});

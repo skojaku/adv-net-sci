@@ -2,83 +2,74 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Term} from '../components/Text';
-import {C, F} from '../theme';
-import {betweenStages, fromStage, prog} from '../lib/anim';
-import {Frac} from '../lib/eight';
-import {CoMatrix, N_AGREE, N_AGREE_CELLS, N_CELLS, N_DIAG} from '../lib/pairmatrix';
+import {Box} from '../components/Text';
+import {C} from '../theme';
+import {prog, smooth} from '../lib/anim';
+import {lerp} from '../lib/plot';
+import {SHUFFLES} from '../data/data';
+import {NDOT, NodeDot, TRUE30, dotCentre, scatter} from '../lib/dots30';
 
 /**
- * Three matrices, one cell for each of the 28 pairs of nodes. A pair is never drawn as two nodes joined by a line.
- * 0: the matrix of the true split, still empty. "8 nodes make 28 pairs of nodes."
- * 1: true split: a cell is shaded when the two nodes have the same colour.
- * 2: found split: a cell is shaded when the two nodes are in the same box.
- * 3: the two matrices compared: alike in both (both shaded or both white) is a check (agree), different is a cross (disagree).
- * 4: Rand index = agreeing pairs of nodes / all pairs of nodes = 21 / 28.
+ * 0: 30 nodes gather into 5 groups of 6 (true groups).
+ * 1: the same nodes again below, labelled by a random relabeling with the same group sizes; the question.
+ * A question slide: no number and no answer anywhere on it.
  */
-export const marks = [44, 100, 160, 226, 288];
+export const marks = [52, 112];
 
-const C54 = 54;
-const SLOT_X = [180, 762, 1344];
-const MY = 350;
-
-const stagger = (frame: number, start: number) => (k: number) => prog(frame, start + k * 0.45, start + k * 0.45 + 10);
+const D = 56;
+const PITCH = 70;
+const STRIDE = 290;
+const X0 = 310;
+const Y_TOP = 330;
+const Y_BOT = 620;
+const ROW = [...Array(NDOT).keys()];
 
 export const S11: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const f0 = prog(frame, 0, 16);
-  const found = fromStage(frame, marks, 2, 14);
-  const agreeFrame = fromStage(frame, marks, 3, 14);
-  const cap0 = betweenStages(frame, marks, 0, 0) * prog(frame, 22, 38);
-  const cap1 = betweenStages(frame, marks, 1, 1);
-  const cap2 = betweenStages(frame, marks, 2, 2);
-  const cap3 = betweenStages(frame, marks, 3, 3);
-  const cap4 = fromStage(frame, marks, 4, 14);
+  // stage 0: nodes appear scattered, then gather group by group
+  const appear = prog(frame, 0, 12);
+  const gather = (i: number) => smooth(frame, 12 + 3 * Math.floor(i / 6), 36 + 3 * Math.floor(i / 6));
+  const cap0 = prog(frame, 38, 52);
+
+  // stage 1: copies slide down and change their fill on the way (a cross-fade, never a blend)
+  const start = (i: number) => 56 + 0.5 * i;
+  const slide = (i: number) => smooth(frame, start(i), start(i) + 30);
+  const refill = (i: number) => smooth(frame, start(i) + 8, start(i) + 22);
+  const cap1 = prog(frame, 58, 74);
+  const q = prog(frame, 94, 110);
 
   return (
-    <Frame n={11} title="Rand index: pairs of nodes">
+    <Frame n={11} zoom={1.2} top={223}>
       <Canvas>
-        <CoMatrix x={SLOT_X[0]} y={MY} c={C54} mode="true" frame={f0} label="true" reveal={stagger(frame, marks[0] + 2)} />
-        <g opacity={found}>
-          <CoMatrix x={SLOT_X[1]} y={MY} c={C54} mode="found" label="found" reveal={stagger(frame, marks[1] + 6)} />
-        </g>
-        <g opacity={agreeFrame}>
-          <CoMatrix x={SLOT_X[2]} y={MY} c={C54} mode="agree" label="agree?" reveal={stagger(frame, marks[2] + 8)} />
-        </g>
+        {ROW.map((i) => {
+          const [hx, hy] = dotCentre(i, X0, Y_TOP, PITCH, STRIDE);
+          const [sx, sy] = scatter(i, 200, 300, 1520, 150);
+          const t = gather(i);
+          return <NodeDot key={`t${i}`} x={lerp(sx, hx, t)} y={lerp(sy, hy, t)} d={D} g={TRUE30[i]} op={appear} />;
+        })}
+        {ROW.map((i) => {
+          if (frame < start(i)) return null;
+          const [x, y] = dotCentre(i, X0, Y_TOP, PITCH, STRIDE);
+          const [bx, by] = dotCentre(i, X0, Y_BOT, PITCH, STRIDE);
+          const s = slide(i);
+          return <NodeDot key={`b${i}`} x={lerp(x, bx, s)} y={lerp(y, by, s)} d={D} g={TRUE30[i]} gTo={SHUFFLES[0][i]} t={refill(i)} />;
+        })}
       </Canvas>
-
       <Fade o={cap0} dy={14}>
-        <Box x={960} y={830} w={1600} align="center" size={48}>
-          One cell is one pair of nodes. The diagonal: a node with itself.
+        <Box x={960} y={205} w={1200} align="center" size={45} color={C.soft} hand>
+          true groups
         </Box>
       </Fade>
       <Fade o={cap1} dy={14}>
-        <Box x={960} y={830} w={1600} align="center" size={48}>
-          True split: shaded = the two nodes have the same color
+        <Box x={960} y={500} w={1200} align="center" size={45} color={C.soft} hand>
+          random labels
         </Box>
       </Fade>
-      <Fade o={cap2} dy={14}>
-        <Box x={960} y={830} w={1600} align="center" size={48}>
-          Found split: shaded = the two nodes are in the same box
+      <Fade o={q} dy={16}>
+        <Box x={960} y={850} w={1680} align="center" size={45}>
+          What Rand index do we expect for random labels?
         </Box>
-      </Fade>
-      <Fade o={cap3} dy={14}>
-        <Box x={960} y={830} w={1600} align="center" size={48}>
-          Alike in both: <span style={{color: C.blue}}>agree</span>. Different: <Term>disagree</Term>.
-        </Box>
-      </Fade>
-      <Fade o={cap4} dy={14}>
-        <div style={{position: 'absolute', left: 150, top: 815, width: 1620, background: C.panel, padding: '12px 28px', fontFamily: F.serif, fontSize: 42, lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap'}}>
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16}}>
-            <Term>Rand index</Term>
-            <span>=</span>
-            <Frac top="agreeing pairs of nodes" bottom="all pairs of nodes" />
-            <span>=</span>
-            <Frac top={`${N_AGREE_CELLS} \u2212 ${N_DIAG}`} bottom={`${N_CELLS} \u2212 ${N_DIAG}`} />
-            <span>= {((N_AGREE_CELLS - N_DIAG) / (N_CELLS - N_DIAG)).toFixed(2)}</span>
-          </div>
-        </div>
       </Fade>
     </Frame>
   );

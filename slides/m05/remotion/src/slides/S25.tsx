@@ -38,7 +38,7 @@ export const S25: React.FC = () => {
   const cap = prog(frame, 146, 162);
 
   return (
-    <Frame n={25} title="Sort by group, and blocks appear">
+    <Frame n={25}>
       <Canvas>
         <Network pos={POS} edges={EDGES} look={SAME} lookTo={LOOKS} t={paint} nodeD={PIC.nodeD} edgeW={5} label={LABELS} labelSize={36} opacity={intro} />
         <AdjMatrix x={PIC.mx} y={PIC.my} cell={PIC.cell} edges={EDGES} pos={slotsAt(steps)} look={SAME} lookTo={LOOKS} t={paint} opacity={intro} />

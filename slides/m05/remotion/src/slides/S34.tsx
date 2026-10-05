@@ -2,7 +2,7 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Fade} from '../components/Fade';
-import {Box} from '../components/Text';
+import {Box, Term} from '../components/Text';
 import {C, F} from '../theme';
 import {fromStage, prog} from '../lib/anim';
 
@@ -21,10 +21,10 @@ export const S34: React.FC = () => {
   const d = prog(frame, marks[0] + 24, marks[0] + 42);
 
   return (
-    <Frame n={34} title="graph-tool">
+    <Frame n={34} zoom={1.25} top={300}>
       <Fade o={a} dy={14}>
         <Box x={260} y={300} w={1500} size={56}>
-          A Python library by Tiago Peixoto
+          <Term>graph-tool</Term>: a Python library by Tiago Peixoto
         </Box>
       </Fade>
       <Fade o={b} dy={14}>

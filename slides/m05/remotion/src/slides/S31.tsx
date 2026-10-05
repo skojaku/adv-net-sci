@@ -71,7 +71,7 @@ export const S31: React.FC = () => {
   const last = prog(frame, marks[1] + 8, marks[1] + 26);
 
   return (
-    <Frame n={31} title="Back to c">
+    <Frame n={31}>
       <Fade o={recap} dy={10}>
         <div style={{position: 'absolute', left: 120, top: 186, width: 1680, background: C.panel, padding: '8px 24px', fontSize: 32, lineHeight: 1.25}}>
           <div><Tex tex={RECAP1} /></div>

@@ -24,7 +24,7 @@ export const S15: React.FC = () => {
   const cap0 = betweenStages(frame, marks, 0, 0) * prog(frame, 24, 40);
 
   return (
-    <Frame n={15} title="Joint probability">
+    <Frame n={15} zoom={1.15} top={245}>
       <Canvas>
         <ProbGrid op={grid} />
         {[0, 1].map((r) =>

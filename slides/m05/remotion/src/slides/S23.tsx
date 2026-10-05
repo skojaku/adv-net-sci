@@ -110,7 +110,7 @@ export const S23: React.FC = () => {
     o > 0.001 ? <circle key={i} cx={POS[i][0]} cy={POS[i][1]} r={PIC.nodeD / 2 + 10} fill="none" stroke={C.ink} strokeWidth={7} opacity={o} /> : null;
 
   return (
-    <Frame n={23} title="Groups first, then edges">
+    <Frame n={23}>
       {/* the definition: stage 1 on */}
       <Fade o={defO} dy={14}>
         <Box x={120} y={192} w={1680} size={45}>

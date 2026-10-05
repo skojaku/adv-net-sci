@@ -77,7 +77,7 @@ export const S21: React.FC = () => {
   const vs = fromStage(frame, marks, 4, 16);
 
   return (
-    <Frame n={21} title="Which split is closer to the real one?">
+    <Frame n={21}>
       <Canvas>
         <Network pos={CLUBS[0]} edges={EDGES} look={LOOKS[0]} nodeD={D} edgeW={2.5} opacity={realIn} nodeOp={nodeIn(0)} />
         <Network pos={CLUBS[1]} edges={EDGES} look={LOOKS[1]} nodeD={D} edgeW={2.5} opacity={fourIn} nodeOp={nodeIn(marks[0] + 2)} />

@@ -67,7 +67,7 @@ export const S20: React.FC = () => {
   const last = prog(frame, 144, 158);
 
   return (
-    <Frame n={20} title="Many tiny groups">
+    <Frame n={20}>
       <Canvas>
         <g opacity={eight}>
           <EightRows

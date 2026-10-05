@@ -29,7 +29,7 @@ export const S17: React.FC = () => {
   ];
 
   return (
-    <Frame n={17} title="Joint against marginals">
+    <Frame n={17} zoom={1.15} top={245}>
       <Canvas>
         <ProbGrid rowsOp={1} colsOp={1} op={grid} hot={frame >= marks[0] + 6 ? hot.filter(([r, c]) => RATIO[r][c] > 1) : []} />
         {[0, 1].map((r) => (

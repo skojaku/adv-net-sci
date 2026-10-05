@@ -4,8 +4,10 @@
 
 **改訂 (同日、講師の指摘のあと)**: 35 枚 (最初の案は 23 枚)。
 
-- Rand 指数は、ノードの組を **行列のセル** で見せる (S11)。ノード 2 つを線で結ぶ絵は、ネットワークの辺に見えるので使わない。
-  なぜ組を数えるかは、ノードを数える案と反例で示す (S10)。
+- Rand 指数は、ノードの組を **行列のセル** で見せる (S09, S10)。ノード 2 つを線で結ぶ絵は、ネットワークの辺に見えるので使わない。
+  2 つの分け方を並べ、見つけた分け方の段を 90 度回して行列の左辺にする (S09)。Rand 指数は「両方で一緒」と「両方で別々」の
+  2 つの積の行列から数える (S10)。そのあと ARI (S12) に進み、「組でなくノードでもよいのでは」(S13) から
+  ノードの分割表、対角を数えられない理由 (ラベルは任意の名前で順序もない、S14)、NMI (S15 から S19) の順に進む。
 - 相互情報量は、質問の数 (エントロピー) ではなく **確率の式** で説明する (S15 から S19)。
   同時確率を分子に、周辺確率どうしの積を分母にした比で決まる。
 - **群の色は、青、オレンジ、茶色、紫、濃い灰色。赤は文字だけ。** ストライプ (茶色) は、帯と円の重なりにだけ使う。
@@ -13,6 +15,11 @@
 - 最後に、SBM の推定を数式で積み上げる (S29 から S31。p_rs は与えず、一般の形の尤度から対数尤度、最大化、c を固定して p を求め、c だけの式に戻す)、
   尤度が K とともに増えること (S32)、Peixoto のベイズ流 SBM (S33)、graph-tool (S34)、オチの空手クラブ (S35) を足した。
 - 字幕は 1 段階に短いもの 1 つまで。数える単位 (ノードの組か、ノード 1 つか) を明示する。
+- **見出しは付けない** (扉の S01, S08, S22 を除く)。内容に必要な語は本文に入れた (S06 `no groups`、S18 `mutual information`、
+  S19 `normalized mutual information`、S33 `Bayesian SBM`、S34 `graph-tool`)。見出しがない分、内容を上へ寄せて拡大し (既定は 1.08 倍)、
+  **下の 160 px (y = 920 から) は後で付ける字幕のために空ける**。`Frame` の `zoom` と `top` で調整し、
+  `npm run review` のあと `python3 scripts/check_bottom.py` で、どの段階の静止画も y = 920 より下に絵がないことと、
+  端 40 px に絵がかかっていないことを確かめる (今は全 103 枚で最下部は y = 918)。
 
 ## 何を作るか
 
@@ -122,24 +129,24 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | --- | --- | --- | --- |
 | S08 `Comparing two splits` (扉) | 0 | 帯、見出し、`Let's compare two splits with a number.` | 扉 |
 | S09 `Two splits of eight nodes` | 0 | 8 ノードが横一列に現れる。ノード 1 から 4 が青、5 から 8 がオレンジ。字幕 `true groups` | 色つきの 8 ノード |
-| | 1 | 下の段に同じ 8 ノードと、枠が 2 つ (A = ノード 1 から 5、B = ノード 6 から 8)。A に入ったオレンジのノード 5 に輪 | 上: 真の色、下: 枠 |
-| | 2 | ノードが 1 つずつ、(真の群 x 見つけた群) の 2 x 2 の升に飛び込む。数: 青 A = 4、青 B = 0、オレンジ A = 1、オレンジ B = 3 | ノード列 (縮小) + 升目 |
-| S10 `Why not count nodes?` | 0 | 升目 (行: 真の群、列: A と B)。A を青に、B をオレンジに対応させると、対角に 4 + 3 = 7。`4 + 3 = 7 of 8 nodes` | 升目 + 対角 |
-| | 1 | 同じ分け方で、列の並びだけ入れ替える (B, A)。対角は 0 + 1 = 1。`0 + 1 = 1 of 8 nodes`、`same split, columns in another order` | 入れ替えた升目 |
-| | 2 | 見つけた群が 3 つ (2 x 3 の升目)。`3 found groups, 2 true groups`、`no one-to-one match` | 2 x 3 の升目 |
-| | 3 | 丸い枠の中にノード 2 つ。`A pair is together or apart.`、`No group names to match.` | 組の絵 |
-| S11 `Rand index: pairs of nodes` | 0 | ノード 1 から 8 を縦横に並べた「真の分け方」の 8 x 8 の行列 (空)。セルは対称で、対角はノード自身との組。`One cell is one pair of nodes. The diagonal: a node with itself.` | 空の行列 1 つ |
-| | 1 | 同じ色の 2 ノードのセルを塗る (対角も塗る)。`True split: shaded = the two nodes have the same color` | 真の行列 |
-| | 2 | 隣に「見つけた分け方」の行列 (見つけた群の箱つき)。同じ箱のセルを塗る。`Found split: shaded = the two nodes are in the same box` | 行列 2 つ |
-| | 3 | 右に 3 つ目の行列: 2 つの行列で同じ判定なら青のチェック (agree)、違えば赤の x (disagree)。対角は灰色のチェック。`Alike in both: agree. Different: disagree.` | 行列 3 つ |
-| | 4 | `Rand index = agreeing pairs of nodes / all pairs of nodes = (50 - 8) / (64 - 8) = 0.75` (一致 50 セル、全 64 セル、対角 8 セルを引く) | 式 |
-| S12 `Shuffle the labels` (問い) | 0 | 30 ノードが 5 群 (各 6) にまとまる。字幕 `true groups` | 5 色のノード |
+| | 1 | 下の段に同じ 8 ノードと、枠が 2 つ (A = ノード 1 から 5、B = ノード 6 から 8)。A に入ったオレンジのノード 5 に輪。字幕 `found groups` | 上: 真の色、下: 枠 |
+| | 2 | 下の段 (見つけた分け方) が 90 度回って 8 x 8 の行列の左辺になり、上の段 (真の分け方) が上辺になる。`One cell is one pair of nodes.` | 空の 8 x 8 行列 |
+| S10 `Rand index` | 0 | 行列 1: 真の分け方で、同じ色の 2 ノードのセルを塗る (対角も塗る)。`true` | 真の行列 |
+| | 1 | 行列 2: 見つけた分け方で、同じ箱のセルを塗る。`found` | 行列 2 つ |
+| | 2 | 右に 2 つの行列の積: 両方で一緒のセル (together in both) に青のチェック (9 セル) | 行列 3 つ (右は一緒) |
+| | 3 | 同じ位置の積の行列が、両方で別々のセル (apart in both) のものに替わる。青のチェック (12 セル) | 右の積の行列 (別々) |
+| | 4 | `Rand index = (together in both + apart in both) / all pairs of nodes = (9 + 12) / 28 = 0.75` (組は対角と下三角を除いた 28 組) | 式 |
+| S11 `Shuffle the labels` (問い) | 0 | 30 ノードが 5 群 (各 6) にまとまる。字幕 `true groups` | 5 色のノード |
 | | 1 | ノードの色が一度シャッフルされ、別の色分けが下の段に現れる。問い `What Rand index do we expect for random labels?` | 上下 2 段 + 問い。答えは出さない |
-| S13 `Adjusted Rand index` | 0 | シャッフルが 40 回、速く繰り返され、毎回の Rand 指数が数直線に点で積もる。`Random labels: about 0.71` | 数直線 + 40 点 |
+| S12 `Adjusted Rand index` | 0 | シャッフルが 40 回、速く繰り返され、毎回の Rand 指数が数直線に点で積もる。`Random labels: about 0.71` | 数直線 + 40 点 |
 | | 1 | `ARI = (Rand - expected Rand) / (1 - expected Rand)`、`expected Rand = 0.715`。目盛りが ARI に切り替わり、点群が 0 のまわりへ。`0 = chance, 1 = identical` | ARI の数直線 + 式 |
 | | 2 | 8 ノードの例に戻る: `Rand 0.75, expected 0.51, ARI 0.49` | 数字 3 つ |
-| S14 `Pairs or nodes?` | 0 | ノードを縦横に並べた行列の 1 セルが光り、そのセルの両側のノード 2 つに輪。`Rand index: a pair of nodes`、`One cell is one pair.` (対称なので 1 組が 2 セル) | 行列 + 2 セル |
-| | 1 | 行列が消え、1 つのノードが光る。`NMI: one node` | 1 ノードが光る |
+| S13 `Nodes or pairs?` | 0 | 8 ノードの 2 段 (真の色と見つけた箱) の 1 ノードが光る。`Why not count nodes, one at a time?` ("NMI" の語は出さない) | 1 ノードが光る |
+| | 1 | ノードの分割表 (行: 真の群、列: A と B): 4, 0, 1, 3。`Count the nodes in each cell.` | ノード数の表 |
+| S14 `Can we count the diagonal?` | 0 | 2 x 2 の表で、A を青に、B をオレンジに対応させると対角に 4 + 3 = 7 of 8 nodes | 升目 + 対角 |
+| | 1 | 列の並びだけ入れ替える (B, A)。対角は 0 + 1 = 1 of 8 nodes。`same split, columns in another order` | 入れ替えた升目 |
+| | 2 | 見つけた群が 3 つ (2 x 3 の表)。`3 found groups, 2 true groups`、`no diagonal to count` | 2 x 3 の表 |
+| | 3 | `We need a score that ignores the names and the order.` (次の NMI へつなぐ) | 同上 + 1 行 |
 | S15 `Joint probability` | 0 | 表 (行: 真の群、列: 見つけた群) に、セルごとのノード数 4, 0, 1, 3。`Count the nodes in each cell.` | ノード数の表 |
 | | 1 | 8 で割る。0.5, 0, 0.125, 0.375。`Divide by 8: joint probability` | 同時確率の表 |
 | S16 `Marginal probability` | 0 | 行を足す: 右の余白に 0.5, 0.5。`Add up each row: marginal probability` | + 行の和 |
@@ -155,7 +162,7 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 3 | 両端を並べる: 同じ分け方は `NMI = 1`、無関係な分け方は `NMI = 0`、真ん中がこの例の 0.562 | 3 つの状態 |
 | S20 `Many tiny groups` (任意) | 0 | found を「全員ひとり」にする | 8 個の枠 |
 | | 1 | `Rand 0.57, NMI 0.50, ARI 0.00`。字幕 `This split says nothing about the groups.` | + 数字 3 つ |
-| | 2 | S13 のシャッフル (30 ノード、5 群): `average NMI 0.215, average ARI about 0`。`NMI is not zero for random labels.` | + 字幕 |
+| | 2 | S11 のシャッフル (30 ノード、5 群): `average NMI 0.215, average ARI about 0`。`NMI is not zero for random labels.` | + 字幕 |
 | S21 `Which split is closer to the real one?` | 0 | カラテクラブを実際の分裂 (17 人と 17 人) で塗る。左のスロット。`the real split` と凡例 | クラブ 1 つ |
 | | 1 | 中央に 4 グループの分け方 (Q = 0.407) が並ぶ。下に `NMI 0.586`、`ARI 0.450` | クラブ 2 つ |
 | | 2 | 右に 3 グループの分け方 (Q = 0.402)。下に `NMI 0.568`、`ARI 0.591` | クラブ 3 つ |

@@ -75,7 +75,7 @@ export const S30: React.FC = () => {
   const swap = prog(frame, marks[2] + 6, marks[2] + 24);
 
   return (
-    <Frame n={30} title="Fix c, find p">
+    <Frame n={30}>
       {/* what we have so far, docked at the top */}
       <Fade o={recap} dy={10}>
         <div style={{position: 'absolute', left: 120, top: 186, width: 1680, background: C.panel, padding: '8px 24px', fontSize: 32, lineHeight: 1.25}}>
