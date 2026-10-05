@@ -1260,16 +1260,16 @@ The page's target is 0.37, a split into two groups. Four groups can reach 0.420,
 
 <!-- _class: mid -->
 
-## Game: where Q goes wrong
+## Game: three more networks
 
 <hr>
 
-Two more networks, same game. Get Q as high as you can, then look at the groups you made.
+Same game. Get Q as high as you can, then look at the groups you made.
 
 [Open the games](https://skojaku.github.io/adv-net-sci/assets/vis/community-detection/modularity-limits.html)
 
 <!--
-Tab 1: two groups of 5 and one of 40. Three groups score Q = 0.1404; merging the two groups of 5 scores 0.1410, the page's target. The page rounds both to 0.14, so the "Congratulations" message is the only sign that the merge wins. Tab 2: 40 nodes, 41 edges placed at random. The page's target is 0.40 with two groups; three colors can reach 0.57, above the karate club's 0.42, and Louvain reaches 0.66 with six groups.
+Tab 1: two groups of 5 joined by one edge, four colors. The best coloring uses two colors, Q = 0.452: Q is not told how many groups to make. Splitting one group 3 + 2 drops Q to 0.285. Tab 2: two groups of 5 and one of 40. Three groups score Q = 0.1404; merging the two groups of 5 scores 0.1410, the page's target. The page rounds both to 0.14, so the "Congratulations" message is the only sign that the merge wins. Tab 3: 40 nodes, 41 edges placed at random. The page's target is 0.40 with two groups; three colors can reach 0.57, above the karate club's 0.42, and Louvain reaches 0.66 with six groups.
 -->
 
 ---
