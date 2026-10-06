@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe|expr|cup|new]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe|expr|cup|new|new2]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -217,6 +217,21 @@ CANDIDATES_NEW = {
     8: 'DRINKING TEA, ONE HAND. He lies on his stomach with the head up, one hand holds the cup of tea near his mouth while the other hand still rests on the keyboard, a content look. The floor spot where the cup stood is now empty.',
     9: 'TEA BREAK. He lies on his stomach on both elbows, holding the cup of tea in both hands in front of his chest and looking down into it with a gentle smile, steam rising. The keyboard lies on the floor in front of him; the floor spot where the cup stood is now empty.',
 }
+NEWPOSE2 = (
+    'The FIRST attached image is the character to KEEP, exactly: the same boy (the same big round head and face, short hair, white T-shirt and shorts, sky-blue wristbands, white sneakers), '
+    'the same drawing style and the same colouring: thick black outlines, FLAT matte soft off-white fills and a hint of pale lavender shading, NO glossy highlights, NO shine marks, NO sparkles, '
+    'NO white specular spots anywhere (the colouring must look as matte as the first image), the same small cream keyboard at the same size. '
+    'There is NO cup, mug or tea anywhere in the picture. Draw the boy in the NEW pose described below, on a plain white background, the whole figure fully inside the picture, '
+    'the keyboard on the floor at the lower right at the same place and size as in the first image. '
+)
+CANDIDATES_NEW2 = {
+    1: 'ON HIS BACK. He lies on his back looking up, both hands resting on his stomach, one knee up with the other leg crossed over it, a calm blank look. The head is at the left, the face turned up.',
+    2: 'ON HIS BACK, RELAXED. He lies on his back with the head at the left and the face turned up, both hands resting on his stomach, both knees up, the legs together, a calm half-smile.',
+    3: 'ON HIS BACK, ONE KNEE UP. He lies on his back, the head at the left with the face turned up, one hand on his stomach and the other arm resting beside him, one knee up and the other leg crossed over it, a blank calm look.',
+    4: 'GLANCE. He lies on his stomach as in the first image, both hands on the keyboard, but only his face changes: the eye looks to the right and a little down toward the floor in front of his face, the mouth a small calm line, one eyebrow raised a little, as if he is looking at something on the floor to the right. Nothing is drawn there.',
+    5: 'GLANCE, SOFT. He lies on his stomach as in the first image, both hands on the keyboard; only the face changes: the eye looks to the right and slightly down, the mouth a tiny relaxed smile, a calm curious look, as if he is looking at something on the floor to the right. Nothing is drawn there.',
+    6: 'GLANCE, THIRSTY. He lies on his stomach as in the first image, both hands on the keyboard; only the face changes: the eye looks to the right and slightly down, the mouth a small round open O, the eyebrows slightly raised, as if he is looking at something on the floor to the right. Nothing is drawn there.',
+}
 CANDIDATES_EXPR = {
     # more faces for the video (lecturer, 2026-10-06: the narrator is monotone). Face only: same camera, same head, the hands stay on the keys.
     1: ('HAPPY FACE WHILE STILL TYPING. Only the face changes: the eye is closed as a happy upward arc, the mouth is a wide open smile, the cheek has a faint pink blush. The hands stay on the keyboard exactly as in the first image.', 'happy'),
@@ -260,8 +275,8 @@ def make(n):
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
         name = f'prone-{n}'
-    elif SET in ('cup', 'new'):
-        prompt = (CUP + CANDIDATES_CUP[n]) if SET == 'cup' else (NEWPOSE + CANDIDATES_NEW[n])
+    elif SET in ('cup', 'new', 'new2'):
+        prompt = (CUP + CANDIDATES_CUP[n]) if SET == 'cup' else (NEWPOSE2 + CANDIDATES_NEW2[n]) if SET == 'new2' else (NEWPOSE + CANDIDATES_NEW[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -312,7 +327,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME, 'expr': CANDIDATES_EXPR, 'cup': CANDIDATES_CUP, 'new': CANDIDATES_NEW}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME, 'expr': CANDIDATES_EXPR, 'cup': CANDIDATES_CUP, 'new': CANDIDATES_NEW, 'new2': CANDIDATES_NEW2}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:

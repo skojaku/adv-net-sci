@@ -13,12 +13,12 @@ SRC = os.environ.get('CHAR_SRC', 'out/character')  # the pictures drawn by gen_c
 OUT = os.environ.get('CHAR_OUT', 'src/video/character')
 # frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B (the far hand lifted), pframe-21 = typing C (the near hand lifted, made from a rough collage cleaned up by the model), pframe-3 = troubled face while typing, pframe-5 = shrug)
 FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'typeC': 'pframe-21', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
-# more faces and poses for the modularity video (gen_character.py --set expr / cup / new); env CHAR_FACES=1 includes them.
-# expr-4 surprise, expr-7 smug, expr-8 focus (the lecturer kept these three), new-1 push (a fist slams a key), new-6 onback (lying on his back), new-7 tea (a sip).
-# A cup of tea stands on the floor in every frame: cut out of cup-1 (the difference to base2) and pasted into the frames below; the three new poses carry their own cup.
+# more faces and poses for the modularity video; env CHAR_FACES=1 includes them (gen_character.py --set expr / new2):
+# expr-4 surprise, expr-7 smug, expr-8 focus, new2-1 onback (lying on his back, head at the left), new2-4 glance (looking at the cup on the floor).
+# A cup of tea stands next to the keyboard in EVERY frame. It is drawn by scripts/draw_cup.py (out/character/cup-layer.png: flat, matte, no highlight: the image model's cup was too glossy)
+# and pasted BEHIND the figure (only where the frame is white), so that a hand or a foot in front of it hides it.
 if os.environ.get('CHAR_FACES'):
-    FRAMES.update({'surprise': 'expr-4', 'smug': 'expr-7', 'focus': 'expr-8', 'push': 'new-1', 'onback': 'new-6', 'tea': 'new-7'})
-OWN_CUP = {'push', 'onback', 'tea'}  # these pictures draw their own cup (the pose moves it, or holds it)
+    FRAMES.update({'surprise': 'expr-4', 'smug': 'expr-7', 'focus': 'expr-8', 'onback': 'new2-1', 'glance': 'new2-4'})
 NO_ALIGN = {'onback'}  # the head is not where it is in the rest frame: do not try to align it
 WIDTH = 640  # px of the saved frames; they are shown at about 260 px, so this is sharp at 2x
 SEARCH = 70  # largest shift tried, px
@@ -116,30 +116,21 @@ def shifted(arr, dy, dx):
 
 os.makedirs(OUT, exist_ok=True)
 def cup_layer():
-    """the cup of tea: the pixels that differ between cup-1 and base2, near the cup (dilated by 2 px so that the anti-aliased edge comes with it)"""
-    base, cup = load('base2'), load('cup-1')
-    mask = np.abs(cup - base).max(axis=2) > 40
-    keep = np.zeros_like(mask)
-    keep[380:660, 1070:1264] = True
-    mask &= keep
-    for _ in range(2):
-        m = mask.copy()
-        m[1:, :] |= mask[:-1, :]
-        m[:-1, :] |= mask[1:, :]
-        m[:, 1:] |= mask[:, :-1]
-        m[:, :-1] |= mask[:, 1:]
-        mask = m & keep
-    return mask, cup
+    """the cup of tea drawn by scripts/draw_cup.py: (mask of its pixels, its rgb)"""
+    rgba = np.asarray(Image.open(f'{SRC}/cup-layer.png').convert('RGBA')).astype(np.int16)
+    return rgba[:, :, 3] > 8, rgba[:, :, :3]
 
 
 def with_cup(rgb, mask, cup):
+    """the cup behind the figure: only where the picture is still the white page"""
     out = rgb.copy()
-    out[mask] = cup[mask]
+    free = mask & (rgb.min(axis=2) >= 240)
+    out[free] = cup[free]
     return out
 
 
 _mask, _cup = cup_layer() if os.environ.get('CHAR_FACES') else (None, None)
-rgbs = {k: (load(v) if (_mask is None or k in OWN_CUP) else with_cup(load(v), _mask, _cup)) for k, v in FRAMES.items()}
+rgbs = {k: (load(v) if _mask is None else with_cup(load(v), _mask, _cup)) for k, v in FRAMES.items()}
 ref = rgbs['rest']
 aligned = {}
 for k, rgb in rgbs.items():

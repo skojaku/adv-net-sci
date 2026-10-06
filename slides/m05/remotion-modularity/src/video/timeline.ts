@@ -159,7 +159,7 @@ export const introMove = (frame: number, intro?: IntroSeg) => {
 };
 
 /** how the narrator reacts to a stage: after the last line of the stage is typed he takes his hands off the keyboard and shows the mood */
-export type Mood = 'worry' | 'shrug' | 'surprise' | 'smug' | 'focus' | 'push' | 'onback' | 'tea';
+export type Mood = 'worry' | 'shrug' | 'surprise' | 'smug' | 'focus' | 'onback' | 'glance';
 export type MoodRule = {slide: number; stage: number; mood: Mood};
 export type Reaction = {from: number; to: number; mood: Mood};
 export const REACT_AFTER = 6; // frames after the last key before the mood starts
