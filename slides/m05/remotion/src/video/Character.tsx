@@ -13,6 +13,7 @@ import {Mood, Reaction} from './timeline';
  * - 'rest': both hands on the keys, no key pressed;
  * - 'type': while keys are being pressed, typeA and typeB alternate (every two keystrokes), so the fingers move with the sound;
  * - 'worry' / 'shrug': a reaction (timeline.reactionsOf) between two lines.
+ * The figure is mirrored (scaleX(-1)): the lecturer wanted it facing the text, so the keyboard is at the right and the legs at the left.
  * The groups blend over FADE frames; typeA <-> typeB is a hard cut.
  */
 const FADE = 6;
@@ -54,7 +55,7 @@ export const Character: React.FC<{frame: number; keys: {frame: number}[]; reacti
   const art: Record<string, string> = {rest, typeA, typeB, worry, shrug};
   const height = (width * 416) / 640;
   return (
-    <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleY(${breathe})`}}>
+    <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleX(-1) scaleY(${breathe})`}}>
       {Object.keys(art).map((name) => (
         <Img key={name} src={art[name]} style={{position: 'absolute', left: 0, top: 0, width, height, opacity: opacity[name]}} />
       ))}

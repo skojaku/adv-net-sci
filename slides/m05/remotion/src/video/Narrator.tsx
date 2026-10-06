@@ -14,10 +14,10 @@ const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
  */
 const FONT = 31;
 const LINE = 46;
-const BX = 440; // left edge of the lines
-export const BAND = 190; // height of the band at the TOP of the video that holds the figure and the lines; the slide is shown under it
-const TOP = 56; // distance of the two lines from the top edge
-const WIDTH = 1340;
+const BX = 520; // left edge of the lines
+export const BAND = 228; // height of the band at the TOP of the video that holds the figure and the lines; the slide is shown under it
+const TOP = 94; // distance of the two lines from the top edge
+const WIDTH = 1300;
 const FADE = [1, 0.6, 0, 0]; // opacity by age: the newest line, the one before, ...; two lines fit above the bottom margin
 const PROMPT = '$';
 
@@ -35,7 +35,7 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
 
   return (
     <>
-      <div style={{position: 'absolute', left: 140, top: 14, width: 255, height: 166, opacity: fadeOut}}>
+      <div style={{position: 'absolute', left: 140, top: 52, width: 255, height: 166, opacity: fadeOut}}>
         <Character frame={frame} keys={keys} reactions={reactions} width={255} />
       </div>
       <div

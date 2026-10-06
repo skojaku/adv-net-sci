@@ -25,7 +25,7 @@ Run `npm run video:audio` again after **any** change to the narration, to a slid
 
 One continuous talk, not chapters: the three section dividers (S1, S8, S22) are left out (`SKIP` in `src/video/timeline.ts`), the chat is never cleared at a slide
 change, and the bridge from one part to the next is in the first lines of the next slide (S9, S23). Each slide plays stage by stage as in the click-through deck.
-After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. **The narrator is in a band at the TOP** (190 px, `BAND` in `src/video/Narrator.tsx`): the figure a little left of centre (x about 150 to 400), the terminal lines to its right. **The slide is shown under it**: `NarratedDeck.tsx` scales the slide's first 920 px (its own bottom 160 px, kept empty for subtitles, are cut off) to the room that is left (scale 0.967), so the slide's page number is not in the video. (Lecturer: character and text on top, slide below, easier to see.)
+After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. **The narrator is in a band at the TOP** (228 px, `BAND` in `src/video/Narrator.tsx`; the figure starts 52 px below the top edge): the figure at the left (x 140 to 395), the terminal lines to its right (from x 520). **The slide is shown under it**: `NarratedDeck.tsx` scales the slide's first 920 px (its own bottom 160 px, kept empty for subtitles, are cut off) to the room that is left (scale 0.926), so the slide's page number is not in the video. (Lecturer: character and text on top, slide below, easier to see.)
 
 ### The slides' sentences move into the chat
 
@@ -109,12 +109,12 @@ Extract the audio of a rendered clip (`npx remotion ffmpeg -i clip.mp4 -vn -ac 1
 ## The figure and the terminal lines (`src/video/Character.tsx`, `Narrator.tsx`)
 
 The lecturer asked for **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before each line, monospace type (JetBrains Mono), a block cursor on
-the line being typed. A new line starts at the bottom; the older lines move up one line and fade (`FADE` in `Narrator.tsx`). Position: figure at x 140 to 395 (top 14), text from x 440
-(top 56): **two lines** of 46 px, in the band at the top of the video.
+the line being typed. A new line starts at the bottom; the older lines move up one line and fade (`FADE` in `Narrator.tsx`). Position: figure at x 140 to 395 (top 52), text from x 520
+(top 94): **two lines** of 46 px, in the band at the top of the video. (Lecturer: more margin above the figure; the narration a little to the right.)
 
 The figure is a boy lying on his stomach at a tiny keyboard, drawn by a Gemini image model (below) in the touch of the lecturer's reference images (thick black outlines, soft off-white fills,
 a hint of pale lavender shading, tiny dot eyes). `Character.tsx` swaps five frames (`src/video/character/*.png`, committed; the head is at the same pixels in all of them):
-`rest` (both hands on the keys), `typeA` / `typeB` (alternate every two keystrokes while keys are being pressed, so the fingers follow the sound), `worry` (arms crossed, a sweat drop) and
+(the figure is mirrored in `Character.tsx`: it faces the text, the keyboard at the right) `rest` (both hands on the keys), `typeA` / `typeB` (alternate every two keystrokes while keys are being pressed, so the fingers follow the sound), `worry` (arms crossed, a sweat drop) and
 `shrug` (eyes closed, palms up). The frame is a pure function of the frame number; groups blend over 6 frames, A to B is a hard cut; the whole figure breathes and dips 1.5 px on each key.
 
 **Reactions** (`src/video/moods.ts`): after the last line of a named stage is typed he takes his hands off the keyboard and shows the mood for about 3 s (until 6 frames before the next line,
