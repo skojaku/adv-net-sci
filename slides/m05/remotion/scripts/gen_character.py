@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -65,6 +65,29 @@ CANDIDATES_BOY = {
     4: 'White hair, white T-shirt and white shorts, typing on a tiny white keyboard on the floor with one hand while the other hand props the chin; the one accent colour is sky blue, on a wristband only.',
     5: 'White hair, white hooded sweatshirt (hood down) and white shorts, one foot waving, white socks; the one accent colour is soft pink, on the sock cuffs only.',
 }
+MORE_COLOUR = (
+    ' COLOUR RULE: still light and minimal, but a little more colour than pure white is welcome: mostly white and off-white, plus two to four SOFT pastel colours in all (named below); '
+    'no red, no green, no strong or dark colours except the thick black outlines. '
+)
+GLASSES_NOTE = ' The boy WEARS GLASSES (drawn simply: two round or square lenses with a frame and a small bridge, the eyes as tiny dash-like dots seen through them). '
+CANDIDATES_GLASSES = {
+    1: 'Round glasses with thin dark frames; light grey hair; white T-shirt with sky-blue sleeves; pale yellow wristband.',
+    2: 'Square glasses with sky-blue frames; soft light-brown hair; white hoodie; pale blue shorts; pale yellow socks.',
+    3: 'Round glasses with lavender frames; soft grey hair; white gym shirt with a lavender collar; a sky-blue towel around the neck.',
+    4: 'Typing on a tiny pale-pink keyboard on the floor with one hand while the other hand props the chin; square glasses with lavender frames; light-brown hair; white T-shirt; sky-blue wristband.',
+    5: 'Round glasses sliding a little down the nose; soft light-brown hair; pale yellow T-shirt; sky-blue shorts; white socks with pink cuffs; one foot waving.',
+}
+HAIR_LINES = (
+    ' HAIR: the hair is drawn as ONLY a few short black line strokes (four to seven short strokes, like a close-cropped sports cut) on the top of the head; the head itself is just the skin colour. '
+    'NO filled hair shape, NO hair colour, no bangs, no outline of a hair mass. '
+)
+CANDIDATES_LINES = {
+    1: 'Round glasses with thin dark frames; white T-shirt with sky-blue sleeves; pale yellow wristband; bare feet.',
+    2: 'Square glasses with sky-blue frames; white hoodie; pale blue shorts; pale yellow socks.',
+    3: 'Round glasses with lavender frames; white gym shirt with a lavender collar; a sky-blue towel around the neck.',
+    4: 'Typing on a tiny pale-pink keyboard on the floor with one hand while the other hand props the chin; square glasses with lavender frames; white T-shirt; sky-blue wristband.',
+    5: 'Round glasses sliding a little down the nose; pale yellow T-shirt; sky-blue shorts; white socks with pink cuffs; one foot waving.',
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -80,8 +103,8 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white', 'boy'):
-        prompt = REF_STYLE + (WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else CANDIDATES_REF[n])
+    if SET in ('ref', 'white', 'boy', 'glasses', 'lines'):
+        prompt = REF_STYLE + (BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -114,7 +137,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
