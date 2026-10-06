@@ -144,7 +144,7 @@ export const buildTimeline = (marks: number[][], narration: Narration, prose: Pr
 
 /**
  * The move from the introduction layout to the band, one progress (0 to 1) per part, staggered so that nothing overlaps: the title leaves first (`title`, linear: 0 shown, 1 gone),
- * then the figure moves, then the lines, and the first slide fades in last. Every part that moves reads its progress here.
+ * then the lines move, then the figure (in M05 the figure moves first), and the first slide fades in last. Every part that moves reads its progress here.
  */
 export const introMove = (frame: number, intro?: IntroSeg) => {
   if (!intro) return {title: 1, figure: 1, text: 1, slide: 1};
@@ -154,7 +154,8 @@ export const introMove = (frame: number, intro?: IntroSeg) => {
     const x = clamp((t - a) / (b - a));
     return x * x * (3 - 2 * x);
   };
-  return {title: clamp(t / 0.3), figure: seg(0.12, 0.77), text: seg(0.32, 1), slide: seg(0.4, 1)};
+  // this video: the lines are above the narrator, so the lines move up first and the narrator follows underneath them (neither crosses the other)
+  return {title: clamp(t / 0.3), text: seg(0.12, 0.65), figure: seg(0.35, 0.92), slide: seg(0.72, 1)};
 };
 
 /** how the narrator reacts to a stage: after the last line of the stage is typed he takes his hands off the keyboard and shows the mood */
