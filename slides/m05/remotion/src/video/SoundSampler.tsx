@@ -16,7 +16,7 @@ export const SoundSampler: React.FC = () => {
   const idx = SAMPLER_PACKS.indexOf(seg.pack);
   return (
     <AbsoluteFill style={{background: C.paper, color: C.ink, fontFamily: F.serif}}>
-      <div style={{position: 'absolute', left: 140, top: 250, opacity: a, transform: `translateY(${(1 - a) * 14}px)`}}>
+      <div style={{position: 'absolute', left: 140, top: 360, opacity: a, transform: `translateY(${(1 - a) * 14}px)`}}>
         <div style={{fontSize: 92, letterSpacing: '-0.02em'}}>{seg.pack.name}</div>
         <div style={{fontFamily: F.hand, fontSize: 56, color: C.soft, marginTop: 20}}>{seg.pack.feel}</div>
         <div style={{fontSize: 34, color: C.soft, marginTop: 40}}>

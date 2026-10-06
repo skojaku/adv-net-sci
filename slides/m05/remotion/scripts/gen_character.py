@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -122,6 +122,18 @@ TOUCH = (
     'Redraw the first picture in that touch only (line quality, softness, blush, sticker edge). Do not copy the dog. Pure white background, no text, whole character visible, generous margin. '
 )
 CANDIDATES_TOUCH = {1: '', 2: '', 3: '', 4: ''}
+BOTH = (
+    'The FIRST attached image is the character to KEEP, exactly in its drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading, tiny dot eyes, a small smile) and with the same '
+    'body, clothes, sky-blue wristbands and tiny keyboard. The other attached image is only a style anchor. '
+    'Redraw the character with ONE change: BOTH hands are on the tiny keyboard, fiddling with it (both arms stretched forward, the fingers of both hands on the keys, a sky-blue wristband on each wrist). '
+    'The hand that held the chin is gone: the head is simply held up, slightly raised. Same camera, same proportions, same lying pose. Pure white background, no text, whole character visible, generous margin. '
+)
+CANDIDATES_BOTH = {
+    1: 'The gaze stays as in the first image.',
+    2: 'He looks toward the UPPER RIGHT of the picture: the face is turned slightly to the right and the tiny dot eyes sit toward the upper right; the hands keep fiddling without looking at them.',
+    3: 'A relaxed, lazy fiddling: the wrists rest on the keyboard edge and the fingers are loosely spread. The gaze stays as in the first image.',
+    4: 'He looks toward the UPPER RIGHT as in a daydream, and two small motion marks near the fingers show the typing.',
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -137,8 +149,8 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch'):
-        prompt = (TOUCH if SET == 'touch' else GAZE + CANDIDATES_GAZE[n] if SET == 'gaze' else REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET in ('b4', 'gaze', 'touch') else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
+    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch', 'both'):
+        prompt = (BOTH + CANDIDATES_BOTH[n] if SET == 'both' else TOUCH if SET == 'touch' else GAZE + CANDIDATES_GAZE[n] if SET == 'gaze' else REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET in ('b4', 'gaze', 'touch', 'both') else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -171,7 +183,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:

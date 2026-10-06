@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Freeze, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {slides} from '../slides';
-import {Narrator} from './Narrator';
+import {BAND, Narrator} from './Narrator';
 import {ProseContext} from '../components/Text';
 import {Prose, SKIP, SlideSeg, buildTimeline} from './timeline';
 import proseData from './prose.json';
@@ -12,6 +12,9 @@ import {narration} from './narration';
  * then the next stage starts. The slides themselves are not touched: this file only plays them (a Sequence that starts at a negative
  * frame makes a slide play from the middle; a Freeze holds the end of a stage).
  */
+/** The slide is shown under the narrator band. Its own free band (the last 160 px, kept empty for subtitles) is cut off, so the first 920 px fill the room that is left. */
+const SLIDE_SCALE = (1080 - BAND) / 920;
+
 export const timeline = buildTimeline(
   slides.map((s) => s.marks),
   narration,
@@ -46,13 +49,17 @@ export const NarratedDeck: React.FC = () => {
   return (
     <AbsoluteFill style={{background: '#ffffff'}}>
       {/* the slides' sentences are not drawn: the narrator types them in the chat */}
-      <ProseContext.Provider value="hide">
-        {timeline.slides.map((seg) => (
-          <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
-            <SlidePlay seg={seg} />
-          </Sequence>
-        ))}
-      </ProseContext.Provider>
+      <div style={{position: 'absolute', left: 0, top: BAND, width: 1920, height: 1080 - BAND, overflow: 'hidden'}}>
+        <div style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '50% 0', transform: `scale(${SLIDE_SCALE})`}}>
+          <ProseContext.Provider value="hide">
+            {timeline.slides.map((seg) => (
+              <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
+                <SlidePlay seg={seg} />
+              </Sequence>
+            ))}
+          </ProseContext.Provider>
+        </div>
+      </div>
       <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} fadeFrom={timeline.total - 80} />
       <Audio src={staticFile('typing.wav')} volume={0.9} />
     </AbsoluteFill>

@@ -8,14 +8,15 @@ import {Bubble, FPS} from './timeline';
 const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
 
 /**
- * The narrator at the bottom of the slide, in the free band under the slides (below y = 920): a small figure lying down at the left and, to
+ * The narrator in the band at the TOP of the video (the slide is shown under it, see NarratedDeck.tsx): a small figure lying down at the left and, to
  * its right, plain terminal lines on the white page (a prompt, the text typed key by key, a block cursor, no frame). A new line starts at the
- * bottom and the older lines move up and fade; two lines at most, with a margin of 72 px under the last one.
+ * bottom of the two lines and the older lines move up and fade; two lines at most.
  */
 const FONT = 31;
 const LINE = 46;
 const BX = 440; // left edge of the lines
-const BOTTOM = 72; // distance of the last line from the bottom edge (the lecturer: text too low is hard to see)
+export const BAND = 190; // height of the band at the TOP of the video that holds the figure and the lines; the slide is shown under it
+const TOP = 56; // distance of the two lines from the top edge
 const WIDTH = 1340;
 const FADE = [1, 0.6, 0, 0]; // opacity by age: the newest line, the one before, ...; two lines fit above the bottom margin
 const PROMPT = '$';
@@ -63,14 +64,14 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
 
   return (
     <>
-      <div style={{position: 'absolute', left: 150, bottom: 46, width: 250, height: 150}}>
+      <div style={{position: 'absolute', left: 150, top: 22, width: 250, height: 150}}>
         <Loafer pose={pose} width={250} />
       </div>
       <div
         style={{
           position: 'absolute',
           left: BX,
-          bottom: BOTTOM,
+          top: TOP,
           width: WIDTH,
           height: LINE * 2,
           fontFamily: `${mono.fontFamily}, ui-monospace, Menlo, monospace`,

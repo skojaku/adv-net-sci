@@ -25,7 +25,7 @@ Run `npm run video:audio` again after **any** change to the narration, to a slid
 
 One continuous talk, not chapters: the three section dividers (S1, S8, S22) are left out (`SKIP` in `src/video/timeline.ts`), the chat is never cleared at a slide
 change, and the bridge from one part to the next is in the first lines of the next slide (S9, S23). Each slide plays stage by stage as in the click-through deck.
-After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. The figure sits a little left of centre (x about 150 to 400; the first version had it at the edge), the terminal lines to its right; all of it stays in the free band under the slides (below y = 920).
+After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. **The narrator is in a band at the TOP** (190 px, `BAND` in `src/video/Narrator.tsx`): the figure a little left of centre (x about 150 to 400), the terminal lines to its right. **The slide is shown under it**: `NarratedDeck.tsx` scales the slide's first 920 px (its own bottom 160 px, kept empty for subtitles, are cut off) to the room that is left (scale 0.967), so the slide's page number is not in the video. (Lecturer: character and text on top, slide below, easier to see.)
 
 ### The slides' sentences move into the chat
 
@@ -112,7 +112,7 @@ The lecturer asked for something simpler than the first cat: a person lying on t
 reference image was only the "touch", the drawing is our own), and **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before
 each line, monospace type (JetBrains Mono), a block cursor on the line being typed. A new line starts at the bottom; the older lines move up one line and fade (three
 lines at most, `FADE` in `Narrator.tsx`). The figure's pose is a pure function of the frame: a nod and tilt on each key, the feet kick alternately (faster while typing), a blink
-every 112 frames, the ribbon sways, a breathing movement. Position: figure at x 150 to 400, text from x 440, all below y = 920: **two lines** of 46 px with **72 px of margin under the last** (the lecturer found text near the bottom edge hard to see; three lines would need a taller band).
+every 112 frames, the ribbon sways, a breathing movement. Position: figure at x 150 to 400 (top 22), text from x 440 (top 56): **two lines** of 46 px. (An earlier version had them at the bottom, where they were hard to see.)
 (The first version, a cat with speech bubbles, is in the git history: commits before this change.)
 
 ### Character art from an image model (optional)
