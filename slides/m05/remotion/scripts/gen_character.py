@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -101,6 +101,27 @@ CANDIDATES_B4 = {
     3: 'Restyled, and the boy wears round glasses with thin dark frames.',
     4: 'Restyled, with a slightly bigger head, a more tilted face plate, and white sneakers on his raised feet.',
 }
+GAZE = (
+    'The FIRST attached image is the character to KEEP: a short-haired boy lying on his stomach at a tiny keyboard. The SECOND attached image is another boy whose face is turned and whose eyes look up and to the right: '
+    'it shows the gaze I want. The remaining attached images show the target drawing STYLE. '
+    'Redraw the boy from the first image, in the same drawing style, same outfit, same keyboard, same sky-blue wristband and short hair, but make him LOOK TOWARD THE UPPER RIGHT of the picture: '
+    'the face is turned slightly toward the right and the eyes look up and to the right, as if he is reading something above and to the right. '
+    'One hand just idly rests on and fiddles with the tiny keyboard, without looking at it. Do NOT copy the other characters; only the gaze and the style. '
+    'Pure white background, no text, whole character visible, generous margin. '
+)
+CANDIDATES_GAZE = {
+    1: 'No glasses; exactly as in the first image otherwise.',
+    2: 'Keep the bigger head, the more tilted face plate and the white sneakers of the first image.',
+    3: 'Keep the round glasses with thin dark frames of the first image; the eyes seen through the lenses look up and to the right.',
+    4: 'Keep the small pale-lavender hairclip of the first image.',
+}
+TOUCH = (
+    'The FIRST attached image is a picture whose COMPOSITION must NOT change: keep exactly the same character, pose, camera, proportions, placement of every element, expression, gaze, clothes and colours. '
+    'The SECOND attached image (a dog character in a chat-bubble video) shows the TOUCH I want: soft rounded shapes; slightly rough, wobbly, hand-drawn marker-like outlines in a dark brown-black with uneven line width; '
+    'flat cream-white fills with a little texture at the edges; round soft-pink blush spots on the cheeks; and a thin pale sticker-like edge around the whole character. '
+    'Redraw the first picture in that touch only (line quality, softness, blush, sticker edge). Do not copy the dog. Pure white background, no text, whole character visible, generous margin. '
+)
+CANDIDATES_TOUCH = {1: '', 2: '', 3: '', 4: ''}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -116,8 +137,8 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4'):
-        prompt = (REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET == 'b4' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
+    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch'):
+        prompt = (TOUCH if SET == 'touch' else GAZE + CANDIDATES_GAZE[n] if SET == 'gaze' else REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET in ('b4', 'gaze', 'touch') else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -150,7 +171,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
