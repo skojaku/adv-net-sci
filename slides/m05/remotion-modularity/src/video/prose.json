@@ -1,1 +1,172 @@
-{}
+{
+ "1": {
+  "1": [
+   "Is each colour a strong community?"
+  ]
+ },
+ "2": {
+  "2": [
+   "Pick one edge at random. Its two ends have the same colour with probability 0.859."
+  ]
+ },
+ "3": {
+  "0": [
+   "Which grouping gives the highest score?"
+  ],
+  "2": [
+   "Everyone in one group gives the highest score. The score says nothing about the network."
+  ]
+ },
+ "4": {
+  "1": [
+   "The random network has the same number of edges and the same degree for every node."
+  ],
+  "2": [
+   "Now we need that random network."
+  ]
+ },
+ "5": {
+  "2": [
+   "Every node keeps its degree. The number of edges stays 7."
+  ],
+  "3": [
+   "Like a power strip: each device keeps its sockets, only the wiring is shuffled."
+  ]
+ },
+ "6": {
+  "1": [
+   "A stub of i joins one of the other 2M − 1 stubs. Each one is equally likely."
+  ]
+ },
+ "7": {
+  "0": [
+   "Each cell is one stub of i and one stub of j."
+  ],
+  "1": [
+   "Each pair of stubs is joined with probability about 1/2M."
+  ],
+  "2": [
+   "Counting from i or from j covers the same cells. Do not add the two counts."
+  ]
+ },
+ "8": {
+  "0": [
+   "This is a number of edges, not a probability. Here it is above 1."
+  ],
+  "1": [
+   "When it is small, it is close to a probability."
+  ],
+  "2": [
+   "For hubs or dense networks the approximation breaks. We leave that for another time."
+  ]
+ },
+ "9": {
+  "1": [
+   "The entry for nodes i and j is 1 if they share an edge, and 0 if not."
+  ]
+ },
+ "10": {
+  "2": [
+   "A random network with the same degrees has this many edges between each pair, on average."
+  ]
+ },
+ "11": {
+  "2": [
+   "Positive: more edges than chance. Negative: fewer."
+  ],
+  "3": [
+   "Each row of B sums to 0."
+  ]
+ },
+ "12": {
+  "0": [
+   "The same three matrices for the karate club, with the nodes sorted by group."
+  ]
+ },
+ "13": {
+  "3": [
+   "Q is the fraction of edges inside groups minus the fraction expected in a random network."
+  ]
+ },
+ "14": {
+  "4": [
+   "We did not choose the number of groups. Maximizing Q chooses it."
+  ]
+ },
+ "15": {
+  "0": [
+   "ways to split 34 nodes into groups"
+  ],
+  "1": [
+   "We cannot try them all. We improve one partition step by step."
+  ]
+ },
+ "16": {
+  "0": [
+   "Every node starts with its own label."
+  ],
+  "1": [
+   "A node takes the label of the neighbouring group that raises Q the most."
+  ],
+  "3": [
+   "No single move raises Q any more."
+  ]
+ },
+ "17": {
+  "0": [
+   "No node can move to raise Q."
+  ],
+  "2": [
+   "Merging two whole groups raises Q. One node at a time cannot see it."
+  ]
+ },
+ "18": {
+  "1": [
+   "Each disc counts nodes. Each loop and line counts edges."
+  ],
+  "2": [
+   "The network of groups has the same Q."
+  ]
+ },
+ "19": {
+  "0": [
+   "Run the same local moves, now on the supernodes."
+  ],
+  "1": [
+   "Two groups merge into one node."
+  ]
+ },
+ "20": {
+  "2": [
+   "Fast unfolding of communities in large networks"
+  ]
+ },
+ "21": {
+  "2": [
+   "The blue group is now in two pieces with no edge between them."
+  ],
+  "3": [
+   "Louvain moves a node only to a neighbouring group. It cannot split them.",
+   "Up to 25% of the communities are badly connected and up to 16% are disconnected."
+  ]
+ },
+ "22": {
+  "1": [
+   "Leiden splits each group into well-connected parts before it merges them."
+  ]
+ },
+ "23": {
+  "0": [
+   "Edges inside groups, minus the edges that a random network with the same degrees puts there."
+  ],
+  "1": [
+   "Louvain: move nodes, merge groups, repeat."
+  ],
+  "2": [
+   "Leiden: the same, with a split step, so groups stay connected."
+  ],
+  "3": [
+   "Q has limits of its own. A ring of triangles merges neighbours. That is next."
+  ]
+ }
+}
