@@ -13,10 +13,9 @@ import {ToyDisc} from '../lib/a_toy';
 /**
  * The value k_i k_j / 2M is a number of edges, not a probability.
  * 0: the formula; two hubs of the club (degrees 16 and 17): 16 x 17 / 156 = 1.74, above 1.
- * 1: two nodes of low degree (2 and 3): 2 x 3 / 156 = 0.04, close to a probability.
- * 2: for hubs or dense networks the approximation breaks.
+ * 1: two nodes of low degree (2 and 3): 2 x 3 / 156 = 0.04, close to a probability; for hubs or dense networks the approximation breaks.
  */
-export const marks = [70, 130, 190];
+export const marks = [70, 130];
 
 const HUBS: [number, number] = [DEG[0], DEG[33]]; // 16 and 17
 const SMALL: [number, number] = [2, 3];
@@ -35,8 +34,7 @@ export const S08: React.FC = () => {
   const rowAValue = prog(frame, 40, 62);
   const rowB = fromStage(frame, marks, 1, 18);
   const s0 = caption(frame, marks, 0);
-  const s1 = caption(frame, marks, 1);
-  const s2 = caption(frame, marks, 2);
+  const s1 = fromStage(frame, marks, 1, 16);
 
   const small = (SMALL[0] * SMALL[1]) / TWO_M;
   const hubs = (HUBS[0] * HUBS[1]) / TWO_M;
@@ -81,9 +79,7 @@ export const S08: React.FC = () => {
       </div>
       <div style={{opacity: s1}}>
         <Box x={390} y={800} w={1400} size={46} color={C.soft}>When it is small, it is close to a probability.</Box>
-      </div>
-      <div style={{opacity: s2}}>
-        <Box x={390} y={800} w={1400} size={46} color={C.soft}>For hubs or dense networks the approximation breaks. We leave that for another time.</Box>
+        <Box x={390} y={868} w={1400} size={46} color={C.soft}>For hubs or dense networks the approximation breaks. We leave that for another time.</Box>
       </div>
     </Frame>
   );

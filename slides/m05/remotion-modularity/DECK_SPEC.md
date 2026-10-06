@@ -82,20 +82,18 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 2: 端が `TOY_STUB_PAIRS` の組に無作為につなぎ直される (端が伸びて出会う)。新しい網 `TOY_REWIRED`。各ノードの次数は同じ (label を残す)。文: `Every node keeps its degree. The number of edges stays 7.`
 3: 元の網 (左、2 派を青とオレンジ) と、つなぎ直した網 (右、同じ色) を並べる。数: `6 of 7 edges inside` と `2 of 7 edges inside` (label)。文: `Like a power strip: the number of sockets on each device is fixed and only the wiring is shuffled.`
 
-**S06 one-stub** (3 段階)。14 個の端を 1 列に (小さい円)、ノードごとにまとめて、下にノード番号。ノード i = 3、j = 4 (インデックス 2, 3) に `i`, `j` の札。
-0: 端の列。`2M = 14 stubs` (label)。
-1: i の端 1 つから、他の 13 個すべてへ細い弧。文: `A stub of i joins one of the other 2M − 1 stubs. Each one is equally likely.`
-2: j の端 3 つが強調される。式 `\dfrac{k_j}{2M-1}\approx\dfrac{k_j}{2M}`。文: `k_j of the other stubs belong to j.`
+**S06 one-stub** (2 段階。講師の指示 2026-10-06: 導出は一本の筋で簡潔に。弧と 2M−1 は使わない)。14 個の端を 1 列に (小さい円)、ノードごとにまとめて、下にノード番号。ノード i = 3、j = 4 (インデックス 2, 3) に `i`, `j` の札。
+0: 端の列。`2M = 14 stubs` (label)。文: `Every stub is equally likely to join any other stub.`
+1: i の端 3 つと j の端 3 つに括弧と `k_i`, `k_j`。文: `So the chance that i joins j is proportional to the stubs of i and of j.` 式 `\text{chance}\ \propto\ k_i\,k_j`。
 
-**S07 stub-pairs** (3 段階)。k_i × k_j (3 × 3) のセルの格子 (行 = i の端 1 から 3、列 = j の端 1 から 3)。
-0: 格子が現れる。式 `k_i\times k_j=3\times3=9`。文: `Each cell is one stub of i and one stub of j.`
-1: 各セルに `1/2M` (各セルの組がつながる確率の近似)。式 `\dfrac{k_ik_j}{2M}=\dfrac{3\times3}{14}=0.64`。
-2: 行を順に強調 (i から数える)、そのあと列を順に強調 (j から数える)。同じ 9 セル。式 `\dfrac{k_ik_j}{2M}=\dfrac{k_jk_i}{2M}`。文: `Counting from i or from j covers the same cells. Do not add the two counts.`
+**S07 stub-pairs** (2 段階)。k_i × k_j (3 × 3) のセルの格子 (行 = i の端 1 から 3、列 = j の端 1 から 3)。
+0: 格子が現れる。式 `k_i\times k_j=3\times3=9\ \text{pairs}`。文: `Each cell is one pair of stubs: one of i, one of j.`
+1: 各セルに `1/2M`。式 `\dfrac{k_ik_j}{2M}=\dfrac{3\times3}{14}=0.64`。文: `Each pair of stubs is joined with probability about 1/2M.`
+(行と列から数えて同じ 9 セルになる段階は削った。「j の側からも k_j k_i / 2M で同じ」は、ナレーションの 1 行で言う。)
 
-**S08 not-a-probability** (3 段階)。
+**S08 not-a-probability** (2 段階)。
 0: 式 `\dfrac{k_ik_j}{2M}`、label `expected number of edges`。空手クラブのノード 0 と 33 (次数 16, 17) の円と、式 `\dfrac{16\times17}{156}=1.74`。文: `This is a number of edges, not a probability. Here it is above 1.`
-1: 次数の低い 2 ノード (DEG から選ぶ。例: 次数 2 と 3) の式、`\dfrac{2\times3}{156}=0.04`。文: `When it is small, it is close to a probability.`
-2: 文: `For hubs or dense networks the approximation breaks. We leave that for another time.`
+1: 次数の低い 2 ノード (次数 2 と 3) の式 `\dfrac{2\times3}{156}=0.04`。文: `When it is small, it is close to a probability.` `For hubs or dense networks the approximation breaks. We leave that for another time.`
 
 ### 前半の続き: 行列 (担当 B)
 
