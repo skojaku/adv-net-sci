@@ -112,8 +112,17 @@ The lecturer asked for something simpler than the first cat: a person lying on t
 reference image was only the "touch", the drawing is our own), and **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before
 each line, monospace type (JetBrains Mono), a block cursor on the line being typed. A new line starts at the bottom; the older lines move up one line and fade (three
 lines at most, `FADE` in `Narrator.tsx`). The figure's pose is a pure function of the frame: a nod and tilt on each key, the feet kick alternately (faster while typing), a blink
-every 112 frames, the ribbon sways, a breathing movement. Position: figure at x 150 to 400, text from x 440, all below y = 920 (three lines of 46 px fit in the 160 px band).
+every 112 frames, the ribbon sways, a breathing movement. Position: figure at x 150 to 400, text from x 440, all below y = 920: **two lines** of 46 px with **72 px of margin under the last** (the lecturer found text near the bottom edge hard to see; three lines would need a taller band).
 (The first version, a cat with speech bubbles, is in the git history: commits before this change.)
+
+### Character art from an image model (optional)
+
+`python3 scripts/gen_character.py [--only 1,3] [--model google/gemini-3.1-flash-image]` makes candidates for the figure with a Gemini image model through OpenRouter (key in `$OPENROUTER_API_KEY`, never
+written to a file; a few cents per image; `out/character/cand-N.png` and the prompt in `cand-N.txt`). The prompt describes the touch in words (thick uniform black outlines, flat pastel fills,
+no shading, big round head with straight bangs, dot eyes, a small smile, lying on the stomach with the head on one hand and the feet in the air, white background); **a reference image is not uploaded**,
+so the result is an original character. Models that can output images are listed by `GET https://openrouter.ai/api/v1/models` (`output_modalities` contains `image`); the request is a chat completion with
+`modalities: ["image", "text"]` and `image_config.aspect_ratio`, and the image comes back as a base64 data URL in `choices[0].message.images[0]`. To use a candidate in the video, cut the white background
+away (or draw it on white) and replace `Loafer.tsx` with an `<Img>` plus small CSS movements (nod, breathing), keeping the pose a pure function of the frame.
 
 ## Checks before handing it over
 

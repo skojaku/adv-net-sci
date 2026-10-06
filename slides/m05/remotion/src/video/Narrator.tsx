@@ -10,14 +10,14 @@ const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
 /**
  * The narrator at the bottom of the slide, in the free band under the slides (below y = 920): a small figure lying down at the left and, to
  * its right, plain terminal lines on the white page (a prompt, the text typed key by key, a block cursor, no frame). A new line starts at the
- * bottom and the older lines move up and fade; three lines at most.
+ * bottom and the older lines move up and fade; two lines at most, with a margin of 72 px under the last one.
  */
 const FONT = 31;
 const LINE = 46;
 const BX = 440; // left edge of the lines
-const BOTTOM = 26; // distance of the last line from the bottom edge
+const BOTTOM = 72; // distance of the last line from the bottom edge (the lecturer: text too low is hard to see)
 const WIDTH = 1340;
-const FADE = [1, 0.62, 0.32, 0]; // opacity by age: the newest line, the one before, ...
+const FADE = [1, 0.6, 0, 0]; // opacity by age: the newest line, the one before, ...; two lines fit above the bottom margin
 const PROMPT = '$';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
@@ -63,7 +63,7 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
 
   return (
     <>
-      <div style={{position: 'absolute', left: 150, bottom: 6, width: 250, height: 150}}>
+      <div style={{position: 'absolute', left: 150, bottom: 46, width: 250, height: 150}}>
         <Loafer pose={pose} width={250} />
       </div>
       <div
@@ -72,7 +72,7 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
           left: BX,
           bottom: BOTTOM,
           width: WIDTH,
-          height: LINE * 3,
+          height: LINE * 2,
           fontFamily: `${mono.fontFamily}, ui-monospace, Menlo, monospace`,
           fontSize: FONT,
           lineHeight: `${LINE}px`,
