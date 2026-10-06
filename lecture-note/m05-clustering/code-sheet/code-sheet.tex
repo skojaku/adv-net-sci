@@ -139,40 +139,36 @@ with whom, which makes this network the standard test case for community detecti
 
 \input{boxes/box1}
 
-\parthead{2}{Find communities with Leiden}
+\parthead{2}{Find communities with Leiden, and draw them}
 
-Leiden is one of the methods from the lecture. In igraph, running it takes one call.
+Leiden is one of the methods from the lecture. In igraph, running it takes one
+call, and igraph can draw what it found.
 
 \input{boxes/box2}
 
 \parthead{3}{The stochastic block model, with graph-tool}
 
-graph-tool is a second library, and it works on its own kind of network. This box
-moves the karate club over to it and fits the stochastic block model from the lecture.
+graph-tool is a second library. It has its own kind of network and its own drawing
+function. This box moves the karate club over to it, fits the stochastic block model
+from the lecture, and draws the result.
 
 \input{boxes/box3}
 
-\parthead{4}{Put the results side by side}
+\parthead{4}{Draw what really happened}
 
 \input{boxes/box4}
 
-\textbf{What to look at.}
-\begin{itemize}[itemsep=0.1em, topsep=0.2em, leftmargin=1.4em]
-\item Find node 0 and node 33 in each picture. Which groupings keep them apart?
-\item The two methods look for different things. In the SBM picture, who ends up
-together, and how many friends do they have? (Bigger marks: more friends.)
-\end{itemize}
+\textbf{What to look at.} Put your three pictures side by side. Find node 0 and
+node 33 in each. Which groupings keep them apart? In the stochastic block model's
+picture, who ends up together, and how many friends do they have?
 
 \parthead{5}{Draw the groups on a circle}
 
-Another way to look at a grouping: every member on a circle, each group on its own
-arc. This box uses the drawing tools themselves, \texttt{matplotlib} and igraph,
-instead of the ready-made \texttt{show}.
+Another way to look at a grouping: every member on a circle, each group on its own arc.
 
 \input{boxes/box5}
 
-\textbf{What to look at.} Which friendships run from one arc to another? Compare the
-two circles: where do they put the same members, and where do they differ?
+\textbf{What to look at.} Which friendships run from one arc to another?
 
 \parthead{6}{If you have time: the US airports}
 

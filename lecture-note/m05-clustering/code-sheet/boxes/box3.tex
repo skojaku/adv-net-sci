@@ -7,6 +7,7 @@ g.add_edge_list(karate.get_edgelist())
 state = gt.minimize_blockmodel_dl(g, state_args=dict(deg_corr=False))
 sbm = state.get_blocks().a
 print(sbm)
+pos = state.draw()
 \end{codebox}
 \begin{linenotes}
 \item[1] graph-tool is a second library. It fits the stochastic block model, which you know from the lecture. \texttt{as gt} is its short name.
@@ -16,4 +17,5 @@ print(sbm)
 \item[5] \texttt{minimize\_blockmodel\_dl} fits the stochastic block model. \texttt{dl} stands for \emph{description length}: of all the ways to group the nodes, it picks the one that describes the network in the fewest bits. It decides the number of groups too. \texttt{state\_args=dict(deg\_corr=False)} asks for the plain model of the lecture, where the group alone decides how likely a friendship is. Graph-tool's default lets every member also have a number of friends of their own; on a network this small, that version finds one single group, which tells us nothing. The fitted model is stored as \texttt{state}.
 \item[6] \texttt{state.get\_blocks()} gives the group of each node, in graph-tool's own array type. \texttt{.a} turns it into a plain array of numbers, like the list in Box 2.
 \item[7] Print it: again one number for each of the 34 nodes.
+\item[8] \texttt{state.draw()} is graph-tool's own drawing function. It draws the network with each group in its own colour. It hands back the position it gave each node; we keep that as \texttt{pos}, which also stops Colab from printing it under the picture.
 \end{linenotes}
