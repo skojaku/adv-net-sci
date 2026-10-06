@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe|expr]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -190,6 +190,17 @@ CANDIDATES_PFRAME = {
     22: ('TYPING FRAME C3, cleaned up from a rough collage. The attached picture is a ROUGH COLLAGE: the LOWER hand (in front, with the lower wristband) was cut out and rotated upward about the wrist so that it is lifted above the keys. Clean it up in the same drawing style: keep the lower hand lifted where it is, hovering above the keys with relaxed curled fingers; make the wrist and forearm join smoothly; redraw the keyboard keys where the cream patch is; keep the UPPER hand pressing the keys. Everything else stays exactly as it is.', None),
     6: ('SHRUG, elbows out. The eye closed as a slim arc, a small content smile, the head tilted a little to one side, both forearms lifted off the floor with the elbows out and the open hands palms up near the keyboard. The feet stay up as in the first image.', 'shrug'),
 }
+CANDIDATES_EXPR = {
+    # more faces for the video (lecturer, 2026-10-06: the narrator is monotone). Face only: same camera, same head, the hands stay on the keys.
+    1: ('HAPPY FACE WHILE STILL TYPING. Only the face changes: the eye is closed as a happy upward arc, the mouth is a wide open smile, the cheek has a faint pink blush. The hands stay on the keyboard exactly as in the first image.', 'happy'),
+    2: ('GRINNING FACE WHILE STILL TYPING. Only the face changes: the eye is a bright round dot with a small white highlight, the eyebrow raised a little, the mouth a big open grin, with two tiny sparkle marks near the head. The hands stay on the keyboard exactly as in the first image.', None),
+    3: ('SURPRISED FACE WHILE STILL TYPING. Only the face changes: the eyebrow raised high, the eye wide open as a round circle with a tiny pupil, the mouth a small round open O, and one small exclamation mark floating above the head. The hands stay on the keyboard exactly as in the first image.', None),
+    4: ('SURPRISED, OH I SEE. Only the face changes: the eyebrow raised, the eye wide open and round, looking toward the text on the right, the mouth a small open oval. No other marks. The hands stay on the keyboard exactly as in the first image.', None),
+    5: ('THINKING FACE WHILE STILL TYPING. Only the face changes: the eye looks up and to the right, one eyebrow raised a little, the mouth a small flat line pushed to one side, and a small thought cloud with three dots floating beside the head. The hands stay on the keyboard exactly as in the first image.', None),
+    6: ('PUZZLED THINKING. Only the face changes: the eye looks up and sideways, the eyebrow raised, the mouth a small pursed circle, and one small question mark floating beside the head. The hands stay on the keyboard exactly as in the first image.', None),
+    7: ('SMUG FACE WHILE STILL TYPING. Only the face changes: the eye half closed and relaxed, one eyebrow slightly raised, a confident little smirk on one side of the mouth. The hands stay on the keyboard exactly as in the first image.', None),
+    8: ('DETERMINED FACE WHILE STILL TYPING. Only the face changes: both eyebrows drawn level and slightly lowered, the eye focused on the text to the right, the mouth a small firm line, and one tiny sweat-free highlight on the cheek. The hands stay on the keyboard exactly as in the first image.', None),
+}
 CANDIDATES_POSE = {
     1: ('TYPING FRAME A. Only the hands change: the hand at the left end of the keyboard is pressed flat on the keys, the other hand is lifted a little above the keys with the fingers curled, ready to press. The face stays exactly as in the first image.', None),
     2: ('TYPING FRAME B. Only the hands change: the hand at the right side of the keyboard is pressed flat on the keys, the other hand (at the left end) is lifted a little above the keys with the fingers curled. The face stays exactly as in the first image.', None),
@@ -222,8 +233,8 @@ def make(n):
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
         name = f'prone-{n}'
-    elif SET in ('pose', 'pframe'):
-        change, expr = (CANDIDATES_POSE if SET == 'pose' else CANDIDATES_PFRAME)[n]
+    elif SET in ('pose', 'pframe', 'expr'):
+        change, expr = (CANDIDATES_POSE if SET == 'pose' else CANDIDATES_EXPR if SET == 'expr' else CANDIDATES_PFRAME)[n]
         prompt = (POSE if SET == 'pose' else PFRAME) + change + (POSE_REF if expr else '')
         paths = REFS + ([f'out/character/expr/{expr}.png'] if expr else [])
         parts = [{'type': 'text', 'text': prompt}]
@@ -266,7 +277,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME, 'expr': CANDIDATES_EXPR}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:

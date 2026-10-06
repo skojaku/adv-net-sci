@@ -9,10 +9,13 @@ from collections import deque
 import numpy as np
 from PIL import Image
 
-SRC = 'out/character'
-OUT = 'src/video/character'
+SRC = os.environ.get('CHAR_SRC', 'out/character')  # the pictures drawn by gen_character.py (in the project that has them)
+OUT = os.environ.get('CHAR_OUT', 'src/video/character')
 # frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B (the far hand lifted), pframe-21 = typing C (the near hand lifted, made from a rough collage cleaned up by the model), pframe-3 = troubled face while typing, pframe-5 = shrug)
 FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'typeC': 'pframe-21', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
+# more faces (gen_character.py --set expr), added for the modularity video; env CHAR_FACES=1 includes them. Only faces whose marks stay inside the old crop box, so the figure keeps its size.
+if os.environ.get('CHAR_FACES'):
+    FRAMES.update({'happy': 'expr-1', 'sparkle': 'expr-2', 'surprise': 'expr-4', 'puzzled': 'expr-6', 'smug': 'expr-7'})
 WIDTH = 640  # px of the saved frames; they are shown at about 260 px, so this is sharp at 2x
 SEARCH = 70  # largest shift tried, px
 
