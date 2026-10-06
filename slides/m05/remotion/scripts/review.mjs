@@ -20,6 +20,13 @@ const slides = [...index.matchAll(/\{n: (\d+), id: '([^']+)'/g)].map((m) => {
   return {n, id: m[2], marks, title: (file.match(/title="([^"]+)"/) || file.match(/title: ?'([^']+)'/) || [])[1] ?? m[2].replace(/-/g, ' ')};
 });
 
+// --only=1-8 or --only=3,5: render only those slides (several people can work on different slides at once)
+const onlyArg = process.argv.find((a) => a.startsWith('--only='));
+if (onlyArg) {
+  const want = new Set(onlyArg.slice(7).split(',').flatMap((x) => { const [a, b] = x.split('-').map(Number); return Array.from({length: (b ?? a) - a + 1}, (_, i) => a + i); }));
+  for (let i = slides.length - 1; i >= 0; i--) if (!want.has(slides[i].n)) slides.splice(i, 1);
+}
+
 const serveUrl = await bundle({entryPoint: path.join(root, 'src/remotion-entry.ts')});
 const cards = [];
 for (const s of slides) {

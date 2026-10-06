@@ -23,6 +23,23 @@ node scripts/render_video.mjs --still=1900,2000 --dir=out/video-stills     # sin
 Run `npm run video:audio` again after **any** change to the narration, to a slide's `marks`, to `src/video/prose.json` or to the sound: the timeline
 (and so every key time) changes, and the audio must follow.
 
+## Starting a new topic (no deck yet)
+
+The video needs a Remotion deck. For a new topic the deck is most of the work (the modularity video: 21 slides, written first, then 149 lines). Check first whether a deck exists: `slides/*/remotion*/src/slides/index.ts`.
+
+1. **The story as a table**: from the lecturer's brief, one row per slide and stage, what appears on screen and what picture is left at the end (`DECK_SPEC.md` of the new project; the modularity one is the model). Pitch it as pictures, not algorithm names. Show it and ask the questions that change what is drawn (the lecturer invites them); get the answers before drawing.
+2. **One command**, from `slides/m05/remotion`: `node scripts/new_deck.mjs ../remotion-<topic> --name=<topic> --ids=slide-one,slide-two,... --video-id=<ID> [--title=... --subtitle=... --kicker=...]`. It copies the shared deck parts, writes a stub slide per id, `src/slides/index.ts` and `TOTAL`, and ports the video code (`port_video.mjs`). It refuses a directory that is not empty. Then `npm install` there.
+3. **Numbers before pictures**: `scripts/make_data.py` writes `src/data/data.ts` (every number and random choice), `scripts/verify_numbers.py` recomputes them with an independent library (a number that no script computed is a bug). Check a claim from a paper at its source (an arXiv abstract) before it goes on a slide. A **constructed** example is never captioned as an algorithm's real run: say in the spec that it is constructed.
+4. **Slides**: agents can write slide ranges in parallel once the shared files are frozen (data, shared libs, index, stubs); each edits only its own slides and helper files with its own prefix (`a_`, `b_`, `c_`), never the shared ones. `node scripts/review.mjs --only=1-8` renders a range. Look at every still yourself (contact sheets of 9 to 12 stills per image save effort), then `check_bottom.py`.
+5. **Then the video**, steps 2 to 7 of the next section. Commit after each round (the project directory only).
+
+What the second video taught:
+- **A line costs about 7.5 seconds**: plan the length by counting lines before writing (149 lines = 18.7 minutes); cut lines, not typing speed.
+- The lecturer reads a long derivation as wordy: **one straight line per step**; a slide whose information is scattered is cut and replaced by one sentence; no closing recap slide; an example whose values differ clearly (every node with the same degree makes the matrix of expected edges teach nothing); an expected count is not called a probability.
+- Cutting or inserting a slide shifts the slide files, `index.ts`, `TOTAL`, the narration keys, `moods.ts` and the spec: do it with a script, then `npm run video:prose` and `npm run video:audio`.
+- The introduction's layout and the order of its move are per-video knobs (`INTRO` in `Narrator.tsx`, `introMove` in `timeline.ts`); in the modularity video the typed lines are above the narrator, who moves up after them. `port_video.mjs --update` would overwrite a changed copy.
+- Render the full video only after the lecturer has seen the stills and says so (about 11 minutes in the background); for a changed introduction render a clip: `--frames=0-1700 --out=out/intro-clip.mp4`.
+
 ## Making the video of another deck
 
 **What is specific to one video** is four files in `src/video/`: `video.config.json` (`id` of the compositions, `out` the file name, `skip` the slides left out, normally the section
