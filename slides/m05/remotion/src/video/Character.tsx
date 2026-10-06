@@ -3,6 +3,7 @@ import {Img} from 'remotion';
 import rest from './character/rest.png';
 import typeA from './character/typeA.png';
 import typeB from './character/typeB.png';
+import typeC from './character/typeC.png';
 import worry from './character/worry.png';
 import shrug from './character/shrug.png';
 import size from './character/size.json';
@@ -15,12 +16,14 @@ export const ASPECT = size.width / size.height;
  * The narrator, drawn by Gemini (scripts/gen_character.py, scripts/prep_character.py): five frames of the same boy lying flat on his stomach (side view, feet up, facing right toward the text), the head at
  * the same pixels in all of them. Which frame shows is a pure function of the frame number:
  * - 'rest': hands on the keys, no key pressed;
- * - 'type': while keys are being pressed, typeA and typeB alternate (every two keystrokes), so the fingers move with the sound;
+ * - 'type': while keys are being pressed, typeA / typeC / typeB / typeC follow one another (every two keystrokes), so that both hands strike with the sound;
  * - 'worry' (a troubled face, still at the keys) / 'shrug' (palms up, eyes closed): a reaction (timeline.reactionsOf) between two lines.
  * The groups blend over FADE frames; typeA <-> typeB is a hard cut.
  */
 const FADE = 6;
 const TYPING_AGE = 12; // frames after a key during which he is still typing
+/** the typing frames in turn, one step every two keystrokes: A lifts the far hand, C the near hand, B the far hand higher, so that both hands visibly strike */
+const TYPE_SEQ = ['typeA', 'typeC', 'typeB', 'typeC'];
 
 type Group = 'rest' | 'type' | Mood;
 
@@ -49,13 +52,20 @@ export const Character: React.FC<{frame: number; keys: {frame: number}[]; reacti
   for (let i = 0; i < FADE; i++) weight[groupAt(frame - i)] += 1 / FADE;
 
   const k = lastKey(frame);
-  const useA = Math.floor(Math.max(k, 0) / 2) % 2 === 0;
-  const opacity: Record<string, number> = {rest: weight.rest, typeA: useA ? weight.type : 0, typeB: useA ? 0 : weight.type, worry: weight.worry, shrug: weight.shrug};
+  const typeFrame = TYPE_SEQ[Math.floor(Math.max(k, 0) / 2) % TYPE_SEQ.length];
+  const opacity: Record<string, number> = {
+    rest: weight.rest,
+    typeA: typeFrame === 'typeA' ? weight.type : 0,
+    typeB: typeFrame === 'typeB' ? weight.type : 0,
+    typeC: typeFrame === 'typeC' ? weight.type : 0,
+    worry: weight.worry,
+    shrug: weight.shrug,
+  };
   const age = k >= 0 ? frame - keys[k].frame : 999;
   const bob = age < 4 ? 1.5 * (1 - age / 4) : 0; // the whole figure dips a little with each key
   const breathe = 1 + 0.012 * Math.sin(frame / 17);
 
-  const art: Record<string, string> = {rest, typeA, typeB, worry, shrug};
+  const art: Record<string, string> = {rest, typeA, typeB, typeC, worry, shrug};
   const height = width / ASPECT;
   return (
     <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleY(${breathe})`}}>

@@ -12,12 +12,12 @@ const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
  * its right, plain terminal lines on the white page (a prompt, the text typed key by key, a block cursor, no frame). A new line starts at the
  * bottom of the two lines and the older lines move up and fade; two lines at most.
  */
-const FONT = 31;
-const LINE = 46;
+const FONT = 34;
+const LINE = 50;
 const BX = 520; // left edge of the lines
 export const BAND = 228; // height of the band at the TOP of the video that holds the figure and the lines; the slide is shown under it
-const TOP = 94; // distance of the two lines from the top edge
-const WIDTH = 1300;
+const TOP = 85; // distance of the two lines from the top edge (they are centred on the figure)
+const WIDTH = 1390; // the longest line is 63 characters + the prompt + the cursor = 66.7 characters of 34 px mono = 1360 px: it must not wrap
 const FIG_H = 166; // height of the figure; its width follows from the aspect of the frames
 const FIG_W = Math.round(FIG_H * ASPECT);
 const FADE = [1, 0.6, 0, 0]; // opacity by age: the newest line, the one before, ...; two lines fit above the bottom margin
@@ -52,7 +52,7 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
           lineHeight: `${LINE}px`,
           color: C.ink,
           opacity: fadeOut,
-          whiteSpace: 'pre-wrap',
+          whiteSpace: 'pre',
         }}
       >
         {shown.map((b, i) => {
@@ -70,7 +70,7 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
           const typingNow = frame >= b.start && frame < b.typedEnd + 2;
           const blinkOn = typingNow || Math.floor(frame / 15) % 2 === 0;
           return (
-            <div key={`${b.slide}-${b.stage}-${b.index}`} style={{position: 'absolute', left: 0, bottom: rank * LINE, opacity: o, transform: `translateY(${shift}px)`, whiteSpace: 'pre-wrap'}}>
+            <div key={`${b.slide}-${b.stage}-${b.index}`} style={{position: 'absolute', left: 0, bottom: rank * LINE, opacity: o, transform: `translateY(${shift}px)`, whiteSpace: 'pre'}}>
               <span style={{color: C.blue, fontWeight: 500}}>{PROMPT} </span>
               {text}
               {isNewest && (

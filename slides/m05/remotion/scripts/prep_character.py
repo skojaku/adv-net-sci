@@ -11,8 +11,8 @@ from PIL import Image
 
 SRC = 'out/character'
 OUT = 'src/video/character'
-# frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B, pframe-3 = troubled face while typing, pframe-5 = shrug)
-FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
+# frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B (the far hand lifted), pframe-21 = typing C (the near hand lifted, made from a rough collage cleaned up by the model), pframe-3 = troubled face while typing, pframe-5 = shrug)
+FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'typeC': 'pframe-21', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
 WIDTH = 640  # px of the saved frames; they are shown at about 260 px, so this is sharp at 2x
 SEARCH = 70  # largest shift tried, px
 
