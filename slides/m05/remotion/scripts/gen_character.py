@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -88,6 +88,19 @@ CANDIDATES_LINES = {
     4: 'Typing on a tiny pale-pink keyboard on the floor with one hand while the other hand props the chin; square glasses with lavender frames; white T-shirt; sky-blue wristband.',
     5: 'Round glasses sliding a little down the nose; pale yellow T-shirt; sky-blue shorts; white socks with pink cuffs; one foot waving.',
 }
+REFINE = (
+    'The FIRST attached image is a character to KEEP: a short-haired boy lying on his stomach, typing on a tiny keyboard. The OTHER attached images show the target drawing STYLE. '
+    'Redraw the SAME boy (same pose, same outfit, same keyboard, same sky-blue wristband, short sports-cut hair, white clothes) but match the target style much more faithfully: '
+    'noticeably thicker, even black outlines; a very large round head on a tiny body; a flat, slightly tilted face plate with tiny dash-like eyes and a small smile; '
+    'soft off-white and cream fills with a hint of pale lavender-grey in the shadows of the clothes and hair, like the target; simple, rounded, slightly wobbly hand-drawn shapes. '
+    'Do NOT copy the character of the target images; only their style. Pure white background, no text, whole character visible, generous margin. '
+)
+CANDIDATES_B4 = {
+    1: 'Keep it as close to the first image as possible, only restyled.',
+    2: 'Restyled, and the boy has a tiny pale-lavender hairclip on the short hair (a small accent like in the target).',
+    3: 'Restyled, and the boy wears round glasses with thin dark frames.',
+    4: 'Restyled, with a slightly bigger head, a more tilted face plate, and white sneakers on his raised feet.',
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -103,8 +116,8 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white', 'boy', 'glasses', 'lines'):
-        prompt = REF_STYLE + (BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
+    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4'):
+        prompt = (REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET == 'b4' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -137,7 +150,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
