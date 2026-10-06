@@ -165,12 +165,16 @@ From here on, graph-tool does the drawing.
 
 \input{boxes/box4}
 
+\textbf{Try it.} Change \texttt{False} to \texttt{True} in line 1 and run the cell
+again. How many groups does the model find now, and what happens to the picture?
+Then change it back to \texttt{False}.
+
 \parthead{5}{What really happened}
 
 \input{boxes/box5}
 
-\textbf{What to look at.} Put your three pictures side by side: the nodes are in the
-same places. Find node 0 and node 33. Which groupings keep them apart? In the
+\textbf{What to look at.} Put your three pictures side by side (the block model with
+\texttt{deg\_corr = False}): the nodes are in the same places. Find node 0 and node 33. Which groupings keep them apart? In the
 stochastic block model's picture, who ends up together, and how many friends do they have?
 
 \parthead{6}{A hierarchy of groups}
@@ -178,7 +182,7 @@ stochastic block model's picture, who ends up together, and how many friends do 
 \input{boxes/box6}
 
 \textbf{What to look at.} How many levels does the hierarchy have, and how many groups
-at each? Which nodes does the bundle of friendships join?
+at each? Now change \texttt{False} to \texttt{True} and run the cell again. What changes?
 
 \parthead{7}{If you have time: the US airports}
 
@@ -187,12 +191,9 @@ connects them.
 
 \input{boxes/box7}
 
-\input{boxes/box8}
-
-\input{boxes/box9}
-
-\textbf{What to look at.} Do the groups follow regions of the map, or something
-else? Compare Leiden with the stochastic block model.
+\textbf{Try it.} Run the cell with \texttt{False}, then with \texttt{True}. Compare the
+printed levels and the two pictures. The number of flights differs a lot from one
+airport to another. Which setting describes this network better, do you think, and why?
 
 \textbf{Then try your own.} Change the network in Box 1, and run Boxes 2 to 4 and
 Box 6 again. A small network to try instead of the karate club:

@@ -26,7 +26,7 @@ below:
                               that the answers can be read without a Colab runtime.
 
 Everything the student does not type -- the install, and the data (the club's real
-split, the airports and where they are) -- is in the three setup cells, so that no
+split and the airports) -- is in the three setup cells, so that no
 spell-like step stands between a student and the code on the paper.
 
 Why graph-tool is installed with condacolab. graph-tool is a C++ library that
@@ -113,8 +113,11 @@ pos = gt.graph_draw(
     dict(
         id="sbm",
         title="The stochastic block model",
-        code='''gt.seed_rng(1)
-state = gt.minimize_blockmodel_dl(g, state_args=dict(deg_corr=False))
+        code='''deg_corr = False
+gt.seed_rng(1)
+state = gt.minimize_blockmodel_dl(
+    g, state_args=dict(deg_corr=deg_corr)
+)
 sbm = state.get_blocks().a
 print(sbm)
 pos = gt.graph_draw(
@@ -122,11 +125,12 @@ pos = gt.graph_draw(
     vertex_fill_color=paint(sbm),
 )''',
         notes=[
-            ("1", r"The fit makes random choices. \texttt{seed\_rng(1)} fixes them, so that everyone in the room gets the same answer. Change the \texttt{1} and you may get a different grouping."),
-            ("2", r"\texttt{minimize\_blockmodel\_dl} fits the stochastic block model from the lecture. \texttt{dl} stands for \emph{description length}: of all the ways to group the nodes, it picks the one that describes the network in the fewest bits. It decides the number of groups too. \texttt{state\_args=dict(deg\_corr=False)} asks for the plain model of the lecture, where the group alone decides how likely a friendship is. Graph-tool's default also lets every member have a number of friends of their own; on a network this small, that version finds one single group. The fitted model is stored as \texttt{state}."),
-            ("3", r"\texttt{state.get\_blocks()} gives the group of each node, in graph-tool's own array type. \texttt{.a} turns it into a plain array of numbers, like the list in Box 2."),
-            ("4", r"Print it: again one number for each of the 34 nodes."),
-            ("5--8", r"The drawing call of Box 3, with the colours of the block model's groups. \texttt{pos=pos} reuses the positions from Box 3, so that each node stays in the same place and the two pictures can be compared."),
+            ("1", r"This stores your choice of model under the name \texttt{deg\_corr}. \texttt{False} is the plain model of the lecture: the group alone decides how likely a friendship is, so the members of a group are alike in how many friends they have. \texttt{True} is the \emph{degree-corrected} model: every member may also have more or fewer friends than the others in the group. Change this one word later, to try the other model."),
+            ("2", r"The fit makes random choices. \texttt{seed\_rng(1)} fixes them, so that everyone in the room gets the same answer. Change the \texttt{1} and you may get a different grouping."),
+            ("3--5", r"\texttt{minimize\_blockmodel\_dl} fits the stochastic block model from the lecture. \texttt{dl} stands for \emph{description length}: of all the ways to group the nodes, it picks the one that describes the network in the fewest bits. It decides the number of groups too. \texttt{state\_args=dict(deg\_corr=deg\_corr)} hands your choice from line 1 to the model. The fitted model is stored as \texttt{state}."),
+            ("6", r"\texttt{state.get\_blocks()} gives the group of each node, in graph-tool's own array type. \texttt{.a} turns it into a plain array of numbers, like the list in Box 2."),
+            ("7", r"Print it: one number for each of the 34 nodes."),
+            ("8--11", r"The drawing call of Box 3, with the colours of the block model's groups. \texttt{pos=pos} reuses the positions from Box 3, so that each node stays in the same place and the pictures can be compared."),
         ],
     ),
     dict(
@@ -143,71 +147,38 @@ pos = gt.graph_draw(
     dict(
         id="nested",
         title="A hierarchy of groups: the nested block model",
-        code='''nested = gt.minimize_nested_blockmodel_dl(
-    g, state_args=dict(deg_corr=False)
+        code='''deg_corr = False
+nested = gt.minimize_nested_blockmodel_dl(
+    g, state_args=dict(deg_corr=deg_corr)
 )
 nested.print_summary()
 groups = nested.get_bs()[0]
 pos_tree = nested.draw(vertex_fill_color=paint(groups))''',
         notes=[
-            ("1--3", r"\texttt{minimize\_nested\_blockmodel\_dl} fits the \emph{nested} stochastic block model: the groups of nodes are themselves grouped into bigger groups, and those into still bigger ones, up to a single group. Everything else is as in Box 4. The result is stored as \texttt{nested}."),
-            ("4", r"\texttt{print\_summary()} prints one line for each level of the hierarchy. For example \texttt{l: 0, N: 34, B: 2} says that level 0 has 34 nodes, put into 2 groups."),
-            ("5", r"\texttt{nested.get\_bs()} gives the group of every node at every level, and \texttt{[0]} keeps the first level: the groups of the nodes themselves."),
-            ("6", r"\texttt{nested.draw} draws the hierarchy on a circle: the nodes sit on the rim, the groups and the groups of groups are the squares inside, and the friendships bend along the hierarchy. \texttt{vertex\_fill\_color=paint(groups)} colours the nodes as in Box 3. It hands back positions; we keep them as \texttt{pos\_tree}."),
+            ("1", r"Your choice of model, as in Box 4."),
+            ("2--4", r"\texttt{minimize\_nested\_blockmodel\_dl} fits the \emph{nested} stochastic block model: the groups of nodes are themselves grouped into bigger groups, and those into still bigger ones, up to a single group. Everything else is as in Box 4. The result is stored as \texttt{nested}."),
+            ("5", r"\texttt{print\_summary()} prints one line for each level of the hierarchy. For example \texttt{l: 0, N: 34, B: 2} says that level 0 has 34 nodes, put into 2 groups."),
+            ("6", r"\texttt{nested.get\_bs()} gives the group of every node at every level, and \texttt{[0]} keeps the first level: the groups of the nodes themselves."),
+            ("7", r"\texttt{nested.draw} draws the hierarchy on a circle: the nodes sit on the rim, the groups and the groups of groups are the squares inside, and the friendships bend along the hierarchy. \texttt{vertex\_fill\_color=paint(groups)} colours the nodes as in Box 3. It hands back positions; we keep them as \texttt{pos\_tree}."),
         ],
     ),
     dict(
-        id="airports_leiden",
-        title="The US airports: Leiden, and a map",
-        code='''import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-members = g_air.community_leiden("modularity", n_iterations=-1).membership
-top = pd.Series(members).value_counts().index[:4]
-sns.scatterplot(x=lon, y=lat, color="#bdbdbd", s=14)
-sns.scatterplot(
-    x=lon, y=lat, hue=members, hue_order=top, palette=palette[:4], s=14
-)
-plt.show()''',
-        notes=[
-            ("1--3", r"\texttt{matplotlib} draws pictures, \texttt{seaborn} draws statistical pictures on top of it, and \texttt{pandas} works with tables. \texttt{plt}, \texttt{sns} and \texttt{pd} are their usual short names."),
-            ("4", r"Box 2, line 1, again, on the US airport network \texttt{g\_air} (540 airports, two linked when a flight connects them), which is ready-made. We keep the group of each airport as \texttt{members}."),
-            ("5", r"\texttt{pd.Series(members).value\_counts()} counts how many airports each group has, biggest group first. \texttt{.index[:4]} keeps the numbers of the four biggest groups. We call them \texttt{top}."),
-            ("6", r"\texttt{lon} and \texttt{lat} are the longitude and the latitude of each airport, also ready-made. \texttt{sns.\allowbreak scatterplot} puts one dot per airport at that place: a rough map of the US. This first call paints all of them light grey; \texttt{s=14} is the dot size."),
-            ("7--9", r"The second call paints over the grey, but only the four groups in \texttt{top}: \texttt{hue=members} says that the colour follows the group, \texttt{hue\_order=top} limits it to those four, and \texttt{palette[:4]} is the first four colours of the palette. Every other airport stays light grey: it is ``the rest''."),
-            ("10", r"Show the map."),
-        ],
-    ),
-    dict(
-        id="airports_sbm",
-        title="The US airports: the block model, and a map",
-        code='''g2 = gt.Graph(directed=False)
-g2.add_edge_list(g_air.get_edgelist())
-state2 = gt.minimize_blockmodel_dl(g2, state_args=dict(deg_corr=False))
-members = state2.get_blocks().a
-top = pd.Series(members).value_counts().index[:4]
-sns.scatterplot(x=lon, y=lat, color="#bdbdbd", s=14)
-sns.scatterplot(
-    x=lon, y=lat, hue=members, hue_order=top, palette=palette[:4], s=14
-)
-plt.show()''',
-        notes=[
-            ("1--2", r"Box 1, lines 4 and 5, again, with a new graph-tool network called \texttt{g2}."),
-            ("3", r"Box 4, line 2, again."),
-            ("4", r"Box 4, line 3, again: the group of each airport, kept as \texttt{members}."),
-            ("5--10", r"The map of the previous box, again, now coloured by the groups of the stochastic block model."),
-        ],
-    ),
-    dict(
-        id="airports_nested",
+        id="airports",
         title="The US airports: the hierarchy",
-        code='''nested_air = gt.minimize_nested_blockmodel_dl(
-    g2, state_args=dict(deg_corr=False)
+        code='''deg_corr = False
+g2 = gt.Graph(directed=False)
+g2.add_edge_list(g_air.get_edgelist())
+nested_air = gt.minimize_nested_blockmodel_dl(
+    g2, state_args=dict(deg_corr=deg_corr)
 )
 nested_air.print_summary()
 pos_air = nested_air.draw()''',
         notes=[
-            ("1--5", r"Box 6 again, on the airport network \texttt{g2}. Without \texttt{vertex\_fill\_color}, graph-tool picks the colours itself; with this many groups, colour no longer says much, and the place on the circle does. How many levels does the hierarchy have, and how many groups at each?"),
+            ("1", r"Your choice of model, as in Box 4."),
+            ("2--3", r"Box 1, lines 4 and 5, again, with a new graph-tool network called \texttt{g2}. \texttt{g\_air} is the US airport network (540 airports, two linked when a flight connects them), already built for you."),
+            ("4--6", r"Box 6, lines 2 to 4, again, on the airport network."),
+            ("7", r"One line for each level of the hierarchy, as in Box 6."),
+            ("8", r"The hierarchy on a circle. Without \texttt{vertex\_fill\_color}, graph-tool picks the colours itself; with this many groups, colour no longer says much, and the place on the circle does."),
         ],
     ),
 ]
@@ -235,8 +206,6 @@ import base64, json, zlib
 import igraph
 import seaborn as sns
 
-sns.set_theme(style="white")  # a plain white background for every picture
-
 # Colours for the groups, chosen by the course's figure rules: blue and vermillion (they
 # stay apart for colour-blind readers too), then two steps of ink; the light grey is for
 # "the rest". The node numbers in the pictures are the second channel.
@@ -252,8 +221,6 @@ club = [1 if i in _OFFICER else 0 for i in range(34)]
 # The US airport network: 540 airports, two linked when a flight connects them.
 AIRPORTS = _DATA["airports"]  # [code, city, latitude, longitude]
 g_air = igraph.Graph(n=len(AIRPORTS), edges=_DATA["edges"])
-lon = [a[3] for a in AIRPORTS]  # where each airport is
-lat = [a[2] for a in AIRPORTS]
 
 try:
     import graph_tool
