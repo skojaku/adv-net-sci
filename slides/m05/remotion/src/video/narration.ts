@@ -10,12 +10,27 @@ import type {Narration} from './timeline';
  *   typed first in their stage; write '@mirror' in a stage's lines to put them somewhere else. The lines below only ADD to them: why, how to
  *   read the picture, what to compare. Labels, numbers, figures and formulas stay on the slide.
  * - A stage's notes start only after the slide has finished animating (the slide is still while a note types).
+ * - The introduction is slide 0 (greeting, what the module covers); the title is in video.config.json (`intro`).
  * - One continuous talk: the three section dividers (S1, S8, S22) are not in the video, and the chat is never cleared: the bridge from one
  *   part to the next is the first lines of the next slide (S9, S23).
  * - A line is one short plain sentence (at most 64 characters). No answer on a question slide: it ends with a prompt to think.
  * Draft text: edit freely, then run `npm run video:audio` and `npm run video`.
  */
 export const narration: Narration = {
+  // 0 = the introduction, typed with the title on screen and the narrator in the middle; then the narrator moves up and slide 2 starts
+  0: {
+    0: [
+      'Hello everyone.',
+      'This module is about finding communities in a network.',
+      'A community is a group of nodes with many links inside it.',
+      'There are three parts.',
+      'Part 1: modularity, and the limits of its score.',
+      'Part 2: how to compare a found grouping with a known one.',
+      'Part 3: models that generate a network from its groups.',
+      'I will type short notes here while each slide plays.',
+      "Let's start with modularity.",
+    ],
+  },
   2: {
     0: ['Modularity Q gives one score to a grouping.', "Let's see where that score misleads us."],
     1: ['Q rewards dense groups with few edges between them.'],

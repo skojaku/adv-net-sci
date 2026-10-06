@@ -3,8 +3,9 @@ import {AbsoluteFill, Audio, Freeze, Sequence, staticFile, useCurrentFrame} from
 import {slides} from '../slides';
 import {BAND, Narrator} from './Narrator';
 import {ProseContext} from '../components/Text';
+import {IntroTitle} from './IntroTitle';
 import {MOODS} from './moods';
-import {Prose, SKIP, SlideSeg, buildTimeline, reactionsOf} from './timeline';
+import {Prose, SKIP, SlideSeg, buildTimeline, introMove, reactionsOf} from './timeline';
 import proseData from './prose.json';
 import {narration} from './narration';
 
@@ -24,6 +25,8 @@ export const timeline = buildTimeline(
 );
 
 export const reactions = reactionsOf(timeline, MOODS);
+
+
 
 const SlidePlay: React.FC<{seg: SlideSeg}> = ({seg}) => {
   const Comp = slides[seg.n - 1].Component;
@@ -55,6 +58,14 @@ export const NarratedDeck: React.FC = () => {
       <div style={{position: 'absolute', left: 0, top: BAND, width: 1920, height: 1080 - BAND, overflow: 'hidden'}}>
         <div style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '50% 0', transform: `scale(${SLIDE_SCALE})`}}>
           <ProseContext.Provider value="hide">
+            {timeline.intro && timeline.slides.length > 0 && (
+              <Sequence from={timeline.intro.transFrom} durationInFrames={timeline.intro.transTo - timeline.intro.transFrom}>
+                {/* the first slide's opening picture fades in while the narrator moves up, so that it does not pop in when the move is done */}
+                <div style={{opacity: introMove(frame, timeline.intro).slide}}>
+                  <Freeze frame={0}>{React.createElement(slides[timeline.slides[0].n - 1].Component)}</Freeze>
+                </div>
+              </Sequence>
+            )}
             {timeline.slides.map((seg) => (
               <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
                 <SlidePlay seg={seg} />
@@ -63,7 +74,8 @@ export const NarratedDeck: React.FC = () => {
           </ProseContext.Provider>
         </div>
       </div>
-      <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} reactions={reactions} fadeFrom={timeline.total - 80} />
+      {timeline.intro && <IntroTitle frame={frame} intro={timeline.intro} />}
+      <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} reactions={reactions} intro={timeline.intro} fadeFrom={timeline.total - 80} />
       <Audio src={staticFile('typing.wav')} volume={0.9} />
     </AbsoluteFill>
   );

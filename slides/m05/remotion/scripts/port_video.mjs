@@ -1,4 +1,4 @@
-// node scripts/port_video.mjs <target remotion project> --id=M06 [--out=m06-narrated.mp4] [--skip=1,8] [--update]
+// node scripts/port_video.mjs <target remotion project> --id=M06 [--out=m06-narrated.mp4] [--skip=1,8] [--kicker="Module 6" --title="..." --subtitle="..."] [--update]
 //
 // Puts the narrated-video machinery of this project (Module 05) into another Remotion deck, so that the deck can have a video of its own.
 // Shared code is copied (src/video/*.ts(x), the character frames, the scripts, the typing samples) and the four files that are specific to one
@@ -18,7 +18,7 @@ const opt = (name, fallback) => {
 };
 const targetArg = args.find((a) => !a.startsWith('--'));
 if (!targetArg || !opt('id')) {
-  console.error('usage: node scripts/port_video.mjs <target remotion project> --id=M06 [--out=m06-narrated.mp4] [--skip=1,8] [--update]');
+  console.error('usage: node scripts/port_video.mjs <target remotion project> --id=M06 [--out=m06-narrated.mp4] [--skip=1,8] [--kicker="Module 6" --title="..." --subtitle="..."] [--update]');
   process.exit(1);
 }
 const target = path.resolve(targetArg);
@@ -30,6 +30,7 @@ const id = opt('id');
 const out = opt('out', `${id.toLowerCase()}-narrated.mp4`);
 const skip = opt('skip', '').split(',').filter(Boolean).map(Number);
 const update = flag('update');
+const intro = {kicker: opt('kicker', ''), title: opt('title', ''), subtitle: opt('subtitle', '')}; // the title of the introduction (narration[0][0] holds its lines)
 
 const notes = [];
 const read = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : null);
@@ -87,7 +88,7 @@ const stub = (file, text) => {
   fs.writeFileSync(to, text);
   copied.push(file);
 };
-stub('src/video/video.config.json', JSON.stringify({id, out, skip}, null, 2) + '\n');
+stub('src/video/video.config.json', JSON.stringify({id, out, skip, intro}, null, 2) + '\n');
 stub('src/video/narration.ts', "import type {Narration} from './timeline';\n\n// stub: replace with `npm run video:skeleton`\nexport const narration: Narration = {};\n");
 stub('src/video/moods.ts', "import type {MoodRule} from './timeline';\n\n/** Where the figure reacts after the last line of a stage: {slide, stage (0-based), mood: 'worry' | 'shrug'}. Few of them. See NARRATED_VIDEO_GUIDE.md, \"Reactions\". */\nexport const MOODS: MoodRule[] = [];\n");
 stub('src/video/prose.json', '{}\n');

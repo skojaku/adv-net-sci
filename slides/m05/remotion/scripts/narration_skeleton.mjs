@@ -34,6 +34,8 @@ lines.push(" * The slide's own sentences are typed first, from prose.json (shown
 lines.push(" * '@mirror' puts the slide's sentences somewhere else in the stage. Rules and examples: slides/NARRATED_VIDEO_GUIDE.md, \"Writing the narration\".");
 lines.push(' */');
 lines.push('export const narration: Narration = {');
+lines.push('  // 0 = the introduction: a greeting and what the module covers, typed with the title (video.config.json, intro) on screen and the narrator in the middle of the screen; [] for none');
+lines.push('  0: {0: []},');
 for (const s of slides) {
   if (config.skip.includes(s.n)) {
     lines.push(`  // S${s.n} ${s.id}: left out of the video (skip in video.config.json)`);

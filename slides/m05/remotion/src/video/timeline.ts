@@ -27,7 +27,9 @@ export type Bubble = {
 };
 export type StageSeg = {k: number; from: number; anim: number; hold: number; slideFrom: number; slideTo: number};
 export type SlideSeg = {n: number; from: number; dur: number; stages: StageSeg[]};
-export type Timeline = {slides: SlideSeg[]; bubbles: Bubble[]; keys: {frame: number; kind: KeyKind}[]; total: number};
+/** The introduction (narration[0][0]): the title alone, then the lines typed with the narrator in the middle of the screen, then the narrator moves up into the band and the first slide appears. */
+export type IntroSeg = {from: number; typedEnd: number; transFrom: number; transTo: number};
+export type Timeline = {slides: SlideSeg[]; bubbles: Bubble[]; keys: {frame: number; kind: KeyKind}[]; total: number; intro?: IntroSeg};
 
 export const LEAD_IN = 18; // frames of the first picture before anything happens
 export const LEAD = 40; // narration starts this long after the animation of its stage has finished, so text never moves while a note is being read
@@ -36,6 +38,9 @@ export const GAP = 44; // between two bubbles of one stage
 export const READ = 72; // after the last key of a stage: time to finish reading and to look at the slide
 export const HOLD = 48; // after the animation of a stage without narration
 export const END_PAD = 75;
+export const INTRO_LEAD = 45; // the title alone, before the first key of the introduction
+export const INTRO_HOLD = 70; // after the last line of the introduction, before the narrator moves up
+export const TRANS = 54; // the narrator moves from the middle to the band at the top, and the first slide fades in
 export const MAX_CHARS = 64; // a line longer than this wraps in its bubble
 /** the slides left out of the video (video.config.json, `skip`): the section dividers, so that it is one continuous talk, not chapters */
 export const SKIP: number[] = config.skip;
@@ -87,6 +92,34 @@ export const buildTimeline = (marks: number[][], narration: Narration, prose: Pr
   let pos = LEAD_IN;
   const slides: SlideSeg[] = [];
   const bubbles: Bubble[] = [];
+  /** types `lines` as bubbles of stage k of slide n, the first one `t` frames after `stageFrom`; returns the frame of the last key, relative to `stageFrom` */
+  const addLines = (n: number, k: number, lines: string[], stageFrom: number, t0: number): number => {
+    let t = t0;
+    let lastEnd = 0;
+    lines.forEach((text, j) => {
+      if (text.length > MAX_CHARS) throw new Error(`${n ? `S${n} stage ${k + 1}` : 'introduction'}: "${text}" is ${text.length} characters (limit ${MAX_CHARS})`);
+      const start = stageFrom + t;
+      const plan = planTyping(text, hashString(`${n}/${k}/${j}/${text}`));
+      const keys = plan.events.map((e: KeyEv) => ({frame: start + POP + (e.t * FPS) / 1000, kind: e.kind, text: e.text}));
+      const typedEnd = keys[keys.length - 1].frame;
+      bubbles.push({slide: n, stage: k, index: j, text, start, keys, typedEnd});
+      lastEnd = typedEnd - stageFrom;
+      t = lastEnd + GAP;
+    });
+    return lastEnd;
+  };
+
+  // the introduction is slide 0, stage 0 of the narration
+  let intro: IntroSeg | undefined;
+  const introLines = stageLines(undefined, narration[0]?.[0]);
+  if (introLines.length) {
+    const from = pos;
+    const lastEnd = addLines(0, 0, introLines, from, INTRO_LEAD);
+    const transFrom = from + Math.ceil(lastEnd) + INTRO_HOLD;
+    intro = {from, typedEnd: from + lastEnd, transFrom, transTo: transFrom + TRANS};
+    pos = intro.transTo;
+  }
+
   marks.forEach((mk, si) => {
     const n = si + 1;
     if (skip.includes(n)) return;
@@ -97,18 +130,7 @@ export const buildTimeline = (marks: number[][], narration: Narration, prose: Pr
       const anim = end - slideFrom;
       const lines = stageLines(prose[String(n)]?.[String(k)], narration[n]?.[k]);
       const stageFrom = pos;
-      let t = anim + LEAD; // after the animation of the stage
-      let lastEnd = 0;
-      lines.forEach((text, j) => {
-        if (text.length > MAX_CHARS) throw new Error(`S${n} stage ${k + 1}: "${text}" is ${text.length} characters (limit ${MAX_CHARS})`);
-        const start = stageFrom + t;
-        const plan = planTyping(text, hashString(`${n}/${k}/${j}/${text}`));
-        const keys = plan.events.map((e: KeyEv) => ({frame: start + POP + (e.t * FPS) / 1000, kind: e.kind, text: e.text}));
-        const typedEnd = keys[keys.length - 1].frame;
-        bubbles.push({slide: n, stage: k, index: j, text, start, keys, typedEnd});
-        lastEnd = typedEnd - stageFrom;
-        t = lastEnd + GAP;
-      });
+      const lastEnd = addLines(n, k, lines, stageFrom, anim + LEAD); // after the animation of the stage
       const dur = lines.length ? Math.ceil(lastEnd) + READ : anim + HOLD;
       stages.push({k, from: stageFrom, anim, hold: dur - anim, slideFrom, slideTo: end});
       pos += dur;
@@ -117,7 +139,22 @@ export const buildTimeline = (marks: number[][], narration: Narration, prose: Pr
   });
   const total = pos + END_PAD;
   const keys = bubbles.flatMap((b) => b.keys.map((e) => ({frame: e.frame, kind: e.kind}))).sort((a, b) => a.frame - b.frame);
-  return {slides, bubbles, keys, total};
+  return {slides, bubbles, keys, total, intro};
+};
+
+/**
+ * The move from the introduction layout to the band, one progress (0 to 1) per part, staggered so that nothing overlaps: the title leaves first (`title`, linear: 0 shown, 1 gone),
+ * then the figure moves, then the lines, and the first slide fades in last. Every part that moves reads its progress here.
+ */
+export const introMove = (frame: number, intro?: IntroSeg) => {
+  if (!intro) return {title: 1, figure: 1, text: 1, slide: 1};
+  const clamp = (x: number) => Math.min(1, Math.max(0, x));
+  const t = clamp((frame - intro.transFrom) / (intro.transTo - intro.transFrom));
+  const seg = (a: number, b: number) => {
+    const x = clamp((t - a) / (b - a));
+    return x * x * (3 - 2 * x);
+  };
+  return {title: clamp(t / 0.3), figure: seg(0.12, 0.77), text: seg(0.32, 1), slide: seg(0.4, 1)};
 };
 
 /** how the narrator reacts to a stage: after the last line of the stage is typed he takes his hands off the keyboard and shows the mood */

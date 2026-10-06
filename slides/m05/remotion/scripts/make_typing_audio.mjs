@@ -29,6 +29,8 @@ const prose = fs.existsSync(proseFile) ? JSON.parse(fs.readFileSync(proseFile, '
 if (!fs.existsSync(proseFile)) console.log('no src/video/prose.json: run `npm run video:prose` first for the slide text in the chat');
 const tl = buildTimeline(marks, narration, prose, SKIP);
 
+// the introduction (narration[0]): the frames of the move into the band, listed here so that they can be looked at
+if (tl.intro) console.log(`introduction: typed frames ${Math.round(tl.intro.from)}-${Math.round(tl.intro.typedEnd)}, the narrator moves up in frames ${tl.intro.transFrom}-${tl.intro.transTo} (the first slide starts at ${tl.slides[0]?.from})`);
 // where the narrator reacts (src/video/moods.ts): listed here so that the frames can be looked at
 for (const r of reactionsOf(tl, MOODS)) console.log(`reaction ${r.mood}: frames ${Math.round(r.from)}-${Math.round(r.to)} (${(r.from / FPS).toFixed(1)}s-${(r.to / FPS).toFixed(1)}s)`);
 
