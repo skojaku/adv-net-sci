@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe|expr]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe|expr|cup|new]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -190,6 +190,33 @@ CANDIDATES_PFRAME = {
     22: ('TYPING FRAME C3, cleaned up from a rough collage. The attached picture is a ROUGH COLLAGE: the LOWER hand (in front, with the lower wristband) was cut out and rotated upward about the wrist so that it is lifted above the keys. Clean it up in the same drawing style: keep the lower hand lifted where it is, hovering above the keys with relaxed curled fingers; make the wrist and forearm join smoothly; redraw the keyboard keys where the cream patch is; keep the UPPER hand pressing the keys. Everything else stays exactly as it is.', None),
     6: ('SHRUG, elbows out. The eye closed as a slim arc, a small content smile, the head tilted a little to one side, both forearms lifted off the floor with the elbows out and the open hands palms up near the keyboard. The feet stay up as in the first image.', 'shrug'),
 }
+CUP = (
+    'The FIRST attached image is the character to KEEP, exactly, in the same drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading). '
+    'Redraw the same picture with ONE new object added: a cup of hot tea standing on the floor. EVERYTHING else stays exactly the same: the boy, his face, his hands, the keyboard, '
+    'the camera, the scale, the position of every line, and the plain white background. '
+)
+CANDIDATES_CUP = {
+    1: 'The cup is a small round ceramic tea cup with a little handle, pale blue glaze like the wristbands, tea inside, and one tiny curl of steam above it. Place it standing on the floor to the right of the boy\'s face, a little behind the keyboard, completely inside the picture with free white space around it. It is about one third as tall as the boy\'s head.',
+    2: 'The cup is a small Japanese tea cup (a yunomi, no handle), cream coloured with a thin pale blue band, tea inside, and one tiny curl of steam above it. Place it standing on the floor to the right of the boy\'s face, a little behind the keyboard, completely inside the picture with free white space around it. It is about one third as tall as the boy\'s head.',
+    3: 'The cup is a small off-white mug with a handle and a blue stripe, tea inside, and one tiny curl of steam above it. Place it standing on the floor just to the right of the keyboard, at the right edge of the picture, completely inside the picture. It is about one third as tall as the boy\'s head.',
+}
+NEWPOSE = (
+    'The FIRST attached image is the character to KEEP, exactly: the same boy (the same big round head and face, short hair, white T-shirt and shorts, sky-blue wristbands, white sneakers), '
+    'the same drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading), the same small cream keyboard and the same cup of tea with its steam, drawn at the same size. '
+    'Draw the boy in the NEW pose described below, on a plain white background, the whole figure fully inside the picture. Unless the pose says otherwise, the keyboard and the cup of tea '
+    'stay on the floor at the same place and the same size as in the first image. '
+)
+CANDIDATES_NEW = {
+    1: 'DRAMATIC KEY PUSH. He is lying on his stomach and slams one key of the keyboard: the arm nearest the viewer is raised high above the keyboard and the fist comes down hard on a key, three short motion lines beside the arm, the eyebrows level and the mouth set in a determined look.',
+    2: 'PUSH-UP. He pushes his chest up off the floor with both straight arms like a push-up, the head up, a cheerful determined face, the legs still bent up in the air behind him; the keyboard and the cup stay on the floor.',
+    3: 'PUSHING AWAY. He lies on his stomach and pushes the keyboard away from himself with both flat palms, the arms straight, a tired "enough" face with one eyebrow raised, two small motion lines.',
+    4: 'ON HIS BACK. He lies flat on his back, face up, the head at the right as before, both hands tucked behind his head, the knees up and the legs crossed, the sneakers up, the eyes closed in a relaxed smile. The keyboard and the cup stay on the floor beside him.',
+    5: 'ON HIS BACK, STRETCHING. He lies on his back, the arms stretched up over his head, the toes pointed, a big open-mouthed yawn with the eyes closed. The keyboard and the cup stay on the floor.',
+    6: 'ON HIS BACK, THINKING. He lies on his back looking up, both hands resting on his stomach, one knee up with the other leg crossed over it, a calm blank look. The keyboard and the cup stay on the floor.',
+    7: 'DRINKING TEA. He is on his stomach propped on one elbow, holding the cup of tea with both hands close to his mouth, taking a sip with the eyes closed in a content look, steam rising from the cup. The keyboard lies on the floor in front of him; the floor spot where the cup stood is now empty.',
+    8: 'DRINKING TEA, ONE HAND. He lies on his stomach with the head up, one hand holds the cup of tea near his mouth while the other hand still rests on the keyboard, a content look. The floor spot where the cup stood is now empty.',
+    9: 'TEA BREAK. He lies on his stomach on both elbows, holding the cup of tea in both hands in front of his chest and looking down into it with a gentle smile, steam rising. The keyboard lies on the floor in front of him; the floor spot where the cup stood is now empty.',
+}
 CANDIDATES_EXPR = {
     # more faces for the video (lecturer, 2026-10-06: the narrator is monotone). Face only: same camera, same head, the hands stay on the keys.
     1: ('HAPPY FACE WHILE STILL TYPING. Only the face changes: the eye is closed as a happy upward arc, the mouth is a wide open smile, the cheek has a faint pink blush. The hands stay on the keyboard exactly as in the first image.', 'happy'),
@@ -233,6 +260,14 @@ def make(n):
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
         name = f'prone-{n}'
+    elif SET in ('cup', 'new'):
+        prompt = (CUP + CANDIDATES_CUP[n]) if SET == 'cup' else (NEWPOSE + CANDIDATES_NEW[n])
+        parts = [{'type': 'text', 'text': prompt}]
+        for path in REFS:
+            with open(path, 'rb') as f:
+                parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
+        content = parts
+        name = f'{SET}-{n}'
     elif SET in ('pose', 'pframe', 'expr'):
         change, expr = (CANDIDATES_POSE if SET == 'pose' else CANDIDATES_EXPR if SET == 'expr' else CANDIDATES_PFRAME)[n]
         prompt = (POSE if SET == 'pose' else PFRAME) + change + (POSE_REF if expr else '')
@@ -277,7 +312,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME, 'expr': CANDIDATES_EXPR}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME, 'expr': CANDIDATES_EXPR, 'cup': CANDIDATES_CUP, 'new': CANDIDATES_NEW}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:

@@ -6,11 +6,12 @@ import typeB from './character/typeB.png';
 import typeC from './character/typeC.png';
 import worry from './character/worry.png';
 import shrug from './character/shrug.png';
-import happy from './character/happy.png';
-import sparkle from './character/sparkle.png';
 import surprise from './character/surprise.png';
-import puzzled from './character/puzzled.png';
 import smug from './character/smug.png';
+import focus from './character/focus.png';
+import push from './character/push.png';
+import onback from './character/onback.png';
+import tea from './character/tea.png';
 import size from './character/size.json';
 import {Mood, Reaction} from './timeline';
 
@@ -22,8 +23,8 @@ export const ASPECT = size.width / size.height;
  * the same pixels in all of them. Which frame shows is a pure function of the frame number:
  * - 'rest': hands on the keys, no key pressed;
  * - 'type': while keys are being pressed, typeA / typeC / typeB / typeC follow one another (every two keystrokes), so that both hands strike with the sound;
- * - a reaction (timeline.reactionsOf) between two lines: 'worry' (a troubled face, still at the keys), 'shrug' (palms up, eyes closed) and, for the modularity video, five more faces
- *   at the keys: 'happy', 'sparkle' (an aha), 'surprise', 'puzzled', 'smug' (scripts/gen_character.py --set expr).
+ * - a reaction (timeline.reactionsOf) between two lines: 'worry' (a troubled face, still at the keys), 'shrug' (palms up, eyes closed) and, for the modularity video, three more faces at the keys
+ *   ('surprise', 'smug', 'focus') and three poses: 'push' (a fist slams a key), 'onback' (lying on his back), 'tea' (a sip). A cup of tea stands next to the keyboard in every frame (scripts/prep_character.py).
  * The groups blend over FADE frames; typeA <-> typeB is a hard cut.
  */
 const FADE = 6;
@@ -32,7 +33,7 @@ const TYPING_AGE = 12; // frames after a key during which he is still typing
 const TYPE_SEQ = ['typeA', 'typeC', 'typeB', 'typeC'];
 
 type Group = 'rest' | 'type' | Mood;
-const MOODS: Mood[] = ['worry', 'shrug', 'happy', 'sparkle', 'surprise', 'puzzled', 'smug'];
+const MOODS: Mood[] = ['worry', 'shrug', 'surprise', 'smug', 'focus', 'push', 'onback', 'tea'];
 
 export const Character: React.FC<{frame: number; keys: {frame: number}[]; reactions: Reaction[]; width: number}> = ({frame, keys, reactions, width}) => {
   const lastKey = (f: number) => {
@@ -71,7 +72,7 @@ export const Character: React.FC<{frame: number; keys: {frame: number}[]; reacti
   const bob = age < 4 ? 1.5 * (1 - age / 4) : 0; // the whole figure dips a little with each key
   const breathe = 1 + 0.012 * Math.sin(frame / 17);
 
-  const art: Record<string, string> = {rest, typeA, typeB, typeC, worry, shrug, happy, sparkle, surprise, puzzled, smug};
+  const art: Record<string, string> = {rest, typeA, typeB, typeC, worry, shrug, surprise, smug, focus, push, onback, tea};
   const height = width / ASPECT;
   return (
     <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleY(${breathe})`}}>

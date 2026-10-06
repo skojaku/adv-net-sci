@@ -13,9 +13,13 @@ SRC = os.environ.get('CHAR_SRC', 'out/character')  # the pictures drawn by gen_c
 OUT = os.environ.get('CHAR_OUT', 'src/video/character')
 # frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B (the far hand lifted), pframe-21 = typing C (the near hand lifted, made from a rough collage cleaned up by the model), pframe-3 = troubled face while typing, pframe-5 = shrug)
 FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'typeC': 'pframe-21', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
-# more faces (gen_character.py --set expr), added for the modularity video; env CHAR_FACES=1 includes them. Only faces whose marks stay inside the old crop box, so the figure keeps its size.
+# more faces and poses for the modularity video (gen_character.py --set expr / cup / new); env CHAR_FACES=1 includes them.
+# expr-4 surprise, expr-7 smug, expr-8 focus (the lecturer kept these three), new-1 push (a fist slams a key), new-6 onback (lying on his back), new-7 tea (a sip).
+# A cup of tea stands on the floor in every frame: cut out of cup-1 (the difference to base2) and pasted into the frames below; the three new poses carry their own cup.
 if os.environ.get('CHAR_FACES'):
-    FRAMES.update({'happy': 'expr-1', 'sparkle': 'expr-2', 'surprise': 'expr-4', 'puzzled': 'expr-6', 'smug': 'expr-7'})
+    FRAMES.update({'surprise': 'expr-4', 'smug': 'expr-7', 'focus': 'expr-8', 'push': 'new-1', 'onback': 'new-6', 'tea': 'new-7'})
+OWN_CUP = {'push', 'onback', 'tea'}  # these pictures draw their own cup (the pose moves it, or holds it)
+NO_ALIGN = {'onback'}  # the head is not where it is in the rest frame: do not try to align it
 WIDTH = 640  # px of the saved frames; they are shown at about 260 px, so this is sharp at 2x
 SEARCH = 70  # largest shift tried, px
 
@@ -111,11 +115,35 @@ def shifted(arr, dy, dx):
 
 
 os.makedirs(OUT, exist_ok=True)
-rgbs = {k: load(v) for k, v in FRAMES.items()}
+def cup_layer():
+    """the cup of tea: the pixels that differ between cup-1 and base2, near the cup (dilated by 2 px so that the anti-aliased edge comes with it)"""
+    base, cup = load('base2'), load('cup-1')
+    mask = np.abs(cup - base).max(axis=2) > 40
+    keep = np.zeros_like(mask)
+    keep[380:660, 1070:1264] = True
+    mask &= keep
+    for _ in range(2):
+        m = mask.copy()
+        m[1:, :] |= mask[:-1, :]
+        m[:-1, :] |= mask[1:, :]
+        m[:, 1:] |= mask[:, :-1]
+        m[:, :-1] |= mask[:, 1:]
+        mask = m & keep
+    return mask, cup
+
+
+def with_cup(rgb, mask, cup):
+    out = rgb.copy()
+    out[mask] = cup[mask]
+    return out
+
+
+_mask, _cup = cup_layer() if os.environ.get('CHAR_FACES') else (None, None)
+rgbs = {k: (load(v) if (_mask is None or k in OWN_CUP) else with_cup(load(v), _mask, _cup)) for k, v in FRAMES.items()}
 ref = rgbs['rest']
 aligned = {}
 for k, rgb in rgbs.items():
-    dy, dx = (0, 0) if k == 'rest' else shift_for(ref, rgb)
+    dy, dx = (0, 0) if (k == 'rest' or k in NO_ALIGN) else shift_for(ref, rgb)
     print(f'{k:6s} <- {FRAMES[k]:7s} shift dy={dy:+d} dx={dx:+d}')
     aligned[k] = shifted(to_rgba(rgb), dy, dx)
 
