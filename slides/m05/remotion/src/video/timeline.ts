@@ -4,8 +4,9 @@ import {KeyEv, KeyKind, hashString, planTyping} from './typing';
  * The timeline of the narrated video, from the stage marks of the slides and the narration lines.
  * Pure (no React), so that the typing sound can be synthesized from the same keystrokes (scripts/make_typing_audio.mjs).
  *
- * A slide plays stage by stage, as in the click-through deck: the animation of a stage runs, then the picture is held while the
- * narration of that stage is typed, then the next stage starts. Bubbles stay until the slide changes.
+ * A slide plays stage by stage, as in the click-through deck: the animation of a stage runs and finishes, then the picture is held
+ * while the narration of that stage is typed (nothing on the slide moves while a note is being read), then the next stage starts.
+ * Bubbles stay until the slide changes.
  */
 export const FPS = 30;
 /** narration[slide number][stage index] = lines; each line is one bubble */
@@ -28,12 +29,11 @@ export type SlideSeg = {n: number; from: number; dur: number; stages: StageSeg[]
 export type Timeline = {slides: SlideSeg[]; bubbles: Bubble[]; keys: {frame: number; kind: KeyKind}[]; total: number};
 
 export const LEAD_IN = 18; // frames of the first picture before anything happens
-export const LEAD = 14; // narration starts this long after its stage starts
+export const LEAD = 20; // narration starts this long after the animation of its stage has finished, so text never moves while a note is being read
 export const POP = 9; // the bubble pops up this long before the first key
 export const GAP = 26; // between two bubbles of one stage
-export const READ = 42; // after the last key of a stage
+export const READ = 38; // after the last key of a stage
 export const HOLD = 30; // after the animation of a stage without narration
-export const HOLD_ANIM = 20; // after the animation of a stage whose narration is already done
 export const END_PAD = 75;
 export const MAX_CHARS = 64; // a line longer than this wraps in its bubble
 
@@ -50,7 +50,7 @@ export const buildTimeline = (marks: number[][], narration: Narration): Timeline
       const anim = end - slideFrom;
       const lines = narration[n]?.[k] ?? [];
       const stageFrom = pos;
-      let t = LEAD;
+      let t = anim + LEAD; // after the animation of the stage
       let lastEnd = 0;
       lines.forEach((text, j) => {
         if (text.length > MAX_CHARS) throw new Error(`narration S${n} stage ${k + 1}: "${text}" is ${text.length} characters (limit ${MAX_CHARS})`);
@@ -62,7 +62,7 @@ export const buildTimeline = (marks: number[][], narration: Narration): Timeline
         lastEnd = typedEnd - stageFrom;
         t = lastEnd + GAP;
       });
-      const dur = lines.length ? Math.max(anim + HOLD_ANIM, Math.ceil(lastEnd) + READ) : anim + HOLD;
+      const dur = lines.length ? Math.ceil(lastEnd) + READ : anim + HOLD;
       stages.push({k, from: stageFrom, anim, hold: dur - anim, slideFrom, slideTo: end});
       pos += dur;
     });

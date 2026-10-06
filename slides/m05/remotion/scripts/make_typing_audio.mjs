@@ -169,7 +169,10 @@ const playSample = (t0, kind) => {
 const used = Object.entries(samples).filter(([, v]) => v.length).map(([k, v]) => `${k}: ${v.length}`);
 console.log(used.length ? `recorded samples: ${used.join(', ')}; the other kinds are synthesized` : 'no recorded samples in sounds/: all synthesized');
 
+// the space bar is silent unless --space-sound is given (the thud of a space bar was found distracting)
+const spaceSound = process.argv.includes('--space-sound');
 for (const k of tl.keys) {
+  if (k.kind === 'space' && !spaceSound) continue;
   if (samples[k.kind].length) playSample(k.frame / FPS, k.kind);
   else clack(k.frame / FPS, k.kind);
 }

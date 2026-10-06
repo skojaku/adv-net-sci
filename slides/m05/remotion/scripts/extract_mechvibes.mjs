@@ -2,8 +2,11 @@
 // Cuts the typing samples for the video out of a Mechvibes sound pack (the packs installed with MechvibesDX or Mechvibes) and writes them to
 // sounds/ as key-*.wav, space-1.wav and back-1.wav. A pack is one long audio file with a table of (start, end) times for the press and the release
 // of every key; each sample here is a press and its release in one clip. Run it again with another pack name to try another keyboard.
-//   --pack=NAME   a folder name under keyboard/ (default cherrymx-blue-abs); see `ls <packs>/keyboard`
-//   --from=DIR    the soundpacks folder (default: the one inside /Applications/MechvibesDX.app)
+//   --pack=NAME     a folder name under keyboard/ (default cherrymx-blue-abs); see `ls <packs>/keyboard`
+//   --from=DIR      the soundpacks folder (default: the one inside /Applications/MechvibesDX.app)
+//   --release=G     gain of the key coming back up, 0 to 1 (default 0.6): the release click is what makes a clicky switch sound "scratchy"
+//   --lowpass=HZ    a low-pass filter on every sample (default 0 = none): takes the bright edge off
+//   --out=DIR       where to write the samples (default sounds/)
 import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -15,6 +18,8 @@ const arg = (name, fallback) => {
 };
 const pack = arg('pack', 'cherrymx-blue-abs');
 const from = arg('from', '/Applications/MechvibesDX.app/Contents/Resources/soundpacks');
+const release = Number(arg('release', 0.6));
+const lowpassHz = Number(arg('lowpass', 0));
 const dir = path.join(from, 'keyboard', pack);
 const config = JSON.parse(fs.readFileSync(path.join(dir, 'config.json'), 'utf8'));
 const defs = config.definitions ?? config.defines;
@@ -34,14 +39,30 @@ while (pos + 8 <= wav.length) {
 const SR = 44100;
 const total = Math.floor(data.length / 2);
 
+/** a 2-pole Butterworth low-pass, in place */
+const lowpass = (x, fc) => {
+  const w = (2 * Math.PI * fc) / SR, cos = Math.cos(w), alpha = Math.sin(w) / (2 * Math.SQRT1_2);
+  const b0 = (1 - cos) / 2, b1 = 1 - cos, b2 = b0, a0 = 1 + alpha, a1 = -2 * cos, a2 = 1 - alpha;
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++) {
+    const y = (b0 * x[i] + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2) / a0;
+    x2 = x1; x1 = x[i]; y2 = y1; y1 = y;
+    x[i] = y;
+  }
+};
+
 const clip = (code) => {
   const t = defs[code]?.timing;
   if (!t) return null;
   const a = t[0][0];
   const b = t[1] ? Math.min(t[1][1], a + 420) : a + 200; // the press and, right after it, the release
   const i0 = Math.floor((a / 1000) * SR), i1 = Math.min(total, Math.floor((b / 1000) * SR));
-  const out = Buffer.alloc((i1 - i0) * 2);
-  for (let i = i0; i < i1; i++) out.writeInt16LE(data.readInt16LE(i * 2), (i - i0) * 2);
+  const iUp = t[1] ? Math.floor((t[1][0] / 1000) * SR) : i1; // where the release starts
+  const x = new Float32Array(i1 - i0);
+  for (let i = i0; i < i1; i++) x[i - i0] = (data.readInt16LE(i * 2) / 32768) * (i >= iUp ? release : 1);
+  if (lowpassHz > 0) lowpass(x, lowpassHz);
+  const out = Buffer.alloc(x.length * 2);
+  for (let i = 0; i < x.length; i++) out.writeInt16LE(Math.round(Math.max(-1, Math.min(1, x[i])) * 32767), i * 2);
   return out;
 };
 const writeWav = (file, pcm) => {
@@ -52,7 +73,7 @@ const writeWav = (file, pcm) => {
   fs.writeFileSync(file, Buffer.concat([h, pcm]));
 };
 
-const soundsDir = path.join(root, 'sounds');
+const soundsDir = path.resolve(root, arg('out', 'sounds'));
 fs.mkdirSync(soundsDir, {recursive: true});
 for (const f of fs.readdirSync(soundsDir)) if (/^(key|space|back)[-_ ]?\d*\.wav$/i.test(f)) fs.rmSync(path.join(soundsDir, f));
 

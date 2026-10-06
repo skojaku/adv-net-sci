@@ -18,6 +18,8 @@ slides/
                     copy of the skill, or clone one there.
   DECK_BUILD_GUIDE.md  SLIDE_RUBRIC.md  FIGURE_GUIDE.md  REVIEW_PLAYBOOK.md
   FILLER_PASS.md    the last stage: cut the padding out of a finished deck
+  REMOTION_DECK_GUIDE.md   animated click-through decks in Remotion (m05/remotion): use model, parts, pitfalls
+  NARRATED_VIDEO_GUIDE.md  the narrated video of that deck: typing bubbles, typing sound, Mechvibes sampling
 ```
 
 Nothing generated is committed: figures, GIFs, review screenshots, HTML and PDF

@@ -92,19 +92,18 @@ in headless Chrome: the fonts load, the picture shows, no request leaves the fil
 
 ## The narrated video (a separate file; the slides are not touched)
 
-`npm run video:audio` then `npm run video` writes `out/m05-narrated.mp4` (1920 x 1080, 30 fps, about 9 minutes with sound). It plays every
-slide stage by stage as the click-through deck does, holds the picture while a small animal at the bottom left types a short note in a speech
-bubble, and then goes on. Everything lives in `src/video/` and is registered by its own entry point (`src/video/entry.ts`), so `src/slides/`,
-`src/Root.tsx` and the player app are unchanged.
+Full guide: `slides/NARRATED_VIDEO_GUIDE.md`. Short version: `node scripts/extract_mechvibes.mjs --pack=cherrymx-red-abs --release=0.5` (once), then
+`npm run video:audio` and `npm run video` write `out/m05-narrated.mp4` (1920 x 1080, 30 fps, about 17 minutes with sound). Each slide plays stage by stage as the
+click-through deck does; once a stage's animation has finished the picture is held while a small animal at the bottom left types a short note in a speech
+bubble (nothing on the slide moves while a note is read); then the next stage starts. Everything lives in `src/video/` with its own entry point
+(`src/video/entry.ts`), so `src/slides/`, `src/Root.tsx` and the player app are unchanged.
 
-- `src/video/narration.ts`: the lines, `narration[slide number][stage index] = [line, ...]`. One line is one bubble. Keep it minimal (a line is one short
-  plain sentence of at most 64 characters, most stages have none, a question slide gets no answer). The text is a draft.
-- `src/video/typing.ts`: the keystrokes of a line (uneven bursts, slower after spaces and punctuation, an occasional wrong neighbouring key that is
-  noticed after a beat, deleted with backspace and typed again). Deterministic: the same text always gives the same typing.
-- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `src/video/NarratedDeck.tsx` plays the slides (`Sequence` with a negative
-  `from` to start a stage in the middle of a slide, `Freeze` to hold its end), `Narrator.tsx` draws the bubbles (two at most; a new one pops up at the
-  bottom and pushes the older one up; they stay below y = 920, the free band under the slides) and `Critter.tsx` the animal.
-- Sound: `scripts/make_typing_audio.mjs` writes `out/video-public/typing.wav` from the same keystrokes (key, space and backspace each have their own sound), so
-  every key on the screen has its sound on the same frame. It is synthesized, unless WAV recordings are in `sounds/` (see `sounds/README.md`), which are used instead.
+- `src/video/narration.ts`: the lines, `narration[slide number][stage index] = [line, ...]`. A line is one bubble, at most 64 characters; the first line may say what the
+  slide shows, the next adds a supplement; a question slide gets no answer. The text is a draft.
+- `src/video/typing.ts`: human-like keystrokes (bursts, pauses, occasional wrong key, backspace, retype); deterministic.
+- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `NarratedDeck.tsx` plays the slides, `Narrator.tsx` draws the bubbles (two at most,
+  below y = 920), `Critter.tsx` the animal.
+- Sound: `scripts/make_typing_audio.mjs` writes `out/video-public/typing.wav` from the same keystrokes. WAV samples in `sounds/` are used when present (cut from a Mechvibes
+  pack by `scripts/extract_mechvibes.mjs`, or your own recordings), otherwise the sound is synthesized. **The space bar is silent** (`--space-sound` to turn it on).
 - `node scripts/render_video.mjs --frames=0-400 --out=out/test.mp4` renders a part; `--still=120,900 --dir=out/video-stills` renders single frames.
 After editing the narration or the slides run `npm run video:audio` again before `npm run video`: the timeline (and so the audio) changes.

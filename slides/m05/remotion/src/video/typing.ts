@@ -71,7 +71,7 @@ export const planTyping = (text: string, seed: number, speed = 1): {events: KeyE
     shown = shown.slice(0, -1);
     events.push({t, kind: 'back', text: shown});
   };
-  const base = 92 / speed;
+  const base = 58 / speed;
   const gapFor = (ch: string) => {
     let g = base * (0.62 + rng() * 0.9);
     if (rng() < 0.12) g *= 0.45; // two keys in quick succession

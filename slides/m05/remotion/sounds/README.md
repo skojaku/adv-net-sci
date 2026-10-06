@@ -2,7 +2,7 @@
 
 The samples here are generated (not committed): `node scripts/extract_mechvibes.mjs --pack=cherrymx-blue-abs` cuts them out of a Mechvibes sound pack installed with MechvibesDX (see `SOURCE.txt`; other packs: `cherrymx-brown-abs`, `topre-purple-hybrid-pbt`, `cherrymx-red-abs`, ...). Your own recordings go here too, in the same file names; commit those with `git add -f`.
 
-`npm run video:audio` uses the WAV files in this folder when they are here, and the synthesized sound for any kind that has none.
+`npm run video:audio` uses the WAV files in this folder when they are here, and the synthesized sound for any kind that has none (the space bar is silent unless `--space-sound` is given; see `slides/NARRATED_VIDEO_GUIDE.md`).
 
 | file name | what | how many |
 | --- | --- | --- |
