@@ -151,45 +151,52 @@ Officer} (node 33). We know who went with whom, so it is the standard test case.
 
 \input{boxes/box1}
 
-\parthead{2}{Find communities with Leiden, and draw them}
+\parthead{2}{Find communities with Leiden}
 
 \input{boxes/box2}
 
-\parthead{3}{The stochastic block model, with graph-tool}
+\parthead{3}{Draw them with graph-tool}
 
-graph-tool is a second library, with its own kind of network and its own drawing function.
+From here on, graph-tool does the drawing.
 
 \input{boxes/box3}
 
-\parthead{4}{Draw what really happened}
+\parthead{4}{The stochastic block model}
 
 \input{boxes/box4}
 
-\textbf{What to look at.} Put your three pictures side by side. Find node 0 and
-node 33 in each. Which groupings keep them apart? In the stochastic block model's
-picture, who ends up together, and how many friends do they have?
-
-\parthead{5}{Draw the groups on a circle}
-
-Another way to look at a grouping: every member on a circle, each group on its own arc.
+\parthead{5}{What really happened}
 
 \input{boxes/box5}
 
-\parthead{6}{If you have time: the US airports}
+\textbf{What to look at.} Put your three pictures side by side: the nodes are in the
+same places. Find node 0 and node 33. Which groupings keep them apart? In the
+stochastic block model's picture, who ends up together, and how many friends do they have?
 
-The same recipe on a bigger network, drawn with \texttt{seaborn}.
+\parthead{6}{A hierarchy of groups}
 
 \input{boxes/box6}
 
-Now the same map for the stochastic block model.
+\textbf{What to look at.} How many levels does the hierarchy have, and how many groups
+at each? Which nodes does the bundle of friendships join?
+
+\parthead{7}{If you have time: the US airports}
+
+The same recipe on a bigger network: 540 US airports, two linked when a flight
+connects them.
 
 \input{boxes/box7}
+
+\input{boxes/box8}
+
+\input{boxes/box9}
 
 \textbf{What to look at.} Do the groups follow regions of the map, or something
 else? Compare Leiden with the stochastic block model.
 
-\textbf{Then try your own.} Any igraph network goes through Boxes 2 and 3 in the same
-way: put its name where \texttt{karate} is. A small one to try:
-\texttt{ig.Graph.Famous("Krackhardt\_Kite")}.
+\textbf{Then try your own.} Change the network in Box 1, and run Boxes 2 to 4 and
+Box 6 again. A small network to try instead of the karate club:
+
+\hspace*{1.4em}\texttt{ig.Graph.Famous("Krackhardt\_Kite")}
 
 \end{document}

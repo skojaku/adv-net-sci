@@ -62,121 +62,105 @@ BOXES = [
         id="karate",
         title="Build the karate club network",
         code='''import igraph as ig
+import graph_tool.all as gt
 karate = ig.Graph.Famous("Zachary")
-print(karate.vcount(), karate.ecount())''',
+g = gt.Graph(directed=False)
+g.add_edge_list(karate.get_edgelist())
+print(g.num_vertices(), g.num_edges())''',
         notes=[
-            ("1", r"\texttt{import} loads a library: a bundle of ready-made tools. \texttt{igraph} is a library for building, studying and drawing networks. \texttt{as ig} gives it the short name \texttt{ig}, so that we type less."),
-            ("2", r"\texttt{ig.Graph.Famous("+'"Zachary"'+r")} builds a network that igraph already knows: Zachary's karate club. The \texttt{=} stores it under the name \texttt{karate}."),
-            ("3", r"\texttt{vcount()} counts the nodes (the members) and \texttt{ecount()} counts the edges (the friendships). \texttt{print} shows both. You should see \texttt{34 78}."),
+            ("1", r"\texttt{import} loads a library: a bundle of ready-made tools. \texttt{igraph} is a library for networks. We use it for one thing only: Leiden. \texttt{as ig} is its short name."),
+            ("2", r"\texttt{graph\_tool} is the main library of this sheet. It fits stochastic block models and draws networks. \texttt{as gt} is its short name."),
+            ("3", r"\texttt{ig.Graph.Famous("+'"Zachary"'+r")} builds a network that igraph already knows: Zachary's karate club. The \texttt{=} stores it under the name \texttt{karate}."),
+            ("4--5", r"graph-tool cannot read igraph's networks. It has its own kind, so we make an empty one (\texttt{directed=False} says that a friendship goes both ways) and fill it. \texttt{karate.get\_edgelist()} asks igraph for all the friendships as pairs of node numbers, and \texttt{add\_edge\_\allowbreak list} hands the pairs to graph-tool, which creates the nodes and the edges. This is the only bridge between the two libraries."),
+            ("6", r"\texttt{num\_vertices()} counts the nodes (the members) and \texttt{num\_edges()} counts the edges (the friendships). You should see \texttt{34 78}."),
         ],
     ),
     dict(
         id="leiden",
-        title="Find communities with Leiden, and draw them",
+        title="Find communities with Leiden",
         code='''result = karate.community_leiden("modularity", n_iterations=-1)
 leiden = result.membership
-print(leiden)
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-ig.plot(
-    karate, target=ax,
-    vertex_color=[palette[g] for g in leiden],
-    vertex_shape=[shapes[g] for g in leiden],
-    vertex_label=karate.vs.indices,
-    vertex_label_color="white",
-)
-ax.set_title("Leiden")
-plt.show()''',
+print(leiden)''',
         notes=[
             ("1", r"\texttt{community\_leiden} runs the Leiden algorithm. It looks for \emph{communities}: groups with many friendships inside and few between groups. \texttt{"+'"modularity"'+r"} is the score it tries to raise: how much denser the groups are than in a random network. \texttt{n\_iterations=-1} means keep improving until nothing changes. What it returns is stored as \texttt{result}."),
             ("2", r"\texttt{result.membership} is the answer as a plain list: entry $i$ is the group number of node $i$. We store it as \texttt{leiden}."),
             ("3", r"Print the list. You should see 34 numbers. Two nodes with the same number are in the same group. The numbers are only labels, and Leiden uses chance, so your list may differ from your neighbour's."),
-            ("4", r"\texttt{matplotlib.pyplot} is Python's library for drawing pictures. \texttt{plt} is its short name."),
-            ("5", r"\texttt{plt.subplots()} makes an empty picture. \texttt{fig} is the picture and \texttt{ax} is the empty panel in it, which we draw into."),
-            ("6--12", r"\texttt{ig.plot} is igraph's drawing function. It draws \texttt{karate} into the panel \texttt{ax}. \texttt{palette} and \texttt{shapes} are ready-made lists: group 0 is a blue circle, group 1 a vermillion square, and so on. \texttt{[palette[g] for g in leiden]} builds a list by looking up, for each group number \texttt{g} in \texttt{leiden}, the colour of that group: one colour for each node. \texttt{vertex\_shape} does the same with shapes, so that a group never depends on colour alone. \texttt{vertex\_label} writes each node's number on it (\texttt{karate.vs.indices} is the list 0 to 33), in white. Each line inside the brackets ends with a comma."),
-            ("13--14", r"\texttt{ax.set\_title} writes the title above the panel, and \texttt{plt.show()} shows the picture."),
+        ],
+    ),
+    dict(
+        id="paint",
+        title="Draw the groups with graph-tool",
+        code='''import numpy as np
+def paint(groups):
+    groups = np.unique(groups, return_inverse=True)[1]
+    colors = g.new_vertex_property("vector<double>")
+    for v in g.vertices():
+        colors[v] = (*palette[groups[int(v)]], 1)
+    return colors
+pos = gt.graph_draw(
+    g, vertex_fill_color=paint(leiden), vertex_text=g.vertex_index
+)''',
+        notes=[
+            ("1", r"\texttt{numpy} is a library for lists of numbers. \texttt{np} is its short name."),
+            ("2", r"We write a \emph{function}: a recipe we can use again. \texttt{paint} takes a list of group numbers and gives back a colour for every node. The lines indented under \texttt{def} are the recipe."),
+            ("3", r"graph-tool numbers its groups with gaps (say 15 and 32). \texttt{np.unique} with \texttt{return\_\allowbreak inverse=True} renumbers them 0, 1, 2, \ldots{} so that they fit the palette; the \texttt{[1]} picks that renumbered list. (Leiden's numbers have no gaps, so for them it changes nothing.)"),
+            ("4", r"graph-tool keeps what it knows about nodes in a \emph{property map}: a table with one value per node. This one will hold a list (red, green, blue) for each node. \texttt{palette} is a ready-made list of colours, one for each group."),
+            ("5--6", r"A loop over the nodes \texttt{v} of the network. \texttt{groups[int(v)]} is the group of node \texttt{v} (\texttt{int} turns graph-tool's node object into its number), \texttt{palette[\ldots]} is the colour of that group, and \texttt{(*palette[\ldots], 1)} unpacks its red, green and blue and adds a 1 for fully opaque. The result goes into the table."),
+            ("7", r"\texttt{return} hands the table back to whoever called \texttt{paint}."),
+            ("8--10", r"\texttt{gt.graph\_draw} is graph-tool's drawing function. \texttt{vertex\_fill\_color=paint(leiden)} fills each node with the colour of its Leiden group, and \texttt{vertex\_text=g.vertex\_index} writes its number on it. The function hands back the position it gave each node; we keep it as \texttt{pos}, so that the next boxes can draw the nodes in the same places."),
         ],
     ),
     dict(
         id="sbm",
-        title="The stochastic block model, with graph-tool",
-        code='''import graph_tool.all as gt
-import numpy as np
-gt.seed_rng(1)
-g = gt.Graph(directed=False)
-g.add_edge_list(karate.get_edgelist())
+        title="The stochastic block model",
+        code='''gt.seed_rng(1)
 state = gt.minimize_blockmodel_dl(g, state_args=dict(deg_corr=False))
 sbm = state.get_blocks().a
 print(sbm)
-groups = np.unique(sbm, return_inverse=True)[1]
-colors = g.new_vertex_property("vector<double>")
-for v in g.vertices():
-    colors[v] = (*palette[groups[int(v)]], 1)
 pos = gt.graph_draw(
-    g,
-    vertex_fill_color=colors,
-    vertex_text=g.vertex_index,
+    g, pos=pos, vertex_text=g.vertex_index,
+    vertex_fill_color=paint(sbm),
 )''',
         notes=[
-            ("1", r"graph-tool is a second library. It fits the stochastic block model, which you know from the lecture. \texttt{as gt} is its short name."),
-            ("2", r"\texttt{numpy} is a library for lists of numbers. \texttt{np} is its short name."),
-            ("3", r"The fit makes random choices. \texttt{seed\_rng(1)} fixes them, so that everyone in the room gets the same answer. Change the \texttt{1} and you may get a different grouping."),
-            ("4", r"graph-tool cannot read igraph's networks. It has its own kind, so we start with an empty one. \texttt{directed=False} says that a friendship goes both ways."),
-            ("5", r"\texttt{karate.get\_edgelist()} asks igraph for all the friendships as pairs of node numbers. \texttt{add\_edge\_\allowbreak list} hands the pairs to graph-tool, which creates the nodes and the edges. This line is the only bridge between the two libraries."),
-            ("6", r"\texttt{minimize\_blockmodel\_dl} fits the stochastic block model. \texttt{dl} stands for \emph{description length}: of all the ways to group the nodes, it picks the one that describes the network in the fewest bits. It decides the number of groups too. \texttt{state\_args=dict(deg\_corr=False)} asks for the plain model of the lecture, where the group alone decides how likely a friendship is. Graph-tool's default also lets every member have a number of friends of their own; on a network this small, that version finds one single group. The fitted model is stored as \texttt{state}."),
-            ("7", r"\texttt{state.get\_blocks()} gives the group of each node, in graph-tool's own array type. \texttt{.a} turns it into a plain array of numbers, like the list in Box 2."),
-            ("8", r"Print it: again one number for each of the 34 nodes."),
-            ("9", r"graph-tool numbers its groups with gaps (say 15 and 32). \texttt{np.unique} with \texttt{return\_\allowbreak inverse=True} renumbers them 0, 1, 2, \ldots{} so that they fit the palette; the \texttt{[1]} picks that renumbered list."),
-            ("10", r"graph-tool keeps what it knows about nodes in a \emph{property map}: a table with one value per node. This one will hold a list (red, green, blue) for each node."),
-            ("11--12", r"A loop over the nodes \texttt{v} of the network. \texttt{groups[int(v)]} is the group of node \texttt{v} (\texttt{int} turns graph-tool's node object into its number), \texttt{palette[\ldots]} is the colour of that group, and \texttt{(*palette[\ldots], 1)} unpacks its red, green and blue and adds a 1 for fully opaque. The result goes into the table."),
-            ("13--17", r"\texttt{gt.graph\_draw} is graph-tool's drawing function. \texttt{vertex\_fill\_color=colors} fills each node with its colour from the table, and \texttt{vertex\_text=g.vertex\_index} writes its number on it. The function hands back the position it gave each node; we keep that as \texttt{pos}, which also stops Colab from printing it under the picture."),
+            ("1", r"The fit makes random choices. \texttt{seed\_rng(1)} fixes them, so that everyone in the room gets the same answer. Change the \texttt{1} and you may get a different grouping."),
+            ("2", r"\texttt{minimize\_blockmodel\_dl} fits the stochastic block model from the lecture. \texttt{dl} stands for \emph{description length}: of all the ways to group the nodes, it picks the one that describes the network in the fewest bits. It decides the number of groups too. \texttt{state\_args=dict(deg\_corr=False)} asks for the plain model of the lecture, where the group alone decides how likely a friendship is. Graph-tool's default also lets every member have a number of friends of their own; on a network this small, that version finds one single group. The fitted model is stored as \texttt{state}."),
+            ("3", r"\texttt{state.get\_blocks()} gives the group of each node, in graph-tool's own array type. \texttt{.a} turns it into a plain array of numbers, like the list in Box 2."),
+            ("4", r"Print it: again one number for each of the 34 nodes."),
+            ("5--8", r"The drawing call of Box 3, with the colours of the block model's groups. \texttt{pos=pos} reuses the positions from Box 3, so that each node stays in the same place and the two pictures can be compared."),
         ],
     ),
     dict(
         id="real",
-        title="Draw what really happened",
-        code='''fig, ax = plt.subplots()
-ig.plot(
-    karate, target=ax,
-    vertex_color=[palette[g] for g in club],
-    vertex_shape=[shapes[g] for g in club],
-    vertex_label=karate.vs.indices,
-    vertex_label_color="white",
-)
-ax.set_title("What really happened")
-plt.show()''',
+        title="What really happened",
+        code='''pos = gt.graph_draw(
+    g, pos=pos, vertex_text=g.vertex_index,
+    vertex_fill_color=paint(club),
+)''',
         notes=[
-            ("1", r"A fresh empty panel, as in Box 2."),
-            ("2--8", r"The drawing call of Box 2 again. The only change is the list of groups: \texttt{club} is ready-made, a \texttt{0} or a \texttt{1} for each member, for the side they joined when the club split in two."),
-            ("9--10", r"A title, and show the picture."),
+            ("1--4", r"The same call once more, with \texttt{club}, which is ready-made: a \texttt{0} or a \texttt{1} for each member, for the side they joined when the club split in two."),
         ],
     ),
     dict(
-        id="circle",
-        title="Draw the groups on a circle",
-        code='''layout = karate.layout_circle(order=np.argsort(leiden))
-fig, ax = plt.subplots()
-ig.plot(
-    karate, target=ax, layout=layout,
-    vertex_color=[palette[g] for g in leiden],
-    vertex_shape=[shapes[g] for g in leiden],
-    vertex_label=karate.vs.indices,
-    vertex_label_color="white",
-    edge_color="lightgray",
+        id="nested",
+        title="A hierarchy of groups: the nested block model",
+        code='''nested = gt.minimize_nested_blockmodel_dl(
+    g, state_args=dict(deg_corr=False)
 )
-ax.set_title("Leiden, on a circle")
-plt.show()''',
+nested.print_summary()
+groups = nested.get_bs()[0]
+pos_tree = nested.draw(vertex_fill_color=paint(groups))''',
         notes=[
-            ("1", r"\texttt{np.argsort(leiden)} lists the node numbers sorted by group, so that nodes of one group sit together. \texttt{layout\_circle(order=...)} puts the nodes on a circle in that order, so that each group takes one arc. The layout is a position for every node."),
-            ("2", r"A fresh empty panel."),
-            ("3--10", r"The drawing call of Box 2 again, with two additions: \texttt{layout=layout} uses our positions instead of igraph's own, and \texttt{edge\_color="+'"lightgray"'+r"} draws the friendships in light grey, so that they do not hide the nodes."),
-            ("11--12", r"A title, and show the picture."),
+            ("1--3", r"\texttt{minimize\_nested\_blockmodel\_dl} fits the \emph{nested} stochastic block model: the groups of nodes are themselves grouped into bigger groups, and those into still bigger ones, up to a single group. Everything else is as in Box 4. The result is stored as \texttt{nested}."),
+            ("4", r"\texttt{print\_summary()} prints one line for each level of the hierarchy. For example \texttt{l: 0, N: 34, B: 2} says that level 0 has 34 nodes, put into 2 groups."),
+            ("5", r"\texttt{nested.get\_bs()} gives the group of every node at every level, and \texttt{[0]} keeps the first level: the groups of the nodes themselves."),
+            ("6", r"\texttt{nested.draw} draws the hierarchy on a circle: the nodes sit on the rim, the groups and the groups of groups are the squares inside, and the friendships bend along the hierarchy. \texttt{vertex\_fill\_color=paint(groups)} colours the nodes as in Box 3. It hands back positions; we keep them as \texttt{pos\_tree}."),
         ],
     ),
     dict(
         id="airports_leiden",
         title="The US airports: Leiden, and a map",
-        code='''import seaborn as sns
+        code='''import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
 members = g_air.community_leiden("modularity", n_iterations=-1).membership
 top = pd.Series(members).value_counts().index[:4]
@@ -186,12 +170,12 @@ sns.scatterplot(
 )
 plt.show()''',
         notes=[
-            ("1--2", r"\texttt{seaborn} draws statistical pictures, and \texttt{pandas} works with tables. \texttt{sns} and \texttt{pd} are their usual short names."),
-            ("3", r"Box 2, line 1, again, on the US airport network \texttt{g\_air} (540 airports, two linked when a flight connects them), which is ready-made. We keep the group of each airport as \texttt{members}."),
-            ("4", r"\texttt{pd.Series(members).value\_counts()} counts how many airports each group has, biggest group first. \texttt{.index[:4]} keeps the numbers of the four biggest groups. We call them \texttt{top}."),
-            ("5", r"\texttt{lon} and \texttt{lat} are the longitude and the latitude of each airport, also ready-made. \texttt{sns.\allowbreak scatterplot} puts one dot per airport at that place: a rough map of the US. This first call paints all of them light grey; \texttt{s=14} is the dot size."),
-            ("6--8", r"The second call paints over the grey, but only the four groups in \texttt{top}: \texttt{hue=members} says that the colour follows the group, \texttt{hue\_order=top} limits it to those four, and \texttt{palette[:4]} is the first four colours of the palette. Every other airport stays light grey: it is ``the rest''."),
-            ("9", r"Show the map."),
+            ("1--3", r"\texttt{matplotlib} draws pictures, \texttt{seaborn} draws statistical pictures on top of it, and \texttt{pandas} works with tables. \texttt{plt}, \texttt{sns} and \texttt{pd} are their usual short names."),
+            ("4", r"Box 2, line 1, again, on the US airport network \texttt{g\_air} (540 airports, two linked when a flight connects them), which is ready-made. We keep the group of each airport as \texttt{members}."),
+            ("5", r"\texttt{pd.Series(members).value\_counts()} counts how many airports each group has, biggest group first. \texttt{.index[:4]} keeps the numbers of the four biggest groups. We call them \texttt{top}."),
+            ("6", r"\texttt{lon} and \texttt{lat} are the longitude and the latitude of each airport, also ready-made. \texttt{sns.\allowbreak scatterplot} puts one dot per airport at that place: a rough map of the US. This first call paints all of them light grey; \texttt{s=14} is the dot size."),
+            ("7--9", r"The second call paints over the grey, but only the four groups in \texttt{top}: \texttt{hue=members} says that the colour follows the group, \texttt{hue\_order=top} limits it to those four, and \texttt{palette[:4]} is the first four colours of the palette. Every other airport stays light grey: it is ``the rest''."),
+            ("10", r"Show the map."),
         ],
     ),
     dict(
@@ -208,10 +192,22 @@ sns.scatterplot(
 )
 plt.show()''',
         notes=[
-            ("1--2", r"Box 3, lines 4 and 5, again, with a new graph-tool network called \texttt{g2}."),
-            ("3", r"Box 3, line 6, again."),
-            ("4", r"Box 3, line 7, again: the group of each airport, kept as \texttt{members}."),
-            ("5--9", r"The map of the previous box, again, now coloured by the groups of the stochastic block model."),
+            ("1--2", r"Box 1, lines 4 and 5, again, with a new graph-tool network called \texttt{g2}."),
+            ("3", r"Box 4, line 2, again."),
+            ("4", r"Box 4, line 3, again: the group of each airport, kept as \texttt{members}."),
+            ("5--10", r"The map of the previous box, again, now coloured by the groups of the stochastic block model."),
+        ],
+    ),
+    dict(
+        id="airports_nested",
+        title="The US airports: the hierarchy",
+        code='''nested_air = gt.minimize_nested_blockmodel_dl(
+    g2, state_args=dict(deg_corr=False)
+)
+nested_air.print_summary()
+pos_air = nested_air.draw()''',
+        notes=[
+            ("1--5", r"Box 6 again, on the airport network \texttt{g2}. Without \texttt{vertex\_fill\_color}, graph-tool picks the colours itself; with this many groups, colour no longer says much, and the place on the circle does. How many levels does the hierarchy have, and how many groups at each?"),
         ],
     ),
 ]
@@ -241,12 +237,10 @@ import seaborn as sns
 
 sns.set_theme(style="white")  # a plain white background for every picture
 
-# Colours and shapes for the groups, chosen by the course's figure rules: blue and
-# vermillion (they stay apart for colour-blind readers too), then two steps of ink; the
-# light grey is for "the rest". A shape goes with each colour, so that no group depends
-# on colour alone.
+# Colours for the groups, chosen by the course's figure rules: blue and vermillion (they
+# stay apart for colour-blind readers too), then two steps of ink; the light grey is for
+# "the rest". The node numbers in the pictures are the second channel.
 palette = sns.color_palette(["#0072b2", "#d55e00", "#1a1a1a", "#767676", "#bdbdbd"])
-shapes = ["circle", "rectangle", "triangle-up", "diamond", "circle"]
 
 # The airport data travels inside this notebook, so nothing is downloaded.
 _DATA = json.loads(zlib.decompress(base64.b64decode("@@DATA@@")))
