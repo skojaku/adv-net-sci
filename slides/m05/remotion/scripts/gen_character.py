@@ -138,16 +138,17 @@ POSE = (
     'The FIRST attached image is the character to KEEP, exactly: the same boy, the same drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading), the same head, '
     'the same flat face plate with tiny dash-like eyes, the same short hair shape, white T-shirt and shorts, sky-blue wristbands, white sneakers. '
     'He is lying on his stomach, in the SAME camera and the SAME scale: the head, the torso and the legs sit at the same place on the canvas as in the first image (the pictures will be swapped as animation frames), '
-    'and only what is described below changes. Pure white background, no text, whole character visible, generous margin. '
+    'and only what is described below changes. KEYBOARD RULE: the tiny cream keyboard lies on the floor at the lower left, at exactly the same place, size and angle as in the first image, in EVERY picture, '
+    'also when his hands are not on it (then it simply lies there alone); it is never moved, never removed, never redrawn. He stays lying flat on his stomach on the floor, never floating. Pure white background, no text, whole character visible, generous margin. '
 )
 POSE_REF = ' The SECOND attached image (a dog character) is only a reference for the gesture and the facial expression: copy the gesture and the expression onto the boy, never the dog. '
 # n: (the change, an expression reference or None)
 CANDIDATES_POSE = {
     1: ('TYPING FRAME A. Only the hands change: the hand at the left end of the keyboard is pressed flat on the keys, the other hand is lifted a little above the keys with the fingers curled, ready to press. The face stays exactly as in the first image.', None),
     2: ('TYPING FRAME B. Only the hands change: the hand at the right side of the keyboard is pressed flat on the keys, the other hand (at the left end) is lifted a little above the keys with the fingers curled. The face stays exactly as in the first image.', None),
-    3: ('TROUBLED. He is worried and stuck: the eyebrows are drawn as two short slanted lines tilted down toward the middle, the mouth a small wavy line, and one small blue sweat drop near the temple. He has taken his hands off the keyboard and folds both ARMS crossed in front of him, and his two LEGS are crossed at the ankles in the air.', 'worry'),
-    4: ('TROUBLED, thinking hard. He is on his elbows with the arms folded together on the floor in front of the chin, the keyboard pushed a little aside; the eyebrows slanted down toward the middle, the mouth a small flat wavy line, the eyes tiny dashes looking sideways; the legs crossed at the ankles in the air.', 'worry'),
-    5: ('HAPPY. He is delighted: the eyes are closed as two happy arcs, the mouth wide open in a big smile with a small pink tongue, both small fists raised beside the shoulders in a cheering gesture, the feet kicking up in the air; he has left the keyboard.', 'happy'),
+    3: ('TROUBLED. He is worried and stuck: the eyebrows are drawn as two short slanted lines tilted down toward the middle, the mouth a small wavy line, and one small blue sweat drop near the temple. He has taken his hands off the keyboard (it lies untouched on the floor) and folds both ARMS crossed in front of him, and his two LEGS are crossed at the ankles in the air.', 'worry'),
+    4: ('TROUBLED, thinking hard. He is on his elbows with the arms folded together on the floor in front of the chin; a puzzled, uneasy look, NOT angry: the eyebrows only slightly slanted, the mouth a small wavy line, the eyes tiny dashes looking sideways; the legs crossed at the ankles in the air.', 'worry'),
+    5: ('HAPPY. He is delighted: the eyes are closed as two happy arcs, the mouth wide open in a big smile with a small pink tongue, both small fists raised beside the shoulders in a cheering gesture, the feet kicking up in the air; the keyboard lies untouched on the floor.', 'happy'),
     6: ('HAPPY, laughing. The eyes are closed as happy arcs, a wide open smiling mouth, both arms thrown up in the air in a V, the legs kicking high with the feet apart.', 'happy'),
     7: ('RELAXED SHRUG. The eyes are closed as two slim calm arcs, a small content smile, both hands open with the palms up at the sides of the body like a gentle shrug, the legs crossed lazily at the ankles in the air.', 'shrug'),
 }
