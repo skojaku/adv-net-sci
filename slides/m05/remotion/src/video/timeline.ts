@@ -1,3 +1,4 @@
+import config from './video.config.json';
 import {KeyEv, KeyKind, hashString, planTyping} from './typing';
 
 /**
@@ -36,8 +37,8 @@ export const READ = 72; // after the last key of a stage: time to finish reading
 export const HOLD = 48; // after the animation of a stage without narration
 export const END_PAD = 75;
 export const MAX_CHARS = 64; // a line longer than this wraps in its bubble
-/** the three section dividers of the deck are left out of the video: it is one continuous talk, not three chapters */
-export const SKIP = [1, 8, 22];
+/** the slides left out of the video (video.config.json, `skip`): the section dividers, so that it is one continuous talk, not chapters */
+export const SKIP: number[] = config.skip;
 /** in a stage's narration this line stands where the slide's own sentences are typed (by default they come first) */
 export const MIRROR = '@mirror';
 

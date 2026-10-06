@@ -1,7 +1,7 @@
-// npm run video                       the whole video: out/m05-narrated.mp4
+// npm run video                       the whole video: out/<out of src/video/video.config.json> (m05-narrated.mp4)
 // node scripts/render_video.mjs --frames=0-400 --out=out/test.mp4      a part of it
 // node scripts/render_video.mjs --still=120,900,3000 --dir=out/video-stills   single frames (png), for looking
-// --id=M05-sampler renders the listening test of the keyboard packs (npm run video:sampler first).
+// --id=<id>-sampler (M05-sampler) renders the listening test of the keyboard packs (npm run video:sampler first).
 // Needs out/video-public/typing.wav first (npm run video:audio).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,6 +9,7 @@ import {bundle} from '@remotion/bundler';
 import {renderMedia, renderStill, selectComposition} from '@remotion/renderer';
 
 const root = path.resolve(import.meta.dirname, '..');
+const config = JSON.parse(fs.readFileSync(path.join(root, 'src/video/video.config.json'), 'utf8')); // what is specific to this deck's video: id, output file, skipped slides
 const arg = (name, fallback) => {
   const a = process.argv.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : fallback;
@@ -17,7 +18,7 @@ const publicDir = path.join(root, 'out', 'video-public');
 if (!fs.existsSync(path.join(publicDir, 'typing.wav')) && !fs.existsSync(path.join(publicDir, 'sampler.wav'))) throw new Error('run `npm run video:audio` (or `npm run video:sampler`) first');
 
 const serveUrl = await bundle({entryPoint: path.join(root, 'src/video/entry.ts'), publicDir});
-const id = arg('id', 'M05-narrated');
+const id = arg('id', `${config.id}-narrated`);
 const composition = await selectComposition({serveUrl, id});
 console.log(`${composition.durationInFrames} frames = ${(composition.durationInFrames / composition.fps / 60).toFixed(1)} min`);
 
@@ -31,7 +32,7 @@ if (still) {
   console.log('stills done');
 } else {
   const range = arg('frames');
-  const out = path.resolve(root, arg('out', 'out/m05-narrated.mp4'));
+  const out = path.resolve(root, arg('out', `out/${config.out}`));
   fs.mkdirSync(path.dirname(out), {recursive: true});
   let lastPct = -1;
   await renderMedia({

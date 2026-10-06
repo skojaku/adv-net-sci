@@ -35,4 +35,5 @@ for (const k of tl.keys) {
 }
 mixer.write(path.join(outDir, 'sampler.wav'));
 console.log(`${SAMPLER_PACKS.length} packs, ${tl.total} frames = ${(tl.total / 30).toFixed(0)} s -> out/video-public/sampler.wav`);
-console.log('now: node scripts/render_video.mjs --id=M05-sampler --out=out/sound-packs.mp4');
+const config = JSON.parse(fs.readFileSync(path.join(root, 'src/video/video.config.json'), 'utf8'));
+console.log(`now: node scripts/render_video.mjs --id=${config.id}-sampler --out=out/sound-packs.mp4`);

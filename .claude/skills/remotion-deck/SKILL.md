@@ -8,4 +8,4 @@ description: Build, extend or review an animated click-through slide deck in Rem
 The substance is in plain markdown so that any agent can follow it: read `slides/REMOTION_DECK_GUIDE.md` and do what it says
 (use model, order of work, the style the lecturer decided, review tools, single html build, pitfalls). The project is
 `slides/m05/remotion/` (its own `DECK_SPEC.md`, `BUILD_NOTES.md`, `README.md`). The judgment files `slides/SLIDE_RUBRIC.md` and
-`slides/FIGURE_GUIDE.md` apply to every slide. Commit only `slides/m05/remotion`.
+`slides/FIGURE_GUIDE.md` apply to every slide. Commit only the deck's project directory (`slides/m05/remotion` for Module 05). A narrated video of a deck is the `narrated-video` skill.

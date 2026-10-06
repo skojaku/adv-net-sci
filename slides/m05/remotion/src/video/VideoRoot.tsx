@@ -3,6 +3,7 @@ import {Composition} from 'remotion';
 import {slides} from '../slides';
 import {ProseContext} from '../components/Text';
 import {FPS} from './timeline';
+import config from './video.config.json';
 import {NarratedDeck, timeline} from './NarratedDeck';
 import {SoundSampler, sampler} from './SoundSampler';
 
@@ -18,8 +19,8 @@ const Collect: React.FC<{n: number}> = ({n}) => {
 
 export const VideoRoot: React.FC = () => (
   <>
-    <Composition id="M05-narrated" component={NarratedDeck} durationInFrames={timeline.total} fps={FPS} width={1920} height={1080} />
-    <Composition id="M05-sampler" component={SoundSampler} durationInFrames={sampler.total} fps={FPS} width={1920} height={1080} />
+    <Composition id={`${config.id}-narrated`} component={NarratedDeck} durationInFrames={timeline.total} fps={FPS} width={1920} height={1080} />
+    <Composition id={`${config.id}-sampler`} component={SoundSampler} durationInFrames={sampler.total} fps={FPS} width={1920} height={1080} />
     {slides.map((s) => (
       <Composition
         key={s.n}
