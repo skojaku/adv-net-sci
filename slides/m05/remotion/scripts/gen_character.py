@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -54,6 +54,17 @@ CANDIDATES_WHITE = {
     4: 'White long straight hair, white robe, one foot waving; the one accent colour is pale yellow, on a small star hairclip only.',
     5: 'White hair with a side ponytail, white robe, typing on a tiny white keyboard on the floor with one hand while the other hand props the chin; the one accent colour is lavender, on the hair tie only.',
 }
+BOY_NOTE = (
+    ' The character is a BOY with short hair cut close in a Japanese "sports cut" (a short, flat-topped crop: no long strands, no bangs, no ponytail, no ahoge, no loop). A sporty, cheerful kid. '
+    'His outfit is given below and OVERRIDES the robe mentioned above. Keep the same thick black outlines and the same lying pose. '
+)
+CANDIDATES_BOY = {
+    1: 'White hair (just a clean outline with a very light grey crop texture), white short-sleeve T-shirt and white shorts, bare feet in the air; the one accent colour is sky blue, on a sweatband on one wrist only.',
+    2: 'White hair, white gym shirt and white shorts, white sneakers on the raised feet; the one accent colour is lavender, on a small towel around the neck only.',
+    3: 'White hair, white loose robe like the attached style but for a boy, bare feet; the one accent colour is pale yellow, on the sash only.',
+    4: 'White hair, white T-shirt and white shorts, typing on a tiny white keyboard on the floor with one hand while the other hand props the chin; the one accent colour is sky blue, on a wristband only.',
+    5: 'White hair, white hooded sweatshirt (hood down) and white shorts, one foot waving, white socks; the one accent colour is soft pink, on the sock cuffs only.',
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -69,8 +80,8 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white'):
-        prompt = REF_STYLE + (WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else CANDIDATES_REF[n])
+    if SET in ('ref', 'white', 'boy'):
+        prompt = REF_STYLE + (WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
@@ -103,7 +114,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
