@@ -7,13 +7,15 @@ import {Tex} from '../components/Tex';
 import {C} from '../theme';
 import {prog} from '../lib/anim';
 import {TOY_EDGES} from '../data/data';
-import {Matrix, TOY, TOY_A, ToyNet, type CellStyle} from '../lib/b_matrix';
+import {Matrix, MatrixDegrees, TOY, TOY_A, TOY_E, ToyNet, fillE, num2, type CellStyle} from '../lib/b_matrix';
 
 /**
- * 0: the small network (6 nodes, 6 edges) and an empty 6 x 6 grid, labelled A_ij.
- * 1: the cells fill: an edge lights both its cells (1), then the other cells, the diagonal included, get 0.
+ * Opens on the last picture of S09 (the network, A, its label and sentence).
+ * 0: A fades out; the degrees k appear next to the nodes and along the matrix; the label becomes E_ij.
+ * 1: the cells fill row by row with k_i k_j / 12; the cell of nodes 1 and 5 is ringed, with its arithmetic.
+ * 2: the sentence.
  */
-export const marks = [50, 124];
+export const marks = [50, 174, 204];
 
 const edgeIndex = (r: number, c: number): number => TOY_EDGES.findIndex(([u, v]) => (u === r && v === c) || (u === c && v === r));
 
@@ -21,35 +23,55 @@ export const S09: React.FC = () => {
   const frame = useCurrentFrame();
 
   // stage 0
-  const net = prog(frame, 2, 26);
-  const grid = prog(frame, 22, 42);
-  const label = prog(frame, 30, 46);
+  const aOut = 1 - prog(frame, 0, 14);
+  const degNet = prog(frame, 16, 36);
+  const degMat = prog(frame, 26, 44);
+  const eLabel = prog(frame, 16, 34);
 
   // stage 1
-  const one = (e: number) => prog(frame, 56 + 5 * e, 66 + 5 * e);
-  const zeros = (r: number) => prog(frame, 100 + 2 * r, 112 + 2 * r);
-  const cap = prog(frame, 104, 122);
+  const cellOp = (r: number, c: number) => prog(frame, 56 + 13 * r + 2 * c, 66 + 13 * r + 2 * c);
+  const ring = prog(frame, 146, 158);
+  const formula = prog(frame, 152, 170);
+
+  // stage 2
+  const cap = prog(frame, 176, 198);
 
   const at = (r: number, c: number): CellStyle => {
-    const e = edgeIndex(r, c);
-    if (e >= 0) return {fill: C.blue, text: '1', color: '#fff', op: one(e)};
-    return {fill: 'none', text: '0', color: C.faint, op: zeros(r)};
+    if (frame < 55) {
+      return edgeIndex(r, c) >= 0 ? {fill: C.blue, text: '1', color: '#fff', op: aOut} : {fill: 'none', text: '0', color: C.faint, op: aOut};
+    }
+    return {fill: fillE(TOY_E[r][c], 0.75), text: num2(TOY_E[r][c]), op: cellOp(r, c)};
   };
+  void TOY_A;
 
   return (
     <Frame n={9} top={190}>
       <Canvas>
-        <ToyNet opacity={net} />
-        <Matrix x={TOY.mx} y={TOY.my} cell={TOY.cell} n={6} at={at} font={36} discs={{d: 52, size: 32}} opacity={grid} />
+        <ToyNet degrees={degNet} />
+        <Matrix x={TOY.mx} y={TOY.my} cell={TOY.cell} n={6} at={at} font={36} discs={{d: 52, size: 32}} rings={[[0, 4]]} ringOp={ring} />
+        <MatrixDegrees x={TOY.mx} y={TOY.my} cell={TOY.cell} opacity={degMat} />
       </Canvas>
-      <Fade o={label} dy={14}>
+      <Fade o={aOut} dy={0}>
         <Box x={TOY.net[0][0] + 250} y={TOY.labelY} w={500} align="center" size={72}>
           <Tex tex="A_{ij}" />
         </Box>
-      </Fade>
-      <Fade o={cap} dy={14}>
         <Box x={TOY.net[0][0] - 60} y={TOY.captionY} w={640} size={38}>
           The entry for nodes i and j is 1 if they share an edge, and 0 if not.
+        </Box>
+      </Fade>
+      <Fade o={eLabel} dy={14}>
+        <Box x={TOY.net[0][0] + 250} y={TOY.labelY} w={500} align="center" size={72}>
+          <Tex tex="E_{ij}" />
+        </Box>
+      </Fade>
+      <Fade o={formula} dy={14}>
+        <Box x={TOY.net[0][0] + 250} y={TOY.formulaY - 10} w={640} align="center" size={44}>
+          <Tex tex="\dfrac{k_ik_j}{2M}=\dfrac{3\times2}{12}=0.50" />
+        </Box>
+      </Fade>
+      <Fade o={cap} dy={14}>
+        <Box x={TOY.net[0][0] - 60} y={TOY.captionY + 25} w={640} size={36}>
+          A random network with the same degrees has this many edges between each pair, on average.
         </Box>
       </Fade>
     </Frame>

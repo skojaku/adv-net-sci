@@ -3,96 +3,81 @@ import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
 import {Box, Tag} from '../components/Text';
-import {C} from '../theme';
-import {caption, prog} from '../lib/anim';
-import {LOOK, type Look} from '../lib/look';
-import {mix, Network} from '../lib/network';
+import {caption, fromStage, prog, smooth} from '../lib/anim';
+import {lerp} from '../lib/plot';
+import {Network, type Pt} from '../lib/network';
 import {CLUB_L, q3} from '../lib/club';
-import {MERGE_PAIR, MOVE_NODE, Q_MERGED, Q_STUCK, STUCK} from '../data/data';
-import {EDGES, groupEdgeLook, groupEdgeOp, NODES, STUCK_HUE, STUCK_LOOKS} from '../lib/c_trace';
-import {Band} from '../lib/c_super';
+import {Q_STUCK, STUCK} from '../data/data';
+import {EDGES, groupEdgeLook, groupEdgeOp, NODES, STUCK_LOOKS} from '../lib/c_trace';
+import {Band, CENTRES, DIRS, GROUPS, LOOP_COUNT, PAIRS, SIZES, SuperNet, tint} from '../lib/c_super';
 
 /**
- * The state that label switching stops in: 5 groups, Q = 0.399.
- * 0: no single node can move to raise Q.
- * 1: one node of group 2 (MOVE_NODE) takes the label of group 1: Q goes down to 0.386.
- * 2: the node goes back; then one soft band around the whole groups 1 and 2 (they are not recoloured, so that S18 opens on this picture): Q would go up to 0.420.
+ * Opens on the stuck partition of S17 (same coordinates).
+ * 0: a soft band around each of the 5 groups.
+ * 1: each group collapses into one disc (its size = the number of nodes); the edges inside a group become a loop, the edges between two groups one thick line (each with its number).
+ * 2: the network of groups has the same Q.
  */
-export const marks = [40, 100, 172];
-
-const [NODE, TO] = [MOVE_NODE[0], MOVE_NODE[1]];
-const MERGED_NODES = STUCK.map((g, v) => (MERGE_PAIR.includes(g) ? v : -1)).filter((v) => v >= 0);
-const TARGET: Look = LOOK[STUCK_HUE[TO]]; // the hue of group 1 (orange)
+export const marks = [30, 112, 156];
 
 export const S17: React.FC = () => {
   const frame = useCurrentFrame();
+  const bands = prog(frame, 0, 16);
+  const c = smooth(frame, 32, 72);
+  const pos: Pt[] = CLUB_L.map((p, v) => [lerp(p[0], CENTRES[STUCK[v]][0], c), lerp(p[1], CENTRES[STUCK[v]][1], c)] as const);
+  const discOp = prog(c, 0.55, 1);
+  const parts = prog(frame, 66, 90);
+  const edgeFade = 1 - Math.min(1, c * 2.2);
+  const looks = STUCK_LOOKS;
+  const opE = groupEdgeOp(STUCK, looks);
 
-  // the colour of the node that moves: (stage 1) it goes over, (stage 2) it goes back
-  const tA = prog(frame, 50, 70);
-  const tB = prog(frame, 102, 120);
-  const t = tA - tB;
-  const moving = new Set([NODE]);
-  const ringAll = prog(frame, 128, 150); // the band around the two groups that would be one
-  const lookTo = STUCK_LOOKS.map((l, i) => (moving.has(i) ? TARGET : l));
-  const looksNow = t > 0.5 ? lookTo : STUCK_LOOKS;
-  const lab = STUCK.map((g, i) => (moving.has(i) && t > 0.5 ? TO : g));
-
-  const ring = Array.from({length: NODES}, (_, i) =>
-    i === NODE ? mix('#ffffff', C.ink, prog(frame, 42, 54) * (1 - prog(frame, 112, 124))) : null,
-  );
-
-  // the Q tag: 0.399, then 0.386, back to 0.399, then 0.420
-  const b = prog(frame, 56, 68) - prog(frame, 112, 124);
-  const c = prog(frame, 144, 158);
-  const a = Math.max(0, 1 - b - c);
+  const hot = fromStage(frame, marks, 2, 14);
 
   return (
     <Frame n={17}>
       <Canvas>
-        <Band pts={MERGED_NODES.map((v) => CLUB_L[v])} pad={24} color="#e4e4e8" opacity={ringAll} />
+        <defs>
+          <clipPath id="s18-clip">
+            <rect x={112} y={0} width={1808} height={1080} />
+          </clipPath>
+        </defs>
+        <g clipPath="url(#s18-clip)">
+          {GROUPS.map((g, i) => (
+            <Band key={i} pts={g.map((v) => pos[v])} pad={34} color={tint(looks[g[0]])} opacity={bands * (1 - prog(c, 0.6, 1))} />
+          ))}
+        </g>
         <Network
-          pos={CLUB_L}
+          pos={pos}
           edges={EDGES}
-          look={STUCK_LOOKS}
-          lookTo={lookTo}
-          t={t}
+          look={looks}
           nodeD={46}
-          edgeOp={groupEdgeOp(lab, looksNow)}
-          edgeLook={groupEdgeLook(lab, looksNow)}
-          ring={ring}
-          ringW={7}
+          nodeOp={() => 1 - prog(c, 0.45, 0.9)}
+          edgeOp={(i, e) => edgeFade * opE(i, e)}
+          edgeLook={groupEdgeLook(STUCK, looks)}
+        />
+        <SuperNet
+          discs={CENTRES.map((p, g) => ({c: p, size: SIZES[g], look: looks[GROUPS[g][0]], op: discOp}))}
+          lines={PAIRS.map((e) => ({a: CENTRES[e.a], b: CENTRES[e.b], count: e.count, op: parts}))}
+          loops={CENTRES.map((p, g) => ({c: p, size: SIZES[g], dir: DIRS[g], count: LOOP_COUNT[g], op: parts}))}
         />
       </Canvas>
-      <Fade o={a}>
+      <Fade o={1 - hot}>
         <Tag x={1385} y={290} style={{fontSize: 64}}>
           Q = {q3(Q_STUCK)}
         </Tag>
       </Fade>
-      <Fade o={b}>
-        <Tag x={1385} y={290} style={{fontSize: 64}}>
-          Q = {q3(MOVE_NODE[2])}
-        </Tag>
-      </Fade>
-      <Fade o={c}>
+      <Fade o={hot}>
         <Tag x={1385} y={290} hot style={{fontSize: 64}}>
-          Q = {q3(Q_MERGED)}
+          Q = {q3(Q_STUCK)}
         </Tag>
-      </Fade>
-      <Fade o={caption(frame, marks, 0)} dy={14}>
-        <Box x={1010} y={450} w={770}>
-          No node can move to raise Q.
-        </Box>
       </Fade>
       <Fade o={caption(frame, marks, 1)} dy={14}>
         <Box x={1010} y={450} w={770}>
-          Moving one node lowers Q.
+          Each disc counts nodes. Each loop and line counts edges.
         </Box>
       </Fade>
       <Fade o={caption(frame, marks, 2)} dy={14}>
-        <Box x={1000} y={450} w={800} size={42}>
-          Merging two whole groups raises Q.
-          <br />
-          One node at a time cannot see it.
+        <Box x={1010} y={450} w={770}>
+          The network of groups has the same Q.
         </Box>
       </Fade>
     </Frame>

@@ -5,108 +5,94 @@ import {Canvas, Fade} from '../components/Fade';
 import {Box, Tag} from '../components/Text';
 import {C} from '../theme';
 import {caption, prog} from '../lib/anim';
-import {clamp} from '../lib/plot';
+import {LOOK, type Look} from '../lib/look';
 import {mix, Network} from '../lib/network';
-import {HOLLOW} from '../lib/look';
 import {CLUB_L, q3} from '../lib/club';
-import {MOVES} from '../data/data';
-import {EDGES, groupEdgeLook, groupEdgeOp, LABELS, LOOKS_AT, N_MOVES, NODES, Q_AFTER} from '../lib/c_trace';
-import {QPlot} from '../lib/c_qplot';
+import {MERGE_PAIR, MOVE_NODE, Q_MERGED, Q_STUCK, STUCK} from '../data/data';
+import {EDGES, groupEdgeLook, groupEdgeOp, NODES, STUCK_HUE, STUCK_LOOKS} from '../lib/c_trace';
+import {Band} from '../lib/c_super';
 
 /**
- * Label switching on the club, one node at a time (MOVES: each node visits in the order of ORDER and takes the label of the neighbouring group that raises Q most).
- * 0: the club, every node with its own label (a number in a hollow disc), Q = -0.050.
- * 1: moves 1 to 12.
- * 2: moves 13 to 36: five groups, Q = 0.399.
- * 3: no single move raises Q any more.
+ * The state that label switching stops in: 5 groups, Q = 0.399.
+ * 0: no single node can move to raise Q.
+ * 1: one node of group 2 (MOVE_NODE) takes the label of group 1: Q goes down to 0.386.
+ * 2: the node goes back; then one soft band around the whole groups 1 and 2 (they are not recoloured, so that S18 opens on this picture): Q would go up to 0.420.
  */
-export const marks = [56, 130, 264, 314];
+export const marks = [40, 100, 172];
 
-const MV = 5; // frames per move
-const S1 = 62; // the first move of stage 1 starts
-const S2 = 136; // the first move of stage 2 starts
-
-/** how many moves are done at this frame (fractional: the move in progress) */
-const moves = (frame: number): number => (frame < S2 ? clamp((frame - S1) / MV, 0, 12) : 12 + clamp((frame - S2) / MV, 0, N_MOVES - 12));
-
-const PLOT = {x: 1070, y: 330, w: 690, h: 330};
-const XS = Array.from({length: N_MOVES + 1}, (_, i) => i);
+const [NODE, TO] = [MOVE_NODE[0], MOVE_NODE[1]];
+const MERGED_NODES = STUCK.map((g, v) => (MERGE_PAIR.includes(g) ? v : -1)).filter((v) => v >= 0);
+const TARGET: Look = LOOK[STUCK_HUE[TO]]; // the hue of group 1 (orange)
 
 export const S16: React.FC = () => {
   const frame = useCurrentFrame();
-  const p = moves(frame);
-  const m = Math.min(N_MOVES, Math.floor(p + 1e-9));
-  const f = m >= N_MOVES ? 0 : p - m;
-  const lookA = LOOKS_AT[m];
-  const lookB = LOOKS_AT[Math.min(m + 1, N_MOVES)];
-  const labelsNow = LABELS[f > 0.5 ? m + 1 : m];
-  const looksNow = f > 0.5 ? lookB : lookA;
-  const mover = m < N_MOVES && f > 0 ? MOVES[m][0] : -1;
-  const ring = Array.from({length: NODES}, (_, i) => (i === mover ? mix('#ffffff', C.ink, Math.sin(Math.PI * f)) : null));
-  const numbers = looksNow.map((l, i) => (l === HOLLOW ? labelsNow[i] + 1 : null));
 
-  const nodeOp = (i: number) => prog(frame, 0.4 * i, 0.4 * i + 12);
-  const edgeAppear = (i: number) => prog(frame, 6 + 0.28 * i, 6 + 0.28 * i + 10);
-  const edgeOp = groupEdgeOp(labelsNow, looksNow);
-  const q = Q_AFTER[Math.round(p)];
-  const plotOp = prog(frame, 16, 36);
+  // the colour of the node that moves: (stage 1) it goes over, (stage 2) it goes back
+  const tA = prog(frame, 50, 70);
+  const tB = prog(frame, 102, 120);
+  const t = tA - tB;
+  const moving = new Set([NODE]);
+  const ringAll = prog(frame, 128, 150); // the band around the two groups that would be one
+  const lookTo = STUCK_LOOKS.map((l, i) => (moving.has(i) ? TARGET : l));
+  const looksNow = t > 0.5 ? lookTo : STUCK_LOOKS;
+  const lab = STUCK.map((g, i) => (moving.has(i) && t > 0.5 ? TO : g));
+
+  const ring = Array.from({length: NODES}, (_, i) =>
+    i === NODE ? mix('#ffffff', C.ink, prog(frame, 42, 54) * (1 - prog(frame, 112, 124))) : null,
+  );
+
+  // the Q tag: 0.399, then 0.386, back to 0.399, then 0.420
+  const b = prog(frame, 56, 68) - prog(frame, 112, 124);
+  const c = prog(frame, 144, 158);
+  const a = Math.max(0, 1 - b - c);
 
   return (
     <Frame n={16}>
       <Canvas>
+        <Band pts={MERGED_NODES.map((v) => CLUB_L[v])} pad={24} color="#e4e4e8" opacity={ringAll} />
         <Network
           pos={CLUB_L}
           edges={EDGES}
-          look={lookA}
-          lookTo={lookB}
-          t={f}
-          nodeD={42}
-          nodeOp={(i) => nodeOp(i)}
-          edgeOp={(i, e) => edgeAppear(i) * edgeOp(i, e)}
-          edgeLook={groupEdgeLook(labelsNow, looksNow)}
+          look={STUCK_LOOKS}
+          lookTo={lookTo}
+          t={t}
+          nodeD={46}
+          edgeOp={groupEdgeOp(lab, looksNow)}
+          edgeLook={groupEdgeLook(lab, looksNow)}
           ring={ring}
           ringW={7}
-          label={numbers}
-          labelSize={20}
-        />
-        <QPlot
-          {...PLOT}
-          xs={XS}
-          ys={Q_AFTER}
-          shown={p + 1}
-          xMin={0}
-          xMax={N_MOVES}
-          yMin={-0.08}
-          yMax={0.46}
-          xTicks={[0, 12, 24, 36].map((v) => ({v, label: String(v)}))}
-          yTicks={[0, 0.2, 0.4].map((v) => ({v, label: v === 0 ? '0' : String(v)}))}
-          xLabel="move"
-          yLabel="Q"
-          opacity={plotOp}
         />
       </Canvas>
-      <Fade o={plotOp} dy={14}>
-        <Tag x={1415} y={222} style={{fontSize: 56}}>
-          Q = {q3(q)}
+      <Fade o={a}>
+        <Tag x={1385} y={290} style={{fontSize: 64}}>
+          Q = {q3(Q_STUCK)}
+        </Tag>
+      </Fade>
+      <Fade o={b}>
+        <Tag x={1385} y={290} style={{fontSize: 64}}>
+          Q = {q3(MOVE_NODE[2])}
+        </Tag>
+      </Fade>
+      <Fade o={c}>
+        <Tag x={1385} y={290} hot style={{fontSize: 64}}>
+          Q = {q3(Q_MERGED)}
         </Tag>
       </Fade>
       <Fade o={caption(frame, marks, 0)} dy={14}>
-        <Box x={1010} y={790} w={770}>
-          Every node starts
-          <br />
-          with its own label.
+        <Box x={1010} y={450} w={770}>
+          No node can move to raise Q.
         </Box>
       </Fade>
       <Fade o={caption(frame, marks, 1)} dy={14}>
-        <Box x={1010} y={790} w={770}>
-          A node takes the label of the neighbouring group that raises Q the most.
+        <Box x={1010} y={450} w={770}>
+          Moving one node lowers Q.
         </Box>
       </Fade>
-      <Fade o={caption(frame, marks, 3)} dy={14}>
-        <Box x={1010} y={790} w={770}>
-          No single move
+      <Fade o={caption(frame, marks, 2)} dy={14}>
+        <Box x={1000} y={450} w={800} size={42}>
+          Merging two whole groups raises Q.
           <br />
-          raises Q any more.
+          One node at a time cannot see it.
         </Box>
       </Fade>
     </Frame>

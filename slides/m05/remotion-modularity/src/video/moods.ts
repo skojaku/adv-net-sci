@@ -6,8 +6,7 @@ import type {MoodRule} from './timeline';
  */
 export const MOODS: MoodRule[] = [
   {slide: 3, stage: 2, mood: 'worry'}, // everyone in one group gets the best score
-  {slide: 15, stage: 0, mood: 'shrug'}, // 2.1e28 partitions: no way to try them all
-  {slide: 17, stage: 1, mood: 'worry'}, // moving one node lowers Q
-  {slide: 21, stage: 2, mood: 'worry'}, // the blue group is in two pieces
-  {slide: 8, stage: 1, mood: 'shrug'}, // the approximation breaks for hubs and dense networks: left for another time
+  {slide: 14, stage: 0, mood: 'shrug'}, // 2.1e28 partitions: no way to try them all
+  {slide: 16, stage: 1, mood: 'worry'}, // moving one node lowers Q
+  {slide: 20, stage: 2, mood: 'worry'}, // the blue group is in two pieces
 ];

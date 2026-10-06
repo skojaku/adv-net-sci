@@ -6,81 +6,95 @@ import {Box, Cap, Tag} from '../components/Text';
 import {C} from '../theme';
 import {betweenStages, fromStage, prog} from '../lib/anim';
 import {LOOK, type Look} from '../lib/look';
+import {mix} from '../lib/network';
 import {q3} from '../lib/club';
-import {BR_Q, BR_S0, BR_S1} from '../data/data';
+import {BR_Q, BR_S1, BR_S2} from '../data/data';
 import {BridgeScene} from '../lib/c_bridge';
+import {LoopDiagram, loopWidth, type LoopBox} from '../lib/c_loop';
 
 /**
- * A constructed example (BR_*), not a run of Louvain: each Q is computed, and Leiden's paper shows that Louvain can reach such a state.
- * 0: the bridge node (6) sits in the blue group; the other group is orange. Q = 0.222.
- * 1: the bridge moves to the orange group: Q goes up to 0.357.
- * 2: the blue group is in two pieces with no edge between them.
- * 3: Louvain moves a node only to a neighbouring group; what the Leiden paper found.
+ * Opens on the picture S21 ends with (the constructed example: two blue pieces, Q = 0.357).
+ * 0: the same picture.
+ * 1: Leiden splits the blue group into its two connected parts (the right triangle turns purple): Q = 0.482.
+ * 2: the loop of Leiden: move nodes, split groups into connected parts, merge parts into nodes.
+ * 3: every group stays connected; the name and the paper.
  */
-export const marks = [58, 120, 184, 236];
+export const marks = [26, 96, 168, 214];
 
 const BLUE = LOOK[0];
 const ORANGE = LOOK[1];
-const LOOKS0: Look[] = BR_S0.map((g) => (g === 0 ? BLUE : ORANGE));
+const PURPLE = LOOK[3];
 const LOOKS1: Look[] = BR_S1.map((g) => (g === 0 ? BLUE : ORANGE));
+const LOOKS2: Look[] = BR_S2.map((g) => (g === 0 ? BLUE : g === 1 ? PURPLE : ORANGE));
+
+const BOXES: LoopBox[] = [
+  {text: 'Move nodes', w: 270},
+  {text: 'Split into connected parts', w: 520},
+  {text: 'Merge parts into nodes', w: 470},
+];
+const GAP = 90;
+const X0 = (1920 - loopWidth(BOXES, GAP)) / 2;
 
 export const S21: React.FC = () => {
   const frame = useCurrentFrame();
-  const t = prog(frame, 68, 90);
-  const lookTo = LOOKS0.map((l, i) => (i === 6 ? ORANGE : l));
-  const lab = t > 0.5 ? BR_S1 : BR_S0;
-  const looksNow = t > 0.5 ? LOOKS1 : LOOKS0;
-
-  const hot = prog(frame, 82, 98);
-  const dim = prog(frame, 124, 146);
-  const rings = prog(frame, 124, 146);
-  const gap = prog(frame, 142, 160);
+  const t = prog(frame, 30, 54);
+  const lookTo = LOOKS1.map((l, i) => (i >= 3 && i <= 5 ? PURPLE : l));
+  const lab = t > 0.5 ? BR_S2 : BR_S1;
+  const looksNow = t > 0.5 ? LOOKS2 : LOOKS1;
+  const dim = 1 - prog(frame, 30, 54);
+  const hot = prog(frame, 50, 66);
+  const gap = 1 - prog(frame, 28, 42);
+  const diagram = (i: number) => prog(frame, marks[1] + 4 + 18 * i, marks[1] + 22 + 18 * i);
 
   return (
     <Frame n={21} zoom={1.08} top={200}>
       <Canvas>
         <BridgeScene
           lab={lab}
-          looks={LOOKS0}
+          looks={LOOKS1}
           lookTo={lookTo}
           t={t}
           edgeLab={lab}
           edgeLooks={looksNow}
-          nodeAppear={(i) => prog(frame, 0.8 * i, 0.8 * i + 12)}
-          edgeAppear={(i) => prog(frame, 8 + 0.8 * i, 8 + 0.8 * i + 12)}
           dim={dim}
-          bridgeRing={prog(frame, 60, 70) * (1 - prog(frame, 98, 110))}
-          bridgeLabel={prog(frame, 30, 44) * (1 - prog(frame, 124, 138))}
-          rings={{o: rings, left: C.blue, right: C.blue}}
+          rings={{o: 1, left: C.blue, right: mix(C.blue, C.purple, t)}}
           gap={gap}
         />
+        <LoopDiagram
+          x={X0}
+          y={770}
+          h={96}
+          boxes={BOXES}
+          gap={GAP}
+          font={36}
+          appear={[diagram(0), diagram(1), diagram(2)]}
+          back={{from: 2, to: 0, label: 'repeat', appear: prog(frame, marks[1] + 58, marks[1] + 74)}}
+        />
       </Canvas>
-      <Fade o={prog(frame, 30, 46) * (1 - hot)}>
-        <Tag x={960} y={215} style={{fontSize: 56}}>
-          Q = {q3(BR_Q[0])}
-        </Tag>
-      </Fade>
-      <Fade o={hot}>
+      <Fade o={1 - hot}>
         <Tag x={960} y={215} hot style={{fontSize: 56}}>
           Q = {q3(BR_Q[1])}
         </Tag>
       </Fade>
-      <Fade o={betweenStages(frame, marks, 2, 2)} dy={14}>
+      <Fade o={hot}>
+        <Tag x={960} y={215} hot style={{fontSize: 56}}>
+          Q = {q3(BR_Q[2])}
+        </Tag>
+      </Fade>
+      <Fade o={betweenStages(frame, marks, 1, 1)} dy={14}>
         <Box x={960} y={715} w={1680} align="center">
-          The blue group is now in two pieces with no edge between them.
+          Leiden splits each group into well-connected parts
+          <br />
+          before it merges them.
         </Box>
       </Fade>
       <Fade o={fromStage(frame, marks, 3, 16)} dy={14}>
-        <Box x={960} y={715} w={1680} align="center" size={42}>
-          Louvain moves a node only to a neighbouring group.
-          <br />
-          It cannot split them.
+        <Box x={960} y={688} w={1500} align="center" size={44}>
+          Every group stays connected.
         </Box>
-        <Box x={960} y={850} w={1680} align="center" size={42}>
-          Up to 25% of the communities are badly connected
-          <br />
-          and up to 16% are disconnected.
-        </Box>
+        <Tag x={250} y={215} hot style={{fontSize: 56}}>
+          Leiden
+        </Tag>
         <Cap x={1460} y={222} w={560}>
           Traag, Waltman, van Eck, 2019
         </Cap>

@@ -20,7 +20,6 @@ import {S18, marks as marks18} from './S18';
 import {S19, marks as marks19} from './S19';
 import {S20, marks as marks20} from './S20';
 import {S21, marks as marks21} from './S21';
-import {S22, marks as marks22} from './S22';
 
 export type SlideDef = {
   /** the slide's number in DECK_SPEC.md */
@@ -39,19 +38,18 @@ export const slides: SlideDef[] = [
   {n: 5, id: 'cut-edges', marks: marks05, Component: S05},
   {n: 6, id: 'one-stub', marks: marks06, Component: S06},
   {n: 7, id: 'stub-pairs', marks: marks07, Component: S07},
-  {n: 8, id: 'not-a-probability', marks: marks08, Component: S08},
-  {n: 9, id: 'matrix-a', marks: marks09, Component: S09},
-  {n: 10, id: 'matrix-e', marks: marks10, Component: S10},
-  {n: 11, id: 'matrix-b', marks: marks11, Component: S11},
-  {n: 12, id: 'club-matrices', marks: marks12, Component: S12},
-  {n: 13, id: 'q-formula', marks: marks13, Component: S13},
-  {n: 14, id: 'club-q-values', marks: marks14, Component: S14},
-  {n: 15, id: 'too-many', marks: marks15, Component: S15},
-  {n: 16, id: 'label-switching', marks: marks16, Component: S16},
-  {n: 17, id: 'stuck', marks: marks17, Component: S17},
-  {n: 18, id: 'supernodes', marks: marks18, Component: S18},
-  {n: 19, id: 'second-level', marks: marks19, Component: S19},
-  {n: 20, id: 'louvain-loop', marks: marks20, Component: S20},
-  {n: 21, id: 'bridge-leaves', marks: marks21, Component: S21},
-  {n: 22, id: 'leiden-refine', marks: marks22, Component: S22},
+  {n: 8, id: 'matrix-a', marks: marks08, Component: S08},
+  {n: 9, id: 'matrix-e', marks: marks09, Component: S09},
+  {n: 10, id: 'matrix-b', marks: marks10, Component: S10},
+  {n: 11, id: 'club-matrices', marks: marks11, Component: S11},
+  {n: 12, id: 'q-formula', marks: marks12, Component: S12},
+  {n: 13, id: 'club-q-values', marks: marks13, Component: S13},
+  {n: 14, id: 'too-many', marks: marks14, Component: S14},
+  {n: 15, id: 'label-switching', marks: marks15, Component: S15},
+  {n: 16, id: 'stuck', marks: marks16, Component: S16},
+  {n: 17, id: 'supernodes', marks: marks17, Component: S17},
+  {n: 18, id: 'second-level', marks: marks18, Component: S18},
+  {n: 19, id: 'louvain-loop', marks: marks19, Component: S19},
+  {n: 20, id: 'bridge-leaves', marks: marks20, Component: S20},
+  {n: 21, id: 'leiden-refine', marks: marks21, Component: S21},
 ];

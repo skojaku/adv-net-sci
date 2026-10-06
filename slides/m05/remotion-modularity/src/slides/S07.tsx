@@ -3,7 +3,7 @@ import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas} from '../components/Fade';
 import {FormulaStack, type StackRow} from '../components/FormulaStack';
-import {Box} from '../components/Text';
+import {Box, Cap} from '../components/Text';
 import {Tex} from '../components/Tex';
 import {C} from '../theme';
 import {caption, prog} from '../lib/anim';
@@ -90,7 +90,8 @@ export const S07: React.FC = () => {
         <Box x={960} y={700} w={860} size={42} style={BALANCE}>Each cell is one pair of stubs: one of i, one of j.</Box>
       </div>
       <div style={{opacity: s1}}>
-        <Box x={960} y={700} w={860} size={42} style={BALANCE}>Each pair of stubs is joined with probability about 1/2M.</Box>
+        <Box x={960} y={700} w={860} size={42} style={BALANCE}>Each pair of stubs contributes 1/2M edges on average.</Box>
+        <Cap x={1390} y={560} w={600} align="left">expected number of edges</Cap>
       </div>
     </Frame>
   );

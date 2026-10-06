@@ -38,7 +38,7 @@
    "Every stub is equally likely to join any other stub."
   ],
   "1": [
-   "So the chance that i joins j is proportional to the stubs of i and of j."
+   "So the expected edges between i and j are proportional to their stubs."
   ]
  },
  "7": {
@@ -46,52 +46,43 @@
    "Each cell is one pair of stubs: one of i, one of j."
   ],
   "1": [
-   "Each pair of stubs is joined with probability about 1/2M."
+   "Each pair of stubs contributes 1/2M edges on average."
   ]
  },
  "8": {
-  "0": [
-   "This is a number of edges, not a probability. Here it is above 1."
-  ],
-  "1": [
-   "When it is small, it is close to a probability.",
-   "For hubs or dense networks the approximation breaks. We leave that for another time."
-  ]
- },
- "9": {
   "1": [
    "The entry for nodes i and j is 1 if they share an edge, and 0 if not."
   ]
  },
- "10": {
+ "9": {
   "2": [
    "A random network with the same degrees has this many edges between each pair, on average."
   ]
  },
- "11": {
+ "10": {
   "2": [
-   "Positive: more edges than chance. Negative: fewer."
+   "Positive: more edges than expected. Negative: fewer."
   ],
   "3": [
    "Each row of Q_ij sums to 0."
   ]
  },
- "12": {
+ "11": {
   "0": [
    "The same three matrices for the karate club, with the nodes sorted by group."
   ]
  },
- "13": {
+ "12": {
   "3": [
    "Q is the fraction of edges inside groups minus the fraction expected in a random network."
   ]
  },
- "14": {
+ "13": {
   "4": [
    "We did not choose the number of groups. Maximizing Q chooses it."
   ]
  },
- "15": {
+ "14": {
   "0": [
    "ways to split 34 nodes into groups"
   ],
@@ -99,7 +90,7 @@
    "We cannot try them all. We improve one partition step by step."
   ]
  },
- "16": {
+ "15": {
   "0": [
    "Every node starts with its own label."
   ],
@@ -110,7 +101,7 @@
    "No single move raises Q any more."
   ]
  },
- "17": {
+ "16": {
   "0": [
    "No node can move to raise Q."
   ],
@@ -118,7 +109,7 @@
    "Merging two whole groups raises Q. One node at a time cannot see it."
   ]
  },
- "18": {
+ "17": {
   "1": [
    "Each disc counts nodes. Each loop and line counts edges."
   ],
@@ -126,7 +117,7 @@
    "The network of groups has the same Q."
   ]
  },
- "19": {
+ "18": {
   "0": [
    "Run the same local moves, now on the supernodes."
   ],
@@ -134,12 +125,12 @@
    "Two groups merge into one node."
   ]
  },
- "20": {
+ "19": {
   "2": [
    "Fast unfolding of communities in large networks"
   ]
  },
- "21": {
+ "20": {
   "2": [
    "The blue group is now in two pieces with no edge between them."
   ],
@@ -148,7 +139,7 @@
    "Up to 25% of the communities are badly connected and up to 16% are disconnected."
   ]
  },
- "22": {
+ "21": {
   "1": [
    "Leiden splits each group into well-connected parts before it merges them."
   ]

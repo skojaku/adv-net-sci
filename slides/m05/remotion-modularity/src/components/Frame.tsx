@@ -4,7 +4,7 @@ import {C, F, S} from '../theme';
 import {prog} from '../lib/anim';
 import {PatternDefs} from './Patterns';
 
-export const TOTAL = 22;
+export const TOTAL = 21;
 
 /**
  * A content slide. Without a `title` (the usual case) there is no heading and no rule: the content, laid out for a canvas with

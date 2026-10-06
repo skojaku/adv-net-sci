@@ -2,86 +2,70 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {Frame} from '../components/Frame';
 import {Canvas, Fade} from '../components/Fade';
-import {Box, Cap, Tag} from '../components/Text';
-import {Tex} from '../components/Tex';
-import {FormulaStack, type StackRow} from '../components/FormulaStack';
-import {C} from '../theme';
-import {prog} from '../lib/anim';
+import {Box, Tag} from '../components/Text';
+import {HOLLOW, LOOK, type Look} from '../lib/look';
+import {Network, toCanvas} from '../lib/network';
+import {prog, stageStart} from '../lib/anim';
 import {q3} from '../lib/club';
-import {Q_REAL} from '../data/data';
-import {CLUB_B, CLUB_BAR, CLUB_GROUP, CLUB_SPLIT, Matrix, fillB, type CellStyle} from '../lib/b_matrix';
+import {FINAL, KARATE_EDGES, KARATE_POS, KARATE_REAL, Q_ONE, Q_REAL, Q_FINAL, Q_SINGLES} from '../data/data';
 
 /**
- * The karate club's Q_ij (sorted by group) at the left, the formula at the right, one row per stage.
- * 0: the groups as bars outside the matrix, c_i = group of node i.
- * 1: only the cells of two nodes in the same group stay (delta = 1); the others fade.
- * 2: the kept cells are added: Q = (1 / 2M) sum Q_ij delta(c_i, c_j).
- * 3: Q = 0.358, with the paper.
+ * Four partitions of the karate club side by side, one per stage, each with its Q.
+ * 0: everyone alone (34 groups, Q = -0.050).  1: everyone together (1 group, Q = 0.000).
+ * 2: the two real factions (Q = 0.358).        3: four groups (Q = 0.420).
+ * 4: the number of groups is not an input.
  */
-export const marks = [64, 134, 204, 268];
+export const marks = [52, 102, 152, 202, 252];
 
-const CELL = 14;
-const N = 34;
-const W = N * CELL;
-const MX = 210;
-const MY = 330;
+const EDGES = KARATE_EDGES as unknown as ReadonlyArray<readonly [number, number]>;
+const PW = 380;
+const PX = [140, 560, 980, 1400];
+const PY = 340;
+const PH = 300;
+const POS = PX.map((x) => toCanvas(KARATE_POS, x, PY, PW, PH));
 
-const ROWS: ReadonlyArray<StackRow> = [
-  {group: 0, tex: 'c_i=\\text{group of node }i'},
-  {group: 1, tex: '\\delta(c_i,c_j)=1\\text{ if }c_i=c_j\\text{, else }0'},
-  {group: 2, tex: 'Q=\\dfrac{1}{2M}\\sum_{i,j}Q_{ij}\\,\\delta(c_i,c_j)'},
+type Panel = {label: string; q: number; look: ReadonlyArray<Look>; hot?: boolean};
+const PANELS: ReadonlyArray<Panel> = [
+  {label: '34 groups', q: Q_SINGLES, look: KARATE_REAL.map(() => HOLLOW)},
+  {label: '1 group', q: Q_ONE, look: KARATE_REAL.map(() => LOOK[0])},
+  {label: '2 groups', q: Q_REAL, look: KARATE_REAL.map((g) => LOOK[g])},
+  {label: '4 groups', q: Q_FINAL, look: FINAL.map((g) => LOOK[g]), hot: true},
 ];
 
 export const S13: React.FC = () => {
   const frame = useCurrentFrame();
-
-  // stage 0
-  const bars = prog(frame, 22, 42);
-  const row = (r: number) => prog(frame, 4 + r, 14 + r);
-  const lab = prog(frame, 6, 24);
-  // stage 1
-  const mask = prog(frame, 72, 104);
-  // stage 2
-  const blocks = prog(frame, 140, 160);
-  // stage 3
-  const tag = prog(frame, 208, 226);
-  const credit = prog(frame, 222, 240);
-  const say = prog(frame, 240, 262);
-
-  const at = (r: number, c: number): CellStyle => {
-    const same = CLUB_GROUP[r] === CLUB_GROUP[c];
-    return {fill: fillB(CLUB_B[r][c], 0.8), op: row(r) * (same ? 1 : 1 - 0.88 * mask)};
-  };
-  const x2 = MX + CLUB_SPLIT * CELL;
-  const y2 = MY + CLUB_SPLIT * CELL;
+  const say = prog(frame, stageStart(marks, 4) + 6, stageStart(marks, 4) + 28);
 
   return (
     <Frame n={13} top={190}>
       <Canvas>
-        <Matrix x={MX} y={MY} cell={CELL} n={N} at={at} grid={false} bars={{colors: CLUB_BAR, t: 14, gap: 6, op: bars}} />
-        <g opacity={blocks} fill="none" stroke={C.ink} strokeWidth={3.5}>
-          <rect x={MX} y={MY} width={CLUB_SPLIT * CELL} height={CLUB_SPLIT * CELL} />
-          <rect x={x2} y={y2} width={W - CLUB_SPLIT * CELL} height={W - CLUB_SPLIT * CELL} />
-        </g>
+        {PANELS.map((p, k) => {
+          const s = stageStart(marks, k);
+          const node = (i: number) => prog(frame, s + 2 + 0.35 * i, s + 14 + 0.35 * i);
+          const edge = (i: number) => prog(frame, s + 6 + 0.25 * i, s + 16 + 0.25 * i);
+          return (
+            <Network key={k} pos={POS[k]} edges={EDGES} look={p.look} nodeD={24} edgeW={2.4} nodeOp={(i) => node(i)} edgeOp={(i) => edge(i)} />
+          );
+        })}
       </Canvas>
-      <Fade o={lab} dy={10}>
-        <Box x={MX + W / 2} y={180} w={400} align="center" size={60}><Tex tex="Q_{ij}" /></Box>
-      </Fade>
-      <Fade o={bars} dy={6}>
-        <Box x={MX + W + 52} y={MY - 40} w={90} align="center" size={42}><Tex tex="c_j" /></Box>
-        <Box x={MX - 62} y={MY + W + 6} w={90} align="center" size={42}><Tex tex="c_i" /></Box>
-      </Fade>
-      <FormulaStack rows={ROWS} marks={marks} x={830} y={300} w={980} big={60} small={44} gap={30} />
-      <Fade o={tag} dy={14}>
-        <Tag x={1320} y={670} hot>Q = {q3(Q_REAL)}</Tag>
-      </Fade>
-      <Fade o={credit} dy={10}>
-        <Cap x={1320} y={750} w={900}>Newman and Girvan, 2004</Cap>
-        <Cap x={1320} y={806} w={900} style={{fontSize: 38}}>Phys. Rev. E 69, 026113</Cap>
-      </Fade>
+      {PANELS.map((p, k) => {
+        const s = stageStart(marks, k);
+        const lab = prog(frame, s + 4, s + 22);
+        const tag = prog(frame, s + 26, s + 42);
+        return (
+          <React.Fragment key={k}>
+            <Fade o={lab} dy={12}>
+              <Box x={PX[k] + PW / 2} y={PY - 90} w={PW} align="center" size={46}>{p.label}</Box>
+            </Fade>
+            <Fade o={tag} dy={12}>
+              <Tag x={PX[k] + PW / 2} y={PY + PH + 50} hot={p.hot}>Q = {q3(p.q)}</Tag>
+            </Fade>
+          </React.Fragment>
+        );
+      })}
       <Fade o={say} dy={14}>
-        <Box x={830} y={880} w={980} size={36}>
-          Q is the fraction of edges inside groups minus the fraction expected in a random network.
+        <Box x={960} y={PY + PH + 170} w={1600} align="center" size={46}>
+          We did not choose the number of groups. Maximizing Q chooses it.
         </Box>
       </Fade>
     </Frame>

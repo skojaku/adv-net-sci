@@ -13,7 +13,7 @@ import {ToyDisc} from '../lib/a_toy';
 /**
  * The 12 stubs of the small example in a row, grouped by node. Node 1 (the hub, 3 stubs) is i, node 5 (2 stubs) is j.
  * 0: the row of stubs, the nodes, the labels i and j. Every stub is equally likely to join any other stub.
- * 1: the stubs of i (k_i) and of j (k_j) are marked: the chance that i joins j is proportional to k_i and to k_j.
+ * 1: the stubs of i (k_i) and of j (k_j) are marked: the expected number of edges between i and j is proportional to k_i and to k_j (never called a probability).
  * (Lecturer: the derivation is one straight line, so there are no arcs and no 2M - 1.)
  */
 export const marks = [60, 130];
@@ -100,9 +100,9 @@ export const S06: React.FC = () => {
         <Box x={960} y={810} w={1500} align="center" size={46}>Every stub is equally likely to join any other stub.</Box>
       </div>
       <div style={{opacity: s1}}>
-        <Box x={960} y={790} w={1640} align="center" size={44}>So the chance that i joins j is proportional to the stubs of i and of j.</Box>
+        <Box x={960} y={790} w={1640} align="center" size={44}>So the expected edges between i and j are proportional to their stubs.</Box>
         <Box x={960} y={870} w={1500} align="center" size={58}>
-          <Tex tex="\text{chance}\ \propto\ k_i\,k_j" />
+          <Tex tex="\text{expected edges}\ \propto\ k_i\,k_j" />
         </Box>
       </div>
     </Frame>
