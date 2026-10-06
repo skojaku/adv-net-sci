@@ -2,13 +2,13 @@ import React from 'react';
 import {spring} from 'remotion';
 import {loadFont as loadMono} from '@remotion/google-fonts/JetBrainsMono';
 import {C} from '../theme';
-import {Loafer, LoaferPose} from './Loafer';
-import {Bubble, FPS} from './timeline';
+import {Character} from './Character';
+import {Bubble, FPS, Reaction} from './timeline';
 
 const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
 
 /**
- * The narrator in the band at the TOP of the video (the slide is shown under it, see NarratedDeck.tsx): a small figure lying down at the left and, to
+ * The narrator in the band at the TOP of the video (the slide is shown under it, see NarratedDeck.tsx): a small figure lying down at the left (Character.tsx) and, to
  * its right, plain terminal lines on the white page (a prompt, the text typed key by key, a block cursor, no frame). A new line starts at the
  * bottom of the two lines and the older lines move up and fade; two lines at most.
  */
@@ -25,7 +25,7 @@ const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const pop = (frame: number) => spring({frame, fps: FPS, config: {damping: 14, stiffness: 170, mass: 0.6}});
 
-export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame: number; kind: string}[]; fadeFrom?: number}> = ({frame, bubbles, keys, fadeFrom}) => {
+export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame: number; kind: string}[]; reactions: Reaction[]; fadeFrom?: number}> = ({frame, bubbles, keys, reactions, fadeFrom}) => {
   // one continuous talk: the lines that have started so far, the last four at most (the oldest of them is on its way out)
   const started = bubbles.filter((b) => b.start <= frame);
   const shown = started.slice(-4);
@@ -33,39 +33,10 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
   const newest = started[started.length - 1];
   const pNew = newest ? pop(frame - newest.start) : 1;
 
-  // the figure
-  const last = (() => {
-    let lo = 0;
-    let hi = keys.length - 1;
-    let ans = -1;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      if (keys[mid].frame <= frame) {
-        ans = mid;
-        lo = mid + 1;
-      } else hi = mid - 1;
-    }
-    return ans;
-  })();
-  const age = last >= 0 ? frame - keys[last].frame : 999;
-  const typing = age < 12;
-  const hit = typing ? clamp01(1 - age / 6) : 0;
-  const parity = last % 2 === 0 ? 1 : -1;
-  const pose: LoaferPose = {
-    nod: hit * 3,
-    tilt: parity * hit * 1.6 + 1.2 * Math.sin(frame / 41),
-    kickA: 10 * Math.sin(frame / 11) + (typing ? parity * 7 * hit : 0),
-    kickB: 10 * Math.sin(frame / 11 + 2.3) + (typing ? -parity * 7 * hit : 0),
-    breathe: 1 + 0.025 * Math.sin(frame / 17),
-    blink: frame % 112 < 5,
-    mouth: typing && age < 4 ? 1 : 0,
-    sway: 7 * Math.sin(frame / 23),
-  };
-
   return (
     <>
-      <div style={{position: 'absolute', left: 150, top: 22, width: 250, height: 150}}>
-        <Loafer pose={pose} width={250} />
+      <div style={{position: 'absolute', left: 140, top: 14, width: 255, height: 166, opacity: fadeOut}}>
+        <Character frame={frame} keys={keys} reactions={reactions} width={255} />
       </div>
       <div
         style={{

@@ -106,23 +106,32 @@ Own recordings: one keystroke per WAV, 0.15 to 0.4 s, dry, 6 to 10 letter keys, 
 Extract the audio of a rendered clip (`npx remotion ffmpeg -i clip.mp4 -vn -ac 1 -ar 44100 clip.wav`) and compare the first onsets with the planned key times
 (they agree to a frame); measure peak, rms and the spectrum of the loud blocks. An agent cannot hear the result: say so, and let the lecturer listen.
 
-## The figure and the terminal lines (`src/video/Loafer.tsx`, `Narrator.tsx`)
+## The figure and the terminal lines (`src/video/Character.tsx`, `Narrator.tsx`)
 
-The lecturer asked for something simpler than the first cat: a person lying on the stomach, chin on one hand, feet in the air (thick black lines, flat colours; the
-reference image was only the "touch", the drawing is our own), and **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before
-each line, monospace type (JetBrains Mono), a block cursor on the line being typed. A new line starts at the bottom; the older lines move up one line and fade (three
-lines at most, `FADE` in `Narrator.tsx`). The figure's pose is a pure function of the frame: a nod and tilt on each key, the feet kick alternately (faster while typing), a blink
-every 112 frames, the ribbon sways, a breathing movement. Position: figure at x 150 to 400 (top 22), text from x 440 (top 56): **two lines** of 46 px. (An earlier version had them at the bottom, where they were hard to see.)
-(The first version, a cat with speech bubbles, is in the git history: commits before this change.)
+The lecturer asked for **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before each line, monospace type (JetBrains Mono), a block cursor on
+the line being typed. A new line starts at the bottom; the older lines move up one line and fade (`FADE` in `Narrator.tsx`). Position: figure at x 140 to 395 (top 14), text from x 440
+(top 56): **two lines** of 46 px, in the band at the top of the video.
 
-### Character art from an image model (optional)
+The figure is a boy lying on his stomach at a tiny keyboard, drawn by a Gemini image model (below) in the touch of the lecturer's reference images (thick black outlines, soft off-white fills,
+a hint of pale lavender shading, tiny dot eyes). `Character.tsx` swaps five frames (`src/video/character/*.png`, committed; the head is at the same pixels in all of them):
+`rest` (both hands on the keys), `typeA` / `typeB` (alternate every two keystrokes while keys are being pressed, so the fingers follow the sound), `worry` (arms crossed, a sweat drop) and
+`shrug` (eyes closed, palms up). The frame is a pure function of the frame number; groups blend over 6 frames, A to B is a hard cut; the whole figure breathes and dips 1.5 px on each key.
 
-`python3 scripts/gen_character.py [--only 1,3] [--model google/gemini-3.1-flash-image]` makes candidates for the figure with a Gemini image model through OpenRouter (key in `$OPENROUTER_API_KEY`, never
-written to a file; a few cents per image; `out/character/cand-N.png` and the prompt in `cand-N.txt`). The prompt describes the touch in words (thick uniform black outlines, flat pastel fills,
-no shading, big round head with straight bangs, dot eyes, a small smile, lying on the stomach with the head on one hand and the feet in the air, white background); **a reference image is not uploaded**,
-so the result is an original character. Models that can output images are listed by `GET https://openrouter.ai/api/v1/models` (`output_modalities` contains `image`); the request is a chat completion with
-`modalities: ["image", "text"]` and `image_config.aspect_ratio`, and the image comes back as a base64 data URL in `choices[0].message.images[0]`. To use a candidate in the video, cut the white background
-away (or draw it on white) and replace `Loafer.tsx` with an `<Img>` plus small CSS movements (nod, breathing), keeping the pose a pure function of the frame.
+**Reactions** (`src/video/moods.ts`): after the last line of a named stage is typed he takes his hands off the keyboard and shows the mood for about 3 s (until 6 frames before the next line,
+`reactionsOf` in `timeline.ts`). A rule is `{slide, stage (0-based), mood}`; a stage without lines throws. Keep them few: now 5 worry (the random networks all score high, the reordered table,
+no diagonal, Rand fooled, K = 8) and 3 shrug (a high Q proves nothing, NMI and ARI disagree, one group at the end). `npm run video:audio` prints the frames of every reaction, for looking.
+
+### Character art from an image model (`scripts/gen_character.py`, `scripts/prep_character.py`)
+
+`python3 scripts/gen_character.py --set <name> [--ref a.png,b.png] [--only 1,3]` calls a Gemini image model through OpenRouter (`google/gemini-3.1-flash-image`; key in `$OPENROUTER_API_KEY`,
+never written to a file; a few cents per image; `out/character/<set>-N.png` and the prompt in `<set>-N.txt`). The request is a chat completion with `modalities: ["image", "text"]` and
+`image_config.aspect_ratio`; reference images go in as `image_url` parts (the first is the character to keep, the others only the touch); the image comes back as a base64 data URL in
+`choices[0].message.images[0]`. The sets are the steps of the design: `words` (touch described in words), `ref`, `white`, `boy`, `glasses`, `lines`, `b4` (restyle), `gaze`, `touch`, `both`
+(both hands on the keyboard: the chosen D1 = `both-1`), `pose` (typing A/B, troubled, happy, shrug; `--ref out/character/base.png`, the expression references in `out/character/expr/`).
+Lessons: ask for **the same camera and the same place of the head** (then the frames swap without a jump: the head outline came out pixel-identical), and say explicitly that **the keyboard stays on
+the floor at the same place in every frame** (otherwise it disappears or moves).
+`python3 scripts/prep_character.py` makes the video frames: the white page is flood-filled from the border (the outline is closed) and made transparent, each frame is shifted so that the head matches
+the rest frame (it found 0 px of shift for all five), all are cropped to one box and saved at 640 px width. It needs numpy and Pillow.
 
 ## Checks before handing it over
 

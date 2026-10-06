@@ -3,7 +3,8 @@ import {AbsoluteFill, Audio, Freeze, Sequence, staticFile, useCurrentFrame} from
 import {slides} from '../slides';
 import {BAND, Narrator} from './Narrator';
 import {ProseContext} from '../components/Text';
-import {Prose, SKIP, SlideSeg, buildTimeline} from './timeline';
+import {MOODS} from './moods';
+import {Prose, SKIP, SlideSeg, buildTimeline, reactionsOf} from './timeline';
 import proseData from './prose.json';
 import {narration} from './narration';
 
@@ -21,6 +22,8 @@ export const timeline = buildTimeline(
   proseData as Prose,
   SKIP,
 );
+
+export const reactions = reactionsOf(timeline, MOODS);
 
 const SlidePlay: React.FC<{seg: SlideSeg}> = ({seg}) => {
   const Comp = slides[seg.n - 1].Component;
@@ -60,7 +63,7 @@ export const NarratedDeck: React.FC = () => {
           </ProseContext.Provider>
         </div>
       </div>
-      <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} fadeFrom={timeline.total - 80} />
+      <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} reactions={reactions} fadeFrom={timeline.total - 80} />
       <Audio src={staticFile('typing.wav')} volume={0.9} />
     </AbsoluteFill>
   );

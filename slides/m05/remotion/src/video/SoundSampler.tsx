@@ -23,7 +23,7 @@ export const SoundSampler: React.FC = () => {
           {idx + 1} of {SAMPLER_PACKS.length}
         </div>
       </div>
-      <Narrator frame={frame} bubbles={sampler.bubbles.filter((b) => b.start >= seg.from && b.start < seg.from + 400)} keys={sampler.keys} />
+      <Narrator frame={frame} bubbles={sampler.bubbles.filter((b) => b.start >= seg.from && b.start < seg.from + 400)} keys={sampler.keys} reactions={[]} />
       <Audio src={staticFile('sampler.wav')} volume={0.9} />
     </AbsoluteFill>
   );

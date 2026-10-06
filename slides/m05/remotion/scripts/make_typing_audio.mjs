@@ -14,7 +14,7 @@ fs.mkdirSync(outDir, {recursive: true});
 // the pure part of the video, bundled for node
 const bundled = path.join(outDir, 'audio-entry.mjs');
 await build({entryPoints: [path.join(root, 'src/video/audio-entry.ts')], bundle: true, platform: 'node', format: 'esm', outfile: bundled, logLevel: 'error'});
-const {buildTimeline, FPS, narration, SKIP} = await import(`${bundled}?${Date.now()}`);
+const {buildTimeline, reactionsOf, MOODS, FPS, narration, SKIP} = await import(`${bundled}?${Date.now()}`);
 fs.rmSync(bundled);
 
 // the stage marks, read from the slide files exactly as scripts/review.mjs does
@@ -28,6 +28,9 @@ const proseFile = path.join(root, 'src/video/prose.json');
 const prose = fs.existsSync(proseFile) ? JSON.parse(fs.readFileSync(proseFile, 'utf8')) : {};
 if (!fs.existsSync(proseFile)) console.log('no src/video/prose.json: run `npm run video:prose` first for the slide text in the chat');
 const tl = buildTimeline(marks, narration, prose, SKIP);
+
+// where the narrator reacts (src/video/moods.ts): listed here so that the frames can be looked at
+for (const r of reactionsOf(tl, MOODS)) console.log(`reaction ${r.mood}: frames ${Math.round(r.from)}-${Math.round(r.to)} (${(r.from / FPS).toFixed(1)}s-${(r.to / FPS).toFixed(1)}s)`);
 
 const samples = loadSamples(path.join(root, 'sounds'));
 console.log(describeSamples(samples));

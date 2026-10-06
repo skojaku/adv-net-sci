@@ -118,3 +118,24 @@ export const buildTimeline = (marks: number[][], narration: Narration, prose: Pr
   const keys = bubbles.flatMap((b) => b.keys.map((e) => ({frame: e.frame, kind: e.kind}))).sort((a, b) => a.frame - b.frame);
   return {slides, bubbles, keys, total};
 };
+
+/** how the narrator reacts to a stage: after the last line of the stage is typed he takes his hands off the keyboard and shows the mood */
+export type Mood = 'worry' | 'shrug';
+export type MoodRule = {slide: number; stage: number; mood: Mood};
+export type Reaction = {from: number; to: number; mood: Mood};
+export const REACT_AFTER = 6; // frames after the last key before the mood starts
+export const REACT_BEFORE = 6; // the mood has ended this long before the next line pops up
+export const REACT_MAX = 100; // frames a mood is held at most
+
+/** The reactions of a timeline. A rule names a stage and must find it: a stage without lines would never show the mood, so that is an error. */
+export const reactionsOf = (tl: Timeline, rules: MoodRule[]): Reaction[] =>
+  rules.map(({slide, stage, mood}) => {
+    const mine = tl.bubbles.filter((b) => b.slide === slide && b.stage === stage);
+    if (!mine.length) throw new Error(`mood rule S${slide} stage ${stage + 1}: that stage has no lines`);
+    const last = mine[mine.length - 1];
+    const next = tl.bubbles.find((b) => b.start > last.start);
+    const from = Math.ceil(last.typedEnd) + REACT_AFTER;
+    const to = Math.min((next ? next.start : tl.total) - REACT_BEFORE, from + REACT_MAX);
+    if (to - from < 20) throw new Error(`mood rule S${slide} stage ${stage + 1}: only ${to - from} frames of room`);
+    return {from, to, mood};
+  });

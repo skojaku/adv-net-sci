@@ -102,7 +102,7 @@ in the chat** (`ProseContext` in `src/components/Text.tsx`; the deck itself is u
 - `src/video/narration.ts`: the written lines, `narration[slide number][stage index] = [line, ...]`, which add to the slides' sentences (`'@mirror'` marks where those go). A line is one bubble, at most 64 characters.
 - `src/video/prose.json`: the slides' sentences per stage, written by `scripts/collect_prose.mjs` (committed; run `npm run video:prose` after changing a slide's text).
 - `src/video/typing.ts`: human-like keystrokes (bursts, pauses, occasional wrong key, backspace, retype); deterministic.
-- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `NarratedDeck.tsx` plays the slides, `Narrator.tsx` draws the terminal lines (three at most, below y = 920), `Loafer.tsx` the figure.
+- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `NarratedDeck.tsx` plays the slides, `Narrator.tsx` draws the terminal lines (three at most, below y = 920), `Character.tsx` the figure (five Gemini frames in `src/video/character/`), `moods.ts` where it reacts.
 - Sound: `scripts/make_typing_audio.mjs` writes `out/video-public/typing.wav` from the same keystrokes (shared code in `scripts/lib/typing_sound.mjs`). WAV samples in `sounds/` are used when present (cut from a Mechvibes
   pack by `scripts/extract_mechvibes.mjs`, or your own recordings), otherwise the sound is synthesized. **The space bar is silent** (`--space-sound` to turn it on).
 - `npm run video:sampler` then `node scripts/render_video.mjs --id=M05-sampler --out=out/sound-packs.mp4`: a listening test of all ten Mechvibes keyboard packs.
