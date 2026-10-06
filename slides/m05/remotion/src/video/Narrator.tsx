@@ -3,7 +3,7 @@ import {spring} from 'remotion';
 import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
 import {C} from '../theme';
 import {Critter, Pose} from './Critter';
-import {FPS, Timeline} from './timeline';
+import {Bubble, FPS} from './timeline';
 
 loadInter('normal', {weights: ['400', '500'], subsets: ['latin']});
 
@@ -28,31 +28,29 @@ const lines = (text: string) => Math.max(1, Math.ceil(text.length / CPL));
 const heightOf = (text: string) => lines(text) * LINE + 2 * PAD_Y;
 const pop = (frame: number) => spring({frame, fps: FPS, config: {damping: 11, stiffness: 190, mass: 0.55}});
 
-export const Narrator: React.FC<{frame: number; tl: Timeline}> = ({frame, tl}) => {
-  const seg = tl.slides.find((s) => frame >= s.from && frame < s.from + s.dur);
-  const slideEnd = seg ? seg.from + seg.dur : 0;
-  const fadeOut = seg ? clamp01((slideEnd - frame) / 9) : 0;
-
-  // the bubbles of this slide that have popped up, oldest first
-  const shown = seg ? tl.bubbles.filter((b) => b.slide === seg.n && b.start <= frame) : [];
+export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame: number; kind: string}[]; fadeFrom?: number}> = ({frame, bubbles, keys, fadeFrom}) => {
+  // one continuous conversation: the bubbles that have popped up so far, the last three at most (the oldest of them is on its way out)
+  const started = bubbles.filter((b) => b.start <= frame);
+  const shown = started.slice(-3);
+  const fadeOut = fadeFrom === undefined ? 1 : clamp01(1 - (frame - fadeFrom) / 24);
 
   // the animal
   const last = (() => {
     let lo = 0;
-    let hi = tl.keys.length - 1;
+    let hi = keys.length - 1;
     let ans = -1;
     while (lo <= hi) {
       const mid = (lo + hi) >> 1;
-      if (tl.keys[mid].frame <= frame) {
+      if (keys[mid].frame <= frame) {
         ans = mid;
         lo = mid + 1;
       } else hi = mid - 1;
     }
     return ans;
   })();
-  const age = last >= 0 ? frame - tl.keys[last].frame : 999;
+  const age = last >= 0 ? frame - keys[last].frame : 999;
   const typing = age < 9;
-  const newest = tl.bubbles.filter((b) => b.start <= frame).slice(-1)[0];
+  const newest = started[started.length - 1];
   const sincePop = newest ? frame - newest.start : 999;
   const hop = sincePop >= 0 && sincePop < 10 ? Math.sin((Math.PI * sincePop) / 10) * 9 : 0;
   const parity = last % 2 === 0;

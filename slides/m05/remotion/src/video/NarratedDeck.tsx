@@ -2,7 +2,9 @@ import React from 'react';
 import {AbsoluteFill, Audio, Freeze, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {slides} from '../slides';
 import {Narrator} from './Narrator';
-import {SlideSeg, buildTimeline} from './timeline';
+import {ProseContext} from '../components/Text';
+import {Prose, SKIP, SlideSeg, buildTimeline} from './timeline';
+import proseData from './prose.json';
 import {narration} from './narration';
 
 /**
@@ -13,6 +15,8 @@ import {narration} from './narration';
 export const timeline = buildTimeline(
   slides.map((s) => s.marks),
   narration,
+  proseData as Prose,
+  SKIP,
 );
 
 const SlidePlay: React.FC<{seg: SlideSeg}> = ({seg}) => {
@@ -41,12 +45,15 @@ export const NarratedDeck: React.FC = () => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{background: '#ffffff'}}>
-      {timeline.slides.map((seg) => (
-        <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
-          <SlidePlay seg={seg} />
-        </Sequence>
-      ))}
-      <Narrator frame={frame} tl={timeline} />
+      {/* the slides' sentences are not drawn: the narrator types them in the chat */}
+      <ProseContext.Provider value="hide">
+        {timeline.slides.map((seg) => (
+          <Sequence key={seg.n} from={seg.from} durationInFrames={seg.dur}>
+            <SlidePlay seg={seg} />
+          </Sequence>
+        ))}
+      </ProseContext.Provider>
+      <Narrator frame={frame} bubbles={timeline.bubbles} keys={timeline.keys} fadeFrom={timeline.total - 80} />
       <Audio src={staticFile('typing.wav')} volume={0.9} />
     </AbsoluteFill>
   );

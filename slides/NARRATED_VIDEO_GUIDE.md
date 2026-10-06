@@ -10,32 +10,41 @@ Shell commands and file paths only.
 ```sh
 cd slides/m05/remotion
 node scripts/extract_mechvibes.mjs --pack=cherrymx-red-abs --release=0.5   # typing samples, once (sounds/, not committed)
+npm run video:prose                  # the slides' own sentences -> src/video/prose.json (committed); again whenever a slide's sentences change
 npm run video:audio                  # out/video-public/typing.wav, from the same keystrokes the video shows
-npm run video                        # out/m05-narrated.mp4 (about 8 minutes of rendering for 17 minutes of video)
+npm run video                        # out/m05-narrated.mp4 (about 10 minutes of rendering for 21 minutes of video)
+npm run video:sampler                # a listening test of all ten keyboard packs: then render_video.mjs --id=M05-sampler --out=out/sound-packs.mp4
 node scripts/render_video.mjs --frames=1890-2145 --out=out/clip.mp4        # a part
 node scripts/render_video.mjs --still=1900,2000 --dir=out/video-stills     # single frames
 ```
 
-Run `npm run video:audio` again after **any** change to the narration, to a slide's `marks`, or to the sound: the timeline (and so every key
-time) changes, and the audio must follow.
+Run `npm run video:audio` again after **any** change to the narration, to a slide's `marks`, to `src/video/prose.json` or to the sound: the timeline
+(and so every key time) changes, and the audio must follow.
 
 ## What the video is
 
-Each slide plays stage by stage as in the click-through deck. After a stage's animation **has finished** the picture is held while the narrator types
-that stage's note, then the next stage starts. Nothing moves on the slide while a note is being read (a note that types while captions pop up
-is hard to read). Bubbles stay until the slide changes. The animal sits at the bottom left; two bubbles at most; a new bubble pops up at the
-bottom and pushes the older one up; all of it stays in the free band under the slides (below y = 920).
+One continuous talk, not chapters: the three section dividers (S1, S8, S22) are left out (`SKIP` in `src/video/timeline.ts`), the chat is never cleared at a slide
+change, and the bridge from one part to the next is in the first lines of the next slide (S9, S23). Each slide plays stage by stage as in the click-through deck.
+After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. The animal sits at the
+bottom left; two bubbles at most; a new bubble pops up at the bottom and pushes the older one up; all of it stays in the free band under the slides (below y = 920).
+
+### The slides' sentences move into the chat
+
+The lecturer: text appearing on a slide while a comment is being read ("bang bang bang") is hard to follow, so the slide's words should go into the chat.
+So in the video the slides are drawn with `ProseContext = 'hide'` (`src/components/Text.tsx`): a `Box`, `Cap` or `Tag` with **at least five words and no formula** is not drawn.
+Labels (under five words), numbers, figures and formulas stay on the slide. `npm run video:prose` finds those sentences: it renders every slide at the end of every
+stage with `ProseContext = 'collect'`, reads what the page logs (`onBrowserLog`), keeps the ones visible at the stage end that were not visible at the end of the stage
+before, in reading order, and writes `src/video/prose.json`. The video types them first in their stage (cut into bubble-sized lines, capitalized). The default
+mode is `'show'`, so the deck, the review stills and the student html are unchanged. The slide files are never edited.
 
 ## Writing the narration (`src/video/narration.ts`)
 
-`narration[slide number][stage index] = [line, ...]`; one line is one bubble; lines of one stage are typed one after the other.
-- The first line may say what the slide shows, **in the slide's own words**: the eye stays with the bubble. The next line adds what the slide does
-  not say (why, how to read it, what to compare). Lecturer: "writing what can be seen is fine, but add some supplement".
-- A line is one short plain sentence, at most 64 characters (`MAX_CHARS` in `src/video/timeline.ts`; longer throws). One or two lines per stage,
-  not every stage. No em dash, no rhetoric.
-- **A question slide gets no answer**: its note ends with a prompt ("Take a moment: ...").
-- Length: 121 lines is about 17 minutes. Typing time dominates (about 6,000 keystrokes). Trim the lines, not the speed: past about 12 characters a
-  second the typing stops looking like typing.
+`narration[slide number][stage index] = [line, ...]`; one line is one bubble. The lines **add** to the slide's own sentences (which come first, or where the line
+`'@mirror'` stands): why, how to read the picture, what to compare, the bridge to the next idea. Lecturer: "writing what can be seen is fine, but add some supplement".
+- A line is one short plain sentence, at most 64 characters (`MAX_CHARS` in `src/video/timeline.ts`; longer throws). One or two lines per stage, not every stage. No em dash, no rhetoric.
+- **A question slide gets no answer**: its notes end with a prompt ("Take a moment to guess.").
+- Length: about 190 bubbles (60 sentences from the slides, about 120 written lines) is 21 minutes. Typing time dominates (about 8,000 keystrokes). Trim lines, not typing speed: past
+  about 12 characters a second the typing stops looking like typing.
 - English, like the slides. The text in the repo is a draft by the agent; the lecturer edits it.
 
 ## Typing (`src/video/typing.ts`, pure, deterministic)
@@ -47,7 +56,7 @@ probability 1.2% per eligible letter, at most 2 per line, only in lines of 14+ c
 
 ## Timeline (`src/video/timeline.ts`, no React so that node can import it)
 
-`LEAD` 20 frames after a stage's animation before the first key; `POP` 9 frames from the bubble appearing to the first key; `GAP` 26 between bubbles; `READ`
+`SKIP` the dividers; `stageLines` puts a stage's slide sentences and written lines in order; `LEAD` 20 frames after a stage's animation before the first key; `POP` 9 frames from the bubble appearing to the first key; `GAP` 26 between bubbles; `READ`
 38 after the last key; `HOLD` 30 after a stage without narration. `buildTimeline(marks, narration)` returns slides, stages (`anim` frames of play,
 `hold` frames frozen), bubbles with the global frame of each keystroke, and all key times (used for the sound).
 `NarratedDeck.tsx` plays a stage with `<Sequence from={-slideFrom}>` inside a `<Sequence>` (the slide starts in the middle) and holds its end with `<Freeze>`.
@@ -88,6 +97,8 @@ How bright each pack is (mean over the ten key samples; centroid in Hz, share of
 
 The lecturer's brief: a mechanical keyboard, a soft "sukosuko", not clicky (Blue sounded scratchy), and no space bar. To choose a pack render a short clip with
 each (`--frames=` around one note) and compare: Remotion keeps the audio when it renders a frame range.
+`npm run video:sampler` renders a listening test: every pack in turn types the same sentence (with one typo and a backspace) under its own name, so only the sound differs
+(`src/video/SoundSampler.tsx`, `sampler.ts`); it is how the packs in the table were compared.
 Own recordings: one keystroke per WAV, 0.15 to 0.4 s, dry, 6 to 10 letter keys, 2 to 4 space, 2 to 4 backspace (`sounds/README.md`); commit them with `git add -f`
 (the generated Mechvibes samples are ignored by git).
 

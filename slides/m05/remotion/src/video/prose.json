@@ -1,0 +1,232 @@
+{
+ "2": {
+  "2": [
+   "Each triangle alone has the higher Q."
+  ]
+ },
+ "3": {
+  "1": [
+   "Which grouping has the higher Q now?"
+  ]
+ },
+ "4": {
+  "3": [
+   "The network got bigger: the resolution limit."
+  ]
+ },
+ "5": {
+  "2": [
+   "Different splits, almost the same Q."
+  ]
+ },
+ "6": {
+  "0": [
+   "34 nodes, 78 edges, chosen at random: no groups."
+  ],
+  "1": [
+   "We run Louvain on this network. What Q do we expect?"
+  ]
+ },
+ "7": {
+  "2": [
+   "We compare Q with random networks of the same size."
+  ],
+  "3": [
+   "A random network with 100 nodes scores as high as the club."
+  ]
+ },
+ "9": {
+  "2": [
+   "One cell is one pair of nodes."
+  ]
+ },
+ "10": {
+  "0": [
+   "True split: shaded = the two nodes have the same color"
+  ],
+  "1": [
+   "Found split: shaded = the two nodes are in the same box"
+  ]
+ },
+ "11": {
+  "1": [
+   "What Rand index do we expect for random labels?"
+  ]
+ },
+ "13": {
+  "0": [
+   "Why not count nodes, one at a time?"
+  ],
+  "1": [
+   "Count the nodes in each cell."
+  ]
+ },
+ "14": {
+  "0": [
+   "match A with blue, B with orange"
+  ],
+  "1": [
+   "same split, columns in another order"
+  ],
+  "3": [
+   "We need a score that ignores the names and the order."
+  ]
+ },
+ "15": {
+  "0": [
+   "Count the nodes in each cell."
+  ],
+  "1": [
+   "a node is in this row and this column"
+  ]
+ },
+ "16": {
+  "0": [
+   "Add up each row: marginal probability"
+  ],
+  "1": [
+   "Add up each column: marginal probability"
+  ]
+ },
+ "17": {
+  "0": [
+   "Unrelated splits: joint = marginal × marginal"
+  ],
+  "1": [
+   "above 1: more often than chance. below 1: less often."
+  ]
+ },
+ "18": {
+  "1": [
+   "each cell: joint × log of the ratio"
+  ],
+  "2": [
+   "unrelated splits: every ratio is 1, log 1 = 0, so I = 0"
+  ]
+ },
+ "20": {
+  "1": [
+   "This split says nothing about the groups."
+  ],
+  "2": [
+   "NMI is not zero for random labels."
+  ]
+ },
+ "21": {
+  "3": [
+   "NMI and ARI can disagree"
+  ],
+  "4": [
+   "four vs three groups: NMI 0.768, ARI 0.626"
+  ]
+ },
+ "23": {
+  "3": [
+   "Draw one ticket: no edge"
+  ]
+ },
+ "24": {
+  "0": [
+   "Where are the two groups?"
+  ]
+ },
+ "25": {
+  "2": [
+   "Nothing changed but the order."
+  ]
+ },
+ "26": {
+  "0": [
+   "What does the network look like?"
+  ]
+ },
+ "27": {
+  "2": [
+   "A random network. Q of the true groups: 0.000"
+  ],
+  "3": [
+   "One model: a table of probabilities."
+  ]
+ },
+ "28": {
+  "0": [
+   "Guess the groups. Count edges / pairs of nodes."
+  ],
+  "1": [
+   "score: log of the probability of this network"
+  ],
+  "3": [
+   "We choose the highest score."
+  ]
+ },
+ "31": {
+  "2": [
+   "all that is left: maximize over c"
+  ]
+ },
+ "32": {
+  "1": [
+   "More groups, more parameters, a better fit"
+  ]
+ },
+ "33": {
+  "0": [
+   "Political blogs, split in two by a plain SBM",
+   "What separates the two groups?"
+  ],
+  "1": [
+   "The groups follow degree, not politics."
+  ]
+ },
+ "34": {
+  "1": [
+   "random network, the same numbers of nodes and edges"
+  ],
+  "2": [
+   "In an SBM, every node of a group has the same expected degree.",
+   "To fit the hubs, the SBM makes a group of hubs."
+  ]
+ },
+ "36": {
+  "2": [
+   "node size: its share of the group's degree"
+  ]
+ },
+ "37": {
+  "1": [
+   "more edges inside the groups than expected"
+  ]
+ },
+ "38": {
+  "1": [
+   "Degree correction finds the groups despite heterogeneous degrees.",
+   "NMI with the known labels: 0.0001",
+   "NMI with the known labels: 0.72"
+  ]
+ },
+ "39": {
+  "0": [
+   "more groups always fit better",
+   "a shorter description is a better grouping"
+  ],
+  "1": [
+   "lower is better. uniform priors, 8 nodes"
+  ],
+  "2": [
+   "groups within groups: nested SBM",
+   "uneven degrees: degree-corrected SBM"
+  ]
+ },
+ "40": {
+  "0": [
+   "graph-tool: a Python library by Tiago Peixoto",
+   "The Bayesian SBM: nested, degree-corrected"
+  ]
+ },
+ "41": {
+  "2": [
+   "The two groups are no stronger than in a random network.",
+   "degree-corrected SBM, the shortest description"
+  ]
+ }
+}

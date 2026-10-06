@@ -92,18 +92,19 @@ in headless Chrome: the fonts load, the picture shows, no request leaves the fil
 
 ## The narrated video (a separate file; the slides are not touched)
 
-Full guide: `slides/NARRATED_VIDEO_GUIDE.md`. Short version: `node scripts/extract_mechvibes.mjs --pack=cherrymx-red-abs --release=0.5` (once), then
-`npm run video:audio` and `npm run video` write `out/m05-narrated.mp4` (1920 x 1080, 30 fps, about 17 minutes with sound). Each slide plays stage by stage as the
-click-through deck does; once a stage's animation has finished the picture is held while a small animal at the bottom left types a short note in a speech
-bubble (nothing on the slide moves while a note is read); then the next stage starts. Everything lives in `src/video/` with its own entry point
-(`src/video/entry.ts`), so `src/slides/`, `src/Root.tsx` and the player app are unchanged.
+Full guide: `slides/NARRATED_VIDEO_GUIDE.md`. Short version: `node scripts/extract_mechvibes.mjs --pack=cherrymx-red-abs --release=0.5` (once), `npm run video:prose` (the slides'
+own sentences, when a slide changes), then `npm run video:audio` and `npm run video` write `out/m05-narrated.mp4` (1920 x 1080, 30 fps, about 21 minutes with sound).
+It is one continuous talk (the three section dividers are left out). Each slide plays stage by stage as the click-through deck does; once a stage's animation has finished the
+picture is held while a small animal at the bottom left types short notes in speech bubbles; then the next stage starts. **The slides' sentences are not drawn in the video: they are typed
+in the chat** (`ProseContext` in `src/components/Text.tsx`; the deck itself is unchanged). Everything lives in `src/video/` with its own entry point (`src/video/entry.ts`), so `src/slides/`,
+`src/Root.tsx` and the player app are unchanged.
 
-- `src/video/narration.ts`: the lines, `narration[slide number][stage index] = [line, ...]`. A line is one bubble, at most 64 characters; the first line may say what the
-  slide shows, the next adds a supplement; a question slide gets no answer. The text is a draft.
+- `src/video/narration.ts`: the written lines, `narration[slide number][stage index] = [line, ...]`, which add to the slides' sentences (`'@mirror'` marks where those go). A line is one bubble, at most 64 characters.
+- `src/video/prose.json`: the slides' sentences per stage, written by `scripts/collect_prose.mjs` (committed; run `npm run video:prose` after changing a slide's text).
 - `src/video/typing.ts`: human-like keystrokes (bursts, pauses, occasional wrong key, backspace, retype); deterministic.
-- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `NarratedDeck.tsx` plays the slides, `Narrator.tsx` draws the bubbles (two at most,
-  below y = 920), `Critter.tsx` the animal.
-- Sound: `scripts/make_typing_audio.mjs` writes `out/video-public/typing.wav` from the same keystrokes. WAV samples in `sounds/` are used when present (cut from a Mechvibes
+- `src/video/timeline.ts`: when each stage and bubble happens (pure, no React). `NarratedDeck.tsx` plays the slides, `Narrator.tsx` draws the bubbles (two at most, below y = 920), `Critter.tsx` the animal.
+- Sound: `scripts/make_typing_audio.mjs` writes `out/video-public/typing.wav` from the same keystrokes (shared code in `scripts/lib/typing_sound.mjs`). WAV samples in `sounds/` are used when present (cut from a Mechvibes
   pack by `scripts/extract_mechvibes.mjs`, or your own recordings), otherwise the sound is synthesized. **The space bar is silent** (`--space-sound` to turn it on).
+- `npm run video:sampler` then `node scripts/render_video.mjs --id=M05-sampler --out=out/sound-packs.mp4`: a listening test of all ten Mechvibes keyboard packs.
 - `node scripts/render_video.mjs --frames=0-400 --out=out/test.mp4` renders a part; `--still=120,900 --dir=out/video-stills` renders single frames.
-After editing the narration or the slides run `npm run video:audio` again before `npm run video`: the timeline (and so the audio) changes.
+After editing the narration, `prose.json` or the slides run `npm run video:audio` again before `npm run video`: the timeline (and so the audio) changes.

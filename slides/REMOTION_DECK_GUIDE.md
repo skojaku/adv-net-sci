@@ -6,7 +6,7 @@ picture has to *move* to explain (a matrix turning, nodes flowing into a table, 
 (`SLIDE_RUBRIC.md`, `FIGURE_GUIDE.md`) still apply to every slide. Written so that any agent can follow it: shell commands and file paths only.
 
 Files that live next to the code: `slides/m05/remotion/DECK_SPEC.md` (the plan, one table per slide, and the numbers that were checked),
-`BUILD_NOTES.md` (how to build and run), `README.md`. The narrated video made from the deck is in `NARRATED_VIDEO_GUIDE.md`.
+`BUILD_NOTES.md` (how to build and run), `README.md`. The narrated video made from the deck is in `NARRATED_VIDEO_GUIDE.md` (it needs the slides' sentences to be `Box`, `Cap` or `Tag` text, and the formulas to stay in `Tex`).
 
 ## Use model
 
@@ -51,6 +51,7 @@ Files that live next to the code: `slides/m05/remotion/DECK_SPEC.md` (the plan, 
   zoom eases between the two. A table that appears at frame 0 of the next slide must not fade in.
 - Pictures from a paper or a file: put them in `src/assets/` and `import png from '../assets/x.png'`, then `<Img src={png} />`.
   (Not `public/` + `staticFile`: the single-file build cannot inline those.)
+- **Sentences versus labels**: write a slide's sentences in `Box`, `Cap` or `Tag` and its formulas in `Tex`. The narrated video leaves out every `Box`/`Cap`/`Tag` of five words or more with no `Tex` in it and types it in the chat; labels, numbers and figure text stay. A caption that must stay on the slide (a legend label, a value) should be under five words.
 - Simulate nothing at run time: a diagram of a random process uses seeds fixed in `data.ts` and "10 tickets, draw one", never a random number.
 
 ## Style decided by the lecturer (treat as final)
