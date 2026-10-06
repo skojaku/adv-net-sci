@@ -20,8 +20,8 @@ export const IntroTitle: React.FC<{frame: number; intro: IntroSeg}> = ({frame, i
   return (
     <div style={{position: 'absolute', left: 0, top: 0, width: 1920, textAlign: 'center', opacity, transform: `translateY(${dy}px)`}}>
       {text.kicker && <div style={{position: 'absolute', top: 58, width: 1920, fontFamily: F.serif, fontSize: 40, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.blue}}>{text.kicker}</div>}
-      {text.title && <div style={{position: 'absolute', top: 108, width: 1920, fontFamily: F.serif, fontSize: 126, lineHeight: 1.1, fontWeight: 700, color: C.ink}}>{text.title}</div>}
-      {text.subtitle && <div style={{position: 'absolute', top: 262, width: 1920, fontFamily: F.serif, fontSize: 38, color: C.soft}}>{text.subtitle}</div>}
+      {text.title && <div style={{position: 'absolute', top: 170, width: 1920, fontFamily: F.serif, fontSize: 126, lineHeight: 1.1, fontWeight: 700, color: C.ink}}>{text.title}</div>}
+      {text.subtitle && <div style={{position: 'absolute', top: 322, width: 1920, fontFamily: F.serif, fontSize: 38, color: C.soft}}>{text.subtitle}</div>}
     </div>
   );
 };

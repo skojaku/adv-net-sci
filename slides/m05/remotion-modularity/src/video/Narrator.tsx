@@ -24,7 +24,7 @@ const FADE = [1, 0.6, 0, 0, 0, 0]; // opacity by age: the newest line, the one b
 const BOTTOM = TOP + 2 * LINE; // the lines grow upward from here
 // The introduction: the narrator in the middle of the screen under the title (IntroTitle.tsx), bigger, with more lines; it moves into the band (the layout above) at `intro.transFrom`.
 // Lecturer (modularity video): the typed lines above, the narrator below them at the bottom of the screen: the chat grows up from the narrator toward the title.
-const INTRO = {figW: 440, figTop: 700, textLeft: 180, bottom: 650, font: 40, line: 62, fade: [1, 0.8, 0.62, 0.46, 0.3, 0]};
+const INTRO = {figW: 440, figTop: 765, textLeft: 180, bottom: 735, font: 40, line: 62, fade: [1, 0.8, 0.62, 0.46, 0.3, 0]};
 const PROMPT = '$';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
