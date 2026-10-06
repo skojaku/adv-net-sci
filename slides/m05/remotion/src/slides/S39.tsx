@@ -10,13 +10,14 @@ import {BEST_BAYES} from '../lib/sbmscore';
 
 /**
  * Peixoto's Bayesian SBM, in its simplest form.
- * 0: maximum likelihood against the description length: the block probabilities p are integrated out, and the groups
- *    themselves have to be described. A shorter description is a better grouping.
- * 1: the description length of the 8-node network, best grouping for each K, in nats: the shortest is at K = 2.
- *    (description length = minus the log of the Bayesian posterior, up to a constant)
- * 2: what the full model adds: K is inferred, groups within groups, uneven degrees.
+ * 0: maximum likelihood, and its flaw (more groups always fit better); the Bayesian side is announced.
+ * 1: the posterior of the grouping, by Bayes' rule: P(c | A) = P(A | c) P(c) / P(A). P(A | c) has the block probabilities p integrated out.
+ * 2: minus the log of the numerator is the description length Sigma(c) = -log P(A | c) - log P(c) = -log P(c | A) + const:
+ *    a shorter description is a better grouping, and minimizing it is maximizing the posterior.
+ * 3: the description length of the 8-node network, best grouping for each K, in nats: the shortest is at K = 2.
+ * 4: what the full model adds: K is inferred, groups within groups, uneven degrees.
  */
-export const marks = [64, 134, 196];
+export const marks = [60, 124, 190, 262, 326];
 
 const X0 = 230;
 const X1 = 1130;
@@ -27,17 +28,20 @@ const py = (v: number) => Y0 - ((v - 16) / 8) * (Y0 - Y1);
 /** description length in nats: minus the log of (the marginal likelihood times the prior), for the best grouping with K groups */
 const DL = BEST_BAYES.map((v) => -v);
 const SHORTEST = DL.indexOf(Math.min(...DL));
-if (SHORTEST !== 1 || Math.abs(DL[1] - 18.213) > 2e-3) throw new Error('S33: the description length should be shortest at K = 2');
+if (SHORTEST !== 1 || Math.abs(DL[1] - 18.213) > 2e-3) throw new Error('S39: the description length should be shortest at K = 2');
 
 export const S39: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const left = betweenStages(frame, marks, 0, 0) * prog(frame, 6, 24);
-  const right = betweenStages(frame, marks, 0, 0) * prog(frame, 26, 46);
-  const plot = betweenStages(frame, marks, 1, 1);
-  const dot = (i: number) => prog(frame, marks[0] + 8 + i * 4, marks[0] + 20 + i * 4);
-  const peak = prog(frame, marks[0] + 52, marks[0] + 66);
-  const full = fromStage(frame, marks, 2, 14);
+  const left = betweenStages(frame, marks, 0, 2) * prog(frame, 6, 24);
+  const right = betweenStages(frame, marks, 0, 2) * prog(frame, 26, 44);
+  const posterior = betweenStages(frame, marks, 1, 2) * prog(frame, marks[0] + 6, marks[0] + 26);
+  const sigma = betweenStages(frame, marks, 2, 2) * prog(frame, marks[1] + 6, marks[1] + 26);
+  const sigmaNote = betweenStages(frame, marks, 2, 2) * prog(frame, marks[1] + 34, marks[1] + 52);
+  const plot = betweenStages(frame, marks, 3, 3);
+  const dot = (i: number) => prog(frame, marks[2] + 8 + i * 4, marks[2] + 20 + i * 4);
+  const peak = prog(frame, marks[2] + 52, marks[2] + 66);
+  const full = fromStage(frame, marks, 4, 14);
 
   return (
     <Frame n={39}>
@@ -52,21 +56,36 @@ export const S39: React.FC = () => {
         </Box>
       </Fade>
       <Fade o={right} dy={14}>
-        <Cap x={1000} y={250} w={800} align="left">Bayesian: description length</Cap>
-        <Box x={1000} y={340} w={820} size={34}>
-          <Tex tex={'\\Sigma(c)=\\underbrace{-\\log P(A \\mid c)}_{\\text{the network, given the groups}}\\ \\underbrace{-\\log P(c)}_{\\text{the groups}}'} />
+        <Cap x={1000} y={250} w={800} align="left">Bayesian: the posterior</Cap>
+      </Fade>
+      <Fade o={posterior} dy={14}>
+        <Box x={1000} y={320} w={820} size={46}>
+          <Tex tex={'P(c \\mid A)=\\dfrac{P(A \\mid c)\\,P(c)}{P(A)}'} />
         </Box>
-        <Box x={1000} y={520} w={800} size={45} color={C.soft}>
+        <Box x={1000} y={455} w={820} size={34} color={C.soft}>
+          <Tex tex={'P(A \\mid c)'} />: the likelihood, <Tex tex="p" /> integrated out
+        </Box>
+        <Box x={1000} y={502} w={820} size={34} color={C.soft}>
+          <Tex tex={'P(c)'} />: the prior of the groups
+        </Box>
+      </Fade>
+      <Fade o={sigma} dy={14}>
+        <Box x={1000} y={568} w={820} size={34}>
+          <Tex tex={'\\begin{aligned}\\Sigma(c)&=\\underbrace{-\\log P(A \\mid c)}_{\\text{the network, given the groups}}\\ \\underbrace{-\\log P(c)}_{\\text{the groups}}\\\\&=-\\log P(c \\mid A)+\\text{const}\\end{aligned}'} />
+        </Box>
+      </Fade>
+      <Fade o={sigmaNote} dy={12}>
+        <Box x={1000} y={742} w={820} size={36} color={C.soft}>
           a shorter description is a better grouping
         </Box>
       </Fade>
       <Fade o={(left + right) / 2} dy={10}>
-        <Box x={120} y={840} w={1680} size={38} color={C.soft}>
+        <Box x={120} y={900} w={1680} size={38} color={C.soft}>
           <Tex tex="A" />: the network. <Tex tex="c" />: the groups. <Tex tex="p" />: the probabilities in the table.
         </Box>
       </Fade>
 
-      {/* stage 1 */}
+      {/* stage 3: the plot */}
       <Canvas>
         <g opacity={plot}>
           <line x1={X0} y1={Y0} x2={X1 + 30} y2={Y0} stroke={C.soft} strokeWidth={3} />
@@ -109,7 +128,7 @@ export const S39: React.FC = () => {
         <Cap x={1230} y={520} w={580} align="left">lower is better. uniform priors, 8 nodes</Cap>
       </Fade>
 
-      {/* stage 2 */}
+      {/* stage 4 */}
       <Fade o={full} dy={14}>
         <Box x={260} y={290} w={1400} size={54}>
           <Tex tex="K" /> is inferred: <Term>Bayesian</Term> SBM

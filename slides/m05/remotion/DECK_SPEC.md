@@ -229,9 +229,11 @@ Marp は 1280 x 720、Remotion は 1920 x 1080。サイズは Marp の値の 1.5
 | | 3 | `c-hat = argmax over c of log L(c)`。`all that is left: maximize over c` | 結び |
 | S38 `Back to the blogs` | 0 | 論文の Fig. 2(a) と (b) を並べる。`plain SBM`、`degree-corrected SBM` | 画像 2 つ |
 | | 1 | `Degree correction finds the groups despite heterogeneous degrees.`。`NMI with the known labels: 0.0001` と `NMI with the known labels: 0.72` (論文の値。後者を赤) | + NMI |
-| S39 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右: 記述長 `Sigma(c) = -log P(A given c) - log P(c)` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping` | 2 つの式 |
-| | 1 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2` | 谷のある折れ線 + 輪 |
-| | 2 | `K is inferred: Bayesian SBM`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
+| S39 `Bayesian SBM` | 0 | 左: 最尤 `max log P(A given c, p)` ("more groups always fit better")。右の見出し `Bayesian: the posterior`。下の注 `A: the network. c: the groups. p: the probabilities in the table.` | 左の式 + 右の見出し |
+| | 1 | **事後分布**: `P(c given A) = P(A given c) P(c) / P(A)`。`P(A given c)`: the likelihood, p integrated out、`P(c)`: the prior of the groups | + 事後分布の式 |
+| | 2 | 記述長 `Sigma(c) = -log P(A given c) - log P(c) = -log P(c given A) + const` (注釈 `the network, given the groups`、`the groups`)、`a shorter description is a better grouping`。最小化は事後確率の最大化と同じ | + Sigma の式 |
+| | 3 | K ごとの最良の分け方の記述長 (nats) の折れ線: 22.68、18.21、20.33、21.85、22.60、22.91、23.09、21.49。K = 2 が最短。`The shortest description: K = 2` | 谷のある折れ線 + 輪 |
+| | 4 | `K is inferred: Bayesian SBM`、`groups within groups: nested SBM`、`uneven degrees: degree-corrected SBM`、`Tiago Peixoto (2014, 2017, 2019)` | 3 行 |
 | S40 `graph-tool` | 0 | `graph-tool: a Python library by Tiago Peixoto`、`The Bayesian SBM: nested, degree-corrected` | 2 行 |
 | | 1 | 関数名 `minimize_nested_blockmodel_dl`、`graph-tool.skewed.de` | 結び |
 | S41 `The karate club, once more` | 0 | 左にカラテクラブを実際の分裂 (青とオレンジ) で。`the groups so far` | クラブ 1 つ |

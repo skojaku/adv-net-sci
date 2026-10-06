@@ -29,11 +29,11 @@ export type SlideSeg = {n: number; from: number; dur: number; stages: StageSeg[]
 export type Timeline = {slides: SlideSeg[]; bubbles: Bubble[]; keys: {frame: number; kind: KeyKind}[]; total: number};
 
 export const LEAD_IN = 18; // frames of the first picture before anything happens
-export const LEAD = 20; // narration starts this long after the animation of its stage has finished, so text never moves while a note is being read
+export const LEAD = 40; // narration starts this long after the animation of its stage has finished, so text never moves while a note is being read
 export const POP = 9; // the bubble pops up this long before the first key
-export const GAP = 26; // between two bubbles of one stage
-export const READ = 38; // after the last key of a stage
-export const HOLD = 30; // after the animation of a stage without narration
+export const GAP = 44; // between two bubbles of one stage
+export const READ = 72; // after the last key of a stage: time to finish reading and to look at the slide
+export const HOLD = 48; // after the animation of a stage without narration
 export const END_PAD = 75;
 export const MAX_CHARS = 64; // a line longer than this wraps in its bubble
 /** the three section dividers of the deck are left out of the video: it is one continuous talk, not three chapters */

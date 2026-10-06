@@ -164,7 +164,7 @@ export const narration: Narration = {
   },
   35: {
     0: ['In the SBM, only the groups decide whether an edge appears.'],
-    1: ['Karrer and Newman (2011) give each node a number, theta.', 'A large theta means the node tends to have many edges.'],
+    1: ['Karrer and Newman (2011) give each node a number, theta.', 'A large theta means the node tends to have many edges.', 'A Poisson count: 0, 1, 2 edges; mostly 0 or 1 when sparse.'],
   },
   36: {
     0: ['Same recipe: write the log-likelihood, now with three unknowns.'],
@@ -182,9 +182,11 @@ export const narration: Narration = {
     1: ['@mirror'],
   },
   39: {
-    0: ['The Bayesian SBM scores a grouping by its description length.', '@mirror'],
-    1: ['Eight-node network: the shortest description is at K = 2.', '@mirror'],
-    2: ['The full model infers K, nests groups, and corrects degrees.', '@mirror'],
+    0: ['@mirror', 'The Bayesian approach asks about the grouping itself.'],
+    1: ['The posterior of the grouping, by Bayes rule.', 'P(A | c) has the probabilities p integrated out.', 'P(c) is the prior over groupings.'],
+    2: ['Take minus the log: this is the description length.', '@mirror', 'Minimizing it is the same as maximizing the posterior.'],
+    3: ['Eight-node network: the shortest description is at K = 2.', '@mirror'],
+    4: ['The full model infers K, nests groups, and corrects degrees.', '@mirror'],
   },
   40: {
     0: ['Tiago Peixoto implemented this model.', '@mirror'],
