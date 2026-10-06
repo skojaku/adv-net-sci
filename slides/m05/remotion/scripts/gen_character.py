@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -134,6 +134,23 @@ CANDIDATES_BOTH = {
     3: 'A relaxed, lazy fiddling: the wrists rest on the keyboard edge and the fingers are loosely spread. The gaze stays as in the first image.',
     4: 'He looks toward the UPPER RIGHT as in a daydream, and two small motion marks near the fingers show the typing.',
 }
+POSE = (
+    'The FIRST attached image is the character to KEEP, exactly: the same boy, the same drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading), the same head, '
+    'the same flat face plate with tiny dash-like eyes, the same short hair shape, white T-shirt and shorts, sky-blue wristbands, white sneakers. '
+    'He is lying on his stomach, in the SAME camera and the SAME scale: the head, the torso and the legs sit at the same place on the canvas as in the first image (the pictures will be swapped as animation frames), '
+    'and only what is described below changes. Pure white background, no text, whole character visible, generous margin. '
+)
+POSE_REF = ' The SECOND attached image (a dog character) is only a reference for the gesture and the facial expression: copy the gesture and the expression onto the boy, never the dog. '
+# n: (the change, an expression reference or None)
+CANDIDATES_POSE = {
+    1: ('TYPING FRAME A. Only the hands change: the hand at the left end of the keyboard is pressed flat on the keys, the other hand is lifted a little above the keys with the fingers curled, ready to press. The face stays exactly as in the first image.', None),
+    2: ('TYPING FRAME B. Only the hands change: the hand at the right side of the keyboard is pressed flat on the keys, the other hand (at the left end) is lifted a little above the keys with the fingers curled. The face stays exactly as in the first image.', None),
+    3: ('TROUBLED. He is worried and stuck: the eyebrows are drawn as two short slanted lines tilted down toward the middle, the mouth a small wavy line, and one small blue sweat drop near the temple. He has taken his hands off the keyboard and folds both ARMS crossed in front of him, and his two LEGS are crossed at the ankles in the air.', 'worry'),
+    4: ('TROUBLED, thinking hard. He is on his elbows with the arms folded together on the floor in front of the chin, the keyboard pushed a little aside; the eyebrows slanted down toward the middle, the mouth a small flat wavy line, the eyes tiny dashes looking sideways; the legs crossed at the ankles in the air.', 'worry'),
+    5: ('HAPPY. He is delighted: the eyes are closed as two happy arcs, the mouth wide open in a big smile with a small pink tongue, both small fists raised beside the shoulders in a cheering gesture, the feet kicking up in the air; he has left the keyboard.', 'happy'),
+    6: ('HAPPY, laughing. The eyes are closed as happy arcs, a wide open smiling mouth, both arms thrown up in the air in a V, the legs kicking high with the feet apart.', 'happy'),
+    7: ('RELAXED SHRUG. The eyes are closed as two slim calm arcs, a small content smile, both hands open with the palms up at the sides of the body like a gentle shrug, the legs crossed lazily at the ankles in the air.', 'shrug'),
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -149,7 +166,17 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch', 'both'):
+    if SET == 'pose':
+        change, expr = CANDIDATES_POSE[n]
+        prompt = POSE + change + (POSE_REF if expr else '')
+        paths = REFS + ([f'out/character/expr/{expr}.png'] if expr else [])
+        parts = [{'type': 'text', 'text': prompt}]
+        for path in paths:
+            with open(path, 'rb') as f:
+                parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
+        content = parts
+        name = f'pose-{n}'
+    elif SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch', 'both'):
         prompt = (BOTH + CANDIDATES_BOTH[n] if SET == 'both' else TOUCH if SET == 'touch' else GAZE + CANDIDATES_GAZE[n] if SET == 'gaze' else REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET in ('b4', 'gaze', 'touch', 'both') else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
@@ -183,7 +210,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
