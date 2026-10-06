@@ -2,7 +2,7 @@ import React from 'react';
 import {spring} from 'remotion';
 import {loadFont as loadMono} from '@remotion/google-fonts/JetBrainsMono';
 import {C} from '../theme';
-import {Character} from './Character';
+import {ASPECT, Character} from './Character';
 import {Bubble, FPS, Reaction} from './timeline';
 
 const mono = loadMono('normal', {weights: ['400', '500'], subsets: ['latin']});
@@ -18,6 +18,8 @@ const BX = 520; // left edge of the lines
 export const BAND = 228; // height of the band at the TOP of the video that holds the figure and the lines; the slide is shown under it
 const TOP = 94; // distance of the two lines from the top edge
 const WIDTH = 1300;
+const FIG_H = 166; // height of the figure; its width follows from the aspect of the frames
+const FIG_W = Math.round(FIG_H * ASPECT);
 const FADE = [1, 0.6, 0, 0]; // opacity by age: the newest line, the one before, ...; two lines fit above the bottom margin
 const PROMPT = '$';
 
@@ -35,8 +37,8 @@ export const Narrator: React.FC<{frame: number; bubbles: Bubble[]; keys: {frame:
 
   return (
     <>
-      <div style={{position: 'absolute', left: 140, top: 52, width: 255, height: 166, opacity: fadeOut}}>
-        <Character frame={frame} keys={keys} reactions={reactions} width={255} />
+      <div style={{position: 'absolute', left: 120, top: 52, width: FIG_W, height: FIG_H, opacity: fadeOut}}>
+        <Character frame={frame} keys={keys} reactions={reactions} width={FIG_W} />
       </div>
       <div
         style={{

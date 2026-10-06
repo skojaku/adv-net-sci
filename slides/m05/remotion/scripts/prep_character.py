@@ -11,10 +11,9 @@ from PIL import Image
 
 SRC = 'out/character'
 OUT = 'src/video/character'
-# frame name -> source picture (see scripts/gen_character.py: base = D1, pose-1/2 = typing A/B, pose-3 = troubled, pose-7 = shrug)
-FRAMES = {'rest': 'base', 'typeA': 'pose-1', 'typeB': 'pose-2', 'worry': 'pose-3', 'shrug': 'pose-7'}
+# frame name -> source picture (see scripts/gen_character.py: base2 = P2 (the prone boy, feet up), pframe-1/2 = typing A/B, pframe-3 = troubled face while typing, pframe-5 = shrug)
+FRAMES = {'rest': 'base2', 'typeA': 'pframe-1', 'typeB': 'pframe-2', 'worry': 'pframe-3', 'shrug': 'pframe-5'}
 WIDTH = 640  # px of the saved frames; they are shown at about 260 px, so this is sharp at 2x
-HEAD = (slice(60, 330), slice(240, 940))  # rows, columns of the top of the head (the hair cap), which is the same in every frame
 SEARCH = 70  # largest shift tried, px
 
 
@@ -73,10 +72,20 @@ def dark(rgb):
     return (rgb.min(axis=2) < 90).astype(np.float32)
 
 
+def head_box(ref):
+    """rows, columns of the top of the head (the hair cap), which is the same in every frame: found from the topmost dark pixels of the rest frame"""
+    d = dark(ref)
+    top = int(np.where(d.any(axis=1))[0][0])
+    xs = np.where(d[top + 40])[0]
+    cx = int((xs.min() + xs.max()) / 2)
+    return slice(top, top + 200), slice(max(cx - 250, 0), cx + 250)
+
+
 def shift_for(ref, img):
     """how many px img must move (dy, dx) to put the top of its head on the head of ref (cross-correlation of the outlines, by FFT)"""
-    a = dark(ref)[HEAD]
-    b = dark(img)[HEAD]
+    box = head_box(ref)
+    a = dark(ref)[box]
+    b = dark(img)[box]
     A = np.fft.rfft2(a)
     B = np.fft.rfft2(b)
     cc = np.fft.irfft2(A * np.conj(B), s=a.shape)
@@ -120,3 +129,6 @@ for k, a in aligned.items():
     im = im.resize((WIDTH, round(WIDTH * im.height / im.width)), Image.LANCZOS)
     im.save(f'{OUT}/{k}.png', optimize=True)
     print(f'saved {OUT}/{k}.png', im.size, os.path.getsize(f'{OUT}/{k}.png') // 1024, 'KB')
+import json
+
+json.dump({'width': im.size[0], 'height': im.size[1]}, open(f'{OUT}/size.json', 'w'))  # the frames share this size (Character.tsx reads it)

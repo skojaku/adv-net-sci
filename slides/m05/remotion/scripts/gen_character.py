@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone|pframe]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -157,7 +157,23 @@ CANDIDATES_PRONE = {
     3: 'A relaxed pose: the chin low, the head only slightly raised and seen in side profile facing right; the legs lie flat, the feet resting on the floor.',
     4: 'The head is in a cartoon three-quarter view (the face plate fairly frontal, looking at the keyboard), set on the straight side-view body; one foot is raised a little behind him.',
 }
+PFRAME = (
+    'The FIRST attached image is the character to KEEP, exactly: the same boy lying flat on his stomach seen from the side (head at the right, facing right, in three-quarter view), the same drawing style '
+    '(thick black outlines, soft off-white fills, a hint of pale lavender shading), the same big round head and face, the same short hair shape, white T-shirt and shorts, sky-blue wristbands, white sneakers, '
+    'the knees bent and the feet raised in the air behind him, crossed at the ankles. Keep the SAME camera and scale: the head, the torso and the legs sit at exactly the same place on the canvas as in the first image '
+    '(the pictures will be swapped as animation frames), and only what is described below changes. '
+    'KEYBOARD RULE: the tiny cream keyboard lies on the floor in front of his head at exactly the same place, size and angle as in the first image, in every picture, never moved, never removed, never redrawn. '
+    'Pure white background, no text, whole character visible, generous margin. '
+)
 # n: (the change, an expression reference or None)
+CANDIDATES_PFRAME = {
+    1: ('TYPING FRAME A. Only the hands change: the hand nearest the viewer is pressed flat on the keys with the wrist low, and the other hand, partly hidden behind it, is lifted a little above the keys. The face stays exactly as in the first image.', None),
+    2: ('TYPING FRAME B. Only the hands change: the hand nearest the viewer is lifted a little above the keys with the fingers curled, and the other hand, partly hidden behind it, presses down on the keys. The face stays exactly as in the first image.', None),
+    3: ('TROUBLED FACE WHILE STILL TYPING. Only the face changes: the eyebrow drawn as a short slanted line tilted down toward the middle (worried), the eye a small dash, the mouth a small wavy line instead of the smile, and one small blue sweat drop near the temple. The hands stay on the keyboard exactly as in the first image.', 'worry'),
+    4: ('TROUBLED FACE WHILE STILL TYPING, stronger. Only the face changes: both eyebrows as short slanted lines tilted down toward the middle, the eye looking down and sideways at the keyboard, a small wavy mouth, and one small blue sweat drop near the temple. The hands stay on the keyboard exactly as in the first image.', 'worry'),
+    5: ('RELAXED SHRUG. The eye is closed as a slim calm arc, a small content smile, the shoulders raised a little, and both hands lifted off the keyboard and held open with the palms up beside it, like a gentle shrug. The feet stay up as in the first image.', 'shrug'),
+    6: ('SHRUG, elbows out. The eye closed as a slim arc, a small content smile, the head tilted a little to one side, both forearms lifted off the floor with the elbows out and the open hands palms up near the keyboard. The feet stay up as in the first image.', 'shrug'),
+}
 CANDIDATES_POSE = {
     1: ('TYPING FRAME A. Only the hands change: the hand at the left end of the keyboard is pressed flat on the keys, the other hand is lifted a little above the keys with the fingers curled, ready to press. The face stays exactly as in the first image.', None),
     2: ('TYPING FRAME B. Only the hands change: the hand at the right side of the keyboard is pressed flat on the keys, the other hand (at the left end) is lifted a little above the keys with the fingers curled. The face stays exactly as in the first image.', None),
@@ -190,16 +206,16 @@ def make(n):
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
         name = f'prone-{n}'
-    elif SET == 'pose':
-        change, expr = CANDIDATES_POSE[n]
-        prompt = POSE + change + (POSE_REF if expr else '')
+    elif SET in ('pose', 'pframe'):
+        change, expr = (CANDIDATES_POSE if SET == 'pose' else CANDIDATES_PFRAME)[n]
+        prompt = (POSE if SET == 'pose' else PFRAME) + change + (POSE_REF if expr else '')
         paths = REFS + ([f'out/character/expr/{expr}.png'] if expr else [])
         parts = [{'type': 'text', 'text': prompt}]
         for path in paths:
             with open(path, 'rb') as f:
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
-        name = f'pose-{n}'
+        name = f'{SET}-{n}'
     elif SET in ('ref', 'white', 'boy', 'glasses', 'lines', 'b4', 'gaze', 'touch', 'both'):
         prompt = (BOTH + CANDIDATES_BOTH[n] if SET == 'both' else TOUCH if SET == 'touch' else GAZE + CANDIDATES_GAZE[n] if SET == 'gaze' else REFINE + CANDIDATES_B4[n] if SET == 'b4' else REF_STYLE) + ('' if SET in ('b4', 'gaze', 'touch', 'both') else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + HAIR_LINES + CANDIDATES_LINES[n] if SET == 'lines' else WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else BOY_NOTE + WHITE_RULE + CANDIDATES_BOY[n] if SET == 'boy' else BOY_NOTE + GLASSES_NOTE + MORE_COLOUR + CANDIDATES_GLASSES[n] if SET == 'glasses' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
@@ -234,7 +250,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE, 'pframe': CANDIDATES_PFRAME}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:

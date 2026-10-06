@@ -5,15 +5,18 @@ import typeA from './character/typeA.png';
 import typeB from './character/typeB.png';
 import worry from './character/worry.png';
 import shrug from './character/shrug.png';
+import size from './character/size.json';
 import {Mood, Reaction} from './timeline';
 
+/** width / height of every frame (written by scripts/prep_character.py) */
+export const ASPECT = size.width / size.height;
+
 /**
- * The narrator, drawn by Gemini (scripts/gen_character.py, scripts/prep_character.py): five frames of the same boy lying on his stomach, the head at
+ * The narrator, drawn by Gemini (scripts/gen_character.py, scripts/prep_character.py): five frames of the same boy lying flat on his stomach (side view, feet up, facing right toward the text), the head at
  * the same pixels in all of them. Which frame shows is a pure function of the frame number:
- * - 'rest': both hands on the keys, no key pressed;
+ * - 'rest': hands on the keys, no key pressed;
  * - 'type': while keys are being pressed, typeA and typeB alternate (every two keystrokes), so the fingers move with the sound;
- * - 'worry' / 'shrug': a reaction (timeline.reactionsOf) between two lines.
- * The figure is mirrored (scaleX(-1)): the lecturer wanted it facing the text, so the keyboard is at the right and the legs at the left.
+ * - 'worry' (a troubled face, still at the keys) / 'shrug' (palms up, eyes closed): a reaction (timeline.reactionsOf) between two lines.
  * The groups blend over FADE frames; typeA <-> typeB is a hard cut.
  */
 const FADE = 6;
@@ -53,9 +56,9 @@ export const Character: React.FC<{frame: number; keys: {frame: number}[]; reacti
   const breathe = 1 + 0.012 * Math.sin(frame / 17);
 
   const art: Record<string, string> = {rest, typeA, typeB, worry, shrug};
-  const height = (width * 416) / 640;
+  const height = width / ASPECT;
   return (
-    <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleX(-1) scaleY(${breathe})`}}>
+    <div style={{position: 'relative', width, height, transformOrigin: '50% 100%', transform: `translateY(${bob}px) scaleY(${breathe})`}}>
       {Object.keys(art).map((name) => (
         <Img key={name} src={art[name]} style={{position: 'absolute', left: 0, top: 0, width, height, opacity: opacity[name]}} />
       ))}

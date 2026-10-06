@@ -25,7 +25,7 @@ Run `npm run video:audio` again after **any** change to the narration, to a slid
 
 One continuous talk, not chapters: the three section dividers (S1, S8, S22) are left out (`SKIP` in `src/video/timeline.ts`), the chat is never cleared at a slide
 change, and the bridge from one part to the next is in the first lines of the next slide (S9, S23). Each slide plays stage by stage as in the click-through deck.
-After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. **The narrator is in a band at the TOP** (228 px, `BAND` in `src/video/Narrator.tsx`; the figure starts 52 px below the top edge): the figure at the left (x 140 to 395), the terminal lines to its right (from x 520). **The slide is shown under it**: `NarratedDeck.tsx` scales the slide's first 920 px (its own bottom 160 px, kept empty for subtitles, are cut off) to the room that is left (scale 0.926), so the slide's page number is not in the video. (Lecturer: character and text on top, slide below, easier to see.)
+After a stage's animation **has finished** the picture is held while the narrator types that stage's lines, then the next stage starts. **The narrator is in a band at the TOP** (228 px, `BAND` in `src/video/Narrator.tsx`; the figure starts 52 px below the top edge): the figure at the left (x 120 to 432), the terminal lines to its right (from x 520). **The slide is shown under it**: `NarratedDeck.tsx` scales the slide's first 920 px (its own bottom 160 px, kept empty for subtitles, are cut off) to the room that is left (scale 0.926), so the slide's page number is not in the video. (Lecturer: character and text on top, slide below, easier to see.)
 
 ### The slides' sentences move into the chat
 
@@ -109,15 +109,16 @@ Extract the audio of a rendered clip (`npx remotion ffmpeg -i clip.mp4 -vn -ac 1
 ## The figure and the terminal lines (`src/video/Character.tsx`, `Narrator.tsx`)
 
 The lecturer asked for **plain terminal lines instead of message boxes**: white page, no frame, a prompt (`$ `, blue) before each line, monospace type (JetBrains Mono), a block cursor on
-the line being typed. A new line starts at the bottom; the older lines move up one line and fade (`FADE` in `Narrator.tsx`). Position: figure at x 140 to 395 (top 52), text from x 520
+the line being typed. A new line starts at the bottom; the older lines move up one line and fade (`FADE` in `Narrator.tsx`). Position: figure at x 120 to 432 (top 52, 166 px high), text from x 520
 (top 94): **two lines** of 46 px, in the band at the top of the video. (Lecturer: more margin above the figure; the narration a little to the right.)
 
-The figure is a boy lying on his stomach at a tiny keyboard, drawn by a Gemini image model (below) in the touch of the lecturer's reference images (thick black outlines, soft off-white fills,
-a hint of pale lavender shading, tiny dot eyes). `Character.tsx` swaps five frames (`src/video/character/*.png`, committed; the head is at the same pixels in all of them):
-(the figure is mirrored in `Character.tsx`: it faces the text, the keyboard at the right) `rest` (both hands on the keys), `typeA` / `typeB` (alternate every two keystrokes while keys are being pressed, so the fingers follow the sound), `worry` (arms crossed, a sweat drop) and
+The figure is a boy lying flat on his stomach, seen from the side and facing right toward the text, knees bent and feet in the air (chosen P2), drawn by a Gemini image model (below) in the
+touch of the lecturer's reference images (thick black outlines, soft off-white fills, a hint of pale lavender shading). (The first design, D1, had the face to the viewer and the body lying
+sideways: the lecturer found the body too twisted; it is in `out/character/`.) `Character.tsx` swaps five frames (`src/video/character/*.png`, committed; the head and the keyboard are at the same pixels in all of them):
+`rest` (hands on the keys), `typeA` / `typeB` (alternate every two keystrokes while keys are being pressed, so the fingers follow the sound), `worry` (a troubled face with a sweat drop, **still at the keys**) and
 `shrug` (eyes closed, palms up). The frame is a pure function of the frame number; groups blend over 6 frames, A to B is a hard cut; the whole figure breathes and dips 1.5 px on each key.
 
-**Reactions** (`src/video/moods.ts`): after the last line of a named stage is typed he takes his hands off the keyboard and shows the mood for about 3 s (until 6 frames before the next line,
+**Reactions** (`src/video/moods.ts`): after the last line of a named stage is typed he shows the mood (worry: the face changes; shrug: the hands leave the keys) for about 3 s (until 6 frames before the next line,
 `reactionsOf` in `timeline.ts`). A rule is `{slide, stage (0-based), mood}`; a stage without lines throws. Keep them few: now 5 worry (the random networks all score high, the reordered table,
 no diagonal, Rand fooled, K = 8) and 3 shrug (a high Q proves nothing, NMI and ARI disagree, one group at the end). `npm run video:audio` prints the frames of every reaction, for looking.
 
@@ -127,11 +128,11 @@ no diagonal, Rand fooled, K = 8) and 3 shrug (a high Q proves nothing, NMI and A
 never written to a file; a few cents per image; `out/character/<set>-N.png` and the prompt in `<set>-N.txt`). The request is a chat completion with `modalities: ["image", "text"]` and
 `image_config.aspect_ratio`; reference images go in as `image_url` parts (the first is the character to keep, the others only the touch); the image comes back as a base64 data URL in
 `choices[0].message.images[0]`. The sets are the steps of the design: `words` (touch described in words), `ref`, `white`, `boy`, `glasses`, `lines`, `b4` (restyle), `gaze`, `touch`, `both`
-(both hands on the keyboard: the chosen D1 = `both-1`), `pose` (typing A/B, troubled, happy, shrug; `--ref out/character/base.png`, the expression references in `out/character/expr/`).
+(both hands on the keyboard: D1 = `both-1`), `pose` (typing A/B, troubled, happy, shrug, from D1; `--ref out/character/base.png`, the expression references in `out/character/expr/`), `prone` (four side-view prone candidates, `--ref out/character/base.png`; P2 = `prone-2`, copied to `base2.png`), `pframe` (the frames of the chosen P2: typing A/B, two troubled faces, two shrugs; `--ref out/character/base2.png`; used: `pframe-1`, `-2`, `-3`, `-5`).
 Lessons: ask for **the same camera and the same place of the head** (then the frames swap without a jump: the head outline came out pixel-identical), and say explicitly that **the keyboard stays on
 the floor at the same place in every frame** (otherwise it disappears or moves).
-`python3 scripts/prep_character.py` makes the video frames: the white page is flood-filled from the border (the outline is closed) and made transparent, each frame is shifted so that the head matches
-the rest frame (it found 0 px of shift for all five), all are cropped to one box and saved at 640 px width. It needs numpy and Pillow.
+`python3 scripts/prep_character.py` makes the video frames (its `FRAMES` table says which picture is which): the white page is flood-filled from the border (the outline is closed) and made transparent, each frame is shifted so that the head matches
+the rest frame (it found 0 px of shift for all five), all are cropped to one box and saved at 640 px width, with `size.json` (the aspect of the frames, read by `Character.tsx`). It needs numpy and Pillow.
 
 ## Checks before handing it over
 
