@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -43,6 +43,17 @@ REF_STYLE = (
     'Draw a NEW, ORIGINAL character in exactly that drawing style and the same relaxed lying pose, but do NOT copy the character in the attached image: give them a different hairstyle, hair colour and outfit as described. '
     'Keep the outline thickness, the flat fills and the simplicity of the attached style. Pure white background, no text, no shadow, whole character visible, generous margin. '
 )
+WHITE_RULE = (
+    ' COLOUR RULE: keep the colours minimal. The hair, the robe and the face plate are all white or the faintest off-white (the face plate only a hint of warm cream); '
+    'use exactly ONE small accent colour on the whole character (named below) and nothing else; the outlines stay thick and black. '
+)
+CANDIDATES_WHITE = {
+    1: 'White hair as one big smooth shape with a small side loop, white robe; the one accent colour is lavender, on a small hairclip and the sash only.',
+    2: 'White short hair with one small ahoge on top, white robe; the one accent colour is sky blue, on the sash only.',
+    3: 'White hair in two short low twin tails, white robe; the one accent colour is soft pink, on a small ribbon on one twin tail only.',
+    4: 'White long straight hair, white robe, one foot waving; the one accent colour is pale yellow, on a small star hairclip only.',
+    5: 'White hair with a side ponytail, white robe, typing on a tiny white keyboard on the floor with one hand while the other hand props the chin; the one accent colour is lavender, on the hair tie only.',
+}
 CANDIDATES_REF = {
     1: 'Pale pink hair with two small buns and a heart-shaped hairpin, white robe with a pink sash.',
     2: 'Black bob hair with a single lavender hairclip, white robe with a dark navy sash.',
@@ -58,14 +69,14 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET == 'ref':
-        prompt = REF_STYLE + CANDIDATES_REF[n]
+    if SET in ('ref', 'white'):
+        prompt = REF_STYLE + (WHITE_RULE + CANDIDATES_WHITE[n] if SET == 'white' else CANDIDATES_REF[n])
         parts = [{'type': 'text', 'text': prompt}]
         for path in REFS:
             with open(path, 'rb') as f:
                 parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
         content = parts
-        name = f'ref-{n}'
+        name = f'{SET}-{n}'
     else:
         prompt = STYLE + CANDIDATES[n]
         content = prompt
@@ -92,7 +103,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in (CANDIDATES_REF if SET == 'ref' else CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
