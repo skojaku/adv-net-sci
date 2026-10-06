@@ -6,6 +6,6 @@ print(karate.vcount(), karate.ecount())
 \end{codebox}
 \begin{linenotes}
 \item[1] \texttt{import} loads a library: a bundle of ready-made tools. \texttt{igraph} is a library for building, studying and drawing networks. \texttt{as ig} gives it the short name \texttt{ig}, so that we type less.
-\item[2] \texttt{ig.Graph.Famous("Zachary")} builds a network that igraph already knows: Zachary's karate club, 34 members, two of them linked when they were friends outside the club. The \texttt{=} stores the network under the name \texttt{karate}.
+\item[2] \texttt{ig.Graph.Famous("Zachary")} builds a network that igraph already knows: Zachary's karate club. The \texttt{=} stores it under the name \texttt{karate}.
 \item[3] \texttt{vcount()} counts the nodes (the members) and \texttt{ecount()} counts the edges (the friendships). \texttt{print} shows both. You should see \texttt{34 78}.
 \end{linenotes}

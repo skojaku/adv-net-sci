@@ -129,28 +129,35 @@ a cell. The notes under a box say what each numbered line does.
 matter. Colab may add a closing bracket or quote for you; when you type the closing
 one yourself, it steps over the extra one. Indent with the Tab key.
 
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt, title={\bfseries If something goes wrong}, coltitle=black, colbacktitle=black!9, fonttitle=\normalsize]
+\footnotesize
+\begin{itemize}[itemsep=0.05em, topsep=0.05em, leftmargin=1.2em]
+\item A red message ending in \texttt{NameError} means a name does not exist yet:
+you skipped an earlier box, or Colab was reset. Run the earlier boxes again, in order.
+\item \texttt{SyntaxError} means a typing slip. Look for a missing bracket or quote
+near the \texttt{\^{}} that the message points at.
+\item The \texttt{\char"2713} is gone, or Colab says it has disconnected: Colab forgets
+everything after a break. Run the three setup cells again. Anything else: raise your hand.
+\end{itemize}
+\end{tcolorbox}
+
 \parthead{1}{Meet the data}
 
-Zachary's karate club: 34 members of a university karate club, studied in the
-1970s. Two members are linked when they were friends outside class. During the
-study the club split in two after a quarrel between the instructor, \textbf{Mr.\ Hi}
-(node 0), and the administrator, \textbf{the Officer} (node 33). We know who went
-with whom, which makes this network the standard test case for community detection.
+Zachary's karate club: 34 members of a university karate club, studied in the 1970s,
+linked when they were friends outside class. The club split in two after a quarrel
+between the instructor, \textbf{Mr.\ Hi} (node 0), and the administrator, \textbf{the
+Officer} (node 33). We know who went with whom, so it is the standard test case.
 
 \input{boxes/box1}
 
 \parthead{2}{Find communities with Leiden, and draw them}
 
-Leiden is one of the methods from the lecture. In igraph, running it takes one
-call, and igraph can draw what it found.
-
 \input{boxes/box2}
 
 \parthead{3}{The stochastic block model, with graph-tool}
 
-graph-tool is a second library. It has its own kind of network and its own drawing
-function. This box moves the karate club over to it, fits the stochastic block model
-from the lecture, and draws the result.
+graph-tool is a second library, with its own kind of network and its own drawing function.
 
 \input{boxes/box3}
 
@@ -168,35 +175,21 @@ Another way to look at a grouping: every member on a circle, each group on its o
 
 \input{boxes/box5}
 
-\textbf{What to look at.} Which friendships run from one arc to another?
-
 \parthead{6}{If you have time: the US airports}
 
-The same recipe on a bigger network: 540 US airports, two linked when a flight
-connects them.
+The same recipe on a bigger network, drawn with \texttt{seaborn}.
 
 \input{boxes/box6}
+
+Now the same map for the stochastic block model.
+
+\input{boxes/box7}
 
 \textbf{What to look at.} Do the groups follow regions of the map, or something
 else? Compare Leiden with the stochastic block model.
 
-\textbf{Then try your own.} Any igraph network goes through Boxes 2 and 3 in the
-same way: put its name where \texttt{karate} is. For a first try,
-\texttt{ig.Graph.Famous("Krackhardt\_Kite")} is a small network that igraph
-already has.
-
-\vspace{0.4em}
-\begin{tcolorbox}[colback=white, boxsep=1pt, top=3pt, bottom=3pt, title={\bfseries If something goes wrong}, coltitle=black, colbacktitle=black!9, fonttitle=\normalsize]
-\footnotesize
-\begin{itemize}[itemsep=0.05em, topsep=0.05em, leftmargin=1.2em]
-\item A red message ending in \texttt{NameError} means a name does not exist yet:
-you skipped an earlier box, or Colab was reset. Run the earlier boxes again, in order.
-\item \texttt{SyntaxError} means a typing slip. Look for a missing bracket or quote
-near the \texttt{\^{}} that the message points at.
-\item The \texttt{\char"2713} is gone, or Colab says it has disconnected: Colab forgets
-everything after a break. Run the three setup cells again.
-\item Anything else: raise your hand.
-\end{itemize}
-\end{tcolorbox}
+\textbf{Then try your own.} Any igraph network goes through Boxes 2 and 3 in the same
+way: put its name where \texttt{karate} is. A small one to try:
+\texttt{ig.Graph.Famous("Krackhardt\_Kite")}.
 
 \end{document}

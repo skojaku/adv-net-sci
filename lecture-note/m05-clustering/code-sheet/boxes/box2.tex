@@ -5,7 +5,14 @@ leiden = result.membership
 print(leiden)
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
-ig.plot(result, target=ax, vertex_label=karate.vs.indices)
+ig.plot(
+    karate, target=ax,
+    vertex_color=[palette[g] for g in leiden],
+    vertex_shape=[shapes[g] for g in leiden],
+    vertex_label=karate.vs.indices,
+    vertex_label_color="white",
+)
+ax.set_title("Leiden")
 plt.show()
 \end{codebox}
 \begin{linenotes}
@@ -14,6 +21,6 @@ plt.show()
 \item[3] Print the list. You should see 34 numbers. Two nodes with the same number are in the same group. The numbers are only labels, and Leiden uses chance, so your list may differ from your neighbour's.
 \item[4] \texttt{matplotlib.pyplot} is Python's library for drawing pictures. \texttt{plt} is its short name.
 \item[5] \texttt{plt.subplots()} makes an empty picture. \texttt{fig} is the picture and \texttt{ax} is the empty panel in it, which we draw into.
-\item[6] \texttt{ig.plot} is igraph's drawing function. Given \texttt{result} it draws the network and paints each community in its own colour (the colours are igraph's own choice). \texttt{target=ax} says which panel to draw in. \texttt{vertex\_label=karate.vs.indices} writes each node's number on it: \texttt{karate.vs.indices} is the list of node numbers, 0 to 33.
-\item[7] \texttt{plt.show()} shows the picture.
+\item[6--12] \texttt{ig.plot} is igraph's drawing function. It draws \texttt{karate} into the panel \texttt{ax}. \texttt{palette} and \texttt{shapes} are ready-made lists: group 0 is a blue circle, group 1 a vermillion square, and so on. \texttt{[palette[g] for g in leiden]} builds a list by looking up, for each group number \texttt{g} in \texttt{leiden}, the colour of that group: one colour for each node. \texttt{vertex\_shape} does the same with shapes, so that a group never depends on colour alone. \texttt{vertex\_label} writes each node's number on it (\texttt{karate.vs.indices} is the list 0 to 33), in white. Each line inside the brackets ends with a comma.
+\item[13--14] \texttt{ax.set\_title} writes the title above the panel, and \texttt{plt.show()} shows the picture.
 \end{linenotes}
