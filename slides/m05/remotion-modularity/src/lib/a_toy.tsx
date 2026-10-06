@@ -5,7 +5,7 @@ import {TOY_DEG, TOY_EDGES, TOY_POS, TOY_STUB_NODE} from '../data/data';
 import {toCanvas, type Pt} from './network';
 import {Box} from '../components/Text';
 
-/** The small example of S05 to S11: two triangles joined by one edge (6 nodes, 7 edges). Shared helpers of S05 to S08. */
+/** The small example of S05 to S11: a star joined to a triangle by one edge (6 nodes, 6 edges, degrees 3, 1, 1, 3, 2, 2). Shared helpers of S05 to S08. */
 
 export const TOY_N = TOY_POS.length;
 export const toyPos = (x: number, y: number, w: number, h: number): Pt[] => toCanvas(TOY_POS, x, y, w, h);

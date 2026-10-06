@@ -245,34 +245,39 @@ assert not log2  # a third level changes nothing: Louvain stops
 data['L2_MOVES'] = log2
 data['LEVEL_Q'] = [data['Q_SINGLES'], q_stuck, data['Q_FINAL']]
 
-# ---- the toy: two triangles joined by one edge (S05 to S11) ----
-TOY_POS = [[0.12, 0.2], [0.12, 0.8], [0.44, 0.5], [0.76, 0.5], [1.08, 0.2], [1.08, 0.8]]
-TOY_POS = [[x / 1.2, y] for x, y in TOY_POS]
-TOY_EDGES = [[0, 1], [0, 2], [1, 2], [2, 3], [3, 4], [3, 5], [4, 5]]
+# ---- the toy (S05 to S11): a star joined to a triangle; degrees 3, 1, 1, 3, 2, 2 ----
+# Lecturer: with (nearly) equal degrees the matrix of expected edges teaches nothing, so the degrees differ: two hubs (3), two leaves (1), two nodes of degree 2.
+# node 0 is the hub of the star {0,1,2}; node 3 joins the triangle {3,4,5}; one edge between the groups (0-3)
+TOY_POS = [[0.3, 0.5], [0.02, 0.14], [0.02, 0.86], [0.64, 0.5], [0.94, 0.14], [0.94, 0.86]]
+TOY_EDGES = [[0, 1], [0, 2], [0, 3], [3, 4], [3, 5], [4, 5]]
 toy_adj = graph(6, TOY_EDGES)
 toy_k = [sum(a.values()) for a in toy_adj]
-assert toy_k == [2, 2, 3, 3, 2, 2] and sum(toy_k) == 14
-data['TOY_POS'] = [[round(x, 4), y] for x, y in TOY_POS]
+assert toy_k == [3, 1, 1, 3, 2, 2] and sum(toy_k) == 12
+TOY_LAB = [0, 0, 0, 1, 1, 1]
+data['TOY_POS'] = TOY_POS
 data['TOY_EDGES'] = TOY_EDGES
 data['TOY_DEG'] = toy_k
-data['TOY_LAB'] = [0, 0, 0, 1, 1, 1]
-data['TOY_Q'] = round(modularity([0, 0, 0, 1, 1, 1], toy_adj), 4)
-data['TOY_E23'] = round(toy_k[2] * toy_k[3] / 14, 4)
+data['TOY_LAB'] = TOY_LAB
+data['TOY_Q'] = round(modularity(TOY_LAB, toy_adj), 4)
+data['TOY_E04'] = round(toy_k[0] * toy_k[4] / 12, 4)  # node 1 (hub) and node 5: 3 x 2 / 12 = 0.50 (S06, S07, S10)
+data['TOY_E01'] = round(toy_k[0] * toy_k[1] / 12, 4)  # node 1 (hub) and node 2 (leaf): 3 x 1 / 12 = 0.25, and they are joined (S11)
 
-# S05: the 14 stubs (node of each stub) and one random reconnection that is a simple graph, differs from the original, and has no community
+# S05: the 12 stubs (node of each stub) and one random reconnection that is a simple, connected graph that shares 1 or 2 edges with the original
 stubs = [v for v in range(6) for _ in range(toy_k[v])]
 orig = {tuple(sorted(e)) for e in TOY_EDGES}
-for seed in range(10000):
+for seed in range(100000):
     r = random.Random(seed)
-    idx = list(range(14))
+    idx = list(range(12))
     r.shuffle(idx)
-    pairs = [(idx[2 * i], idx[2 * i + 1]) for i in range(7)]
+    pairs = [(idx[2 * i], idx[2 * i + 1]) for i in range(6)]
     e = [tuple(sorted((stubs[a], stubs[b]))) for a, b in pairs]
-    if any(a == b for a, b in e) or len(set(e)) < 7:
+    if any(a == b for a, b in e) or len(set(e)) < 6:
         continue
-    if len(set(e) & orig) > 2 or len(set(e) & orig) < 1:
+    if len(set(e) & orig) > 3:
         continue
-    # connected
+    ins = sum(1 for a, b in e if TOY_LAB[a] == TOY_LAB[b])
+    if ins != 3:  # the expected number of edges inside by chance is 6 x 0.514 = 3.1: a typical outcome
+        continue
     g = graph(6, e)
     seen, st = {0}, [0]
     while st:
@@ -283,10 +288,13 @@ for seed in range(10000):
                 st.append(v)
     if len(seen) == 6:
         break
+else:
+    raise SystemExit('no rewiring found')
 data['TOY_STUB_NODE'] = stubs
 data['TOY_STUB_PAIRS'] = [list(p) for p in pairs]  # pairs of stub indices
 data['TOY_REWIRED'] = [list(x) for x in e]
-data['TOY_REWIRED_INSIDE'] = sum(1 for a, b in e if data['TOY_LAB'][a] == data['TOY_LAB'][b])
+data['TOY_ORIG_INSIDE'] = sum(1 for a, b in TOY_EDGES if TOY_LAB[a] == TOY_LAB[b])
+data['TOY_REWIRED_INSIDE'] = sum(1 for a, b in e if TOY_LAB[a] == TOY_LAB[b])
 
 # ---- S21: a community whose two parts share no edge ----
 BR_POS = [[0.05, 0.25], [0.05, 0.75], [0.25, 0.5], [0.62, 0.5], [0.82, 0.25], [0.82, 0.75], [0.43, 0.5]]
@@ -333,7 +341,7 @@ for k, v in data.items():
     lines.append(ts(k, v))
 OUT.write_text(''.join(lines))
 print('wrote', OUT.relative_to(HERE))
-for k in ['INSIDE', 'BETWEEN', 'FRAC_INSIDE', 'EXPECTED_FRAC', 'Q_REAL', 'Q_ONE', 'Q_SINGLES', 'PAIR_0_33', 'BELL_34', 'Q_STUCK', 'MERGE_PAIR', 'Q_MERGED', 'MOVE_NODE', 'AGG_SIZE', 'Q_FINAL', 'N_FINAL', 'LEVEL_Q', 'TOY_Q', 'TOY_E23', 'TOY_REWIRED', 'TOY_REWIRED_INSIDE', 'BR_Q']:
+for k in ['INSIDE', 'BETWEEN', 'FRAC_INSIDE', 'EXPECTED_FRAC', 'Q_REAL', 'Q_ONE', 'Q_SINGLES', 'PAIR_0_33', 'BELL_34', 'Q_STUCK', 'MERGE_PAIR', 'Q_MERGED', 'MOVE_NODE', 'AGG_SIZE', 'Q_FINAL', 'N_FINAL', 'LEVEL_Q', 'TOY_Q', 'TOY_E04', 'TOY_E01', 'TOY_REWIRED', 'TOY_ORIG_INSIDE', 'TOY_REWIRED_INSIDE', 'BR_Q']:
     print(' ', k, data[k])
 print('  moves level 0:', len(log0), ' level 1:', log1)
 print('  flip inside:', flip_inside)

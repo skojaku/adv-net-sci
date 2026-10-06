@@ -8,7 +8,7 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 - 前半の道筋: 群の内側の辺を数える → その割合は「辺を 1 本無作為に選んだとき両端が同じ色の確率」 → これを最大にすると全員 1 群が勝つ (使えない)
   → 無作為な網で期待される分を引く (全員 1 群なら 0) → 辺を半分に切って無作為につなぎ直す (次数も辺の数も変わらない。コンセントの数は同じで配線を組み替える)
   → ノード i, j の間の期待辺数 k_i k_j / 2M (順序を入れ替えても同じ、の説明を丁寧に) → 確率でなく本数 (疎なら近い。ハブや密な網では崩れる。別の機会に)
-  → 行列 3 枚を順に: A、k_i k_j / 2M、その差 B (モジュラリティ行列) → メンバーシップ c_i、δ(c_i, c_j)、足し合わせ → 空手クラブで Q。群の数は入力でなく、最大化の途中で決まる。
+  → 行列 3 枚を順に: A、k_i k_j / 2M、その差 Q_ij (モジュラリティ行列。講師の指示で B_ij でなく Q_ij) → メンバーシップ c_i、δ(c_i, c_j)、足し合わせ → 空手クラブで Q。群の数は入力でなく、最大化の途中で決まる。
 - 後半: ラベル切り替えを空手クラブで少しずつ → 止まる (小さい群を合体すれば Q は上がるのに、1 ノードずつでは動けない) → 群をスーパーノードにして再び最適化、Q が上がらなくなるまで繰り返す = Louvain
   → Leiden。
 - Louvain の欠点は、**つながらない群** (Leiden 論文が直した問題) として語る (講師が選んだ)。「まとまりすぎる」(解像度限界) は Q の性質で Leiden でも直らず、M05 デッキ S01 から S04 の話。まとめで一言だけふれる。
@@ -45,15 +45,16 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 列 `ORDER` の順にノードを訪ね、`MOVES` 36 手で 5 群 (`STUCK`)、Q = 0.399。群 1 と 2 (`MERGE_PAIR`) を合体すると Q = 0.420 (`Q_MERGED`)。ノード 5 (`MOVE_NODE`) を群 2 から群 1 へ動かすと Q = 0.386 (下がる)。
 5 つのスーパーノードの大きさ `AGG_SIZE` = 11, 2, 3, 12, 6、重み `AGG_W` (対角は群の内側の辺数の 2 倍)。2 段目の移動 `L1_MOVES` = スーパーノード 1 が 2 のラベルを取る。4 群 (`FINAL`)、Q = 0.420 (= 0.4198)。3 段目は何も動かない。
 段ごとの Q: −0.050, 0.399, 0.420。通り数 `BELL_34` = 2.1e+28 (Bell 数)。
-小さい例 `TOY_*`: 6 ノード 7 辺、三角形 2 つを 1 辺でつなぐ。次数 2, 2, 3, 3, 2, 2 (2M = 14)。2 派 {0,1,2} {3,4,5} の Q = 0.357。ノード 2 と 3 の k_i k_j / 2M = 9/14 = 0.64。
-つなぎ直し: 14 個の端 `TOY_STUB_NODE` (端 s はノード TOY_STUB_NODE[s] のもの)、組 `TOY_STUB_PAIRS` (端の番号の組 7 つ)、新しい辺 `TOY_REWIRED`。群の内側は 7 辺中 2 辺 (元は 6 辺)。
+小さい例 `TOY_*` (2026-10-06 に替えた。講師: ノードの次数がみな同じだと、期待辺数の行列が例にならない): 星 {0,1,2} (ハブ 0、葉 1, 2) と三角形 {3,4,5} を辺 0-3 でつなぐ。6 ノード 6 辺、次数 3, 1, 1, 3, 2, 2 (2M = 12)。
+2 派 {0,1,2} {3,4,5} の Q = 0.319 (内側 5 辺)。ノード 1 と 5 (番号は 1 から) の k_i k_j / 2M = 3 × 2 / 12 = 0.50 (S06, S07, S10)。ノード 1 と 2 は 3 × 1 / 12 = 0.25 で、辺がある (S11)。期待辺数は 0.08 から 0.75 まで開く。
+つなぎ直し: 12 個の端 `TOY_STUB_NODE` (端 s はノード TOY_STUB_NODE[s] のもの)、組 `TOY_STUB_PAIRS` (端の番号の組 6 つ)、新しい辺 `TOY_REWIRED`。群の内側は 6 辺中 3 辺 (元は 5 辺。無作為なら 6 × 0.514 = 3.1 辺で、典型的な結果)。
 つながらない群の例 `BR_*`: 10 ノード 14 辺。三角形 {0,1,2} と {3,4,5}、橋のノード 6 (2 と 3 につながる)、三角形 {7,8,9} (6 から 7, 8, 9 へ)。
 `BR_S0`: 群 C = {0..6}、群 D = {7,8,9}、Q = 0.222。`BR_S1`: 橋 6 が D に移る、Q = 0.357、C = {0..5} は 2 つの三角形で辺がない。`BR_S2`: 2 つの三角形を分ける、Q = 0.482。
 **これは作った例で、Louvain の実行ではない。** 各状態の Q は計算した。Louvain がこのような状態になりうることは Leiden 論文 (Traag, Waltman, van Eck 2019) が示している。スライドで「Louvain がこう動いた」と書かない。
 
 ## スライド
 
-担当 A: S01 から S08。担当 B: S09 から S14。担当 C: S15 から S23。
+担当 A: S01 から S08。担当 B: S09 から S14。担当 C: S15 から S22。
 
 ### 前半: モジュラリティとは
 
@@ -77,18 +78,18 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 2: `\text{everyone in one group: }\ 1-1=0`。文: `Now we need that random network.`
 
 **S05 cut-edges** (4 段階)。小さい例 (`TOY_*`) を大きく (幅 700 ほど)。ノードは 1 から 6 の番号 (`a+1`) の円。
-0: 小さい例が現れる。各ノードの横に次数 (`k = 2` など。label)。`7 edges, 14 edge ends` (Cap)。
-1: 辺が真ん中で切れて、各ノードから短い線 (端、stub) が出る。`14 stubs` (label)。
-2: 端が `TOY_STUB_PAIRS` の組に無作為につなぎ直される (端が伸びて出会う)。新しい網 `TOY_REWIRED`。各ノードの次数は同じ (label を残す)。文: `Every node keeps its degree. The number of edges stays 7.`
-3: 元の網 (左、2 派を青とオレンジ) と、つなぎ直した網 (右、同じ色) を並べる。数: `6 of 7 edges inside` と `2 of 7 edges inside` (label)。文: `Like a power strip: the number of sockets on each device is fixed and only the wiring is shuffled.`
+0: 小さい例が現れる。各ノードの横に次数 (`k = 2` など。label)。`6 edges, 12 edge ends` (Cap)。
+1: 辺が真ん中で切れて、各ノードから短い線 (端、stub) が出る。`12 stubs` (label)。
+2: 端が `TOY_STUB_PAIRS` の組に無作為につなぎ直される (端が伸びて出会う)。新しい網 `TOY_REWIRED`。各ノードの次数は同じ (label を残す)。文: `Every node keeps its degree. The number of edges stays 6.`
+3: 元の網 (左、2 派を青とオレンジ) と、つなぎ直した網 (右、同じ色) を並べる。数: `5 of 6 edges inside` と `3 of 6 edges inside` (label)。文: `Like a power strip: the number of sockets on each device is fixed and only the wiring is shuffled.`
 
-**S06 one-stub** (2 段階。講師の指示 2026-10-06: 導出は一本の筋で簡潔に。弧と 2M−1 は使わない)。14 個の端を 1 列に (小さい円)、ノードごとにまとめて、下にノード番号。ノード i = 3、j = 4 (インデックス 2, 3) に `i`, `j` の札。
-0: 端の列。`2M = 14 stubs` (label)。文: `Every stub is equally likely to join any other stub.`
+**S06 one-stub** (2 段階。講師の指示 2026-10-06: 導出は一本の筋で簡潔に。弧と 2M−1 は使わない)。14 個の端を 1 列に (小さい円)、ノードごとにまとめて、下にノード番号。ノード i = 1 (ハブ)、j = 5 (インデックス 0, 4) に `i`, `j` の札。
+0: 端の列。`2M = 12 stubs` (label)。文: `Every stub is equally likely to join any other stub.`
 1: i の端 3 つと j の端 3 つに括弧と `k_i`, `k_j`。文: `So the chance that i joins j is proportional to the stubs of i and of j.` 式 `\text{chance}\ \propto\ k_i\,k_j`。
 
-**S07 stub-pairs** (2 段階)。k_i × k_j (3 × 3) のセルの格子 (行 = i の端 1 から 3、列 = j の端 1 から 3)。
-0: 格子が現れる。式 `k_i\times k_j=3\times3=9\ \text{pairs}`。文: `Each cell is one pair of stubs: one of i, one of j.`
-1: 各セルに `1/2M`。式 `\dfrac{k_ik_j}{2M}=\dfrac{3\times3}{14}=0.64`。文: `Each pair of stubs is joined with probability about 1/2M.`
+**S07 stub-pairs** (2 段階)。k_i × k_j (3 × 2) のセルの格子 (行 = i の端 1 から 3、列 = j の端 1 から 2)。
+0: 格子が現れる。式 `k_i\times k_j=3\times2=6\ \text{pairs}`。文: `Each cell is one pair of stubs: one of i, one of j.`
+1: 各セルに `1/2M`。式 `\dfrac{k_ik_j}{2M}=\dfrac{3\times2}{12}=0.50`。文: `Each pair of stubs is joined with probability about 1/2M.`
 (行と列から数えて同じ 9 セルになる段階は削った。「j の側からも k_j k_i / 2M で同じ」は、ナレーションの 1 行で言う。)
 
 **S08 not-a-probability** (2 段階)。
@@ -105,14 +106,14 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 
 **S10 matrix-e** (3 段階)。S09 と同じ配置。
 0: 各ノードの横に次数 k。行列の格子と、行・列の端に次数。ラベル `E_{ij}`。
-1: セルが 1 行ずつ埋まる (`k_i k_j / 14`、小数 2 桁、値の大きさで青の濃さ)。セル (ノード 3, ノード 4) を強調して、式 `\dfrac{3\times3}{14}=0.64`。
+1: セルが 1 行ずつ埋まる (`k_i k_j / 12`、小数 2 桁、値の大きさで青の濃さ)。セル (ノード 1, ノード 5) を強調して、式 `\dfrac{3\times2}{12}=0.50`。
 2: 文: `A random network with the same degrees has this many edges between each pair, on average.`
 
 **S11 matrix-b** (4 段階)。A、E、B の 3 つを横に並べる (演算子 − と =)。
 0: A と E が並ぶ (`-`)。
-1: `=` と B が現れる。B_ij = A_ij − E_ij の数字、正は青、負は茶色の濃さ。式 `B_{ij}=A_{ij}-\dfrac{k_ik_j}{2M}`。
+1: `=` と B が現れる。Q_ij = A_ij − E_ij の数字、正は青、負は茶色の濃さ。式 `Q_{ij}=A_{ij}-\dfrac{k_ik_j}{2M}`。
 2: 文: `Positive: more edges than chance. Negative: fewer.` (青・茶の凡例は label)。
-3: B の右に、各行の和 (すべて 0)。文: `Each row of B sums to 0.`
+3: B の右に、各行の和 (すべて 0)。文: `Each row of Q_ij sums to 0.`
 
 **S12 club-matrices** (3 段階)。空手クラブの A、E、B、34 × 34、ノードは派ごとに並べる (REAL = 0 の 17 ノード、次に REAL = 1)。外側に 2 色の線。演算子 − と =。
 0: A (辺 78 本、セル 156 個が青)。1: E (濃淡)。2: B (青と茶)。文: `The same three matrices for the karate club, with the nodes sorted by group.`
@@ -120,7 +121,7 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 **S13 q-formula** (4 段階)。左に B (空手クラブ、セル 13 px) と、外側にメンバーシップの色の線。右に `FormulaStack`。
 0: メンバーシップ。式 `c_i=\text{group of node }i`。
 1: 同じ群のセル (δ = 1) だけが残り、他は薄くなる (2 つの対角ブロックが残る)。式 `\delta(c_i,c_j)=1\text{ if }c_i=c_j\text{, else }0`。
-2: 残ったセルの B を足す。式 `Q=\dfrac{1}{2M}\sum_{i,j}B_{ij}\,\delta(c_i,c_j)`。
+2: 残ったセルの B を足す。式 `Q=\dfrac{1}{2M}\sum_{i,j}Q_{ij}\,\delta(c_i,c_j)`。
 3: Tag `Q = 0.358`。札 `Newman and Girvan, 2004` と `Phys. Rev. E 69, 026113` (label)。文: `Q is the fraction of edges inside groups minus the fraction expected in a random network.`
 
 **S14 club-q-values** (5 段階)。空手クラブ 4 つを横に (幅 380 前後)、各 Tag に Q と群の数。
@@ -164,9 +165,7 @@ M05 の Remotion デッキ (`../remotion`) は「モジュラリティの限界�
 2: ループの図 (S20 と同じ形): `Move nodes` → `Split groups into connected parts` → `Merge parts into nodes`。
 3: 文: `Every group stays connected.` と `Leiden: Traag, Waltman, van Eck, 2019`。
 
-**S23 summary** (4 段階)。0: 式 `Q=\dfrac{1}{2M}\sum_{i,j}\left(A_{ij}-\dfrac{k_ik_j}{2M}\right)\delta(c_i,c_j)`。文: `Edges inside groups, minus the edges that a random network with the same degrees puts there.`
-1: `Louvain: move nodes, merge groups, repeat.` 2: `Leiden: the same, with a split step, so groups stay connected.`
-3: `Q has limits of its own. A ring of triangles merges neighbours. That is next.`
+(S23 まとめ は削った。講師: Louvain と Leiden の復習は余分。「まとまりすぎるのは Q 自身の性質で、Leiden は直さない」は S22 の最後のナレーションに移した。全 22 枚。)
 
 ## 作り方の順
 

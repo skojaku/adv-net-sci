@@ -40,13 +40,13 @@ export const narration: Narration = {
     2: [],
   },
   5: {
-    0: ['Two triangles joined by one edge. Each node has a degree k.'],
+    0: ['A star joined to a triangle. Each node has a degree k.'],
     1: ['Cut every edge in the middle. Each half-edge is a stub.'],
     2: ['Join the stubs again at random.', '@mirror'],
-    3: ['Before: 6 of 7 edges inside. After: only 2 of 7.', '@mirror'],
+    3: ['Before: 5 of 6 edges inside. After: 3 of 6.', '@mirror'],
   },
   6: {
-    0: ['Node i is blue and node j is orange.'],
+    0: ['Node i is the hub, in blue. Node j is in orange.'],
     1: ['k_i and k_j are their numbers of stubs.'],
   },
   7: {
@@ -63,24 +63,24 @@ export const narration: Narration = {
   },
   10: {
     0: ['Write each degree beside its node.', 'The second matrix holds k_i times k_j over 2M.'],
-    1: ['Nodes 3 and 4: 3 times 3 over 14 is 0.64.'],
+    1: ['Nodes 1 and 5: 3 times 2 over 12 is 0.50.'],
     2: [],
   },
   11: {
     0: ['Subtract E from A, cell by cell.'],
-    1: ['The result is the modularity matrix, B.'],
-    2: ['Nodes 3 and 4: an edge exists, and chance gave only 0.64.', '@mirror'],
+    1: ['The result is the modularity matrix, Q_ij.'],
+    2: ['Nodes 1 and 2: an edge exists, and chance gave only 0.25.', '@mirror'],
     3: ['@mirror', 'So one group for everyone gives Q = 0.'],
   },
   12: {
     0: [],
     1: ['Now E: the same shape.'],
-    2: ['B is positive where the edges sit, in the diagonal blocks.'],
+    2: ['Q_ij is positive where the edges sit, in the diagonal blocks.'],
   },
   13: {
     0: ['Each node has a group label c_i, its colour.'],
     1: ['Keep the cells where i and j share a group: delta = 1.'],
-    2: ['Add up the kept cells of B, then divide by 2M.'],
+    2: ['Add up the kept cells of Q_ij, then divide by 2M.'],
     3: ['@mirror', 'Newman and Girvan introduced this score in 2004.', 'For the karate club, Q is 0.358.'],
   },
   14: {
@@ -130,12 +130,6 @@ export const narration: Narration = {
     0: ['Leiden was made to fix exactly this.'],
     1: ['@mirror', 'Splitting the blue group raises Q to 0.482.'],
     2: ['The loop gets one more step: a split before the merge.'],
-    3: ['Leiden guarantees that every group is connected.', 'The authors also report that it runs faster than Louvain.'],
-  },
-  23: {
-    0: ['@mirror', 'This is the score we built.'],
-    1: ['Louvain climbs in two kinds of steps: nodes, then groups.', '@mirror'],
-    2: ['@mirror', 'Leiden adds a split step.'],
-    3: ['@mirror', 'Merging too much comes from Q itself. Leiden does not fix it.'],
+    3: ['Leiden guarantees that every group is connected.', 'The authors also report that it runs faster than Louvain.', 'Merging too much comes from Q itself. Leiden does not fix it.', 'That limit of Q is next.'],
   },
 };

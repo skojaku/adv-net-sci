@@ -12,7 +12,7 @@ import {Matrix, MatrixDegrees, TOY, TOY_A, TOY_E, ToyNet, fillE, num2, type Cell
 /**
  * Opens on the last picture of S09 (the network, A, its label and sentence).
  * 0: A fades out; the degrees k appear next to the nodes and along the matrix; the label becomes E_ij.
- * 1: the cells fill row by row with k_i k_j / 14; the cell of nodes 3 and 4 is ringed, with its arithmetic.
+ * 1: the cells fill row by row with k_i k_j / 12; the cell of nodes 1 and 5 is ringed, with its arithmetic.
  * 2: the sentence.
  */
 export const marks = [50, 174, 204];
@@ -48,7 +48,7 @@ export const S10: React.FC = () => {
     <Frame n={10} top={190}>
       <Canvas>
         <ToyNet degrees={degNet} />
-        <Matrix x={TOY.mx} y={TOY.my} cell={TOY.cell} n={6} at={at} font={36} discs={{d: 52, size: 32}} rings={[[2, 3]]} ringOp={ring} />
+        <Matrix x={TOY.mx} y={TOY.my} cell={TOY.cell} n={6} at={at} font={36} discs={{d: 52, size: 32}} rings={[[0, 4]]} ringOp={ring} />
         <MatrixDegrees x={TOY.mx} y={TOY.my} cell={TOY.cell} opacity={degMat} />
       </Canvas>
       <Fade o={aOut} dy={0}>
@@ -66,7 +66,7 @@ export const S10: React.FC = () => {
       </Fade>
       <Fade o={formula} dy={14}>
         <Box x={TOY.net[0][0] + 250} y={TOY.formulaY - 10} w={640} align="center" size={44}>
-          <Tex tex="\dfrac{k_ik_j}{2M}=\dfrac{3\times3}{14}=0.64" />
+          <Tex tex="\dfrac{k_ik_j}{2M}=\dfrac{3\times2}{12}=0.50" />
         </Box>
       </Fade>
       <Fade o={cap} dy={14}>

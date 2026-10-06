@@ -13,9 +13,9 @@ import {Matrix, MatrixDegrees, TOY, TOY_B, TOY_E, ToyNet, fillB, fillE, num2, ty
 /**
  * Opens on the last picture of S10 (the network, E with its degrees and the ringed cell, the formula, the sentence).
  * 0: those fade out, E moves to the middle and shrinks, A appears at its left, a minus sign between them.
- * 1: "=" and B, A - E, cell by cell (blue above 0, brown below 0); the formula B_ij = A_ij - k_i k_j / 2M.
+ * 1: "=" and Q_ij (the modularity matrix), A - E, cell by cell (blue above 0, brown below 0); the formula Q_ij = A_ij - k_i k_j / 2M.
  * 2: the sentence about the colours.
- * 3: the row sums of B (all 0).
+ * 3: the row sums of Q_ij (all 0).
  */
 export const marks = [72, 148, 188, 232];
 
@@ -75,9 +75,9 @@ export const S11: React.FC = () => {
       <Canvas>
         <ToyNet degrees={1} opacity={netOut} />
         <Matrix x={AX} y={MY} cell={CELL} n={6} at={atA} font={24} discs={{d: 40, size: 24}} opacity={aRow(0)} />
-        <Matrix x={eX} y={eY} cell={eCell} n={6} at={atE} font={eFont} discs={{d: eDisc, size: eDiscSize}} rings={[[2, 3]]} ringOp={oldOut} />
+        <Matrix x={eX} y={eY} cell={eCell} n={6} at={atE} font={eFont} discs={{d: eDisc, size: eDiscSize}} rings={[[0, 4]]} ringOp={oldOut} />
         <MatrixDegrees x={TOY.mx} y={TOY.my} cell={TOY.cell} opacity={oldOut} />
-        <Matrix x={BX} y={MY} cell={CELL} n={6} at={atB} font={24} discs={{d: 40, size: 24, op: equals}} opacity={equals} />
+        <Matrix x={BX} y={MY} cell={CELL} n={6} at={atB} font={22} discs={{d: 40, size: 24, op: equals}} opacity={equals} />
         <g fontFamily={F.serif} fontSize={30} fill={C.ink} textAnchor="middle">
           <text x={BX + W + 52} y={MY - 12} fill={C.soft} opacity={sumHead}>sum</text>
           {TOY_B.map((_, r) => (
@@ -90,7 +90,7 @@ export const S11: React.FC = () => {
           <Tex tex="E_{ij}" />
         </Box>
         <Box x={TOY.net[0][0] + 250} y={TOY.formulaY - 10} w={640} align="center" size={44}>
-          <Tex tex="\dfrac{k_ik_j}{2M}=\dfrac{3\times3}{14}=0.64" />
+          <Tex tex="\dfrac{k_ik_j}{2M}=\dfrac{3\times2}{12}=0.50" />
         </Box>
         <Box x={TOY.net[0][0] - 60} y={TOY.captionY + 25} w={640} size={36}>
           A random network with the same degrees has this many edges between each pair, on average.
@@ -107,11 +107,11 @@ export const S11: React.FC = () => {
         <Box x={EX + W + 39} y={OPS_Y} w={100} align="center" size={80}>=</Box>
       </Fade>
       <Fade o={bLabel} dy={10}>
-        <Box x={labelAt(BX)} y={185} w={400} align="center" size={60}><Tex tex="B_{ij}" /></Box>
+        <Box x={labelAt(BX)} y={185} w={400} align="center" size={60}><Tex tex="Q_{ij}" /></Box>
       </Fade>
       <Fade o={formula} dy={14}>
         <Box x={AX + 40} y={MY + W + 70} w={1000} size={50}>
-          <Tex tex="B_{ij}=A_{ij}-\dfrac{k_ik_j}{2M}" />
+          <Tex tex="Q_{ij}=A_{ij}-\dfrac{k_ik_j}{2M}" />
         </Box>
       </Fade>
       <Fade o={say2} dy={14}>
@@ -121,7 +121,7 @@ export const S11: React.FC = () => {
       </Fade>
       <Fade o={say3} dy={14}>
         <Box x={BX - 50} y={MY + W + 52} w={600} size={36}>
-          Each row of B sums to 0.
+          Each row of Q_ij sums to 0.
         </Box>
       </Fade>
     </Frame>

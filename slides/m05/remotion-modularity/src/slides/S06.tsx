@@ -11,15 +11,15 @@ import {TOY_STUB_NODE} from '../data/data';
 import {ToyDisc} from '../lib/a_toy';
 
 /**
- * The 14 stubs of the small example in a row, grouped by node. Node 3 is i, node 4 is j.
+ * The 12 stubs of the small example in a row, grouped by node. Node 1 (the hub, 3 stubs) is i, node 5 (2 stubs) is j.
  * 0: the row of stubs, the nodes, the labels i and j. Every stub is equally likely to join any other stub.
  * 1: the stubs of i (k_i) and of j (k_j) are marked: the chance that i joins j is proportional to k_i and to k_j.
  * (Lecturer: the derivation is one straight line, so there are no arcs and no 2M - 1.)
  */
 export const marks = [60, 130];
 
-const I = 2; // node i (the third node of the drawing, numbered 3)
-const J = 3; // node j (numbered 4)
+const I = 0; // node i (the hub, numbered 1 in the drawing)
+const J = 4; // node j (numbered 5)
 const SLOT = 92;
 const GAP = 70;
 const ROW_Y = 470;
@@ -90,7 +90,7 @@ export const S06: React.FC = () => {
         <Box x={groupX[J]} y={NODE_Y + 44} w={120} align="center" size={56}><Tex tex="j" /></Box>
       </div>
       <div style={{opacity: label}}>
-        <Cap x={960} y={NODE_Y + 130} w={700}>2M = 14 stubs</Cap>
+        <Cap x={960} y={NODE_Y + 130} w={700}>2M = {TOY_STUB_NODE.length} stubs</Cap>
       </div>
       <div style={{opacity: brace}}>
         <Box x={groupX[I]} y={ROW_Y - 128} w={160} align="center" size={52} color={LOOK[0].fill}><Tex tex="k_i" /></Box>

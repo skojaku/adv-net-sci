@@ -10,7 +10,7 @@ import {TOY_EDGES} from '../data/data';
 import {Matrix, TOY, TOY_A, ToyNet, type CellStyle} from '../lib/b_matrix';
 
 /**
- * 0: the small network (6 nodes, 7 edges) and an empty 6 x 6 grid, labelled A_ij.
+ * 0: the small network (6 nodes, 6 edges) and an empty 6 x 6 grid, labelled A_ij.
  * 1: the cells fill: an edge lights both its cells (1), then the other cells, the diagonal included, get 0.
  */
 export const marks = [50, 124];

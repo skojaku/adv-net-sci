@@ -11,7 +11,7 @@ import {CLUB_A, CLUB_B, CLUB_BAR, CLUB_E, CLUB_SPLIT, Matrix, fillA, fillB, fill
  * The same three matrices for the karate club (34 x 34, nodes sorted by group, a bar of the group's colour outside).
  * 0: A (156 filled cells: 78 edges, both ways).
  * 1: a minus sign and E = k_i k_j / 2M.
- * 2: an equals sign and B = A - E.
+ * 2: an equals sign and Q_ij = A - E.
  */
 export const marks = [64, 122, 180];
 
@@ -55,7 +55,7 @@ export const S12: React.FC = () => {
         <Box x={EX + W / 2} y={190} w={400} align="center" size={60}><Tex tex="E_{ij}" /></Box>
       </Fade>
       <Fade o={bIn} dy={10}>
-        <Box x={BX + W / 2} y={190} w={400} align="center" size={60}><Tex tex="B_{ij}" /></Box>
+        <Box x={BX + W / 2} y={190} w={400} align="center" size={60}><Tex tex="Q_{ij}" /></Box>
       </Fade>
       <Fade o={minus}>
         <Box x={AX + W + 38} y={MY + W / 2 - 54} w={100} align="center" size={80}>{'−'}</Box>

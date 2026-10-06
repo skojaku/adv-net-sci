@@ -21,7 +21,6 @@ import {S19, marks as marks19} from './S19';
 import {S20, marks as marks20} from './S20';
 import {S21, marks as marks21} from './S21';
 import {S22, marks as marks22} from './S22';
-import {S23, marks as marks23} from './S23';
 
 export type SlideDef = {
   /** the slide's number in DECK_SPEC.md */
@@ -55,5 +54,4 @@ export const slides: SlideDef[] = [
   {n: 20, id: 'louvain-loop', marks: marks20, Component: S20},
   {n: 21, id: 'bridge-leaves', marks: marks21, Component: S21},
   {n: 22, id: 'leiden-refine', marks: marks22, Component: S22},
-  {n: 23, id: 'summary', marks: marks23, Component: S23},
 ];

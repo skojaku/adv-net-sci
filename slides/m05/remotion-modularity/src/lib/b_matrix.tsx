@@ -22,7 +22,7 @@ export const expected = (deg: ReadonlyArray<number>): number[][] => {
   return deg.map((ki) => deg.map((kj) => (ki * kj) / twoM));
 };
 
-/** B = A - E, the modularity matrix. */
+/** Q_ij = A - E, the modularity matrix (called B in the code; the slides call it Q_ij). */
 export const modMatrix = (a: number[][], e: number[][]): number[][] => a.map((row, i) => row.map((v, j) => v - e[i][j]));
 
 export const TOY_A = adjacency(6, TOY_EDGES);
@@ -174,7 +174,7 @@ export const Matrix: React.FC<{
 
 export const TOY = {
   /** the small network, at the left */
-  net: toCanvas(TOY_POS, 120, 330, 630, 300),
+  net: toCanvas(TOY_POS, 175, 330, 580, 300),
   /** the matrix, at the right (S09 and S10) */
   mx: 1010,
   my: 285,

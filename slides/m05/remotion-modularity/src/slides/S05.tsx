@@ -7,19 +7,19 @@ import {C} from '../theme';
 import {caption, fromStage, prog, smooth} from '../lib/anim';
 import {HOLLOW, LOOK} from '../lib/look';
 import {mix} from '../lib/network';
-import {TOY_EDGES, TOY_LAB, TOY_REWIRED, TOY_STUB_NODE, TOY_STUB_PAIRS} from '../data/data';
+import {TOY_EDGES, TOY_LAB, TOY_ORIG_INSIDE, TOY_REWIRED, TOY_REWIRED_INSIDE, TOY_STUB_NODE, TOY_STUB_PAIRS} from '../data/data';
 import {DegLabels, STUB_OTHER, STUB_EDGE, ToyDisc, lerp, lerpPos, toyPos} from '../lib/a_toy';
 
 /**
  * The small example, cut and reconnected.
  * 0: the network, a degree label for every node.
- * 1: every edge is cut in the middle: 14 stubs.
+ * 1: every edge is cut in the middle: 12 stubs.
  * 2: the stubs are joined again at random (TOY_STUB_PAIRS); every node keeps its degree.
- * 3: the original and the reconnected network side by side, with the groups coloured: 6 of 7 edges inside, then 2 of 7.
+ * 3: the original and the reconnected network side by side, with the groups coloured: 5 of 6 edges inside, then 3 of 6.
  */
 export const marks = [64, 124, 226, 312];
 
-const BIG = toyPos(360, 215, 1200, 700);
+const BIG = toyPos(360, 225, 1200, 590);
 const LEFT = toyPos(130, 300, 770, 460);
 const RIGHT = toyPos(1020, 300, 770, 460);
 const D_BIG = 84;
@@ -112,19 +112,19 @@ export const S05: React.FC = () => {
       <DegLabels pos={pos} d={d} size={d * 0.52} o={degIn} />
       <DegLabels pos={LEFT} d={D_SMALL} size={D_SMALL * 0.52} o={move} />
       <div style={{opacity: cap0}}>
-        <Cap x={960} y={880}>7 edges, 14 edge ends</Cap>
+        <Cap x={960} y={880}>{TOY_EDGES.length} edges, {2 * TOY_EDGES.length} edge ends</Cap>
       </div>
       <div style={{opacity: cap1}}>
-        <Cap x={960} y={880}>14 stubs</Cap>
+        <Cap x={960} y={880}>{2 * TOY_EDGES.length} stubs</Cap>
       </div>
       <div style={{opacity: cap2 * (1 - move)}}>
-        <Box x={960} y={870} w={1500} align="center" size={46}>Every node keeps its degree. The number of edges stays 7.</Box>
+        <Box x={960} y={870} w={1500} align="center" size={46}>Every node keeps its degree. The number of edges stays {TOY_EDGES.length}.</Box>
       </div>
       <div style={{opacity: outsideCaps}}>
         <Cap x={515} y={236} w={600}>original</Cap>
         <Cap x={1405} y={236} w={600}>rewired</Cap>
-        <Cap x={515} y={780} w={700}>6 of 7 edges inside</Cap>
-        <Cap x={1405} y={780} w={700}>2 of 7 edges inside</Cap>
+        <Cap x={515} y={780} w={700}>{TOY_ORIG_INSIDE} of {TOY_EDGES.length} edges inside</Cap>
+        <Cap x={1405} y={780} w={700}>{TOY_REWIRED_INSIDE} of {TOY_EDGES.length} edges inside</Cap>
         <Cap x={960} y={868} w={1700}>Like a power strip: each device keeps its sockets, only the wiring is shuffled.</Cap>
       </div>
     </Frame>

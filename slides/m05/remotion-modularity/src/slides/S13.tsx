@@ -12,10 +12,10 @@ import {Q_REAL} from '../data/data';
 import {CLUB_B, CLUB_BAR, CLUB_GROUP, CLUB_SPLIT, Matrix, fillB, type CellStyle} from '../lib/b_matrix';
 
 /**
- * The karate club's B (sorted by group) at the left, the formula at the right, one row per stage.
+ * The karate club's Q_ij (sorted by group) at the left, the formula at the right, one row per stage.
  * 0: the groups as bars outside the matrix, c_i = group of node i.
  * 1: only the cells of two nodes in the same group stay (delta = 1); the others fade.
- * 2: the kept cells are added: Q = (1 / 2M) sum B_ij delta(c_i, c_j).
+ * 2: the kept cells are added: Q = (1 / 2M) sum Q_ij delta(c_i, c_j).
  * 3: Q = 0.358, with the paper.
  */
 export const marks = [64, 134, 204, 268];
@@ -29,7 +29,7 @@ const MY = 330;
 const ROWS: ReadonlyArray<StackRow> = [
   {group: 0, tex: 'c_i=\\text{group of node }i'},
   {group: 1, tex: '\\delta(c_i,c_j)=1\\text{ if }c_i=c_j\\text{, else }0'},
-  {group: 2, tex: 'Q=\\dfrac{1}{2M}\\sum_{i,j}B_{ij}\\,\\delta(c_i,c_j)'},
+  {group: 2, tex: 'Q=\\dfrac{1}{2M}\\sum_{i,j}Q_{ij}\\,\\delta(c_i,c_j)'},
 ];
 
 export const S13: React.FC = () => {
@@ -65,7 +65,7 @@ export const S13: React.FC = () => {
         </g>
       </Canvas>
       <Fade o={lab} dy={10}>
-        <Box x={MX + W / 2} y={180} w={400} align="center" size={60}><Tex tex="B_{ij}" /></Box>
+        <Box x={MX + W / 2} y={180} w={400} align="center" size={60}><Tex tex="Q_{ij}" /></Box>
       </Fade>
       <Fade o={bars} dy={6}>
         <Box x={MX + W + 52} y={MY - 40} w={90} align="center" size={42}><Tex tex="c_j" /></Box>
