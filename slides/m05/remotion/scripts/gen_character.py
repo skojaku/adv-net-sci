@@ -1,4 +1,4 @@
-"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose]
+"""python3 scripts/gen_character.py [--model google/gemini-3.1-flash-image] [--only 1,3] [--ref a.png,b.png --set ref|white|boy|glasses|lines|b4|gaze|touch|both|pose|prone]
 
 Candidates for the narrator of the video: a chibi person lying on their stomach, drawn in a flat, thick-outline touch, made with a Gemini image model through
 OpenRouter (the key is read from $OPENROUTER_API_KEY and never written anywhere). Writes out/character/cand-N.png and cand-N.txt (the prompt).
@@ -142,6 +142,21 @@ POSE = (
     'also when his hands are not on it (then it simply lies there alone); it is never moved, never removed, never redrawn. He stays lying flat on his stomach on the floor, never floating. Pure white background, no text, whole character visible, generous margin. '
 )
 POSE_REF = ' The SECOND attached image (a dog character) is only a reference for the gesture and the facial expression: copy the gesture and the expression onto the boy, never the dog. '
+PRONE = (
+    'The FIRST attached image is the character to KEEP: the same boy, the same drawing style (thick black outlines, soft off-white fills, a hint of pale lavender shading), the same big round head, '
+    'the same flat face plate with tiny dash-like eyes and a small smile, the same short hair shape, white T-shirt and shorts, sky-blue wristbands, white sneakers, and the same tiny cream keyboard. '
+    'REDRAW him in a different, NATURAL pose, because the first image is twisted: the head faces the viewer while the body lies sideways. '
+    'New pose: he lies FLAT ON HIS STOMACH, the body seen purely from the SIDE (like a person lying on a bed, seen from the side), the whole body in ONE relaxed, straight, horizontal line from the head to the feet '
+    'with NO twisting of the shoulders or hips: chest and belly on the floor, the back on top, the legs stretched out behind him. '
+    'The head faces RIGHT, toward the tiny keyboard that lies on the floor in front of him (to the right of the head); both forearms lie on the floor in front of him with the elbows bent, and both hands are on the keyboard, typing. '
+    'The picture is a side view: the head is at the right, the feet at the left. Pure white background, no text, whole character visible, generous margin. '
+)
+CANDIDATES_PRONE = {
+    1: 'The head is lifted a little and seen in side profile, facing right, with one dash eye and a small smile; the legs lie flat and straight behind him.',
+    2: 'The head is lifted a little in three-quarter view (the face plate turned a little toward the viewer, but the body stays a straight side view); the knees are bent and the feet are raised in the air behind him, crossed at the ankles.',
+    3: 'A relaxed pose: the chin low, the head only slightly raised and seen in side profile facing right; the legs lie flat, the feet resting on the floor.',
+    4: 'The head is in a cartoon three-quarter view (the face plate fairly frontal, looking at the keyboard), set on the straight side-view body; one foot is raised a little behind him.',
+}
 # n: (the change, an expression reference or None)
 CANDIDATES_POSE = {
     1: ('TYPING FRAME A. Only the hands change: the hand at the left end of the keyboard is pressed flat on the keys, the other hand is lifted a little above the keys with the fingers curled, ready to press. The face stays exactly as in the first image.', None),
@@ -167,7 +182,15 @@ os.makedirs('out/character', exist_ok=True)
 
 
 def make(n):
-    if SET == 'pose':
+    if SET == 'prone':
+        prompt = PRONE + CANDIDATES_PRONE[n]
+        parts = [{'type': 'text', 'text': prompt}]
+        for path in REFS:
+            with open(path, 'rb') as f:
+                parts.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(f.read()).decode()}})
+        content = parts
+        name = f'prone-{n}'
+    elif SET == 'pose':
         change, expr = CANDIDATES_POSE[n]
         prompt = POSE + change + (POSE_REF if expr else '')
         paths = REFS + ([f'out/character/expr/{expr}.png'] if expr else [])
@@ -211,7 +234,7 @@ def make(n):
     return n, len(raw), None
 
 
-todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE}.get(SET, CANDIDATES) if only is None or n in only]
+todo = [n for n in {'ref': CANDIDATES_REF, 'white': CANDIDATES_WHITE, 'boy': CANDIDATES_BOY, 'glasses': CANDIDATES_GLASSES, 'lines': CANDIDATES_LINES, 'b4': CANDIDATES_B4, 'gaze': CANDIDATES_GAZE, 'touch': CANDIDATES_TOUCH, 'both': CANDIDATES_BOTH, 'pose': CANDIDATES_POSE, 'prone': CANDIDATES_PRONE}.get(SET, CANDIDATES) if only is None or n in only]
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     for fut in concurrent.futures.as_completed([ex.submit(make, n) for n in todo]):
         try:
