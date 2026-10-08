@@ -1,0 +1,132 @@
+% The M05 pitch sheet: one page, handed out in class, for the group activity.
+% Four groups each sell one community-detection result on the karate club.
+%
+% Compile with: xelatex -interaction=nonstopmode pitch-sheet.tex   (run twice)
+%
+% The QR code and the printed address are the course's short link, not molab's
+% own address, so that re-uploading the notebook is a line on the server and
+% not a reprint (see lecture-note/LAB_NOTEBOOK_GUIDE.md):
+%
+%   uvx --from segno segno --output=m05pitch-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/m05pitch"
+\documentclass[a4paper, 11pt]{extarticle}
+\usepackage[top=0.5in, bottom=0.45in, left=0.75in, right=0.75in]{geometry}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{fontspec}
+\usepackage{xcolor}
+
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+\IfFontExistsTF{JetBrains Mono}{\setmonofont{JetBrains Mono}[Scale=0.9]}{
+  \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}[Scale=0.88]}{
+    \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.9]}{}}}
+
+\definecolor{accent}{HTML}{3959A6}
+\definecolor{accenttwo}{HTML}{B14434}
+\definecolor{accentthree}{HTML}{DAB167}
+\definecolor{softgrey}{HTML}{6B6B6B}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\setlist{nosep, leftmargin=1.4em, itemsep=0.15em}
+\pagestyle{empty}
+
+\newcommand{\molablink}{https://go.skojaku.com/m05pitch}
+
+\begin{document}
+
+{\LARGE\bfseries Module 5 --- Pitch your result}\hfill{\color{softgrey}\small 25 minutes, in groups}
+
+\vspace{0.2em}
+\rule{\textwidth}{0.8pt}
+
+\textbf{The situation.} Spring 1972. A karate club of 34 people is about to split in two.
+The president asks which people will leave together. You have one community-detection
+result on the club's friendship network (78 edges), and you have three minutes to
+convince the room that yours is the one to trust.
+
+\begin{tcolorbox}[colback=white, colframe=black, boxrule=0.8pt, arc=0pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.17\textwidth}
+\includegraphics[width=2.7cm]{m05pitch-qr.png}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.78\textwidth}
+\textbf{Count off 1, 2, 3, 4. Your number is your method.} Scan the square, or type
+\href{\molablink}{\texttt{go.skojaku.com/m05pitch}}. In the notebook choose your group
+number. It shows your method's result on the club, the numbers behind it, and one
+setting you can change. You type no code.
+\end{minipage}
+\end{tcolorbox}
+
+\vspace{0.3em}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}>{\bfseries}c >{\raggedright\arraybackslash}p{2.7cm} p{12.2cm}@{}}
+1 & Shape: $k$-core &
+A community is a set in which everyone has at least $k$ neighbours inside the set.
+A person's \emph{shell} is the largest $k$ for which they are in the $k$-core. \\
+2 & Cut &
+A community is one side of a split into two. The split with the smallest
+$\text{Cut}(V_1,V_2)=\sum_{i\in V_1}\sum_{j\in V_2}A_{ij}$ divided by a size term
+(ratio cut, normalized cut) wins. \\
+3 & Chance: modularity &
+A community is a set with more edges inside than a random network with the same degrees
+would put there. Maximize $Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$
+with Leiden or Louvain. \\
+4 & Pattern: stochastic block model &
+A community is a set of people who connect to every group in the same way. The grouping
+under which the observed network is most likely wins. \\
+\end{tabular}
+
+\vspace{0.3em}
+\textbf{Reading the figure.} Colour is the group your method gives a person. A circle
+joined Mr.\ Hi's club in 1972, a square joined the officers' club. The real split is
+17 and 17. Dashed lines are edges between groups.
+
+\medskip
+{\large\bfseries Plan}\par
+\vspace{-0.3em}\rule{\textwidth}{0.4pt}
+
+\begin{tabular}{@{}>{\bfseries}r p{1.9cm} p{12.6cm}@{}}
+5 min & Prepare &
+Open the notebook and turn the setting. Write four sentences: (a) your definition of a
+community; (b) who your result puts together, and who it separates from whom;
+(c) one number from the table that supports it; (d) one thing it cannot do. The other
+groups will find (d) if you do not. \\
+12 min & Pitch &
+Three minutes per group, in the order 1, 2, 3, 4. Everyone else writes down one question
+for the group that is speaking. \\
+6 min & Questions &
+Each group asks its question. The pitching group answers. \\
+2 min & Vote &
+Hands up, not for your own group: which result would you give the president? Then switch
+on \emph{Show all four results} in the notebook. \\
+\end{tabular}
+
+\medskip
+{\large\bfseries Questions to ask}\par
+\vspace{-0.3em}\rule{\textwidth}{0.4pt}
+
+\begin{itemize}
+\item What did you have to decide before running it (the number of groups, the objective, $k$)? What changes if you decide differently?
+\item Who does your result put with the wrong club, and why would a method that only sees friendships do that?
+\item Run it again with another seed or setting. Is the answer the same?
+\item Find person 9 in your figure. What does your method say about them?
+\item Does your method need to be told how many groups there are?
+\end{itemize}
+
+\end{document}

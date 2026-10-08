@@ -303,6 +303,25 @@ MODULES = {
 }
 
 
+# Notebooks with no blanks, so no worked copy: only the stylesheet is welded in.
+# name -> (directory under lecture-note/, notebook file)
+EMBED_ONLY = {
+    "m05-pitch": ("m05-clustering/pitch", "pitch.py"),
+}
+
+
+def embed_only(name: str) -> int:
+    folder, nb = EMBED_ONLY[name]
+    d = ROOT / "lecture-note" / folder
+    lab, css = d / nb, d / "lecture-hall.css"
+    for f in (lab, css):
+        if not f.exists():
+            print(f"{name}: no {f.relative_to(ROOT)}", file=sys.stderr)
+            return 1
+    embed_css(lab, css)
+    return 0
+
+
 def paper_dir(slug: str) -> pathlib.Path:
     return ROOT / "lecture-note" / slug / "pen-and-paper"
 
@@ -357,16 +376,19 @@ def build(slug: str, subs: list[tuple[str, str]]) -> int:
 
 
 def main(argv: list[str]) -> int:
-    wanted = argv or sorted(MODULES)
-    unknown = [s for s in wanted if s not in MODULES]
+    wanted = argv or sorted(MODULES) + sorted(EMBED_ONLY)
+    unknown = [s for s in wanted if s not in MODULES and s not in EMBED_ONLY]
     if unknown:
         print(
             f"no lab notebook registered for {', '.join(unknown)}; "
-            f"known modules are {', '.join(sorted(MODULES))}",
+            f"known modules are {', '.join(sorted(MODULES) + sorted(EMBED_ONLY))}",
             file=sys.stderr,
         )
         return 1
-    return max(build(slug, MODULES[slug]) for slug in wanted)
+    return max(
+        embed_only(slug) if slug in EMBED_ONLY else build(slug, MODULES[slug])
+        for slug in wanted
+    )
 
 
 if __name__ == "__main__":
