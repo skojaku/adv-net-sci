@@ -25,7 +25,7 @@ anything here.
 
 Ask the lecturer for a photo of the paper (give them the tips below) and for its path.
 
-- Dark pen on white paper, one circle per person, roughly the same size, none touching.
+- Dark pen on white paper, one circle (or one filled dot) per person, roughly the same size, none touching. A photo of 10 green marker dots on blue-white paper was read correctly.
 - No numbers or writing inside or next to the circles. Words elsewhere on the page are
   tolerated (they are rejected by size) but a word next to a circle is not.
 - Straight from above. The front of the room is at the top of the picture.
@@ -37,9 +37,10 @@ cd lecture-note/m05-clustering/pitch
 uv run read_seats.py /path/to/photo.jpg seats.csv overlay.png
 ```
 
-It thresholds the ink locally (shadows are fine), takes each closed shape as a circle if
-its area is within 0.4 to 2.2 times the median and it is round enough, and writes the
-centres. Coordinates are scaled so that the usual distance to a nearest neighbour is 1,
+It thresholds the ink locally (shadows are fine), takes each closed shape as a seat if
+its area is within 0.25 to 3 times the median and it is round enough, and writes the
+centres. Only specks of a few pixels are dropped without a trace; everything else that is
+not accepted is outlined in red on the overlay. Coordinates are scaled so that the usual distance to a nearest neighbour is 1,
 and `y` points up, so the picture in the notebook has the same orientation as the paper.
 Ids are `A, B, C, ...` from left to right.
 

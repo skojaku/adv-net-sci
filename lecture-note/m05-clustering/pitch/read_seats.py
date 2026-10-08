@@ -23,12 +23,14 @@ def stats(c):
     a, p = cv2.contourArea(c), cv2.arcLength(c, True)
     return a, (4 * np.pi * a / p**2 if p else 0)
 
-big = [c for c in cnts if stats(c)[0] > 0.0003 * H * W]
-ref = np.median([stats(c)[0] for c in big])
+# Drop only specks of paper noise (a few pixels). Everything else is a candidate, and what is not
+# accepted is drawn in red on the overlay, so that nothing is thrown away silently.
+cand = [c for c in cnts if stats(c)[0] > 0.00002 * H * W]
+ref = np.median([stats(c)[0] for c in cand if stats(c)[0] > 0.0002 * H * W])   # a typical circle or dot
 good, bad = [], []
-for c in big:
+for c in cand:
     a, circ = stats(c)
-    (good if 0.4 * ref < a < 2.2 * ref and circ > 0.6 else bad).append(c)
+    (good if 0.25 * ref < a < 3.0 * ref and circ > 0.6 else bad).append(c)
 
 pts = []
 for c in good:
