@@ -139,20 +139,13 @@ A community is a group of a split for which both are small.
 \vspace{0.3em}
 \begin{groupbox}{3}{Chance: modularity (igraph)}
 Maximize $Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$.
-Type each box into the empty cell of your section, by hand. The network is \texttt{graph}.
+Type this into the empty cell of your section, by hand. The network is \texttt{graph}.
 \begin{lstlisting}
 labels = graph.community_leiden(
     objective_function="modularity",
     n_iterations=-1).membership
 show(labels)
 print(graph.modularity(labels))
-\end{lstlisting}
-Leiden finds the grouping with the highest $Q$. Louvain starts from a random node order, so another seed can change the answer:
-\begin{lstlisting}
-import random
-random.seed(1)
-part = graph.community_multilevel()
-labels = part.membership
 \end{lstlisting}
 \end{groupbox}
 
