@@ -13,9 +13,12 @@ result. There is no ground truth: the point of the exercise is that the four
 results differ and that each group can only defend its result from its own
 definition of a community.
 
-Group 4 runs graph-tool, which is installed with condacolab exactly as in the
-M05 code sheet (tools/build_m05_code_sheet.py explains why: it restarts Colab
-once). The other groups never touch it.
+Group 4 runs graph-tool. condacolab only works in Colab, and the notebook may be
+opened in any Jupyter, so graph-tool is installed the way the M05 pen-and-paper
+lab does it (lecture-note/m05-clustering/pen-and-paper/lab.py): micromamba puts
+it in a private conda environment in the temp folder and the fit runs there in
+its own process. That needs no restart and works on Colab, Linux and macOS; there
+is no graph-tool for Windows. The other groups never touch it.
 
 The handout is lecture-note/m05-clustering/pitch/pitch-sheet.tex.
 """
@@ -57,25 +60,60 @@ The lecturer has drawn where everyone in this room sits. Two people are joined b
 
 There is no right answer to check against. You may only argue from your own method's definition of a community.
 
-1. **Group 4 only:** run *Step A1* and *Step A2* now. They install graph-tool and take 3–5 minutes. Colab restarts once after A1; that is meant to happen.
+1. **Group 4 only:** run *Step A* now. It installs graph-tool and takes one to three minutes the first time. It works in Colab and in Jupyter on a Mac or Linux laptop. graph-tool does not run on Windows; use Colab there.
 2. **Everyone:** run *Setup*, then *The graph*.
 3. Go to the section with your group number. Run it, change the setting, run it again.
 """),
-        md("## Step A1 · Group 4 only\nPress ▶ and wait. Colab restarts by itself when this finishes."),
+        md("## Step A · Group 4 only\nPress ▶ and wait. Nothing to type, and nothing restarts."),
         code("""
-# Step A1. Group 4 only.
-!pip install -q condacolab
-import condacolab
-condacolab.install()
-"""),
-        md("## Step A2 · Group 4 only\nPress ▶ after the restart."),
-        code("""
-# Step A2. Group 4 only. Press the play button AFTER the restart.
-import condacolab
-condacolab.check()
-print("Installing graph-tool. This takes three to five minutes. Please wait.")
-!mamba install -q -y -c conda-forge graph-tool python-igraph matplotlib pandas
-print("Done.")
+#@title Step A. Group 4 only. Press the play button and wait. { display-mode: "form" }
+# graph-tool is not on PyPI, so it is installed from conda into a private folder, and the
+# block-model fit runs there in its own process. blockmodel() is the bridge to it.
+import io, json, os, pathlib, platform, subprocess, tarfile, tempfile, urllib.request
+
+GT = pathlib.Path(tempfile.gettempdir()) / "graph-tool"
+GT_PYTHON = GT / "env" / "bin" / "python"
+
+if not GT_PYTHON.exists():
+    kind = {"Linux": "linux-64",
+            "Darwin": "osx-arm64" if platform.machine() == "arm64" else "osx-64"}.get(platform.system())
+    if kind is None:
+        raise SystemExit("graph-tool does not run on Windows. Open this notebook in Colab instead.")
+    print("Installing graph-tool: one to three minutes. Please wait.")
+    url = f"https://micro.mamba.pm/api/micromamba/{kind}/latest"
+    tarfile.open(fileobj=io.BytesIO(urllib.request.urlopen(url).read()), mode="r:bz2").extract("bin/micromamba", GT)
+    subprocess.run([GT / "bin" / "micromamba", "create", "-y", "-q", "-p", GT / "env", "-c", "conda-forge", "graph-tool"],
+                   env={**os.environ, "MAMBA_ROOT_PREFIX": str(GT / "root")}, check=True)
+
+_SCRIPT = '''
+import json
+import numpy as np
+import graph_tool.all as gt
+d = json.load(open("in.json"))
+g = gt.Graph(directed=False)
+g.add_vertex(d["n"])
+g.add_edge_list(d["edges"])
+gt.seed_rng(d["seed"]); np.random.seed(d["seed"]); gt.openmp_set_num_threads(1)
+kw = {} if d["n_groups"] is None else {"multilevel_mcmc_args": dict(B_min=d["n_groups"], B_max=d["n_groups"])}
+state = gt.minimize_blockmodel_dl(g, state_args=dict(deg_corr=d["deg_corr"]), **kw)
+json.dump({"labels": [int(b) for b in state.get_blocks().a], "dl": float(state.entropy())}, open("out.json", "w"))
+'''
+
+
+def blockmodel(n, edges, n_groups=None, deg_corr=False, seed=0):
+    \"\"\"Fit graph-tool's stochastic block model. Returns (group of each person, description length).\"\"\"
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = pathlib.Path(tmp)
+        (tmp / "in.json").write_text(json.dumps(dict(n=n, edges=edges, n_groups=n_groups, deg_corr=deg_corr, seed=seed)))
+        (tmp / "run.py").write_text(_SCRIPT)
+        done = subprocess.run([GT_PYTHON, "run.py"], cwd=tmp, capture_output=True, text=True)
+        if done.returncode:
+            raise RuntimeError(done.stderr[-1500:])
+        out = json.loads((tmp / "out.json").read_text())
+    return out["labels"], out["dl"]
+
+
+print("graph-tool is ready.")
 """),
         md("## Setup · everyone\nLoads the seat coordinates the lecturer published. Nothing to type."),
         code(f"""
@@ -83,7 +121,7 @@ print("Done.")
 try:
     import igraph
 except ImportError:
-    !pip install -q python-igraph
+    %pip install -q python-igraph
     import igraph
 
 import random
@@ -98,8 +136,13 @@ SEATS_URL = "{raw}"
 
 try:
     seats = pd.read_csv(SEATS_URL)
-except Exception as err:
-    raise SystemExit(f"Could not read {{SEATS_URL}}\\nThe lecturer has not published the seats yet, or GitHub is still updating (up to 5 minutes).\\n{{err}}")
+except Exception:
+    # Rehearsal: the lecturer has not published the real seats yet.
+    seats = pd.read_csv(SEATS_URL.replace("seats.csv", "seats-example.csv"))
+    print("#" * 70)
+    print("REHEARSAL DATA: seats.csv is not published yet, so this is an invented room.")
+    print("Run this notebook again once the lecturer says the seats are up.")
+    print("#" * 70)
 
 IDS = list(seats["id"].astype(str))
 P = seats[["x", "y"]].to_numpy(dtype=float)
@@ -298,18 +341,8 @@ N_GROUPS = None     # None: graph-tool chooses. Or 2, 3, ...
 DEG_CORR = False
 SEED = 0
 
-import graph_tool.all as gt
-
-g_gt = gt.Graph(directed=False)
-g_gt.add_vertex(N)
-g_gt.add_edge_list(graph.get_edgelist())
-gt.seed_rng(SEED)
-np.random.seed(SEED)
-gt.openmp_set_num_threads(1)
-kw = {} if N_GROUPS is None else {"multilevel_mcmc_args": dict(B_min=N_GROUPS, B_max=N_GROUPS)}
-state = gt.minimize_blockmodel_dl(g_gt, state_args=dict(deg_corr=DEG_CORR), **kw)
-labels_4 = [int(b) for b in state.get_blocks().a]
-show(labels_4, f"Group 4 · block model, description length {state.entropy():.1f}")
+labels_4, dl = blockmodel(N, graph.get_edgelist(), N_GROUPS, DEG_CORR, SEED)
+show(labels_4, f"Group 4 · block model, description length {dl:.1f}")
 """),
         md("""
 ## After the pitches · everyone
@@ -322,12 +355,9 @@ results["2 · normalized cut"] = cut_labels("normalized")[0]
 random.seed(0)
 results["3 · Leiden"] = graph.community_leiden(objective_function="modularity", n_iterations=-1).membership
 try:
-    import graph_tool.all as gt
-    g_all = gt.Graph(directed=False); g_all.add_vertex(N); g_all.add_edge_list(graph.get_edgelist())
-    gt.seed_rng(0); np.random.seed(0); gt.openmp_set_num_threads(1)
-    results["4 · block model"] = [int(b) for b in gt.minimize_blockmodel_dl(g_all).get_blocks().a]
-except ImportError:
-    print("graph-tool is not installed here; ask group 4 for their result.")
+    results["4 · block model"] = blockmodel(N, graph.get_edgelist())[0]
+except NameError:
+    print("Step A has not been run here, so the block model is missing; ask group 4 for their result.")
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 6.5))
 for ax, (name, lab) in zip(axes.ravel(), results.items()):
