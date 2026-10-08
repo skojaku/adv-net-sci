@@ -93,30 +93,22 @@ number in the picture; \texttt{labels[i]} is the group of node \texttt{i}.
 \item Argue only from your own definition of a community. It is the only thing you have.
 \item Back your pitch with a number you computed or ran yourself.
 \item \texttt{K} (how many nearest people each person is joined to) is a variable in the notebook. Changing it changes the network, and every answer. Say which \texttt{K} you used.
-\item When you are asked a question, answer from your own definition. Before you call another group's partition wrong, say whose definition you are using.
 \end{enumerate}
 
-\textbf{Plan.}\par\vspace{-0.2em}
+\medskip
+\textbf{Plan.}\par
+\renewcommand{\arraystretch}{1.35}
 \begin{tabular}{@{}>{\bfseries}r p{1.7cm} p{12.6cm}@{}}
-10 min & Prepare &
+15 min & Prepare &
 Make your partition. Then write four sentences: (a) your definition of a community;
 (b) who your partition puts together, and who it separates from whom; (c) one number
 that supports it; (d) one thing it cannot do. The other groups will find (d) if you do not. \\
 12 min & Pitch &
-Three minutes per group, in the order 1, 2, 3, 4. Everyone else writes down one question
-for the group that is speaking. \\
-5 min & Questions & Each group asks its question. The speaking group answers. \\
-3 min & Discuss & Which partition is correct? What would you need to know to say? \\
+Three minutes per group, in the order 1, 2, 3, 4. \\
+5 min & Discuss &
+Vote by hand for the most convincing pitch, not your own group's. Then: which partition is
+correct? What would you need to know to say? \\
 \end{tabular}
-
-\medskip
-\textbf{Questions you could ask.}
-\begin{itemize}
-\item What did you decide before you started (\texttt{K}, the number of groups, $k$, $\rho$, the objective)? What changes if you decide differently?
-\item Pick a node that sits between two groups. Why is it with the group it is in?
-\item Does your method need to be told how many groups there are?
-\item Which of the four would you use to form discussion groups for this class? Does the answer depend on what the groups are for?
-\end{itemize}
 
 \vfill
 {\color{softgrey}\small Turn over: one box per group. Work only in your own.}
@@ -147,8 +139,7 @@ A community is a group of a split for which both are small.
 \vspace{0.3em}
 \noindent\begin{minipage}[t]{0.495\textwidth}
 \begin{groupbox}{3}{Chance: modularity (igraph)}
-A community is a set with more edges inside than a random network with the same degrees would
-put there. Maximize $Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$.
+Maximize $Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$.
 Type each box into the empty cell of your section, by hand. The network is \texttt{graph}.
 \begin{lstlisting}
 labels = graph.community_leiden(
@@ -168,8 +159,7 @@ labels = part.membership
 \end{minipage}\hfill
 \begin{minipage}[t]{0.495\textwidth}
 \begin{groupbox}{4}{Pattern: block model (graph-tool)}
-A community is a set of nodes that connect to every group in the same way. The grouping that
-gives the shortest description of the network wins. The first run installs graph-tool (1--3
+The grouping that gives the shortest description of the network wins. The first run installs graph-tool (1--3
 minutes; it does not run on Windows, so use Colab there). In \texttt{fit}, \texttt{g} is the
 network and \texttt{gt} is graph-tool.
 \begin{lstlisting}
