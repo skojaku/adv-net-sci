@@ -42,13 +42,16 @@
     \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.9]}{}}}
 
 \definecolor{softgrey}{HTML}{6B6B6B}
+\definecolor{codeblue}{HTML}{3959A6}
+\definecolor{coderust}{HTML}{B14434}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.3em}
 \setlist{nosep, leftmargin=1.4em, itemsep=0.15em}
 \pagestyle{empty}
 
-\lstset{basicstyle=\ttfamily\normalsize, columns=fullflexible, keepspaces=true, showstringspaces=false,
+\lstset{language=Python, keywordstyle=\color{codeblue}\bfseries, stringstyle=\color{coderust},
+  commentstyle=\color{softgrey}\itshape, emph={True,False,None}, emphstyle=\color{coderust}, basicstyle=\ttfamily\normalsize, columns=fullflexible, keepspaces=true, showstringspaces=false,
   frame=single, framerule=0.6pt, breaklines=true, xleftmargin=0pt, aboveskip=0.3em, belowskip=0.3em}
 
 % One box per group on the back.
