@@ -21,9 +21,9 @@ Four groups then pitch a partition; there is no ground truth.
 
   1. Shape (k-core, clique, pseudo-clique) and 2. Cut: by eye. The nodes are
      numbered in the picture; the student writes one number per node in a list.
-     `show` redraws the partition and prints the raw arrays (group sizes, edges
-     between groups); the adjacency matrix `A` is available. The student computes
-     the values by hand. There is no checking function.
+     `show` redraws the partition; the adjacency matrix `A` is available. The
+     student computes the values by hand. There is no checking function and no
+     table of group sizes.
   3. Modularity: types igraph code from a paper sheet.
   4. Block model: types graph-tool code from a paper sheet.
 
@@ -105,10 +105,8 @@ def make_graph(k):
 PALETTE = ["#8FA8DC", "#E3877A", "#DAB167", "#B79AD6", "#9CCBE8", "#F0A8D0", "#C9A27E", "#BDB8AA", "#E5E5E5", "#F2D16B"]   # light enough for black labels
 
 
-def show(labels, arrays=True):
-    """Draw the partition with igraph (colour = group, dark edge = edge between groups). Then print
-    the group sizes and the matrix of edge counts: the diagonal is the number of edges inside
-    a group, the rest is the number of edges between two groups."""
+def show(labels):
+    """Draw the partition with igraph (colour = group, dark edge = edge between groups)."""
     labels = np.array(labels)
     assert len(labels) == N, f"labels needs one number per node: {N} numbers, you gave {len(labels)}"
     names = np.unique(labels)
@@ -121,17 +119,6 @@ def show(labels, arrays=True):
                 edge_color=["#1A1A1A" if c else "#BDB8AA" for c in cross],
                 edge_width=[1.2 if c else 2.5 for c in cross])
     plt.show()
-    if arrays:
-        M = np.zeros((len(names), len(names)), dtype=int)
-        for u, v in EDGES:
-            a, b = np.where(names == labels[u])[0][0], np.where(names == labels[v])[0][0]
-            M[a, b] += 1
-            if a != b:
-                M[b, a] += 1
-        print("groups:", names)
-        print("size of each group:", np.array([(labels == g).sum() for g in names]))
-        print("edges between groups (diagonal: inside a group):")
-        print(M)
 
 
 GT = pathlib.Path(tempfile.gettempdir()) / "graph-tool"
@@ -188,12 +175,12 @@ Run *Setup*, then *The graph*, then go to your group's section.
 K = {k}
 EDGES, graph = make_graph(K)
 A = np.array(graph.get_adjacency().data)   # adjacency matrix: A[i, j] = 1 when i and j are joined
-show([0] * N, arrays=False)
+show([0] * N)
 print(A)
 """),
         md("""
 ## Groups 1 and 2 · by eye
-`labels[i]` is the group of node `i`. Edit the list, run the cell, look at the picture and the arrays under it.
+`labels[i]` is the group of node `i`. Edit the list, run the cell, look at the picture.
 
 **Group 1:** a k-core, a clique and a pseudo-clique: give its members the number 1 and everyone else 0.
 **Group 2:** exactly two groups, numbered 0 and 1.
