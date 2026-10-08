@@ -14,7 +14,7 @@ anything here.
 | `seats-example.csv` | An invented 15-person room, for rehearsal. Do not delete. |
 | `pitch-seats.ipynb` | The student notebook. **Generated** by `tools/build_m05_pitch_notebook.py`; never edit by hand. |
 | `pitch-sheet.tex` / `.pdf` | The one two-sided handout. The PDF is not committed (`*.pdf` is gitignored). |
-| `pitch-seats-qr.png` | The QR code on the sheet. It encodes a Colab URL that contains the branch name. |
+| `pitch-seats-qr.png` | The QR code on the sheet. It encodes the Colab URL of this notebook on `main`. |
 | `read_seats.py` | Photo of hand-drawn circles to `seats.csv` and an overlay to check by eye. |
 | `exact_cuts.py` | Exact best two-way split by brute force (the lecturer's answer key for group 2). |
 | `pitch.py`, `lecture-hall.css`, `m05pitch-qr.png` | The earlier karate-club version (marimo). Not used. |
@@ -94,10 +94,9 @@ up to 5 minutes. Check that the notebook will see the new file:
 curl -s https://raw.githubusercontent.com/skojaku/adv-net-sci/<branch>/lecture-note/m05-clustering/pitch/seats.csv | head
 ```
 
-`<branch>` is the branch name the notebook was generated with (`git branch --show-current`
-when `tools/build_m05_pitch_notebook.py` was last run; it is printed in the notebook's `SEATS_URL`).
-If the lecturer merges to `main`, regenerate with `python tools/build_m05_pitch_notebook.py --branch main`
-and rebuild the QR code (below).
+`<branch>` is `main`: the notebook was generated with `--branch main` (the name is in its `SEATS_URL`).
+If you ever move the activity to another branch, regenerate with
+`python tools/build_m05_pitch_notebook.py --branch <branch>` and rebuild the QR code (below).
 
 ### 6. Test it the way a student sees it
 
