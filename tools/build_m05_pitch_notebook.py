@@ -27,8 +27,10 @@ Four groups then pitch a partition; there is no ground truth.
   3. Modularity: types igraph code from a paper sheet.
   4. Block model: types graph-tool code from a paper sheet.
 
-The code on the paper is lecture-note/m05-clustering/pitch/pitch-code.tex; the
-notebook has an empty cell for it. The handout is pitch-sheet.tex.
+The code on the paper is in the boxes of group 3 and 4 on the back of
+lecture-note/m05-clustering/pitch/pitch-sheet.tex (one sheet, both sides, the
+only handout); the notebook has an empty cell for it. If `show`, `graph` or
+`graph_tool` change, change the sheet too.
 
 graph-tool is not on PyPI and has no Windows build. It is installed with
 micromamba into a private conda environment in the temp folder and the fit runs

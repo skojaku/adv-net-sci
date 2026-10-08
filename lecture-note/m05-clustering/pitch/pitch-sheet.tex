@@ -1,5 +1,6 @@
-% The M05 pitch sheet: one page, handed out in class, for the group activity.
-% Four groups each sell one community-detection result on the class's own seating.
+% The M05 pitch sheet: ONE sheet, printed on both sides, handed to everyone.
+% Front: what this is, the rules, the QR code, the plan. Back: four boxes, one
+% per group. A student works only in the box of their own group.
 %
 % Compile with: xelatex -interaction=nonstopmode pitch-sheet.tex   (run twice)
 %
@@ -8,13 +9,18 @@
 %
 %   uvx --from segno segno --output=pitch-seats-qr.png --scale=14 --border=4 \
 %       --error=l "<the Colab URL printed by tools/build_m05_pitch_notebook.py>"
+%
+% The code in boxes 3 and 4 is the code that was run against the notebook
+% (tools/build_m05_pitch_notebook.py defines `show`, `graph` and `graph_tool`).
+% If one of those names changes, change this sheet too.
 \documentclass[a4paper, 10pt]{extarticle}
-\usepackage[top=0.45in, bottom=0.4in, left=0.75in, right=0.75in]{geometry}
+\usepackage[top=0.4in, bottom=0.3in, left=0.7in, right=0.7in]{geometry}
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{enumitem}
+\usepackage{listings}
 \usepackage{tcolorbox}
 \usepackage{fontspec}
 \usepackage{xcolor}
@@ -30,33 +36,42 @@
   \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
     \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
       \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+% A code face that tells 0 from O and l from 1, because it is copied by hand.
 \IfFontExistsTF{JetBrains Mono}{\setmonofont{JetBrains Mono}[Scale=0.9]}{
   \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont{DejaVu Sans Mono}[Scale=0.88]}{
     \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.9]}{}}}
 
-\definecolor{accent}{HTML}{3959A6}
-\definecolor{accenttwo}{HTML}{B14434}
-\definecolor{accentthree}{HTML}{DAB167}
 \definecolor{softgrey}{HTML}{6B6B6B}
 
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.35em}
+\setlength{\parskip}{0.3em}
 \setlist{nosep, leftmargin=1.4em, itemsep=0.15em}
 \pagestyle{empty}
 
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, keepspaces=true, showstringspaces=false,
+  frame=single, framerule=0.6pt, breaklines=true, xleftmargin=0pt, aboveskip=0.3em, belowskip=0.3em}
+
+% One box per group on the back.
+\newtcolorbox{groupbox}[2]{box align=top, colback=white, colframe=black, boxrule=0.9pt, arc=0pt,
+  left=6pt, right=6pt, top=3pt, bottom=3pt, title={\bfseries Group #1 --- #2},
+  coltitle=black, colbacktitle=black!12, fonttitle=\normalsize}
+
+% A row to write in.
+\newcommand{\blank}{\rule{0pt}{0.62cm}}
 
 \begin{document}
 
-{\LARGE\bfseries Module 5 --- Pitch your partition}\hfill{\color{softgrey}\small 30 minutes, in groups}
+% ------------------------------------------------------------------ front
+{\LARGE\bfseries Module 5 --- Pitch your community partition}
 
-\vspace{0.2em}
+\vspace{0.1em}
 \rule{\textwidth}{0.8pt}
 
-\textbf{The situation.} The lecturer has drawn where everyone in this room sits. Each person
-is a node, and two people who sit close are joined by an edge. That is a network of about
+\textbf{What this is.} A community analysis of our own seating. Each person in this room is
+a node, and each is joined to their \texttt{K} nearest people. That is a network of about
 15 nodes. Nobody knows which communities it ``really'' has: there is no answer key. Your
-group makes one partition of it and has three minutes to say why that partition is the one
-to use. You may argue only from your own definition of a community.
+group is given one definition of a community. Using it, you make a partition of the nodes
+and, in \textbf{three minutes}, say why it is the one to use.
 
 \begin{tcolorbox}[colback=white, colframe=black, boxrule=0.8pt, arc=0pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt]
@@ -65,75 +80,143 @@ to use. You may argue only from your own definition of a community.
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.73\textwidth}
-\textbf{Count off 1, 2, 3, 4. Your number is your method.} Scan the square: it opens a
-notebook. Run \emph{Setup} and \emph{The graph}, then go to the section with your number.
-Each node has a number in the picture; \texttt{labels[i]} is the group of node \texttt{i}.
-Groups 3 and 4 get a code sheet. Group 4's first run installs graph-tool (1--3 minutes; it
-does not run on Windows, so use Colab there).
+\textbf{Count off 1, 2, 3, 4. Your number is your group.} Scan the square: it opens a
+notebook. Run \emph{Setup} and \emph{The graph}, then go to the section with your number
+and work through \textbf{your group's box on the back, and only that}. Each node has a
+number in the picture; \texttt{labels[i]} is the group of node \texttt{i}.
 \end{minipage}
 \end{tcolorbox}
 
-\vspace{0.3em}
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}>{\bfseries}c >{\raggedright\arraybackslash}p{2.7cm} p{12.2cm}@{}}
-1 & Shape, by eye &
-A community is a set of nodes that hold together. Find, in the picture, (i) the $k$-core
-with the largest $k$ (everyone has at least $k$ neighbours inside the set), (ii) the largest
-clique (everyone is joined to everyone), (iii) the largest pseudo-clique with density
-$\rho\ge 0.8$ ($\rho$ = edges inside / possible edges inside). Give its members the number 1
-and everyone else 0. Work out $k$, the size and $\rho$ by hand from $A$ and the arrays. \\
-2 & Cut, by eye &
-A community is one side of a split with few edges between the sides, relative to size.
-Make exactly two groups so that
-Ratio cut $=\sum_c \ell_c/|V_c|$ and Normalized cut $=\sum_c \ell_c/\text{vol}(V_c)$
-are as small as possible, where $\ell_c$ is the number of edges leaving group $c$ and
-$\text{vol}(V_c)$ is the sum of its members' degrees. A plausible split is not enough:
-compute both values by hand for at least three candidates and keep the smallest. \\
-3 & Chance: modularity, igraph &
-A community is a set with more edges inside than a random network with the same degrees
-would put there. Maximize
-$Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$.
-Type the code from your sheet. \\
-4 & Pattern: block model, graph-tool &
-A community is a set of nodes that connect to every group in the same way. The grouping
-that gives the shortest description of the network wins. Type the code from your sheet. \\
-\end{tabular}
-
-\vspace{0.3em}
-\textbf{The graph is a choice too.} Where people sit is not a network. The notebook joins
-each person to their \texttt{K} nearest people. \texttt{K} is a variable: change it and
-the network, and every answer, changes. Say which \texttt{K} you used when you pitch.
-
 \medskip
-{\large\bfseries Plan}\par
-\vspace{-0.3em}\rule{\textwidth}{0.4pt}
+\textbf{Rules.}
+\begin{enumerate}[label=\arabic*.]
+\item Argue only from your own definition of a community. It is the only thing you have.
+\item Back your pitch with numbers you computed or ran yourself. A plausible partition is not enough.
+\item \texttt{K} (how many nearest people each person is joined to) is a variable in the notebook. Changing it changes the network, and every answer. Say which \texttt{K} you used.
+\item When you are asked a question, answer from your own definition. Before you call another group's partition wrong, say whose definition you are using.
+\end{enumerate}
 
-\begin{tabular}{@{}>{\bfseries}r p{1.9cm} p{12.6cm}@{}}
+\textbf{Plan.}\par\vspace{-0.2em}
+\begin{tabular}{@{}>{\bfseries}r p{1.7cm} p{12.6cm}@{}}
 10 min & Prepare &
 Make your partition. Then write four sentences: (a) your definition of a community;
 (b) who your partition puts together, and who it separates from whom; (c) one number
-that supports it; (d) one thing it cannot do. The other groups will find (d) if you do
-not. \\
+that supports it; (d) one thing it cannot do. The other groups will find (d) if you do not. \\
 12 min & Pitch &
 Three minutes per group, in the order 1, 2, 3, 4. Everyone else writes down one question
 for the group that is speaking. \\
-5 min & Questions &
-Each group asks its question. The answer must come from the answering group's own
-definition. Before you call another group's partition wrong, say whose definition you are
-using. \\
-3 min & Discuss &
-Which partition is correct? What would you need to know to say? \\
+5 min & Questions & Each group asks its question. The speaking group answers. \\
+3 min & Discuss & Which partition is correct? What would you need to know to say? \\
 \end{tabular}
 
 \medskip
-{\large\bfseries Questions to ask}\par
-\vspace{-0.3em}\rule{\textwidth}{0.4pt}
-
+\textbf{Questions you could ask.}
 \begin{itemize}
 \item What did you decide before you started (\texttt{K}, the number of groups, $k$, $\rho$, the objective)? What changes if you decide differently?
 \item Pick a node that sits between two groups. Why is it with the group it is in?
 \item Does your method need to be told how many groups there are?
 \item Which of the four would you use to form discussion groups for this class? Does the answer depend on what the groups are for?
 \end{itemize}
+
+\vfill
+{\color{softgrey}\small Turn over: one box per group. Work only in your own.}
+
+\newpage
+
+% ------------------------------------------------------------------ back
+\begin{groupbox}{1}{Shape (by eye)}
+A community is a set of nodes that hold together. Find these in the picture, give the
+members the number 1 and everyone else 0, and run \texttt{show(labels)}. Count by hand,
+using the adjacency matrix \texttt{A} and the arrays under the picture.
+\renewcommand{\arraystretch}{1.0}
+\begin{center}
+\begin{tabular}{|p{6.3cm}|p{4.0cm}|c|c|p{2.3cm}|}
+\hline
+\textbf{Find} & \textbf{its nodes} & $n$ & edges inside & result \\
+\hline
+$k$-core with the largest $k$: everyone has at least $k$ neighbours inside the set &\blank&&& $k=$ \\
+\hline
+largest clique: everyone is joined to everyone &\blank&&& \\
+\hline
+largest pseudo-clique with $\rho\ge 0.8$ &\blank&&& $\rho=$ \\
+\hline
+\end{tabular}
+\end{center}
+$\rho$ = edges inside / $\binom{n}{2}$. The edges inside a set are the diagonal entry of the matrix.
+\end{groupbox}
+
+\vspace{0.05em}
+\begin{groupbox}{2}{Cut (by eye)}
+A community is one side of a split with few edges between the sides, relative to size.
+Make \textbf{exactly two groups}, numbered 0 and 1, so that both of these are as small as possible:
+\[
+\text{Ratio cut}=\frac{\ell}{|V_0|}+\frac{\ell}{|V_1|},\qquad
+\text{Normalized cut}=\frac{\ell}{\text{vol}(V_0)}+\frac{\ell}{\text{vol}(V_1)}.
+\]
+$\ell$ is the number of edges between the two groups; $\text{vol}(V_c)$ is the sum of the
+degrees of the members of group $c$. From the matrix \texttt{show} prints: $|V_c|$ is the size,
+$\ell$ is the off-diagonal entry, and $\text{vol}(V_c)=2\times(\text{diagonal entry})+\ell$.
+\textbf{A plausible split is not enough.} Compute both values by hand for at least three
+candidate splits and keep the smallest. In your pitch, give the smallest values you found and
+what you tried. Do the two objectives pick the same split?
+\renewcommand{\arraystretch}{1.0}
+\begin{center}
+\begin{tabular}{|c|p{3.9cm}|c|c|c|c|c|c|c|}
+\hline
+ & nodes in group 1 & $|V_0|$ & $|V_1|$ & $\ell$ & $\text{vol}(V_0)$ & $\text{vol}(V_1)$ & Ratio & Norm. \\
+\hline
+A &\blank&&&&&&& \\ \hline
+B &\blank&&&&&&& \\ \hline
+C &\blank&&&&&&& \\ \hline
+D &\blank&&&&&&& \\ \hline
+\end{tabular}
+\end{center}
+\end{groupbox}
+
+\vspace{0.05em}
+\noindent\begin{minipage}[t]{0.495\textwidth}
+\begin{groupbox}{3}{Chance: modularity (igraph)}
+A community is a set with more edges inside than a random network with the same degrees would
+put there. Maximize $Q=\frac{1}{2m}\sum_{ij}\bigl[A_{ij}-\frac{k_ik_j}{2m}\bigr]\delta(c_i,c_j)$.
+Type each box into the empty cell of your section, by hand. The network is \texttt{graph}.
+\begin{lstlisting}
+labels = graph.community_leiden(
+    objective_function="modularity",
+    n_iterations=-1).membership
+show(labels)
+print(graph.modularity(labels))
+\end{lstlisting}
+Leiden finds the grouping with the highest $Q$. Louvain starts from a random node order, so another seed can change the answer:
+\begin{lstlisting}
+import random
+random.seed(1)
+part = graph.community_multilevel()
+labels = part.membership
+\end{lstlisting}
+\end{groupbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.495\textwidth}
+\begin{groupbox}{4}{Pattern: block model (graph-tool)}
+A community is a set of nodes that connect to every group in the same way. The grouping that
+gives the shortest description of the network wins. The first run installs graph-tool (1--3
+minutes; it does not run on Windows, so use Colab there). In \texttt{fit}, \texttt{g} is the
+network and \texttt{gt} is graph-tool.
+\begin{lstlisting}
+def fit(g):
+    state = gt.minimize_blockmodel_dl(g)
+    return state.get_blocks().a.tolist()
+
+labels = graph_tool(fit)
+show(labels)
+\end{lstlisting}
+Replace the \texttt{state = \ldots} line, one at a time, and compare. The first lets every node have its own degree; the second forces 2 groups.
+\begin{lstlisting}
+state = gt.minimize_blockmodel_dl(
+    g, state_args=dict(deg_corr=True))
+state = gt.minimize_blockmodel_dl(
+    g, multilevel_mcmc_args=dict(B_min=2, B_max=2))
+\end{lstlisting}
+\end{groupbox}
+\end{minipage}
 
 \end{document}
