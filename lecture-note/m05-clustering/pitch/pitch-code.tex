@@ -4,7 +4,7 @@
 % Compile with: xelatex -interaction=nonstopmode pitch-code.tex   (run twice)
 %
 % The code here is the code that was run: tools/build_m05_pitch_notebook.py
-% defines `show`, `check`, `graph` and `graph_tool`, and the lines below were
+% defines `show`, `graph` and `graph_tool`, and the lines below were
 % executed against them. If one of those names changes, change this sheet too.
 \documentclass[a4paper, 11pt]{extarticle}
 \usepackage[top=0.6in, bottom=0.5in, left=0.8in, right=0.8in]{geometry}
@@ -48,7 +48,7 @@
 \vspace{0.2em}
 \rule{\textwidth}{0.8pt}
 
-Type each framed box into the empty cell of your section, by hand, and press Shift+Enter. Typing a line is how you find out what it does. The network is called \texttt{graph}. \texttt{show} and \texttt{check} are already defined.
+Type each framed box into the empty cell of your section, by hand, and press Shift+Enter. Typing a line is how you find out what it does. The network is called \texttt{graph}. \texttt{show} is already defined.
 
 \medskip
 {\Large\bfseries igraph}\par
@@ -60,10 +60,11 @@ labels = graph.community_leiden(
     objective_function="modularity",
     n_iterations=-1).membership
 show(labels)
+print(graph.modularity(labels))
 \end{code}
 \begin{itemize}
 \item \texttt{community\_leiden} searches for the grouping with the highest modularity. \texttt{.membership} is the list of group numbers, one per node.
-\item \texttt{show} draws it and prints the matrix of sizes and edge counts.
+\item \texttt{show} draws it and prints the group sizes and the matrix of edge counts. \texttt{modularity} gives $Q$.
 \end{itemize}
 
 \textbf{Box 2} --- the same, with Louvain. Run it again with another seed.
@@ -72,11 +73,10 @@ import random
 random.seed(1)
 labels = graph.community_multilevel().membership
 show(labels)
-check(labels)
+print(graph.modularity(labels))
 \end{code}
 \begin{itemize}
 \item Louvain starts from a random order of the nodes, so \texttt{seed} can change the answer.
-\item \texttt{check} prints the sizes, the cut values and the modularity $Q$.
 \end{itemize}
 
 \medskip
@@ -88,7 +88,7 @@ check(labels)
 \vspace{0.2em}
 \rule{\textwidth}{0.8pt}
 
-Type each framed box into the empty cell of your section, by hand, and press Shift+Enter. Typing a line is how you find out what it does. The network is called \texttt{graph}. \texttt{show} and \texttt{check} are already defined.
+Type each framed box into the empty cell of your section, by hand, and press Shift+Enter. Typing a line is how you find out what it does. The network is called \texttt{graph}. \texttt{show} is already defined.
 
 \medskip
 {\Large\bfseries graph-tool}\par
