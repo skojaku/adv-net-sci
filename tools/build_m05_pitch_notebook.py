@@ -102,27 +102,24 @@ def make_graph(k):
     return edges, igraph.Graph(n=N, edges=edges)
 
 
-PALETTE = ["#3959A6", "#B14434", "#DAB167", "#6B6B6B", "#7A5195", "#E377C2", "#8C564B", "#6BAED6", "#1A1A1A", "#BDB8AA"]
+PALETTE = ["#8FA8DC", "#E3877A", "#DAB167", "#B79AD6", "#9CCBE8", "#F0A8D0", "#C9A27E", "#BDB8AA", "#E5E5E5", "#F2D16B"]   # light enough for black labels
 
 
 def show(labels, arrays=True):
-    """Draw the partition (colour = group, dashed = edge between groups). Then print the
-    group sizes and the matrix of edge counts: the diagonal is the number of edges inside
+    """Draw the partition with igraph (colour = group, dark edge = edge between groups). Then print
+    the group sizes and the matrix of edge counts: the diagonal is the number of edges inside
     a group, the rest is the number of edges between two groups."""
     labels = np.array(labels)
     assert len(labels) == N, f"labels needs one number per node: {N} numbers, you gave {len(labels)}"
     names = np.unique(labels)
-    fig, ax = plt.subplots(figsize=(10, 4.2))
-    for u, v in EDGES:
-        cross = labels[u] != labels[v]
-        ax.plot(P[[u, v], 0], P[[u, v], 1], color="#1A1A1A" if cross else "#BDB8AA", lw=1.2 if cross else 1.8,
-                ls=(0, (4, 3)) if cross else "-", zorder=1)
     colour = [PALETTE[int(np.where(names == g)[0][0]) % len(PALETTE)] for g in labels]
-    ax.scatter(P[:, 0], P[:, 1], s=420, c=colour, edgecolor="#1A1A1A", lw=1, zorder=2)
-    for i in range(N):
-        ax.text(P[i, 0], P[i, 1], str(i), ha="center", va="center", fontsize=10, fontweight="bold",
-                color="#1A1A1A" if colour[i] in ("#DAB167", "#6BAED6", "#BDB8AA") else "white", zorder=3)
-    ax.set_aspect("equal"); ax.axis("off"); ax.margins(0.08)
+    cross = [labels[u] != labels[v] for u, v in graph.get_edgelist()]
+    fig, ax = plt.subplots(figsize=(10, 4.2))
+    igraph.plot(graph, target=ax, layout=igraph.Layout(P.tolist()), bbox=None,
+                vertex_color=colour, vertex_size=30, vertex_label=list(range(N)),
+                vertex_label_color="#1A1A1A",
+                edge_color=["#1A1A1A" if c else "#BDB8AA" for c in cross],
+                edge_width=[1.2 if c else 2.5 for c in cross])
     plt.show()
     if arrays:
         M = np.zeros((len(names), len(names)), dtype=int)
