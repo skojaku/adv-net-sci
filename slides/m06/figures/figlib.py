@@ -287,8 +287,13 @@ def emit_gif(name, frames, container="full", h=None, hmod="", hold=HOLD, ms=MS, 
         if durations is not None:
             assert len(durations) == len(frames), f"{name}: {len(durations)} durations for {len(frames)} frames"
             dur = list(durations) + [durations[-1]] * hold
-        # Downscale to slide pixels: a GIF at 4x raster is needlessly heavy for the deck.
-        seq = [im.resize((im.size[0] // 2, im.size[1] // 2), Image.LANCZOS) for im in seq]
+        # The PNG and PDF exports show a GIF's FIRST frame, and so does check_render. So the
+        # file opens on the complete picture, then plays the build from the start. (Kept at
+        # the full 4x raster: check_render infers the authored container from the width.)
+        if frames[0] != frames[-1]:
+            seq = [ims[-1]] + seq
+            if dur is not None:
+                dur = [dur[-1]] + dur
         pal = [im.convert("P", palette=Image.ADAPTIVE) for im in seq]
         pal[0].save(OUT / f"{name}.gif", save_all=True, append_images=pal[1:],
                     duration=dur or ms, loop=0, optimize=True, disposal=2)

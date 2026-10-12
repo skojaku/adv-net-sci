@@ -128,21 +128,16 @@ Take a vote: Buffalo, Rochester, Syracuse, Utica, Albany, NYC, Binghamton, Water
 
 <hr>
 
-<div class="formula">
-
-$$d_i = \sum_j A_{ij}$$
-
-</div>
+**Degree**: $d_i = \sum_j A_{ij}$, the number of neighbours. Nothing beyond them counts.
 
 <div class="fig tall">
 
 ![w:1080](figures/roma-degree.png)
-<figcaption>degree counts the neighbours and nothing beyond them</figcaption>
 
 </div>
 
 <!--
-The sheet's first question. Name it and move on.
+The sheet's first question. Name it and move on. Roma has the most roads.
 -->
 
 ---
@@ -630,12 +625,11 @@ $$b_i = \sum_{s < t} \frac{\sigma_{st}(i)}{\sigma_{st}}$$
 <div class="fig">
 
 ![w:1080](figures/sigma-answer.png)
-<figcaption>sigma counts shortest paths; with two of them, each carries half</figcaption>
 
 </div>
 
 <!--
-sigma_st: the number of shortest paths from s to t. sigma_st(i): how many of them pass through i.
+sigma_st: the number of shortest paths from s to t. sigma_st(i): how many of them pass through i. From S to D there are two shortest paths, so A and B each carry half of that pair, and T carries all of it.
 -->
 
 ---
@@ -1113,7 +1107,7 @@ $$(I - \alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$$
 
 </div>
 
-$A^k$ counts walks of length $k$: Katz counts walks, discounted by length.
+$A^k$ counts walks of length $k$. So Katz counts walks, discounted by length.
 
 </div>
 <div class="fig">
