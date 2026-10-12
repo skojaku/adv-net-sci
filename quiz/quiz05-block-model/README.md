@@ -74,10 +74,11 @@ Each step is the one the `quiz02` and `quiz04` READMEs document in full.
       - Students: <https://go.skojaku.com/ans-quiz05> →
         <https://docs.google.com/forms/d/e/1FAIpQLScH20NuJi9agoEN41TRt6N0SqIMOEMe-EKNxqOvTxqypSjbMg/viewform>
       - Editor: <https://docs.google.com/forms/d/1O_sID_M5DdjbxegnPpCnQ0dZZ_FAw38SiLhpsYcZh84/edit>
-- [ ] **The file-responses folder.** The copied upload questions have no
-      folder yet; Google makes one at the first upload. Move it into
-      `SSIE 641 Advanced Topics in Network Science/Submission/` then, as for
-      Quiz 4.
+- [x] **The file-responses folder** `Quiz 5 — Cores and blocks (File
+      responses)` (made by Google when the upload questions were first opened
+      in the editor; the copy had none) moved out of Drive root into
+      `SSIE 641 Advanced Topics in Network Science/Submission/`, 2026-10-12,
+      beside Quiz 4's. The form's upload questions still point at it.
 - [x] **Three short links** on the droplet, 2026-10-12, beside the `quiz04`
       pair. Validated and reloaded; all answer 302. The pre-edit Caddyfile is
       `/etc/caddy/Caddyfile.bak-2026-10-12-quiz05`.
