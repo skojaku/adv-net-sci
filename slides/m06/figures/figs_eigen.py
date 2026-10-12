@@ -117,38 +117,56 @@ def check_graph_planar(pos, edges, what, r=None):
 
 
 # =========================================================================== eigen-inherit
-INH_SX, INH_SY = 118, 100
+INH_SX, INH_SY = 122, 52
 INH_H = 400
+INH_CY = 232
+KF_SX, KF_SY = 118, 100                    # katz-floor: no numbers, so it can be taller
 
 
 def fig_eigen_inherit():
-    """Node A's score is the sum of its neighbours' scores, then the same for B."""
-    pos = eig_layout(INH_SX, W_COL / 2, 205, sy=INH_SY)
+    """Node A's score is the sum of its neighbours' scores (times 1/lambda), then the same for B.
+
+    Every disc keeps the eigenvector shading and prints its score (largest = 1).  When the four
+    arrows into A are lit the identity "sum of the four = lambda x score(A)" is written under the
+    graph, with the numbers the discs print.
+    """
+    pos = eig_layout(INH_SX, W_COL / 2, INH_CY, sy=INH_SY)
     check_graph_planar(pos, EDGES, "eigen-inherit")
     nbrs = {n: sorted(S.EIG[n]) for n in NAMES}
     assert nbrs["A"] == ["B", "D", "F", "G"] and nbrs["B"] == ["A", "G"], nbrs
 
-    def frame(focus=None, into=(), shaded=False):
-        if shaded:
-            body = score_graph(pos, V1, size=F.NODE)
-        else:
-            body = edges_body(EDGES, pos)
-            for n in NAMES:
-                body += nd(*pos[n], label=n, name=n, outline=False)
+    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
+    at = place_values(strings, pos, EDGES, bounds=(6, 88, W_COL - 6, 372))
+    # the identity, from the printed numbers
+    terms = [strings[m] for m in nbrs["A"]]
+    assert terms == ["0.64", "0.58", "0.81", "0.85"], terms
+    total = sum(float(t) for t in terms)
+    lam = f"{LAM1:.2f}"
+    assert f"{total:.2f}" == lam == "2.88", (total, lam)
+    assert abs(float(lam) * float(strings["A"]) - total) < 1e-9
+    eq1 = " $+$ ".join(terms)
+    eq2 = f"$=$ {lam} $\\times$ {strings['A']}"
+
+    def frame(focus=None, into=(), formula=False):
+        body = score_graph(pos, V1, size=F.NODE)
+        for n in NAMES:
+            body += F.text(at[n][0], at[n][1], strings[n])
         if focus:
             for m in into:
                 assert S.EIG.has_edge(m, focus)
                 body += arrow(m, focus)
             body += F.mark(*pos[focus], size=F.NODE)
+        if formula:
+            body += F.text(W_COL / 2, 62, eq1)
+            body += F.text(W_COL / 2, 22, eq2)
         return body
 
-    frames = [frame("A", nbrs["A"]),                      # first frame: the claim
-              frame()]
-    frames += [frame("A", nbrs["A"][:k]) for k in range(1, 5)]
+    frames = [frame("A", nbrs["A"][:k], formula=(k == 4)) for k in range(1, 5)]
     frames += [frame("B", nbrs["B"][:k]) for k in range(1, 3)]
-    frames += [frame(shaded=True)]                         # last frame: the eigenvector shading
+    frames += [frame()]                                    # last frame: the complete picture
+    # frame 0 (the complete picture) is added by emit_gif itself
     F.emit_gif("eigen-inherit", frames, container="col", h=INH_H,
-               durations=[1200, 700] + [800] * 4 + [800, 1100] + [1400], hold=4)
+               durations=[800, 800, 800, 2400, 800, 1200, 1400], hold=1)
 
 
 # =========================================================================== eigen-equation
@@ -161,12 +179,13 @@ def fig_eigen_equation():
     assert lam == "2.88", lam
     vals = [V1[c] for c in NAMES]
 
-    ox = 255                                  # shifts the whole composition to the page centre
-    bx0, bx1, by0, by1 = ox, ox + 190, 70, 260
+    CW = 70                                   # width of a column of seven cells
+    ox = 120                                  # 840 bp of composition, centred on the page
+    bx0, bx1, by0, by1 = ox, ox + 330, 70, 260
     body = (f"\\fill[accent!14] ({bx0},{by0}) rectangle ({bx1},{by1});\n"
             f"\\draw[line width=3bp,draw=black] ({bx0},{by0}) rectangle ({bx1},{by1});\n")
 
-    def column(x, w=34.0):
+    def column(x, w=float(CW)):
         out, cell = "", (by1 - by0) / n
         for i in range(n):
             y = by0 + (n - 1 - i) * cell
@@ -176,15 +195,15 @@ def fig_eigen_equation():
         return out
 
     mid = (by0 + by1) / 2
-    cx1, cx2 = bx1 + 60, bx1 + 60 + 34 + 240
+    cx1, cx2 = bx1 + 80, bx1 + 80 + CW + 290
     body += column(cx1) + column(cx2)
     body += F.text((bx0 + bx1) / 2, mid + 24, "$A$", size=46)
     body += F.text((bx0 + bx1) / 2, mid - 34, f"${n} \\times {n}$")
-    body += F.text((cx1 + 34 + cx2) / 2 - 62, mid, "$=$", size=46)
-    body += F.text((cx1 + 34 + cx2) / 2 + 40, mid, "$\\lambda$", color="accenttwo", size=46)
+    body += F.text((cx1 + CW + cx2) / 2 - 62, mid, "$=$", size=46)
+    body += F.text((cx1 + CW + cx2) / 2 + 40, mid, "$\\lambda$", color="accenttwo", size=46)
     body += F.text(W_FULL / 2, 330, "$A\\,\\mathbf{c} = \\lambda\\,\\mathbf{c}$", size=46)
     body += F.text(W_FULL / 2, 22,
-                   f"$\\lambda = {lam}$: the same seven numbers, each {lam} times bigger",
+                   "$\\lambda\\,\\mathbf{c}$: every entry of $\\mathbf{c}$ times the same number $\\lambda$",
                    color="accenttwo")
     F.emit("eigen-equation", body, container="full", h=400, hmod="")
 
@@ -352,10 +371,12 @@ def value_graph(name, vals, strings, sx, sy, letters=True, h=400):
 
 
 def fig_eig_pf():
-    """The Perron-Frobenius eigenvector: every entry positive, every entry printed (unit length)."""
-    assert all(v > 0 for v in UNIT1.values())
-    assert abs(sum(v * v for v in UNIT1.values()) - 1) < 1e-9
-    strings = {n: f"{UNIT1[n]:.2f}" for n in NAMES}
+    """The Perron-Frobenius eigenvector with its largest entry set to 1: eigenvector centrality.
+
+    Same numbers as `eig-centrality`; this file is the "Eigenvector centrality" slide's figure.
+    """
+    assert all(v > 0 for v in V1.values()) and abs(max(V1.values()) - 1) < 1e-12
+    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
     body, _ = value_graph("eig-pf", V1, strings, 114, 78)
     F.emit("eig-pf", body, container="col", h=400)
 
@@ -367,17 +388,6 @@ def fig_eig_centrality():
     strings = {n: f"{V1[n]:.2f}" for n in NAMES}
     body, _ = value_graph("eig-centrality", V1, strings, 114, 78)
     F.emit("eig-centrality", body, container="col", h=400)
-
-
-def fig_power_step1():
-    """Step one of the power iteration is the degree: A times the all-ones vector."""
-    ones = A_MAT @ np.ones(len(NAMES))
-    assert all(ones[i] == DEG[c] for i, c in enumerate(NAMES))
-    dmax = max(DEG.values())
-    vals = {c: DEG[c] / dmax for c in NAMES}
-    strings = {c: str(DEG[c]) for c in NAMES}
-    body, _ = value_graph("power-step1", vals, strings, 112, 90)
-    F.emit("power-step1", body, container="col", h=400)
 
 
 # =========================================================================== the ring of cliques
@@ -429,7 +439,7 @@ def ring_vec(sizes):
     return G, v / v.max()
 
 
-def ring_body(sizes, Rx, Ry, ox, oy, radius):
+def ring_body(sizes, Rx, Ry, ox, oy, radius, plain=False):
     G, v = ring_vec(sizes)
     pl = ring_layout(sizes, Rx, Ry, radius)
     pos = {n: (ox + p[0], oy + p[1]) for n, p in pl.items()}
@@ -442,15 +452,17 @@ def ring_body(sizes, Rx, Ry, ox, oy, radius):
         assert not bad, f"ring {sizes}: an edge passes through a disc {bad[:3]}"
     body = edges_body(edges, pos, w=2.2)
     for n in sorted(G):
-        body += nd(*pos[n], fill=f"accent!{ramp(v[n])}", size=RING_DISC, outline=True, ow=1.8)
+        fill = "accent" if plain else f"accent!{ramp(v[n])}"
+        body += nd(*pos[n], fill=fill, size=RING_DISC, outline=True, ow=1.8)
     return body, pos, v
 
 
 def fig_ring_4444():
     sizes = (4, 4, 4, 4)
-    body, pos, v = ring_body(sizes, 190, 105, W_COL / 2, 200, lambda i, K: RING_R[4])
-    for k in range(4):                         # the four cliques carry equal mass: 25% each
-        assert abs(sum(v[4 * k:4 * k + 4] ** 2) / sum(v ** 2) - 0.25) < 1e-9
+    # one plain fill: the question must not show where the score goes
+    body, pos, v = ring_body(sizes, 190, 105, W_COL / 2, 200, lambda i, K: RING_R[4], plain=True)
+    for k in range(4):                         # the four cliques carry equal score: 25% each
+        assert abs(sum(v[4 * k:4 * k + 4]) / sum(v) - 0.25) < 1e-9
     F.emit("ring-4444", body, container="col", h=400)
 
 
@@ -463,25 +475,25 @@ def fig_ring_local():
         shares.append(share)
         body, pos, v = ring_body(sizes, 395, 105, W_FULL / 2, 200,
                                  lambda i, KK, K=K: RING_R[KK] if i == 3 else RING_R[4])
-        txt = (f"$K={K}$: \\textcolor{{accenttwo}}{{{F.pct(share)}}} in the last clique")
+        txt = (f"$K={K}$: \\textcolor{{accenttwo}}{{{F.pct(share)}}} of the score in the last clique")
         body += F.text(W_FULL / 2, 200, txt)
         # the text box must clear every disc
-        w = est_w(f"K={K}: {F.pct(share)} in the last clique", FONT) * 0.80
+        w = est_w(f"K={K}: {F.pct(share)} of the score in the last clique", FONT) * 0.80
         box = (W_FULL / 2 - w / 2, 200 - 24, W_FULL / 2 + w / 2, 200 + 24)
         assert not any(F.box_hits_disc(box, *p, r=RING_DISC / 2) for p in pos.values()), \
             f"ring-local K={K}: the share text touches a disc"
         frames.append(body)
     got = [F.pct(s) for s in shares]
-    assert got == ["25\\%", "89\\%", "97\\%", "99\\%", "99\\%"], got
+    assert got == ["25\\%", "68\\%", "85\\%", "91\\%", "94\\%"], got
     # first frame = the claim (K = 8), then the growth 4 -> 8; the last frame is K = 8, held
     F.emit_gif("ring-local", [frames[-1]] + frames, container="full", h=400,
-               durations=[1000, 1100, 900, 900, 900, 1500], hold=4)
+               durations=[1800, 1800, 1800, 1800, 1800, 2400], hold=0)
 
 
 # =========================================================================== katz-floor
 def fig_katz_floor():
     """Every node gets a baseline beta; the focal node also gets alpha from each neighbour."""
-    pos = eig_layout(INH_SX, W_COL / 2, 205, sy=INH_SY)
+    pos = eig_layout(KF_SX, W_COL / 2, 205, sy=KF_SY)
     check_graph_planar(pos, EDGES, "katz-floor")
     focus = "A"
     nb = sorted(S.EIG[focus])
@@ -552,9 +564,10 @@ def fig_walks_discount():
              {frozenset(p) for p in zip(ends[3][0], ends[3][0][1:])}
     assert shared == {frozenset(("n2", "v"))}, shared
 
-    sum_line = ("$" + "+".join(
-        f"{c}\\alpha" + (f"^{k + 1}" if k else "") for k, c in enumerate(counts)) + "+\\cdots$")
-    sum_line = sum_line.replace("+", " + ")
+    terms = [(str(c) if c > 1 else "") + "\\alpha" + (f"^{k + 1}" if k else "")
+             for k, c in enumerate(counts) if c]                # no walk of length 1: no alpha term
+    sum_line = "$" + " + ".join(terms) + " + \\cdots$"
+    assert sum_line == "$2\\alpha^2 + \\alpha^3 + 11\\alpha^4 + \\cdots$", sum_line
     lx, seg_len = 300, 36
 
     def frame(n_drawn, total=False):
@@ -589,7 +602,6 @@ FIGURES = [
     ("eigen-equation", fig_eigen_equation),
     ("eig-all", fig_eig_all),
     ("eig-pf", fig_eig_pf),
-    ("power-step1", fig_power_step1),
     ("ring-4444", fig_ring_4444),
     ("ring-local", fig_ring_local),
     ("katz-floor", fig_katz_floor),

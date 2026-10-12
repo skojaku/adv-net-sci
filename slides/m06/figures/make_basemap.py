@@ -101,9 +101,10 @@ def fetch(z, x, y):
     raise SystemExit(f"could not fetch tile {z}/{x}/{y}: {last}")
 
 
-def pale(img, keep=0.35, lift=0.55):
+def pale(img, keep=0.35, lift=0.15):
     """Desaturate (keep = share of colour kept) and blend toward white (lift), so a labelled
-    OSM tile works as a quiet background."""
+    OSM tile works as a quiet background. lift = 0.15 keeps the sea about 33 grey levels
+    darker than the land (lift 0.55 left 12 to 18, which vanished on a projector)."""
     from PIL import ImageEnhance
     img = ImageEnhance.Color(img).enhance(keep)
     return Image.blend(img, Image.new("RGB", img.size, "white"), lift)

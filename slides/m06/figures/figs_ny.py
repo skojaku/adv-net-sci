@@ -37,8 +37,9 @@ assert all(n["id"] == i for i, n in enumerate(NODES))
 
 # --------------------------------------------------------------------------- projection
 SCALE = 72.0                        # bp per degree of latitude
-X0, Y0 = 6.0, 8.0                   # lower-left of the state's bounding box on the canvas
+X0, Y0 = 6.0, 30.0                  # lower-left of the state's bounding box on the canvas
 CANVAS_H = 400
+DY = 22.0                           # Y0 grew from 8 to 30 (room for the 60 km circle); hand-placed names move with the map
 _ring_pts = [p for ring in NY["outline"] for p in ring]
 LON0, LAT0 = min(p[0] for p in _ring_pts), min(p[1] for p in _ring_pts)
 KX = math.cos(math.radians(42.5)) * SCALE
@@ -154,6 +155,7 @@ class Labels:
 
     def __init__(self, name):
         self.name, self.boxes, self.out, self.leaders, self.lines = name, [], "", "", []
+        self.dy = DY
 
     def box(self, s, x, y, anchor, cw=None):
         w = (cw or self.CW) * F.FONT * len(s) + 8
@@ -162,7 +164,9 @@ class Labels:
         return (x + ax * w - w / 2, y - h / 2, x + ax * w + w / 2, y + h / 2)
 
     def add(self, s, x, y, anchor="center", color="black", to=None, r=0.0, lead=None,
-            halo=True, avoid=(), cw=None):
+            halo=True, avoid=(), cw=None, rel=True):
+        if rel:
+            y += self.dy
         b = self.box(s, x, y, anchor, cw)
         assert 2 <= b[0] and b[2] <= F.COL_W - 2 and 2 <= b[1] and b[3] <= CANVAS_H - 2, \
             f"{self.name}: label {s!r} runs off the canvas {tuple(round(v) for v in b)}"
@@ -198,6 +202,74 @@ class Labels:
         return self.leaders + self.out
 
 
+# --------------------------------------------------------------------------- the 3x inset
+ZOOM = 3.0
+INS_W = 156.0                                   # frame, bp
+INS_X0, INS_Y0 = 377.0, 150.0                   # lower-left of the inset frame
+REG_C = (322.0, 54.0)                           # centre of the NYC area on the map (map bp)
+REG_H = INS_W / ZOOM / 2                        # half the side of the region the inset shows
+INS_C = (INS_X0 + INS_W / 2, INS_Y0 + INS_W / 2)
+
+
+def Z(p):
+    """Map position -> inset position."""
+    return (INS_C[0] + ZOOM * (p[0] - REG_C[0]), INS_C[1] + ZOOM * (p[1] - REG_C[1]))
+
+
+def inset(dots, winners=()):
+    """A framed 3x view of the NYC area (lower right). `dots(order, zoomed_xy)` draws the
+    interchanges; `winners` is a list of (node, diameter) drawn on top."""
+    fx0, fy0, fx1, fy1 = INS_X0, INS_Y0, INS_X0 + INS_W, INS_Y0 + INS_W
+    # the region on the main map
+    o = ("\\draw[line width=1.8bp,draw=%s] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
+         % (GRAY, REG_C[0] - REG_H, REG_C[1] - REG_H, REG_C[0] + REG_H, REG_C[1] + REG_H))
+    o += "\\begin{scope}\n\\clip (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1)
+    o += "\\fill[white] (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1)
+    for ring in NY["outline"]:
+        pts = [Z(P(*p)) for p in ring]
+        o += ("\\draw[line width=1.8bp,draw=%s,line join=round] %s -- cycle;\n"
+              % (GRAY, " -- ".join("(%.1f,%.1f)" % p for p in pts)))
+    for e in EDGES:
+        o += seg(Z(XY[e["u"]]), Z(XY[e["v"]]), color=f"{GRAY}!45", w=1.7)
+    inside = [i for i in range(N)
+              if fx0 - 8 <= Z(XY[i])[0] <= fx1 + 8 and fy0 - 8 <= Z(XY[i])[1] <= fy1 + 8]
+    o += dots(inside, {i: Z(XY[i]) for i in inside})
+    for i, d in winners:
+        x, y = Z(XY[i])
+        assert fx0 + d / 2 < x < fx1 - d / 2 and fy0 + d / 2 < y < fy1 - d / 2, f"winner {i} not in the inset"
+        o += ("\\draw[line width=2bp,draw=white,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
+              % (ACCENT2, x, y, d / 2))
+    o += "\\end{scope}\n"
+    o += ("\\draw[line width=2bp,draw=%s] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
+          % (GRAY, fx0, fy0, fx1, fy1))
+    return o
+
+
+def _inset_shaded(shade):
+    def dots(order, zxy):
+        o = ""
+        for i in sorted(order, key=lambda i: shade[i]):
+            t = shade[i]
+            o += ("\\draw[line width=0.8bp,draw=%s!60!black,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
+                  % (ACCENT, mix(t), zxy[i][0], zxy[i][1], (6.5 + 4.5 * t) / 2))
+        return o
+    return dots
+
+
+def _inset_plain(order, zxy):
+    return "".join(F.dot(*zxy[i], color=f"{GRAY}!50", d=6.5) for i in order)
+
+
+# 60 km around Manhattan, drawn with the map's own projection (1 deg lat = 111.2 km)
+MANHATTAN = P(-73.9712, 40.7831)
+R60 = (60 / 111.2 * SCALE, 60 / (111.2 * math.cos(math.radians(40.7831))) * KX)   # (y, x) radii, bp
+
+
+def circle60():
+    return ("\\draw[line width=2bp,draw=%s,dash pattern=on 7bp off 5bp] (%.1f,%.1f) ellipse (%.2fbp and %.2fbp);\n"
+            % (GRAY, MANHATTAN[0], MANHATTAN[1], R60[1], R60[0]))
+
+
 def _city(c):
     return XY[CITY_ID[c]]
 
@@ -215,7 +287,7 @@ def fig_overview():
         b += ("\\draw[line width=2bp,draw=white,fill=%s] (%.1f,%.1f) circle (9bp);\n" % (ACCENT, x, y))
     dots = [_city(c) for c in CITY_ID]
     spec = {                                  # name: (anchor, x, y); leader only if far
-        "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 44, True),
+        "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 44 - DY, True),
         "Buffalo": ("center", 66, 146, True),
         "Rochester": ("center", 110, 250, True),
         "Syracuse": ("center", 232, 157, True),
@@ -239,7 +311,7 @@ def fig_degree():
         y = 300 - k * 50
         b += ("\\draw[line width=0.8bp,draw=%s!60!black,fill=%s] (360,%d) circle (6.5bp);\n"
               % (ACCENT, mix(t), y))
-        L.add(s, 374, y, anchor="west", halo=False, cw=0.43)
+        L.add(s, 374, y, anchor="west", halo=False, cw=0.43, rel=False)
     _finish("ny-degree", b + L.body())
 
 
@@ -273,9 +345,17 @@ def fig_betweenness():
 
 
 def fig_eigenvector():
-    def lab(L, i):
-        L.add("Hempstead", 430, 90, color=ACCENT2, to=XY[i], r=12)
-    _single("ny-eigenvector", "eigenvector", lab)
+    L = Labels("ny-eigenvector")
+    i = WIN["eigenvector"]
+    b = base() + circle60() + shaded_dots(SHADE["eigenvector"]) + winner(i)
+    b += inset(_inset_shaded(SHADE["eigenvector"]), [(i, 20.0)])
+    # "60 km" at the circle's south-west, in the blank below Pennsylvania
+    ang = math.radians(225)
+    L.add("60 km", MANHATTAN[0] + R60[1] * math.cos(ang) - 14, MANHATTAN[1] + R60[0] * math.sin(ang) + 3,
+          anchor="east", color=GRAY, rel=False)
+    zx, zy = Z(XY[i])
+    L.add("Hempstead", 533, INS_Y0 - 28, anchor="east", color=ACCENT2, to=(zx, zy), r=12, cw=0.42, rel=False)
+    _finish("ny-eigenvector", b + L.body())
 
 
 def fig_five():
@@ -283,16 +363,18 @@ def fig_five():
     b = base() + plain_dots(color=f"{GRAY}!50", d=6.5)
     for m in ("eccentricity", "betweenness", "closeness", "eigenvector", "harmonic"):
         b += winner(WIN[m], d=13.0)
-    spec = {
+    b += inset(_inset_plain, [(WIN["harmonic"], 11.0), (WIN["eigenvector"], 11.0)])
+    spec = {                                   # measure: (x, y), map-relative
         "eccentricity": (113, 84),
-        "betweenness": (140, 34),
-        "eigenvector": (339, 70),
-        "harmonic": (339, 120),
-        "closeness": (339, 170),
+        "betweenness": (120, 38),
+        "closeness": (205, 0),
     }
     for m, (x, y) in spec.items():
-        L.add(m, x, y, anchor="west" if x > 300 else "center", color=ACCENT2,
-              to=XY[WIN[m]], r=8)
+        L.add(m, x, y, anchor="center", color=ACCENT2, to=XY[WIN[m]], r=8)
+    # the two winners that sit in the NYC inset: harmonic above the frame, eigenvector below it
+    zh, ze = Z(XY[WIN["harmonic"]]), Z(XY[WIN["eigenvector"]])
+    L.add("harmonic", 533, INS_Y0 + INS_W + 28, anchor="east", color=ACCENT2, to=zh, r=10, cw=0.42, rel=False)
+    L.add("eigenvector", 533, INS_Y0 - 28, anchor="east", color=ACCENT2, to=ze, r=10, cw=0.42, rel=False)
     _finish("ny-five", b + L.body())
 
 

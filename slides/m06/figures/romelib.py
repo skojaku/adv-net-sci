@@ -128,10 +128,9 @@ def assert_same_geometry(name, xy):
 #    cities there is no assignment that clears the edges as well as the discs and
 #    the other labels -- three cities have *zero* viable sides before any other
 #    label is placed -- so a name is allowed to lie across a road.
-# 2. It is then drawn with a white HALO, not on a white chip. The chip version was
-#    built first and rendered a map whose roads were chopped into pieces wherever a
-#    name crossed them: Londinium's road to Colonia simply stopped. A halo lets the
-#    road show through between the letters, which is what an atlas does.
+# 2. It is then drawn on a white box (review round 1; an earlier version used a halo, and a
+#    road still showed through between the letters). The roads end at the box and the
+#    letters are on clean white, so a name can lie across a road and stay legible.
 #
 # And the solver is restricted to the four NEAREST sides, so no name ends up
 # floating between two cities with nothing to say which one it belongs to. That is
@@ -159,7 +158,7 @@ def _fewest_crossings(sides, boxes):
     The solver returns the first assignment that fits, and "fits" here ignores the
     edges -- there is no assignment that clears them. But some assignments cross
     six roads and some cross two, and every crossing is a road chopped into stubs
-    by the label's halo. So take the first solution and hill-climb it: for each
+    by the label's box. So take the first solution and hill-climb it: for each
     name in turn, keep the side that hits fewest edges while staying feasible.
     """
     sides, boxes = dict(sides), dict(boxes)
@@ -195,19 +194,11 @@ LABEL_EDGE_HITS = sum(_edge_hits(b) for b in LABEL_BOXES.values())
 assert all(max(abs(dx), abs(dy)) <= 26 for _, dx, dy in LABEL_SIDES.values()), \
     "a name drifted onto the far ring -- it would no longer read as that city's"
 
-# Halo offsets: eight directions at 2 bp. `contour` is not in this TeX install, so
-# the halo is drawn by hand; 2 bp at 36 pt is enough to break a 2.6 bp road line.
-_HALO = [(dx, dy) for dx in (-2, 0, 2) for dy in (-2, 0, 2) if (dx, dy) != (0, 0)]
-
-
 def labels(color="black"):
-    """Every city name, haloed in white so a road can pass behind it."""
-    out = ""
-    for dx, dy in _HALO:
-        shifted = {c: (NODE_XY[c][0] + dx, NODE_XY[c][1] + dy) for c in CITIES}
-        out += F.draw_labels({c: c for c in CITIES}, shifted, LABEL_SIDES, color="white")
-    out += F.draw_labels({c: c for c in CITIES}, NODE_XY, LABEL_SIDES, color=color)
-    return out
+    """Every city name on a white box, so a road ends at the box and does not run through
+    the letters. Called after the roads and the discs, so the box covers whatever it overlaps."""
+    out = F.draw_labels({c: c for c in CITIES}, NODE_XY, LABEL_SIDES, color=color)
+    return out.replace("\\node[", "\\node[fill=white,inner sep=1.5pt,")
 
 
 # --------------------------------------------------------------------------- ink

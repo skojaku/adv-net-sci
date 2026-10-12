@@ -37,7 +37,7 @@ IMG_W, IMG_H = _meta["image"]["width"], _meta["image"]["height"]
 assert set(PX) == set(R.CITIES), f"basemap cities differ from romelib: {set(PX) ^ set(R.CITIES)}"
 assert (Image.open(BASEMAP).size) == (IMG_W, IMG_H)
 
-PIN = 14            # bp, accent-2 pins on the map (spec)
+PIN = 14            # bp, accent pins on the map (blue, as the discs they become)
 FRAME_W = 2.6
 
 # The region of the 2000 x 1826 PNG that is shown. Rows 62..1795 keep every pin (rows 107 to
@@ -85,7 +85,7 @@ class MapGeom:
 
 
 def _pin(x, y, d=PIN):
-    return (f"\\draw[line width=1.6bp,draw=white,fill=accenttwo] ({x:.2f},{y:.2f}) "
+    return (f"\\draw[line width=1.6bp,draw=white,fill=accent] ({x:.2f},{y:.2f}) "
             f"circle ({d / 2}bp);\n")
 
 
@@ -102,11 +102,7 @@ def fig_basemap():
     # "Roma" sits to the EAST of its pin, over Italy, with a white halo. West of the pin it
     # landed under Massilia's pin and read as Massilia's name.
     x, y = g.pin["Roma"]
-    for dx in (-2, 0, 2):
-        for dy in (-2, 0, 2):
-            if (dx, dy) != (0, 0):
-                b += text(x + 14 + dx, y + dy, "Roma", color="white", anchor="west")
-    b += text(x + 14, y, "Roma", color="black", anchor="west")
+    b += text(x + 14, y, "Roma", color="black", anchor="west").replace("\\node[", "\\node[fill=white,inner sep=2pt,")
     # Roma's name must end before Thessalonica's pin.
     assert x + 14 + 0.55 * F.FONT * 4 < g.pin["Thessalonica"][0] - 10, "the label Roma reaches Thessalonica"
     emit("roma-basemap", b, container="col", h=460)
@@ -148,10 +144,9 @@ def fig_to_graph():
         return o
 
     def dots(pos, t):
-        """Pins turn from accent-2 into accent as they grow from 14 bp to 40 bp discs."""
+        """Pins (accent) grow from 14 bp to 40 bp discs; the rim goes from white to black."""
         d = PIN + (F.NODE - PIN) * t
-        mix = int(round(100 * (1 - t)))
-        fill = "accent" if mix == 0 else f"accenttwo!{mix}!accent"
+        fill = "accent"
         o = ""
         for c in R.CITIES:
             x, y = pos[c]
