@@ -120,84 +120,103 @@ def assert_same_geometry(name, xy):
 
 
 # --------------------------------------------------------------------------- labels
-# Solved once and frozen, so two figures cannot place the same name differently.
+# Placed by an offline search (grid of candidate centres, then a greedy pass) and frozen,
+# so two figures cannot place the same name differently. The rule the search enforced,
+# and `check_labels()` below re-asserts at every build:
 #
-# Two decisions here, both made after looking at the render rather than the code.
+#   * a name's white box never covers a road that does not end at that name's city
+#     (round 2: the Thessalonica box hid the Roma-Alexandria road and the Roma box
+#     hid the stubs of Roma's own roads);
+#   * Roma's five roads all leave its disc in the open;
+#   * no box touches a disc that is not its own, a crown zone, or another box;
+#   * a name sits next to its own city: its own disc is the nearest disc to the box.
 #
-# 1. The solver runs WITHOUT the edge constraint. With eighteen edges among twelve
-#    cities there is no assignment that clears the edges as well as the discs and
-#    the other labels -- three cities have *zero* viable sides before any other
-#    label is placed -- so a name is allowed to lie across a road.
-# 2. It is then drawn on a white box (review round 1; an earlier version used a halo, and a
-#    road still showed through between the letters). The roads end at the box and the
-#    letters are on clean white, so a name can lie across a road and stay legible.
+# One road is allowed under its own city's name, and only where no free place exists
+# (Athenae, which is boxed in by three roads): see `OWN_ROAD_OK`.
 #
-# And the solver is restricted to the four NEAREST sides, so no name ends up
-# floating between two cities with nothing to say which one it belongs to. That is
-# only possible because the figure is a `fig tall`; at the plain 380 px cap there
-# is no solution at any distance.
-_NEAR_SIDES = F.SIDES[:4]
+# WH is the measured size (bp) of the white box of each name at the 36 pt floor, from a
+# test render with a red fill; the box centre is the TikZ `anchor=center` point.
+WH = {"Londinium": (158.8, 27.2), "Colonia": (112.2, 27.2), "Lugdunum": (158.2, 34.2),
+      "Massilia": (118.8, 27.2), "Tarraco": (113.2, 27.2), "Mediolanum": (180.2, 27.2),
+      "Roma": (87.8, 27.2), "Carthago": (136.2, 34.2), "Thessalonica": (185.8, 27.2),
+      "Athenae": (121.8, 27.2), "Byzantium": (159.8, 34.2), "Alexandria": (159.8, 27.2)}
+LABEL_AT = {
+    "Athenae": (918, 119),
+    "Lugdunum": (96, 266),
+    "Londinium": (167, 357),
+    "Colonia": (423, 366),
+    "Roma": (621, 132),
+    "Thessalonica": (744, 221),
+    "Alexandria": (908, 37),
+    "Massilia": (324, 137),
+    "Carthago": (396, 41),
+    "Mediolanum": (604, 284),
+    "Tarraco": (75, 209),
+    "Byzantium": (992, 318),
+}
+OWN_ROAD_OK = {"Athenae", "Thessalonica"}
+CROWNED = ("Roma", "Massilia", "Mediolanum")   # the only cities any metric figure crowns
+_LBL_MARGIN = 3.0          # half the fill's inner sep, doubled: a clear strip around the white box
 
 
-def _solve_near():
-    saved = F.SIDES[:]
-    F.SIDES[:] = _NEAR_SIDES
-    try:
-        return F.place_labels({c: c for c in CITIES}, NODE_XY, [], bounds=BAND, gap=3.0)
-    finally:
-        F.SIDES[:] = saved
+def _label_box(c, cx, cy, m=_LBL_MARGIN):
+    w, h = WH[c]
+    return (cx - w / 2 - m, cy - h / 2 - m, cx + w / 2 + m, cy + h / 2 + m)
 
 
-def _edge_hits(box):
-    return sum(1 for a, b in EDGES if F.box_hits_segment(box, NODE_XY[a], NODE_XY[b]))
+LABEL_BOXES = {c: _label_box(c, *LABEL_AT[c]) for c in CITIES}
 
 
-def _fewest_crossings(sides, boxes):
-    """Among the feasible side assignments, prefer the one crossing fewest roads.
-
-    The solver returns the first assignment that fits, and "fits" here ignores the
-    edges -- there is no assignment that clears them. But some assignments cross
-    six roads and some cross two, and every crossing is a road chopped into stubs
-    by the label's box. So take the first solution and hill-climb it: for each
-    name in turn, keep the side that hits fewest edges while staying feasible.
-    """
-    sides, boxes = dict(sides), dict(boxes)
-    for _ in range(4):
-        improved = False
-        for n in CITIES:
-            best, best_hits = sides[n], _edge_hits(boxes[n])
-            best_box = boxes[n]
-            for side in _NEAR_SIDES:
-                anc, dx, dy = side
-                b = F.label_box(NODE_XY[n][0] + dx, NODE_XY[n][1] + dy, n, anc)
-                b = (b[0] - 3.0, b[1] - 3.0, b[2] + 3.0, b[3] + 3.0)
-                if not (BAND[0] <= b[0] and b[2] <= BAND[2]
-                        and BAND[1] <= b[1] and b[3] <= BAND[3]):
-                    continue
-                if any(F.box_hits_disc(b, x, y) for x, y in NODE_XY.values()):
-                    continue
-                if any(F.boxes_overlap(b, o) for k, o in boxes.items() if k != n):
-                    continue
-                h = _edge_hits(b)
-                if h < best_hits:
-                    best, best_hits, best_box = side, h, b
-            if best is not sides[n] and best != sides[n]:
-                sides[n], boxes[n] = best, best_box
-                improved = True
-        if not improved:
-            break
-    return sides, boxes
+def _gap(b, x, y):
+    return float(np.hypot(max(b[0] - x, 0, x - b[2]), max(b[1] - y, 0, y - b[3])))
 
 
-LABEL_SIDES, LABEL_BOXES = _fewest_crossings(*_solve_near())
-LABEL_EDGE_HITS = sum(_edge_hits(b) for b in LABEL_BOXES.values())
-assert all(max(abs(dx), abs(dy)) <= 26 for _, dx, dy in LABEL_SIDES.values()), \
-    "a name drifted onto the far ring -- it would no longer read as that city's"
+def check_labels():
+    """No white box covers a road that is not its own city's; none hides a disc, a crown or a name."""
+    assert set(LABEL_AT) == set(CITIES), "a city has no label"
+    for c in CITIES:
+        b = LABEL_BOXES[c]
+        assert BAND[0] - 4 <= b[0] and b[2] <= BAND[2] + 4 and BAND[1] - 4 <= b[1] and b[3] <= BAND[3] + 4, \
+            f"{c}: label outside the drawing"
+        for o in CITIES:
+            x, y = NODE_XY[o]
+            assert _gap(b, x, y) >= F.NODE / 2 + 2, f"{c}: label covers the disc of {o}"
+            if o != c:
+                assert _gap(b, x, y) > _gap(b, *NODE_XY[c]) + (13 if c in OWN_ROAD_OK else 29), \
+                    f"{c}: label sits nearer to {o} than to {c}"
+        for o in CROWNED:
+            x, y = NODE_XY[o]
+            assert (b[2] <= x - 30 or x + 30 <= b[0] or b[3] <= y + 18 or y + 62 <= b[1]), \
+                f"{c}: label sits where the crown of {o} is drawn"
+        for a, d in EDGES:
+            if c in (a, d):
+                if c == "Roma":
+                    assert not F.box_hits_segment(b, NODE_XY[a], NODE_XY[d], pad=0), \
+                        f"Roma: its label hides part of the road {a}-{d}"
+                continue
+            assert not F.box_hits_segment(b, NODE_XY[a], NODE_XY[d], pad=1), \
+                f"{c}: its label covers the road {a}-{d}, which does not end there"
+        for o in CITIES:
+            if o < c:
+                q = LABEL_BOXES[o]
+                assert (b[2] + 3 <= q[0] or q[2] + 3 <= b[0] or b[3] + 3 <= q[1] or q[3] + 3 <= b[1]), \
+                    f"labels {c} and {o} touch"
+    own = {c: sum(1 for a, d in EDGES if c in (a, d)
+                  and F.box_hits_segment(LABEL_BOXES[c], NODE_XY[a], NODE_XY[d], pad=0))
+           for c in CITIES}
+    extra = {c: n for c, n in own.items() if n and c not in OWN_ROAD_OK}
+    assert not extra, f"a label lies on its own city's road: {extra}"
+
+
+check_labels()
+
 
 def labels(color="black"):
     """Every city name on a white box, so a road ends at the box and does not run through
     the letters. Called after the roads and the discs, so the box covers whatever it overlaps."""
-    out = F.draw_labels({c: c for c in CITIES}, NODE_XY, LABEL_SIDES, color=color)
+    out = ""
+    for c in CITIES:
+        out += F.text(LABEL_AT[c][0], LABEL_AT[c][1], c, color=color, anchor="center")
     return out.replace("\\node[", "\\node[fill=white,inner sep=1.5pt,")
 
 

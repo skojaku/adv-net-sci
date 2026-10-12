@@ -492,7 +492,7 @@ def grid_empty():
 
 
 def grid_row1():
-    _grid_fig("grid-row1", 4, 0, "", new=[c[0] for c in ROW1])
+    _grid_fig("grid-row1", 4, 1, "", new=[c[0] for c in ROW1])
 
 
 def grid_row2():
@@ -509,7 +509,7 @@ def _grid_same_picture():
     """The four states are one picture: every cell that appears is drawn at the same place."""
     plain = lambda t: t.replace("{accenttwo}", "{black}")          # colour aside, the same lines
     big = plain(_grid(4, 5)).splitlines()
-    parts = (_grid(0, 1), _grid(4, 0, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"]))
+    parts = (_grid(0, 1), _grid(4, 1, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"]))
     for part in parts:
         for line in plain(part).splitlines():
             assert line in big, f"grid state differs from the final picture: {line[:60]}"

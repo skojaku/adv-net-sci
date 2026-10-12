@@ -21,9 +21,8 @@ the deck, so the parts could be authored in parallel:
     figs_decomp.py   the eigendecomposition in circles and bars
     figs_dir.py      HITS and PageRank
 
-Five figures are kept from the v1 deck (2026-08) and still built by its modules:
-roma-degree and two-roads-ahead (figs_rome), star-closeness and sigma-answer
-(figs_small), genealogy (figs_web).
+Four figures are kept from the v1 deck (2026-08) and still built by its modules:
+roma-degree (figs_rome), star-closeness and sigma-answer (figs_small), genealogy (figs_web).
 """
 
 import figs_decomp
@@ -38,7 +37,7 @@ import figs_small
 import figs_web
 from figlib import run
 
-KEPT_V1 = {"roma-degree", "two-roads-ahead", "star-closeness", "sigma-answer", "genealogy"}
+KEPT_V1 = {"roma-degree", "star-closeness", "sigma-answer", "genealogy"}
 
 FIGURES = (figs_intro.FIGURES + figs_ny.FIGURES + figs_defs.FIGURES + figs_quiz.FIGURES
            + figs_eigen.FIGURES + figs_decomp.FIGURES + figs_dir.FIGURES

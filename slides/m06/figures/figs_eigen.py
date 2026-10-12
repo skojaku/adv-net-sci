@@ -163,7 +163,7 @@ def fig_eigen_inherit():
 
     frames = [frame("A", nbrs["A"][:k], formula=(k == 4)) for k in range(1, 5)]
     frames += [frame("B", nbrs["B"][:k]) for k in range(1, 3)]
-    frames += [frame()]                                    # last frame: the complete picture
+    frames += [frame(formula=True)]                        # last frame (= still, = first frame): A's sum line stays
     # frame 0 (the complete picture) is added by emit_gif itself
     F.emit_gif("eigen-inherit", frames, container="col", h=INH_H,
                durations=[800, 800, 800, 2400, 800, 1200, 1400], hold=1)
