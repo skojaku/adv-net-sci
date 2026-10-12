@@ -631,7 +631,6 @@ $\sigma_{st}$: the number of shortest paths from $s$ to $t$; $\sigma_{st}(i)$: t
 <div class="fig">
 
 ![w:1080](figures/sigma-answer.png)
-<figcaption>the pair S, D has two shortest paths, so A and B each carry half</figcaption>
 
 </div>
 
@@ -828,14 +827,17 @@ This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality
 
 <hr>
 
-In a connected network, only the eigenvector of the largest eigenvalue is positive everywhere.
+In a connected network, only the eigenvector of the largest eigenvalue is positive (blue) everywhere.
 
 <div class="fig tall">
 
 ![w:1080](figures/eig-all.png)
-<figcaption>blue: positive entry, gold: negative; only one is blue everywhere</figcaption>
 
 </div>
+
+<!--
+Blue: a positive entry, gold: a negative one, pale: near zero. Every other eigenvector has both colours.
+-->
 
 ---
 

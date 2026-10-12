@@ -62,23 +62,26 @@
 
   /* ------------------------------------------------------------ geometry ---
      The same drawing as the K = 6 frame of the lecture-note GIF ring-local
-     (figs_eigen.ring_layout(sizes, 395, 105, radius), radius 42 for the three
-     4-cliques, 53 for the 6-clique): four cliques on an ellipse, the clique of
+     (figs_eigen.ring_layout(sizes, 350, 112, radius), radius 52 for the three
+     4-cliques, 64 for the 6-clique): four cliques on an ellipse, the clique of
      six at the right. Each 4-clique is a triangle with its fourth node in the
      middle, so no edge crosses another. Coordinates are that function's output
      with y flipped (SVG y runs down), origin at the ellipse's centre, pasted
      rather than recomputed. */
   const POS = [
-    [36.4, -84.0], [-36.4, -84.0], [0.0, -147.0], [0.0, -105.0],
-    [-374.0, -36.4], [-374.0, 36.4], [-437.0, -0.0], [-395.0, -0.0],
-    [-36.4, 84.0], [36.4, 84.0], [-0.0, 147.0], [-0.0, 105.0],
-    [349.1, 26.5], [349.1, -26.5], [395.0, -53.0], [440.9, -26.5],
-    [440.9, 26.5], [395.0, 53.0]
+    [45.0, -86.0], [-45.0, -86.0], [0.0, -164.0], [0.0, -112.0],
+    [-324.0, -45.0], [-324.0, 45.0], [-402.0, 0.0], [-350.0, 0.0],
+    [-45.0, 86.0], [45.0, 86.0], [0.0, 164.0], [0.0, 112.0],
+    [294.6, 32.0], [294.6, -32.0], [350.0, -64.0], [405.4, -32.0],
+    [405.4, 32.0], [350.0, 64.0]
   ];
-  const CENTER_BIG = [395, 0];
-  const RADIUS_BIG = 53;
-  const VIEW = "-460 -165 940 330";
-  const NODE_R = 17;
+  const CENTER_BIG = [350, 0];
+  const RADIUS_BIG = 64;
+  const VIEW = "-437 -199 878 398";
+  /* 21 viewBox units lands at about 29 px on the slide: the render gate wants
+     discs of 26-52 px. Hence the wider cliques (radius 52 and 64, not 42 and 53),
+     so a node in a clique's middle stays clear of its three neighbours. */
+  const NODE_R = 21;
 
   /* ----------------------------------------------------------------- math --- */
   function solve(alpha) {
