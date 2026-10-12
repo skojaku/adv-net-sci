@@ -33,7 +33,7 @@ CY = CANVAS_H / 2
 BOUNDS = (4.0, 4.0, CW - 4.0, CANVAS_H - 4.0)
 OWN = 4.0                         # a label's own disc must be this much nearer than any other
 CLEAR = 24.0                      # margins beyond this are equally good
-GAP = -4.0                        # figlib.label_box pads its boxes by 6 on every side; -4 leaves 2 bp of that
+GAP = -2.0                       # figlib.label_box pads its boxes by 6 on every side; -2 leaves 4 bp of that
 
 RED, GRAY_C = "accenttwo", "annot"
 
@@ -59,6 +59,11 @@ def _sides():
 
 SIDES = _sides()
 F.SIDES = SIDES            # figlib.place_labels reads this module-level list
+
+# Fallback, tried only when SIDES has no solution: above/below the disc shifted sideways by
+# up to 40 bp, for a disc wedged between two edges and a close neighbour (G in the harmonic quiz).
+SIDES_WIDE = SIDES + [(a, dx, dy) for r in (28, 34, 42, 54, 68) for dx in (-40, -32, -24, -16, 16, 24, 32, 40)
+                      for a, dy in (("south", r), ("north", -r))]
 
 
 # CA with the hub E moved 0.4 units left (and its four leaves with it): the gap E-F grows from 1.4
@@ -99,10 +104,17 @@ def edge_list(G):
     return sorted(tuple(sorted(e)) for e in G.edges)
 
 
-def layout_pair(GL, XYL, GR, XYR):
+def layout_pair(GL, XYL, GR, XYR, smax=None, own_scales=False):
+    """own_scales: each graph is scaled to fill its own half (and the left one to at most smax)."""
     s = scale_for(XYL, XYR)
+    sl = sr = s
+    if own_scales:
+        sl, sr = scale_for(XYL), scale_for(XYR)
+    if smax is not None:
+        sl = min(sl, smax)
+    s = (sl, sr)
     pos = {}
-    pl, pr = place(XYL, s, *HALF[0]), place(XYR, s, *HALF[1])
+    pl, pr = place(XYL, s[0], *HALF[0]), place(XYR, s[1], *HALF[1])
     assert not set(pl) & set(pr), "the two graphs on a slide must not share a letter"
     pos.update(pl)
     pos.update(pr)
@@ -112,11 +124,15 @@ def layout_pair(GL, XYL, GR, XYR):
     return pos, edges, s
 
 
-def base_body(pos, edges, edge_extra=""):
-    """Edges, then discs with their letters.  Nothing else: this is the question."""
+def base_body(pos, edges, edge_extra="", letters=None):
+    """Edges, then discs with their letters.  Nothing else: this is the question.
+
+    letters: the nodes that carry a letter (default: every node); the others are blank discs.
+    """
     out = "".join(F.seg(pos[a], pos[b]) for a, b in edges)
     out += edge_extra
-    out += "".join(F.disc(x, y, n) for n, (x, y) in sorted(pos.items()))
+    out += "".join(F.disc(x, y, n if letters is None or n in letters else "")
+                   for n, (x, y) in sorted(pos.items()))
     return out
 
 
@@ -129,6 +145,13 @@ def _margin(box, n, pos):
 
 
 def place_owned(names, pos, edges, blockers=(), bounds=BOUNDS):
+    try:
+        return _place_owned(names, pos, edges, blockers, bounds, SIDES)
+    except AssertionError:
+        return _place_owned(names, pos, edges, blockers, bounds, SIDES_WIDE)
+
+
+def _place_owned(names, pos, edges, blockers, bounds, sides):
     """figlib.place_labels plus one more rule: a value must read as belonging to its own disc.
 
     Same collision tests as figlib (other labels, every disc, every edge, blockers, canvas),
@@ -141,7 +164,7 @@ def place_owned(names, pos, edges, blockers=(), bounds=BOUNDS):
 
     def candidates(n):
         out = []
-        for i, side in enumerate(SIDES):
+        for i, side in enumerate(sides):
             anc, dx, dy = side
             b = F.label_box(pos[n][0] + dx, pos[n][1] + dy, names[n], anc)
             b = (b[0] - GAP, b[1] - GAP, b[2] + GAP, b[3] + GAP)
@@ -332,8 +355,13 @@ def quiz_ecc():
     assert S.argbest(sR, min) == (["K"], 11) and S.argbest(eR, min) == (["L"], 2)
     assert sR["L"] == 12 and eR["K"] == 3 and dict(S.EB.degree)["L"] == 2
     values = {n: str(e) for n, e in (eL | eR).items()}
-    quiz("ecc", S.EA, S.EA_XY, S.EB, S.EB_XY, values, winners={"F", "L"},
-         extra_tags={"E": "closeness", "K": "closeness"})
+    global GAP
+    gap, GAP = GAP, -4.0      # the two wide tags leave no room for the roomier gap used elsewhere
+    try:
+        quiz("ecc", S.EA, S.EA_XY, S.EB, S.EB_XY, values, winners={"F", "L"},
+             extra_tags={"E": "best closeness", "K": "best closeness"})
+    finally:
+        GAP = gap
 
 
 # ---- betweenness
@@ -345,6 +373,37 @@ def quiz_btw():
     values = {n: frac(bL[n]) for n in "EFG"} | {n: frac(bR[n]) for n in "MO"}
     assert values == {"E": "30", "F": "25", "G": "30", "M": "9", "O": "19/2"}
     quiz("btw", S.DB, S.DB_XY, S.SQ, S.SQ_XY, values, winners={"E", "G", "O"})
+
+
+# ---- eigenvector
+def quiz_eig():
+    ev = S.compute()["EQ"]
+    GL, GR = S.EQ_L, S.EQ_R
+    assert S.EQ_LABELS == {"left": ["M", "X"], "right": ["H", "K"]}
+    # the lower-degree node wins on both sides
+    assert ev["left"]["M"] > ev["left"]["X"] and dict(GL.degree)["M"] < dict(GL.degree)["X"]
+    assert ev["right"]["K"] > ev["right"]["H"] and dict(GR.degree)["K"] < dict(GR.degree)["H"]
+    # the two graphs share plain names (a, b, ...); tag the non-candidates by side
+    cand = {"M", "X", "H", "K"}
+    ren_l = lambda n: n if n in cand else "L_" + n
+    ren_r = lambda n: n if n in cand else "R_" + n
+    import networkx as nx
+    GL2 = nx.relabel_nodes(GL, {n: ren_l(n) for n in GL})
+    GR2 = nx.relabel_nodes(GR, {n: ren_r(n) for n in GR})
+    XYL = {ren_l(n): p for n, p in S.EQ_L_XY.items()}
+    XYR = {ren_r(n): p for n, p in S.EQ_R_XY.items()}
+    assert set(XYL) == set(GL2) and set(XYR) == set(GR2)
+    # the left graph is 4.2 units tall: cap the scale so the figure fits the 380 bp the slide allows
+    # (disc, a value above and below, and the crop's padding take about 140 bp of it)
+    smax = 290 / (max(y for _, y in XYL.values()) - min(y for _, y in XYL.values()))
+    pos, edges, s = layout_pair(GL2, XYL, GR2, XYR, smax=smax, own_scales=True)
+    q = base_body(pos, edges, letters=cand)
+    values = {n: f"{ev['left'][n]:.2f}" for n in "MX"} | {n: f"{ev['right'][n]:.2f}" for n in "HK"}
+    win = {"M", "K"}
+    texts = {n: (v, v, RED if n in win else "black") for n, v in values.items()}
+    lab, _ = solve_labels(texts, pos, edges)
+    marks = "".join(F.mark(*pos[n]) for n in sorted(win))
+    emit_pair("quiz-eig", q, "quiz-eig-answer", q + marks + lab)
 
 
 # --------------------------------------------------------------------------- the cut
@@ -388,5 +447,6 @@ FIGURES = [
     ("quiz-harm", quiz_harm),
     ("quiz-ecc", quiz_ecc),
     ("quiz-btw", quiz_btw),
+    ("quiz-eig", quiz_eig),
     ("cut", cut_figures),
 ]

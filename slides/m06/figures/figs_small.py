@@ -428,15 +428,13 @@ def fig_sigma_answer():
     assert words == {"A": "1/2", "B": "1/2", "T": "1"}
 
     b = edges_ink(SIG_E, SIG_XY, color=DIM)
-    b += route_ink(SIG_ROUTES, SIG_XY, [BLUE, RED])
+    b += route_ink(SIG_ROUTES, SIG_XY, [BLUE, GOLD])
     b += discs_ink(SIG_XY, labels={n: n for n in SIG_XY})
     sides, boxes = F.place_labels(words, SIG_XY, SIG_E, bounds=(4, 4, 1076, 300), gap=3.0)
     amb = _unambiguous(SIG_XY, boxes)
     assert not amb, f"a share is printed nearer another node: {amb}"
     _DRAWN.extend(words.values())
-    b += F.draw_labels(words, SIG_XY, sides, color=RED)
-    b += F.note("each route earns 1, split where they tie", (550, 330),
-                color=DIM, anchor="center", boxes=boxes)
+    b += F.draw_labels(words, SIG_XY, sides, color="black")
     F.emit("sigma-answer", b, container="full", h=390)
 
 
