@@ -1,0 +1,132 @@
+% Quiz 05 --- answer key with marking notes. DO NOT HAND OUT.
+%
+% Question 1's numbers are measured: Leiden (igraph, modularity objective,
+% best of three runs) on Erdos--Renyi networks, N = 10,000, three draws per
+% <k>. Question 2's result was checked numerically on a simulated
+% degree-corrected network (N = 300, K = 3): the simplified log-likelihood,
+% the estimates and the final formula agree with the Poisson likelihood
+% computed pair by pair.
+%
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+\newgeometry{top=0.4in, bottom=0.4in, left=0.75in, right=0.75in}
+
+\renewcommand{\question}[3]{\vspace{0.3em}
+  {\large\bfseries Question #1 \quad\normalsize\mdseries (#2 points) --- #3}\par
+  \vspace{-0.3em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par\vspace{0.1em}}
+\newcommand{\ans}[1]{{\color{pltblue}\bfseries #1}}
+\newcommand{\inr}{\sum_{i:\,c_i = r}}
+
+\begin{document}
+
+\quizhead{Quiz 5 \; --- \; Answer key}
+        {Instructor copy \quad$\cdot$\quad do not hand out}
+        {Fall 2026}
+
+\question{1}{4}{Communities in pure noise.}
+
+Measured, Leiden on Erd\H{o}s--R\'enyi networks with $N = 10{,}000$:
+
+\begin{center}
+{\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{|c||*{8}{c|}}
+\hline
+$\langle k \rangle$ & 1 & 2 & 4 & 8 & 16 & 32 & 64 & 128 \\ \hline
+$Q_{\max}$ & 0.99 & 0.85 & 0.56 & 0.36 & 0.24 & 0.17 & 0.11 & 0.08 \\ \hline
+\end{tabular}}
+\end{center}
+
+(a) [2] $Q_{\max}$ \ans{goes down}, steadily, as $\langle k \rangle$ grows.
+Very sparse: \ans{toward 1}. The network falls apart into small trees, and
+each tree is a community with no edge leaving it. Complete:
+\ans{exactly 0}. Every group of a complete graph has exactly the edges chance
+predicts or fewer, so the best partition is everyone in one group, $Q = 0$.
+Marking: the direction, with a falling sketch, $+1$; the two ends, $+0.5$ each.
+A sketch that falls but is not labelled at the ends keeps the first point only.
+
+(b) [2] \emph{Why.} Modularity rewards groups that hold more edges than chance
+predicts. In a sparse network chance is lumpy: a node has a handful of edges,
+the network is tree-like, and it can be cut into chunks with almost no edges
+between them. As $\langle k \rangle$ grows, each node's edges spread evenly
+over any group you propose, the fluctuations average out (relative size
+$\sim 1/\sqrt{\text{expected count}}$), and no group beats chance by much.
+\emph{The check.} Compare against randomized networks of the \ans{same size and
+density} (or the same degree sequence): pure noise at $N = 10{,}000$,
+$\langle k \rangle = 4$ already gives $Q_{\max} \approx 0.56$, so $0.45$ is no
+evidence of communities at all. Marking: the reason $+1$; the check $+1$.
+
+``Sparse networks have fewer edges, so less to cut'' with no mention of chance
+or fluctuation: $+0.5$ for the reason. ``$Q$ cannot be compared across
+networks'' with no baseline named: $+0.5$ for the check. The student does not
+need the number 0.56; naming the right comparison is the point.
+
+\question{2}{6}{The likelihood of the degree-corrected block model.}
+
+(a) [2] Poisson pmf, summed over pairs, with the sheet's convention and the
+$\log A_{ij}!$ term dropped (it depends on none of $c, \theta, w$):
+\[
+  \mathcal{L}
+  = \frac12 \sum_i \sum_j \Big[ A_{ij} \log\!\big(\theta_i\theta_j w_{c_ic_j}\big)
+      - \theta_i\theta_j w_{c_ic_j} \Big] .
+\]
+Three pieces. $\tfrac12\sum_{ij} A_{ij}(\log\theta_i + \log\theta_j) =
+\sum_i k_i \log\theta_i$ (Hint 2, and $A_{ij} = A_{ji}$).
+$\tfrac12\sum_{ij} A_{ij} \log w_{c_ic_j} = \tfrac12 \sum_{rs} m_{rs}\log w_{rs}$
+(Hint 3). $\tfrac12\sum_{ij}\theta_i\theta_j w_{c_ic_j}
+= \tfrac12\sum_{rs} w_{rs} \big(\inr \theta_i\big)\big(\sum_{j:\,c_j=s}\theta_j\big)
+= \tfrac12\sum_{rs} w_{rs}$ (the normalization). So
+\[
+  \mathcal{L}(c, \theta, w) = {\color{pltblue} \sum_i k_i \log\theta_i
+  + \frac12 \sum_{r,s} \big( m_{rs} \log w_{rs} - w_{rs} \big)} .
+\]
+Marking: the log-likelihood as a sum over pairs, $+1$ (keeping $\log A_{ij}!$
+or writing $\sum_{i<j}$ is fine); the simplified form, $+1$, half for the
+$\theta$ term and half for the $w$ terms with the last one collapsed.
+
+(b) [2] $\partial\mathcal{L}/\partial w_{rs} = m_{rs}/w_{rs} - 1 = 0$, so
+\ans{$\hat w_{rs} = m_{rs}$}. (For $r \ne s$, $w_{rs}$ and $w_{sr}$ are one
+parameter that appears twice; the factor 2 cancels.) With a multiplier per
+group, $k_i/\theta_i - \mu_{c_i} = 0$, so $\theta_i = k_i/\mu_r$; summing over
+group $r$ gives $\mu_r = \kappa_r$, so
+\ans{$\hat\theta_i = k_i / \kappa_{c_i}$}: node $i$'s share of its group's
+degree. Check: node $i$'s expected degree is
+$\hat\theta_i \sum_s \hat w_{c_i s} = (k_i/\kappa_r)\,\kappa_r = k_i$; the
+model reproduces every degree.
+Marking: $+1$ each.
+
+\emph{Other route, full credit.} Differentiating the unsimplified form without
+the constraint gives $k_i/\theta_i = \sum_j \theta_j w_{c_ic_j}$ and
+$w_{rs} = m_{rs}/(\Theta_r\Theta_s)$, $\Theta_r = \inr\theta_i$, hence
+$\theta_i = k_i\Theta_r/\kappa_r$: a family of equally good solutions, one
+per scale. Imposing $\Theta_r = 1$ picks $k_i/\kappa_r$.
+\emph{Slips.} $\hat\theta_i = k_i/(\text{anything not } \kappa_{c_i})$ with the
+normalization ignored: $+0.5$. $\hat w_{rs} = m_{rs}/(n_r n_s)$, the plain
+SBM's answer: $0$ for that point.
+
+(c) [2] Substitute:
+\[
+  \mathcal{L}
+  = \sum_i k_i \log k_i - \sum_r \kappa_r \log\kappa_r
+    + \frac12 \sum_{r,s} m_{rs}\log m_{rs} - M .
+\]
+$\sum_i k_i \log k_i$ and $M$ do not depend on $c$. Since
+$\sum_s m_{rs} = \kappa_r$,
+$\sum_r \kappa_r\log\kappa_r = \tfrac12\sum_{rs} m_{rs}(\log\kappa_r + \log\kappa_s)$, and
+\[
+  \mathcal{L}(c) = {\color{pltblue} \frac12 \sum_{r,s} m_{rs}
+  \log \frac{m_{rs}}{\kappa_r \kappa_s}} + \text{const.}
+\]
+Marking: the substitution, correct in any form, $+1$; the constants named and
+dropped, leaving $c$ only through $m_{rs}$ and $\kappa_r$, $+1$. The compact
+form is not required:
+$\tfrac12\sum_{rs} m_{rs}\log m_{rs} - \sum_r \kappa_r\log\kappa_r$ is full
+marks. With or without the $\tfrac12$ is full marks (Karrer and Newman drop it).
+
+\emph{Done early (not graded).} The plain SBM has $n_r n_s$ where this has
+$\kappa_r\kappa_s$: a block is judged dense against the degrees of its members,
+not their number. A group of hubs has many edges, but $\kappa_r$ is large too,
+so it no longer looks surprisingly dense; the groups are free to follow who
+connects to whom.
+
+\end{document}

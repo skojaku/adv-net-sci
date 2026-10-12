@@ -1,0 +1,172 @@
+% Quiz 05 --- Modularity in noise, and the likelihood of the degree-corrected
+% block model. Printed, worked in class, 20 minutes. Page 1 is every question;
+% page 2, printed on the back, is hints for Question 2.
+%
+% Question 1 asks for a trend and its reason: how the best modularity of a
+% random network moves with its average degree. Measured with Leiden on
+% Erdos--Renyi networks of N = 10,000 (three draws each):
+%   <k>   = 1     2     4     8     16    32    64    128
+%   Q_max = 0.99  0.85  0.56  0.36  0.24  0.17  0.11  0.08
+%
+% Question 2 is the Karrer--Newman (2011) derivation: write the log-likelihood
+% in c, theta and w, fix c, find theta-hat and w-hat, substitute them back.
+% Page 1 gives the model, the normalization of theta (without it theta and w
+% trade scale and the estimates are not unique), the large-N convention that
+% removes the self-pairs, and the notation the answer is written in. It gives
+% nothing of the route.
+%
+% Page 2 gives the route as moves, not results. theta-hat = k_i / kappa_r and
+% w-hat = m_rs are printed nowhere, because finding them is part (b). Do not
+% put them back.
+%
+% Compile with: xelatex -interaction=nonstopmode quiz05.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+
+% As in Quiz 4: title and points share one line, to keep page 1 to one page.
+\renewcommand{\question}[3]{%
+  \vspace{0.4em}
+  {\large\bfseries Question #1 \quad #3\quad\normalsize\mdseries (#2 points)}\par
+  \vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par}
+
+\begin{document}
+
+\quizhead{Quiz 5 \; --- \; Communities: noise and likelihood}
+        {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
+         Closed notes, work on your own \quad$\cdot$\quad
+         hints for Question 2 on the back}
+        {Fall 2026}
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.14\textwidth}
+\begin{center}
+\includegraphics[width=1.6cm]{quiz05-form-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.83\textwidth}
+{\small
+You hand in two photos, one per question. Write each question's answer on
+its own page, photograph each page, and upload it. Point a camera at the
+square, or type \formshort.
+}
+\end{minipage}
+\end{tcolorbox}
+
+% ---------------------------------------------------------------------------
+\question{1}{4}{Communities in pure noise.}
+
+You generate Erd\H{o}s--R\'enyi random networks with $N = 10{,}000$ nodes:
+every pair of nodes is joined with the same probability, so no communities are
+planted. You make one at each average degree
+$\langle k \rangle = 1, 2, 4, \dots, 128$, and on each you find the partition
+with the highest modularity, $Q_{\max}$.
+
+(a) [2 pts] As $\langle k \rangle$ grows, does $Q_{\max}$ go up, go down, or
+stay flat? Sketch $Q_{\max}$ against $\langle k \rangle$ (log scale for
+$\langle k \rangle$). What value does $Q_{\max}$ head toward when the network
+is very sparse, and when it is complete ($\langle k \rangle = N - 1$)?
+
+(b) [2 pts] Explain why $Q_{\max}$ moves this way. Then: a paper reports
+$Q = 0.45$ for a network with $N = 10{,}000$ and $\langle k \rangle = 4$, and
+calls it strong community structure. What would you check before believing
+it?
+
+% ---------------------------------------------------------------------------
+\question{2}{6}{The likelihood of the degree-corrected block model.}
+
+\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
+                  sharp corners, boxsep=2pt, left=6pt, right=6pt,
+                  top=4pt, bottom=4pt]
+{\small
+An undirected network has $N$ nodes and $M$ edges. $A_{ij} = A_{ji}$ is the
+number of edges between nodes $i$ and $j$ ($A_{ii} = 0$), and
+$k_i = \sum_j A_{ij}$ is the degree of node $i$. Node $i$ belongs to group
+$c_i \in \{1, \dots, K\}$. The \emph{degree-corrected block model} draws, for
+every pair $i < j$ independently,
+\[
+  A_{ij} \sim \mathrm{Poisson}\!\left(\theta_i \theta_j\, w_{c_i c_j}\right),
+  \qquad
+  \text{with} \quad \sum_{i:\,c_i = r} \theta_i = 1 \ \text{ for every group } r,
+\]
+where $\theta_i > 0$ and $w_{rs} = w_{sr} > 0$. Write $m_{rs}$ for the number
+of edge ends in group $r$ whose other end is in group $s$ (an edge inside
+group $r$ counts twice in $m_{rr}$), and
+$\kappa_r = \sum_{i:\,c_i = r} k_i$ for the total degree of group $r$.
+
+$N$ is large: you may replace $\sum_{i<j}$ by $\tfrac{1}{2}\sum_i \sum_j$, and
+drop any term that depends on none of $c$, $\theta$, $w$.
+}
+\end{tcolorbox}
+
+(a) [2 pts] Write the log-likelihood
+$\mathcal{L}(c, \theta, w) = \log P(A \mid c, \theta, w)$. Simplify it until no
+sum over pairs of nodes is left.
+
+(b) [2 pts] Fix the assignment $c$. Find the maximum-likelihood estimates
+$\hat{\theta}_i$ and $\hat{w}_{rs}$.
+
+(c) [2 pts] Substitute them back, and write $\mathcal{L}$ as a function of the
+assignment $c$ alone, in terms of $m_{rs}$ and $\kappa_r$.
+
+\vfill
+
+{\footnotesize\color{rulegrey}
+Done early? (not graded) Without the $\theta$'s, the same steps give
+$\tfrac12 \sum_{r,s} m_{rs} \log\!\big(m_{rs} / n_r n_s\big)$, where $n_r$ is
+the number of nodes in group $r$. What did $\theta$ change, and why does that
+stop the model from putting all the hubs in one group?}
+
+% ===========================================================================
+\newpage
+
+{\large\bfseries Hints for Question 2}\par
+\vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par
+\vspace{0.2em}
+{\small Read only as far as you need. Each hint names a move; working it out is
+still yours.}
+
+\vspace{0.6em}
+
+\textbf{Hint 1 --- The Poisson distribution.}
+If $A \sim \mathrm{Poisson}(\lambda)$, then
+\[
+  P(A = a) = \frac{\lambda^{a} e^{-\lambda}}{a!} .
+\]
+The pairs are independent, so the likelihood is a product over pairs, and its
+logarithm is a sum over pairs.
+
+\vspace{0.6em}
+
+\textbf{Hint 2 --- From pairs to nodes.}
+A factor that depends on only one end of the pair can leave the inner sum:
+\[
+  \sum_i \sum_j A_{ij}\, f(i) \;=\; \sum_i f(i) \Big( \sum_j A_{ij} \Big) .
+\]
+What is the bracket? Since $A_{ij} = A_{ji}$, a factor $f(j)$ goes the same
+way.
+
+\vspace{0.6em}
+
+\textbf{Hint 3 --- From pairs to groups.}
+A factor that depends only on the groups of the two ends can be collected one
+pair of groups at a time:
+\[
+  \sum_i \sum_j A_{ij}\, g(c_i, c_j)
+  \;=\; \sum_r \sum_s g(r, s) \sum_{i:\,c_i = r} \ \sum_{j:\,c_j = s} A_{ij} .
+\]
+What does the last double sum count? Make the same move on the term that has
+no $A_{ij}$ in it, and then use the normalization of $\theta$.
+
+\vspace{0.6em}
+
+\textbf{Hint 4 --- Maximizing under a constraint.}
+The $\theta_i$ of one group must sum to 1, so you cannot just set
+$\partial \mathcal{L} / \partial \theta_i = 0$. Add one Lagrange multiplier
+per group and maximize
+\[
+  \mathcal{L} \;-\; \sum_r \mu_r \Big( \sum_{i:\,c_i = r} \theta_i - 1 \Big) .
+\]
+
+\end{document}
