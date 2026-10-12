@@ -18,7 +18,7 @@ math: katex
 <div class="credit">Sadamori Kojaku · Binghamton University</div>
 
 <!--
-Day 1 (10/20): slides 1 to 35, measured by shortest paths. Day 2 (10/22): slides 36 to 70, measured by walks.
+Day 1 (10/20): slides 1 to 34, measured by shortest paths. Day 2 (10/22): slides 35 to 70, measured by walks.
 The pen-and-paper sheet has already been done, so the room has met degree, average distance, "indispensable" and passing scores around. Name things; do not re-derive what is in their hands.
 -->
 
@@ -41,7 +41,7 @@ The pen-and-paper sheet has already been done, so the room has met degree, avera
 * Augustus, Caesar's adopted heir, set up the **Golden Milestone** in 20 BC.
 * A gilded column in the Forum, by the Temple of Saturn.
 * Its text is lost. It is said to have listed cities and their distances in miles.
-* All the roads of Italy were said to end at it.
+* Plutarch: every road of Italy ended at it.
 
 <!--
 Caesar had been curator of the Via Appia (Plutarch, Caesar 5) and named Octavian his heir in his will, 44 BC. As Augustus, he took charge of the roads around Rome and set up the column in 20 BC (Cassius Dio 54.8.4).
@@ -53,14 +53,14 @@ The fragments in the photo are the ones the Forum labels as the milestone; wheth
 
 ---
 
-## The roads themselves
+## Twelve cities of the empire
 
 <hr>
 
 <div class="cols">
 <div>
 
-The main roads of the empire joined these twelve cities.
+Roads and sea lanes joined these twelve cities.
 
 </div>
 <div class="fig">
@@ -77,7 +77,7 @@ The pins are the real places: Londinium, Colonia, Lugdunum, Massilia, Tarraco, M
 
 ---
 
-## Keep the roads, drop the map
+## Keep the links, drop the map
 
 <hr>
 
@@ -128,30 +128,18 @@ Take a vote: Buffalo, Rochester, Syracuse, Utica, Albany, NYC, Binghamton, Water
 
 <hr>
 
-**Degree**: $d_i = \sum_j A_{ij}$, the number of neighbours. Nothing beyond them counts.
+**Degree**: $d_i = \sum_j A_{ij}$, where $A_{ij} = 1$ if a road joins $i$ and $j$.
 
 <div class="fig tall">
 
 ![w:1080](figures/roma-degree.png)
+<figcaption>darker: more roads; Roma has the most, 5</figcaption>
 
 </div>
 
 <!--
 The sheet's first question. Name it and move on. Roma has the most roads.
 -->
-
----
-
-## Degree sees one step
-
-<hr>
-
-<div class="fig tall">
-
-![w:1080](figures/two-roads-ahead.png)
-<figcaption>red Roma, blue one step away, gold two steps; degree sees only the blue</figcaption>
-
-</div>
 
 ---
 
@@ -271,7 +259,7 @@ $$c_i = \frac{N-1}{\sum_{j \ne i} \ell_{ij}}$$
 
 </div>
 
-$\ell_{ij}$: the length of a shortest path from $i$ to $j$.
+$\ell_{ij}$: the length of a shortest path from $i$ to $j$. $N$: the number of nodes.
 
 </div>
 <div class="fig">
@@ -332,6 +320,8 @@ The smallest sum of distances wins. Left and right are separate networks.
 
 <hr>
 
+The sum of distances, beside each candidate.
+
 <div class="fig">
 
 ![w:1080](figures/quiz-close-answer.png)
@@ -354,13 +344,14 @@ Right: P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arm
 <div>
 
 * Distance: km of highway.
-* Winner: NY 17 at Middletown, in the Hudson Valley.
-* A third of the interchanges lie within 60 km of Manhattan.
+* Winner: NY 17 near Middletown, in the Hudson Valley.
+* 31% of the interchanges lie within 60 km of Manhattan.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/ny-closeness.png)
+<figcaption>darker, larger dot: closer to everything</figcaption>
 
 </div>
 </div>
@@ -390,6 +381,12 @@ What happens to closeness?
 ![w:537](figures/cut-blank.png)
 
 </div>
+</div>
+
+<div class="cue">
+
+*Take 30 seconds.*
+
 </div>
 
 ---
@@ -432,7 +429,9 @@ $$h_i = \sum_{j \ne i} \frac{1}{\ell_{ij}}$$
 
 </div>
 
-**Harmonic centrality**, with $1/\infty = 0$.
+**Harmonic centrality**.
+
+An unreachable node adds $1/\infty = 0$.
 
 </div>
 <div class="fig">
@@ -452,7 +451,7 @@ Invert each distance, then add. An unreachable node adds 0 instead of making the
 
 <hr>
 
-Left: the same network as before. Right: two pieces.
+Left: the closeness network, with the road E–F open again. Right: two pieces.
 
 <div class="fig">
 
@@ -472,10 +471,12 @@ Left: the same network as before. Right: two pieces.
 
 <hr>
 
+Harmonic centrality, beside each candidate.
+
 <div class="fig">
 
 ![w:1080](figures/quiz-harm-answer.png)
-<figcaption>on the left, closeness and harmonic crown different nodes</figcaption>
+<figcaption>on the left, closeness and harmonic pick different nodes</figcaption>
 
 </div>
 
@@ -492,7 +493,7 @@ Right: the star's centre, 4, beats the middle of the path, 11/3. The bigger piec
 
 <hr>
 
-A fire station must reach its farthest house in time.
+*Take 30 seconds.*
 
 ---
 
@@ -509,7 +510,7 @@ $$e_i = \max_{j} \ell_{ij}$$
 
 </div>
 
-**Eccentricity**: the distance to the farthest node. Its centrality is $1/e_i$.
+A fire station must reach its farthest house. **Eccentricity**: the distance to the farthest node; its centrality is $1/e_i$.
 
 </div>
 <div class="fig">
@@ -539,6 +540,8 @@ The best fire station: the smallest worst case.
 
 <hr>
 
+Eccentricity, beside every node.
+
 <div class="fig">
 
 ![w:1080](figures/quiz-ecc-answer.png)
@@ -567,6 +570,7 @@ Right: K wins closeness (11), worst case 3. L, with degree 2, has worst case 2.
 <div class="fig">
 
 ![w:537](figures/ny-eccentricity.png)
+<figcaption>darker, larger dot: a shorter worst-case drive</figcaption>
 
 </div>
 </div>
@@ -622,9 +626,12 @@ $$b_i = \sum_{s < t} \frac{\sigma_{st}(i)}{\sigma_{st}}$$
 
 </div>
 
+$\sigma_{st}$: the number of shortest paths from $s$ to $t$; $\sigma_{st}(i)$: those through $i$.
+
 <div class="fig">
 
 ![w:1080](figures/sigma-answer.png)
+<figcaption>the pair S, D has two shortest paths, so A and B each carry half</figcaption>
 
 </div>
 
@@ -638,7 +645,7 @@ sigma_st: the number of shortest paths from s to t. sigma_st(i): how many of the
 
 <hr>
 
-Count the shortest paths through each node.
+Count the shortest paths through each node; a tie splits the count.
 
 <div class="fig">
 
@@ -651,6 +658,8 @@ Count the shortest paths through each node.
 ## Answer
 
 <hr>
+
+Betweenness, beside each candidate.
 
 <div class="fig">
 
@@ -673,14 +682,15 @@ Right: O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: t
 <div class="cols">
 <div>
 
-* Binghamton is first of the eight cities.
-* Three and a half times Syracuse, the second.
-* NY 17 joins New York City to the rest of the state.
+* Top interchange: NY 17 at Monticello.
+* Of the eight cities, Binghamton is first: 3.5 times Syracuse.
+* Four of the top five interchanges are on NY 17.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/ny-betweenness.png)
+<figcaption>darker, larger dot: more shortest paths pass through</figcaption>
 
 </div>
 </div>
@@ -776,7 +786,7 @@ $$c_i = \frac{1}{\lambda} \sum_j A_{ij}\, c_j$$
 
 </div>
 
-A node's score is the sum of its neighbours' scores.
+A node's score is the sum of its neighbours' scores, divided by a constant $\lambda$.
 
 </div>
 <div class="fig">
@@ -810,13 +820,15 @@ It is circular: a score defined by scores. The constant lambda keeps the scores 
 
 <hr>
 
-A 7 × 7 matrix has seven eigenvectors. Which one is the centrality?
+This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality?
 
 ---
 
-## All seven
+## Perron and Frobenius
 
 <hr>
+
+In a connected network, only the eigenvector of the largest eigenvalue is positive everywhere.
 
 <div class="fig tall">
 
@@ -827,16 +839,14 @@ A 7 × 7 matrix has seven eigenvectors. Which one is the centrality?
 
 ---
 
-## Perron and Frobenius
+## Eigenvector centrality
 
 <hr>
 
 <div class="cols">
 <div>
 
-In a connected network, the eigenvector of the largest eigenvalue is the only one with every entry positive.
-
-That one is **eigenvector centrality**.
+That eigenvector, with its largest entry set to 1, is **eigenvector centrality**.
 
 </div>
 <div class="fig">
@@ -847,7 +857,46 @@ That one is **eigenvector centrality**.
 </div>
 
 <!--
-The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducible = the network is connected). A negative score would mean nothing, so this is the only eigenvector that can be a centrality.
+The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducible = the network is connected): the eigenvector of the largest eigenvalue can be chosen positive everywhere, and no other eigenvector is. A negative score would mean nothing, so this is the only eigenvector that can be a centrality.
+-->
+
+---
+
+## Which marked node scores higher?
+
+<hr>
+
+Eigenvector centrality. In each network, compare the two lettered nodes.
+
+<div class="fig">
+
+![w:1080](figures/quiz-eig.png)
+
+</div>
+
+<div class="cue">
+
+*Take a minute.*
+
+</div>
+
+---
+
+## Answer
+
+<hr>
+
+Eigenvector centrality, largest = 1.
+
+<div class="fig">
+
+![w:1080](figures/quiz-eig-answer.png)
+<figcaption>in both networks, the node with fewer neighbours scores higher</figcaption>
+
+</div>
+
+<!--
+Left: M 0.85, X 0.46. M's three neighbours include two hubs; X's four include three leaves. Right: K 0.85, H 0.62.
 -->
 
 ---
@@ -856,7 +905,7 @@ The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducib
 
 <hr>
 
-A symmetric matrix is a sum of rank-1 matrices.
+A symmetric matrix is a sum of rank-1 matrices. $\lambda_1 = \lambda_{\max}$ is the largest eigenvalue.
 
 <div class="fig">
 
@@ -864,6 +913,10 @@ A symmetric matrix is a sum of rank-1 matrices.
 <figcaption>circle: an eigenvalue; tall bar: its eigenvector; wide bar: the same vector, transposed</figcaption>
 
 </div>
+
+<!--
+rank 1: every row of u_k u_kᵀ is a multiple of u_kᵀ.
+-->
 
 ---
 
@@ -874,7 +927,7 @@ A symmetric matrix is a sum of rank-1 matrices.
 <div class="fig">
 
 ![w:1080](figures/decomp-orth.png)
-<figcaption>two different eigenvectors multiply to 0; one with itself gives 1</figcaption>
+<figcaption>each eigenvector scaled to length 1: two different ones multiply to 0, one with itself to 1</figcaption>
 
 </div>
 
@@ -883,6 +936,8 @@ A symmetric matrix is a sum of rank-1 matrices.
 ## Square it
 
 <hr>
+
+$A^2 = \sum_k \lambda_k^2\, \mathbf{u}_k \mathbf{u}_k^\top$: squaring squares every eigenvalue.
 
 <div class="fig">
 
@@ -897,7 +952,7 @@ A symmetric matrix is a sum of rank-1 matrices.
 
 <hr>
 
-Each term grows as $\lambda_k^t$. The largest $\lambda$ wins.
+$A^t$ counts walks of length $t$. Divided by $\lambda_1^t$, every term but the first fades, so $A^t \mathbf{1}$ points along $\mathbf{u}_1$.
 
 <div class="fig">
 
@@ -906,7 +961,7 @@ Each term grows as $\lambda_k^t$. The largest $\lambda$ wins.
 </div>
 
 <!--
-Divide everything by lambda_1^t: term k shrinks like (lambda_k / lambda_1)^t. The second largest in size is -2.26, so the error shrinks by a factor 0.78 per step. After 16 steps it is about 2%.
+Divide everything by lambda_1^t: term k shrinks like (lambda_k / lambda_1)^t. The next largest in size is lambda = -2.26, so the error shrinks by a factor 0.78 per step (2.26 / 2.88). After 16 steps it is about 2%.
 -->
 
 ---
@@ -946,47 +1001,16 @@ Ask before step 3: which of B and D will end up higher? Most of the room says D 
 
 ---
 
-## Step one is degree
-
-<hr>
-
-<div class="cols">
-<div>
-
-<div class="formula">
-
-$$A\mathbf{1} = (d_1, d_2, \ldots, d_N)$$
-
-</div>
-
-Start from all ones. One multiplication gives each node its degree.
-
-</div>
-<div class="fig">
-
-![w:537](figures/power-step1.png)
-
-</div>
-</div>
-
-<!--
-So degree is the first guess, and every further step corrects it by looking one step farther. B starts below D (degree 2 against 3), ties it at steps 2 and 3, and passes it at step 4.
--->
-
----
-
 <!-- _class: mid -->
 
-## Where does this break?
+## Where does eigenvector centrality break?
 
 <hr>
 
 <div class="cols">
 <div>
 
-Four cliques of four, in a ring.
-
-Add one node to one clique.
+Four cliques of four, in a ring. Add one node to one clique. Where does the score go?
 
 </div>
 <div class="fig">
@@ -994,6 +1018,12 @@ Add one node to one clique.
 ![w:537](figures/ring-4444.png)
 
 </div>
+</div>
+
+<div class="cue">
+
+*Take 30 seconds.*
+
 </div>
 
 ---
@@ -1005,12 +1035,12 @@ Add one node to one clique.
 <div class="fig">
 
 ![w:1080](figures/ring-local.gif)
-<figcaption>share of the eigenvector inside the growing clique</figcaption>
+<figcaption>share of the total score inside the growing clique</figcaption>
 
 </div>
 
 <!--
-One extra node, and 89% of the eigenvector moves into that clique; with two, 97%. The other three cliques, identical to each other, score almost nothing. The eigenvector concentrates on the densest part of the network.
+One extra node, and 68% of the total score moves into that clique; with two, 85%; at K = 8, 94%. The other three cliques, identical to each other, score almost nothing. The eigenvector concentrates on the densest part of the network.
 -->
 
 ---
@@ -1022,19 +1052,20 @@ One extra node, and 89% of the eigenvector moves into that clique; with two, 97%
 <div class="cols">
 <div>
 
-* 99.7% of the score lies within 60 km of Manhattan.
+* 96% of the score lies within 60 km of Manhattan.
 * 31% of the interchanges lie there.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/ny-eigenvector.png)
+<figcaption>darker, larger dot: higher score; dashed circle: 60 km</figcaption>
 
 </div>
 </div>
 
 <!--
-The real network localizes: the densest cluster, Long Island and the city, takes almost everything. Upstate interchanges all score close to zero.
+The real network localizes: the densest cluster, Long Island and the city, takes 96% of the score. Upstate interchanges all score close to zero.
 -->
 
 ---
@@ -1043,7 +1074,7 @@ The real network localizes: the densest cluster, Long Island and the city, takes
 
 <div class="band"><span>Part Four</span><span class="count">04 / 05</span></div>
 
-## Everyone gets a floor
+## Everyone gets a baseline
 
 Katz centrality
 
@@ -1064,7 +1095,7 @@ $$\mathbf{c} = \beta\, (I - \alpha A)^{-1} \mathbf{1}$$
 
 </div>
 
-**Katz centrality**.
+**Katz centrality**: $\beta$ for free, plus $\alpha$ times each neighbour's score.
 
 </div>
 <div class="fig">
@@ -1088,7 +1119,9 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 
 <div class="formula">
 
-$$\frac{1}{1-x} = 1 + x + x^2 + x^3 + \cdots \qquad \text{for } |x| < 1$$
+$$(I - \alpha A)^{-1} = \;?$$
+
+$$\frac{1}{1-x} = 1 + x + x^2 + \cdots \quad \text{for } |x| < 1$$
 
 </div>
 
@@ -1169,11 +1202,12 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 <div class="fig">
 
 ![w:1080](figures/katz-why.gif)
+<figcaption>circle: the weight of term k, 1 / (1 - alpha lambda_k)</figcaption>
 
 </div>
 
 <!--
-Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
 -->
 
 ---
@@ -1185,7 +1219,7 @@ Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambd
 <div class="fig">
 
 ![w:1080](figures/grid-row2.png)
-<figcaption>degree, Katz and eigenvector centrality: one series, cut at different lengths</figcaption>
+<figcaption>degree and eigenvector centrality are the two ends of Katz: alpha near 0 ranks by degree, alpha near 1 / lambda_max by the eigenvector</figcaption>
 
 </div>
 
@@ -1210,11 +1244,15 @@ A road runs both ways. A link does not.
 
 <div class="formula">
 
-$$a_i = \sum_j A_{ji}\, h_j \qquad h_i = \sum_j A_{ij}\, a_j$$
+$$a_i = \sum_j A_{ji}\, h_j$$
+
+$$h_i = \sum_j A_{ij}\, a_j$$
+
+$$A_{ij} = 1 \;\text{if page } i \text{ links to page } j$$
 
 </div>
 
-**Authority**: pointed to by good hubs. **Hub**: points to good authorities.
+**HITS** (Kleinberg, 1999): an **authority** is pointed to by good hubs; a **hub** points to good authorities.
 
 </div>
 <div class="fig">
@@ -1243,7 +1281,7 @@ $$\mathbf{a} \propto A^\top A\, \mathbf{a}$$
 
 </div>
 
-If $A$ is symmetric, $A^\top A = A^2$: the same eigenvectors as $A$.
+If $A$ is symmetric, $A^\top A = A^2$, whose leading eigenvector is that of $A$.
 
 </div>
 <div class="fig">
@@ -1253,9 +1291,13 @@ If $A$ is symmetric, $A^\top A = A^2$: the same eigenvectors as $A$.
 </div>
 </div>
 
+<!--
+This holds when the network is not bipartite (lambda_max > |lambda_min|; here 2.88 > 2.26).
+-->
+
 ---
 
-## The same equation, six times
+## The same idea, six times
 
 <hr>
 
@@ -1280,6 +1322,8 @@ $$c_i = \sum_j A_{ji}\, \frac{c_j}{d^{\text{out}}_j}$$
 
 </div>
 
+$d^{\text{out}}_j$: the number of links out of $j$.
+
 C has three links in, and E has one. Which ranks higher?
 
 </div>
@@ -1288,6 +1332,12 @@ C has three links in, and E has one. Which ranks higher?
 ![w:537](figures/pr-split.png)
 
 </div>
+</div>
+
+<div class="cue">
+
+*Take 30 seconds.*
+
 </div>
 
 <!--
@@ -1303,9 +1353,8 @@ A page splits its score equally among the pages it links to. A gives a third to 
 <div class="cols">
 <div>
 
-A, C and E: 3/11 each. B and D: 1/11.
-
-E's one link comes from C, and C passes on everything.
+- A, C and E: 3/11 each. B and D: 1/11.
+- E's one link comes from C, which passes on everything.
 
 </div>
 <div class="fig">
@@ -1324,9 +1373,8 @@ E's one link comes from C, and C passes on everything.
 <div class="cols">
 <div>
 
-E loses its only link. Its score has nowhere to go.
-
-The total drains to zero.
+- E loses its only outgoing link.
+- Its score has nowhere to go: the total drains to zero.
 
 </div>
 <div class="fig">
@@ -1351,7 +1399,9 @@ $$c_i = (1-r) \sum_j A_{ji}\, \frac{c_j}{d^{\text{out}}_j} + \frac{r}{N}$$
 
 </div>
 
-With probability $r = 0.15$, jump to a random page. This is **PageRank**.
+- With probability r = 0.15, jump to a random page.
+- A dead end always jumps.
+- This is **PageRank**.
 
 </div>
 <div class="fig">
@@ -1362,7 +1412,7 @@ With probability $r = 0.15$, jump to a random page. This is **PageRank**.
 </div>
 
 <!--
-Brin and Page, 1998. A dead end hands its score to the jump. The jump also makes the answer unique.
+Brin and Page, 1998. A dead end hands its score to the jump. The jump also makes the answer unique. On the dead-end graph: E 0.359, C 0.316, B and D 0.117, A 0.091.
 -->
 
 ---
@@ -1374,14 +1424,14 @@ Brin and Page, 1998. A dead end hands its score to the jump. The jump also makes
 <div class="cols">
 <div>
 
-Jump back to A only.
-
-The scores now measure how close each page is to A.
+- Jump back to A only.
+- Score: how often a walker that keeps restarting at A visits each page.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/ppr.png)
+<figcaption>dashed: the jump back to A</figcaption>
 
 </div>
 </div>
@@ -1399,7 +1449,9 @@ Replace r/N by r on A and 0 elsewhere. "More like this" on a website: teleport t
 <div class="cols">
 <div>
 
-One network. Each measure crowns a different place.
+Closeness: Middletown. Harmonic: the Bronx. Eccentricity: east of Binghamton.
+
+Betweenness: Monticello. Eigenvector: Hempstead.
 
 </div>
 <div class="fig">
@@ -1433,7 +1485,7 @@ Closeness: NY 17 at Middletown. Harmonic: I-95 in the Bronx. Eccentricity: NY 17
 
 <hr>
 
-Draw a network in which degree, closeness, eccentricity and betweenness each crown a different node.
+Draw a network in which degree, closeness, eccentricity and betweenness each rank a different node first.
 
 <div class="cue">
 
