@@ -678,3 +678,66 @@ section .anim-knob {
 section .anim-knob-live { transition: none; cursor: grabbing; }
 
 /* ---------- per-stage rules ---------- */
+
+/* Power iteration (m06): the scenes are lecture-note/assets/anim/power-step.js.
+   One press of the arrow is one x <- A x. The kit's step number counts scenes
+   (1 to 10), which would read as t + 1, so it is hidden and the label says
+   "step t" itself. */
+section #power-step { --anim-svg-max: 440px; }
+section #power-step .anim-grid-2 { grid-template-columns: 440px minmax(0, 1fr); gap: 30px; align-items: center; }
+section #power-step .anim-step { font-size: 34px; }
+section #power-step .anim-step .anim-num { display: none; }
+section #power-step .anim-note { font-size: 28px; min-height: 1.3em; }
+section #power-step .anim-caption { font-size: 24px; margin-top: 0; }
+section #power-step .anim-panel { padding: 12px 18px 14px; }
+section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2; transition: fill 0.5s ease; }
+section #power-step .ps-name {
+  font-family: var(--_hand); font-size: 26px; font-weight: 700; fill: var(--_ink);
+  pointer-events: none; transition: fill 0.5s ease;
+}
+section #power-step .ps-val { font-family: var(--_hand); font-size: 25px; fill: var(--_ink); }
+section #power-step .ps-ring {
+  fill: none; stroke: var(--_amber); stroke-width: 2.6; stroke-dasharray: 5 4;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+section #power-step .ps-rank {
+  font-family: var(--_hand); font-size: 46px; font-weight: 700; line-height: 1.2;
+  letter-spacing: 0.08em; margin: 2px 0 8px; white-space: nowrap;
+}
+
+/* Turn the dial (m06): the scenes are lecture-note/assets/anim/katz-dial.js.
+   The knob wrapper is a block in a block here, but its auto side margins are
+   zeroed anyway: they collapse the track to nothing inside any flex column. */
+section #katz-dial { --anim-svg-max: 460px; }
+section #katz-dial .anim-grid-2 { grid-template-columns: 460px minmax(0, 1fr); gap: 30px; align-items: center; }
+section #katz-dial .anim-step { font-size: 34px; }
+section #katz-dial .anim-note { font-size: 28px; min-height: 1.3em; }
+section #katz-dial .anim-panel { padding: 12px 20px 14px; }
+section #katz-dial .kd-node { stroke: var(--_ink); stroke-width: 1.8; transition: fill 0.2s ease; }
+section #katz-dial .kd-edge { stroke-width: 1.5; opacity: 0.55; }
+section #katz-dial .kd-hull { fill: none; stroke: var(--_ink-faint); stroke-width: 1.8; stroke-dasharray: 5 5; }
+section #katz-dial .kd-alpha { font-family: var(--_hand); font-size: 32px; font-weight: 700; line-height: 1.2; }
+section #katz-dial .kd-alpha sub { font-size: 0.7em; }
+section #katz-dial .kd-range { position: relative; margin: 0; max-width: none; padding-top: 28px; }
+section #katz-dial .anim-track { margin: 8px 7px 6px; }
+section #katz-dial .kd-mark {
+  position: absolute; top: -9px; bottom: -9px; left: 0; width: 3px; margin-left: -1.5px;
+  background: var(--_amber); border-radius: 2px;
+}
+section #katz-dial .kd-pole {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font-family: var(--_hand); font-size: 24px; line-height: 1.1; color: var(--_amber); font-weight: 700;
+  white-space: nowrap;
+}
+section #katz-dial .kd-pole sub, section #katz-dial .kd-end2 sub { font-size: 0.7em; }
+section #katz-dial .kd-ends {
+  position: relative; display: flex; justify-content: space-between; margin: 0 2px;
+  font-family: var(--_hand); font-size: 21px; color: var(--_ink-soft);
+}
+section #katz-dial .kd-still { cursor: default; }
+section #katz-dial .kd-share { font-size: 50px; margin-top: 10px; min-height: 1.1em; white-space: nowrap; }
+section #katz-dial .kd-warn sub { font-size: 0.7em; }
+section #katz-dial .kd-warn {
+  font-family: var(--_hand); font-size: 30px; line-height: 1.2; font-weight: 700;
+  color: var(--_amber); min-height: 1.2em; white-space: nowrap;
+}
