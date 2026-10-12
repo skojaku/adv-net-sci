@@ -8,9 +8,8 @@ Covers M05 (clustering).
 1. **Peel the network** (4 pts), last year's k-core item on an 11-node
    network. (a) The largest k with a non-empty k-core, its nodes, and the
    removal order (2). Answer: k = 3, {A, B, C, D}; removed I, J, K → H → G →
-   E, F. (b) Every node's shell, and why H, the node with the most neighbors,
-   is not in the top shell (2). Answer: A–D 3, E–H 2, I–K 1; three of H's five
-   neighbors are leaves, and a shell counts only neighbors that stay.
+   E, F. (b) Every node's shell (2). Answer: A–D 3, E–H 2, I–K 1. H has the
+   most neighbors but shell 2: three of its five neighbors are leaves.
    The network is built so that two shortcuts fail: "every node of degree ≥ 3"
    (A–H) and "every node of degree ≥ 4" (B, D, F, H, not a 4-core).
 2. **The likelihood of the degree-corrected block model** (6 pts), the

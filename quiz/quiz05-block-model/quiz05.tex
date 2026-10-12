@@ -6,7 +6,7 @@
 % k-core"), on a network built so that two shortcuts fail. Taking every node of
 % degree >= 3 gives A..H, but the removals cascade (I,J,K -> H -> G -> E,F) and
 % leave only A,B,C,D. Taking every node of degree >= 4 gives B,D,F,H, which is
-% not a 4-core. And H, the node with the most neighbours, has shell 2.
+% not a 4-core. H, the node with the most neighbours, has shell 2.
 % Shells: A,B,C,D = 3; E,F,G,H = 2; I,J,K = 1 (checked with igraph).
 %
 % Question 2 is the Karrer--Newman (2011) derivation: write the log-likelihood
@@ -116,8 +116,7 @@ which the node is in the $k$-core.
 its nodes, and show the order in which you removed the others.
 
 \vspace{0.3em}
-(b) [2 pts] Give the shell of every node. Node H has more neighbors than any
-other node. Why is its shell not the largest?
+(b) [2 pts] Give the shell of every node.
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.5\textwidth}
@@ -171,8 +170,8 @@ any term that depends on none of $c$, $\theta$, $w$.
 \textbf{Careful with the self-loops.} Keep them, exactly as defined: a
 self-loop counts 2 in $A_{ii}$ and in $k_i$, and the \emph{number} of
 self-loops is the Poisson variable, with mean $\tfrac12 \theta_i^2 w_{c_ic_i}$.
-Drop them, or treat $A_{ii}$ like any other pair, and the sums in (a) no
-longer close.
+If you leave them out, or treat $A_{ii}$ like the other pairs, the sums in (a)
+will not combine exactly.
 }
 \end{tcolorbox}
 
@@ -199,11 +198,7 @@ stop the model from putting all the hubs in one group?}
 
 {\large\bfseries Hints for Question 2}\par
 \vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par
-\vspace{0.2em}
-{\small Read only as far as you need. Each hint names a move; working it out is
-still yours.}
-
-\vspace{0.6em}
+\vspace{0.4em}
 
 \textbf{Hint 1 --- The Poisson distribution, and the self-loops.}
 If $X \sim \mathrm{Poisson}(\lambda)$, then

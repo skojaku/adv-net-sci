@@ -43,14 +43,10 @@ themselves. $0$ for (a), unless the 3-core is also found and the 4-core is
 not claimed.
 
 (b) [2] Shells: \ans{A, B, C, D: 3}; \ans{E, F, G, H: 2}; \ans{I, J, K: 1}.
-H has five neighbors, but three of them are leaves. A shell counts only the
-neighbors that \emph{stay} while the network is peeled: the leaves go at
-$k = 2$, H keeps F and G, so it is in the 2-core and not the 3-core.
-\ans{Degree counts neighbors; the shell counts neighbors that are themselves
-well connected.}
-Marking: every shell right, $+1$ ($+0.5$ with one or two wrong); the reason for
-H, $+1$. ``Its neighbors have low degree'' is the reason in short and earns
-the point.
+Marking: every shell right, $2$; $-0.5$ for each node wrong, down to $0$.
+The slip to look for is H. It has five neighbors, the most of anyone, but
+three are leaves: they go at $k = 2$, H keeps F and G, and so it is in the
+2-core and not the 3-core. A shell of 3 or more for H is wrong.
 
 \question{2}{6}{The likelihood of the degree-corrected block model.}
 
