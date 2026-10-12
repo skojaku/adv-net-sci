@@ -33,6 +33,9 @@ CY = CANVAS_H / 2
 BOUNDS = (4.0, 4.0, CW - 4.0, CANVAS_H - 4.0)
 OWN = 4.0                         # a label's own disc must be this much nearer than any other
 CLEAR = 24.0                      # margins beyond this are equally good
+TAG_CHAR_W = 0.40                 # measured: 'best closeness' renders 193 bp wide at 36 pt
+AWAY = 60.0                       # a tag steered away from a node keeps its box this far from it
+DISC_R = F.NODE / 2               # a label keeps this far from every disc centre
 GAP = -2.0                       # figlib.label_box pads its boxes by 6 on every side; -2 leaves 4 bp of that
 
 RED, GRAY_C = "accenttwo", "annot"
@@ -170,7 +173,7 @@ def _place_owned(names, pos, edges, blockers, bounds, sides):
             b = (b[0] - GAP, b[1] - GAP, b[2] + GAP, b[3] + GAP)
             if not (bounds[0] <= b[0] and b[2] <= bounds[2] and bounds[1] <= b[1] and b[3] <= bounds[3]):
                 continue
-            if any(F.box_hits_disc(b, x, y) for x, y in pos.values()):
+            if any(F.box_hits_disc(b, x, y, DISC_R) for x, y in pos.values()):
                 continue
             if any(F.boxes_overlap(b, o) for o in list(boxes.values()) + list(blockers)):
                 continue
@@ -200,20 +203,29 @@ def _seg_hits_box(p, q, b):
     return F.box_hits_segment(b, p, q, pad=0)
 
 
-def place_tag(n, s, pos, edges, taken, bounds=BOUNDS):
+def place_tag(n, s, pos, edges, taken, bounds=BOUNDS, away_from=None):
     """A gray tag too wide to sit beside its disc: put it in free space, joined by a gray leader.
 
     The nearest free spot within reach, tried on 24 directions and growing radii.  The box
     must clear every disc, every edge and every other label; the leader (disc border to box)
     must cross no edge and touch no other disc.
+
+    away_from: a node the tag must not sit near.  The whole box must lie in the half-plane
+    beyond the tagged disc (the side facing away from that node) and at least AWAY bp clear of
+    it, so the tag is never read as belonging to, or as a note on, that node.
     """
     cx, cy = pos[n]
-    for r in range(70, 190, 6):
-        for k in range(24):
-            a = 2 * np.pi * k / 24
+    found = []
+    for r in range(70, 250, 6):
+        for k in range(72):
+            a = 2 * np.pi * k / 72
             x, y = cx + r * np.cos(a), cy + r * np.sin(a)
             b = F.label_box(x, y, s, "center")
             b = (b[0] + 4, b[1] + 4, b[2] - 4, b[3] - 4)           # the box without its padding
+            # figlib's width estimate (0.55 em a letter) is generous for lowercase text; the
+            # tags are measured at TAG_CHAR_W em a letter (14 letters = 195 bp, as rendered)
+            half_w = (TAG_CHAR_W * F.FONT * len(s)) / 2 + 3
+            b = (x - half_w, b[1], x + half_w, b[3])
             if not (bounds[0] <= b[0] and b[2] <= bounds[2] and bounds[1] <= b[1] and b[3] <= bounds[3]):
                 continue
             if any(F.box_hits_disc(b, px, py, F.NODE / 2 + 6) for px, py in pos.values()):
@@ -222,6 +234,16 @@ def place_tag(n, s, pos, edges, taken, bounds=BOUNDS):
                 continue
             if any(F.box_hits_segment(b, pos[u], pos[v], pad=6) for u, v in edges):
                 continue
+            if away_from is not None:
+                ax, ay = pos[away_from]
+                u = np.array([cx - ax, cy - ay]); u /= np.linalg.norm(u)
+                # the whole box lies in the half-plane beyond the tagged disc, away from `away_from`
+                if any((px - cx) * u[0] + (py - cy) * u[1] < 0 for px in (b[0], b[2]) for py in (b[1], b[3])):
+                    continue
+                dx_ = max(b[0] - ax, 0, ax - b[2])
+                dy_ = max(b[1] - ay, 0, ay - b[3])
+                if np.hypot(dx_, dy_) < AWAY:
+                    continue
             # leader: from the disc border towards the box, stopped at the box
             d = np.array([x - cx, y - cy]); d /= np.linalg.norm(d)
             p0 = np.array([cx, cy]) + d * (F.NODE / 2 + 3)
@@ -238,10 +260,24 @@ def place_tag(n, s, pos, edges, taken, bounds=BOUNDS):
                 continue
             if any(m != n and _dist_seg_pt(p0, q, np.array(pm)) < F.NODE / 2 + 3 for m, pm in pos.items()):
                 continue
-            ink = F.seg(tuple(p0), tuple(q), color=GRAY_C, w=2.2)
-            ink += F.text(x, y, s, color=GRAY_C)
-            return ink, b
-    raise AssertionError(f"no free spot for the tag {s!r} of {n}")
+            # how far the leader keeps from the edges that meet at the disc (degrees, capped)
+            clear = 90.0
+            for u, v in edges:
+                if n in (u, v):
+                    o = pos[v if u == n else u]
+                    e = np.array([o[0] - cx, o[1] - cy]); e /= np.linalg.norm(e)
+                    clear = min(clear, float(np.degrees(np.arccos(np.clip(d @ e, -1, 1)))))
+            found.append((-int(min(clear, 30) // 3), r, x, y, b, tuple(p0), tuple(q)))
+    if not found:
+        raise AssertionError(f"no free spot for the tag {s!r} of {n}")
+    # the most open direction first (a leader hugging an edge reads as one more edge), then the nearest
+    _, _, x, y, b, p0, q = min(found, key=lambda c: c[:2])
+    ink = F.seg(p0, q, color=GRAY_C, w=2.2)
+    ink += F.text(x, y, s, color=GRAY_C)
+    return ink, b, (p0, q)
+
+
+
 
 
 def _dist_seg_pt(p, q, c):
@@ -266,20 +302,27 @@ def solve_labels(texts, pos, edges, blockers=(), bounds=BOUNDS):
 
 # --------------------------------------------------------------------------- pair emitter
 def emit_pair(nameq, bodyq, namea, bodya, container="full", h=CANVAS_H):
-    """Render a question and its answer and crop both to ONE box.
+    """A question and its answer, cropped to ONE box (see emit_group)."""
+    emit_group([(nameq, bodyq), (namea, bodya)], container, h)
 
-    figlib.emit crops each figure to its own ink, which would move the graphs by a few bp
-    between the question slide and the answer slide.  Here both images are cropped to the
+
+def emit_group(items, container="full", h=CANVAS_H):
+    """Render a question and its answers and crop all of them to ONE box.
+
+    items: [(name, body), ...]; the first is the question, and every later body must start with
+    the question's body.  figlib.emit crops each figure to its own ink, which would move the
+    graphs by a few bp between one slide and the next.  Here every image is cropped to the
     union of their ink, and figlib's gates are run on the cropped images.
     """
     import numpy as _np
-    names = [nameq, namea]
+    names = [n for n, _ in items]
     if F._only and not any(k in n for n in names for k in F._only):
         return
     try:
-        assert bodya.startswith(bodyq), f"{namea}: the answer must be the question plus marks and values"
+        for n, body in items[1:]:
+            assert body.startswith(items[0][1]), f"{n}: the answer must be the question plus marks and values"
         W = F.DESIGN[container]
-        ims = [F.render(b, W, h) for b in (bodyq, bodya)]
+        ims = [F.render(body, W, h) for _, body in items]
         lo, hi = 10 ** 9, -1
         for im in ims:
             ys, _x = _np.where(_np.array(im.convert("L")) < 200)
@@ -298,24 +341,38 @@ def emit_pair(nameq, bodyq, namea, bodya, container="full", h=CANVAS_H):
             print(f"  {name}.png  {fw // 4}x{fh // 4}bp  node {node_px:.0f}px  x-h {x_px:.1f}px  "
                   f"ink {span:.0%}  [{container}]")
     except (AssertionError, SystemExit) as e:
-        F._failures.append((nameq, str(e)))
-        print(f"  FAIL {nameq}/{namea}: {e}")
+        F._failures.append((names[0], str(e)))
+        print(f"  FAIL {'/'.join(names)}: {e}")
 
 
 # --------------------------------------------------------------------------- the four quizzes
-def quiz(slug, GL, XYL, GR, XYR, values, winners, extra_tags=None, who_labelled=None):
-    """values: node -> display string; winners: nodes to mark; extra_tags: node -> gray tag."""
+def quiz(slug, GL, XYL, GR, XYR, values, winners, extra_tags=None, who_labelled=None, tag_away=None):
+    """values: node -> display string; winners: nodes to mark; extra_tags: node -> gray tag;
+    tag_away: tagged node -> the node its tag must stay away from."""
     pos, edges, s = layout_pair(GL, XYL, GR, XYR)
     q = base_body(pos, edges)
     texts = {}
     for n, v in values.items():
         assert n in pos
         texts[n] = (v, v, RED if n in winners else "black")
-    lab, boxes = solve_labels(texts, pos, edges)
+    # the gray tags are wide and have the fewest free spots: they go first, and the values
+    # are then placed around them
+    lab, tag_boxes, leaders = "", {}, []
     for n, tag in (extra_tags or {}).items():
-        t_ink, tb = place_tag(n, tag, pos, edges, list(boxes.values()))
+        t_ink, tb, ld = place_tag(n, tag, pos, edges, list(tag_boxes.values()),
+                                  away_from=(tag_away or {}).get(n))
         lab += t_ink
-        boxes[n + "#tag"] = tb
+        tag_boxes[n + "#tag"] = tb
+        leaders.append(ld)
+    blockers = [(b[0] - 6, b[1] - 6, b[2] + 6, b[3] + 6) for b in tag_boxes.values()]
+    # a leader is a line like an edge: no value may sit across it or hug it
+    pos_l = dict(pos)
+    lead_edges = []
+    for i, (p0, p1) in enumerate(leaders):
+        pos_l[f"#l{i}a"], pos_l[f"#l{i}b"] = p0, p1
+        lead_edges.append((f"#l{i}a", f"#l{i}b"))
+    vlab, boxes = solve_labels(texts, pos_l, edges + lead_edges, blockers=blockers)
+    lab += vlab
     marks = "".join(F.mark(*pos[n]) for n in sorted(winners))
     a = q + marks + lab
     emit_pair(f"quiz-{slug}", q, f"quiz-{slug}-answer", a)
@@ -359,7 +416,8 @@ def quiz_ecc():
     gap, GAP = GAP, -4.0      # the two wide tags leave no room for the roomier gap used elsewhere
     try:
         quiz("ecc", S.EA, S.EA_XY, S.EB, S.EB_XY, values, winners={"F", "L"},
-             extra_tags={"E": "best closeness", "K": "best closeness"})
+             extra_tags={"E": "best closeness", "K": "best closeness"},
+             tag_away={"E": "F", "K": "L"})
     finally:
         GAP = gap
 
@@ -375,14 +433,16 @@ def quiz_btw():
     quiz("btw", S.DB, S.DB_XY, S.SQ, S.SQ_XY, values, winners={"E", "G", "O"})
 
 
-# ---- eigenvector
-def quiz_eig():
-    ev = S.compute()["EQ"]
+# ---- eigenvector, and Katz on the same two graphs
+def _eig_question():
+    """The geometry of quiz-eig: the two graphs of the eigenvector quiz, drawn once.
+
+    Returns (pos, edges, q) where q is the question's body: edges, discs, and a letter only on
+    the four candidates M, X, H, K.  The Katz question and answer reuse it, so the graphs never
+    move between the eigenvector slide and the Katz slides.
+    """
     GL, GR = S.EQ_L, S.EQ_R
     assert S.EQ_LABELS == {"left": ["M", "X"], "right": ["H", "K"]}
-    # the lower-degree node wins on both sides
-    assert ev["left"]["M"] > ev["left"]["X"] and dict(GL.degree)["M"] < dict(GL.degree)["X"]
-    assert ev["right"]["K"] > ev["right"]["H"] and dict(GR.degree)["K"] < dict(GR.degree)["H"]
     # the two graphs share plain names (a, b, ...); tag the non-candidates by side
     cand = {"M", "X", "H", "K"}
     ren_l = lambda n: n if n in cand else "L_" + n
@@ -397,13 +457,38 @@ def quiz_eig():
     # (disc, a value above and below, and the crop's padding take about 140 bp of it)
     smax = 290 / (max(y for _, y in XYL.values()) - min(y for _, y in XYL.values()))
     pos, edges, s = layout_pair(GL2, XYL, GR2, XYR, smax=smax, own_scales=True)
-    q = base_body(pos, edges, letters=cand)
-    values = {n: f"{ev['left'][n]:.2f}" for n in "MX"} | {n: f"{ev['right'][n]:.2f}" for n in "HK"}
-    win = {"M", "K"}
+    return pos, edges, base_body(pos, edges, letters=cand)
+
+
+def _eig_answer(pos, edges, values, win):
+    """Marks on the winners, and each value beside its disc, clear of the marked ring."""
+    global DISC_R
     texts = {n: (v, v, RED if n in win else "black") for n, v in values.items()}
-    lab, _ = solve_labels(texts, pos, edges)
-    marks = "".join(F.mark(*pos[n]) for n in sorted(win))
-    emit_pair("quiz-eig", q, "quiz-eig-answer", q + marks + lab)
+    old, DISC_R = DISC_R, F.NODE / 2 + 8      # the ring around a winner is wider than its disc
+    try:
+        lab, _ = solve_labels(texts, pos, edges)
+    finally:
+        DISC_R = old
+    return "".join(F.mark(*pos[n]) for n in sorted(win)) + lab
+
+
+def quiz_eig():
+    ev = S.compute()["EQ"]
+    GL, GR = S.EQ_L, S.EQ_R
+    # the lower-degree node wins on both sides
+    assert ev["left"]["M"] > ev["left"]["X"] and dict(GL.degree)["M"] < dict(GL.degree)["X"]
+    assert ev["right"]["K"] > ev["right"]["H"] and dict(GR.degree)["K"] < dict(GR.degree)["H"]
+    pos, edges, q = _eig_question()
+    values = {n: f"{ev['left'][n]:.2f}" for n in "MX"} | {n: f"{ev['right'][n]:.2f}" for n in "HK"}
+    a = q + _eig_answer(pos, edges, values, {"M", "K"})
+    kq = S.compute()["KQ"]
+    assert kq["left"]["M"] > kq["left"]["X"] and kq["right"]["H"] > kq["right"]["K"]
+    kvalues = {n: f"{kq['left'][n]:.2f}" for n in "MX"} | {n: f"{kq['right'][n]:.2f}" for n in "HK"}
+    assert kvalues == {"M": "0.87", "X": "0.81", "H": "1.00", "K": "0.81"}, kvalues
+    k = q + _eig_answer(pos, edges, kvalues, {"M", "H"})
+    # the Katz question slide shows quiz-eig.png itself, so the question, the eigenvector answer
+    # and the Katz answer share ONE crop: the graphs sit still across all three slides
+    emit_group([("quiz-eig", q), ("quiz-eig-answer", a), ("quiz-katz-answer", k)])
 
 
 # --------------------------------------------------------------------------- the cut

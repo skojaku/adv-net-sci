@@ -427,15 +427,22 @@ def fig_sigma_answer():
     words = {n: ("1/2" if share[n] == 0.5 else "1") for n in share}
     assert words == {"A": "1/2", "B": "1/2", "T": "1"}
 
-    b = edges_ink(SIG_E, SIG_XY, color=DIM)
-    b += route_ink(SIG_ROUTES, SIG_XY, [BLUE, GOLD])
-    b += discs_ink(SIG_XY, labels={n: n for n in SIG_XY})
-    sides, boxes = F.place_labels(words, SIG_XY, SIG_E, bounds=(4, 4, 1076, 300), gap=3.0)
-    amb = _unambiguous(SIG_XY, boxes)
+    # The same graph, squeezed vertically (76 bp per grid unit instead of 105): the figure is
+    # about a quarter shorter, so its slide has room for a one-line caption.  Discs and type
+    # keep their size; x is unchanged.
+    xy = {n: (x, 60 + 76 * SIGMA_POS[n][1]) for n, (x, _y) in SIG_XY.items()}
+    assert all(abs(xy[n][0] - SIG_XY[n][0]) < 1e-9 for n in xy)
+    F.assert_planar_drawing(SIG_E, xy, "sigma answer")
+    b = edges_ink(SIG_E, xy, color=DIM)
+    b += route_ink(SIG_ROUTES, xy, [BLUE, GOLD])
+    b += discs_ink(xy, labels={n: n for n in xy})
+    # the bounds are the discs' own extent, so the shares sit inside the diamond, not above and below it
+    sides, boxes = F.place_labels(words, xy, SIG_E, bounds=(4, 60 - 21, 1076, 60 + 152 + 21), gap=0.0)
+    amb = _unambiguous(xy, boxes)
     assert not amb, f"a share is printed nearer another node: {amb}"
     _DRAWN.extend(words.values())
-    b += F.draw_labels(words, SIG_XY, sides, color="black")
-    F.emit("sigma-answer", b, container="full", h=390)
+    b += F.draw_labels(words, xy, sides, color="black")
+    F.emit("sigma-answer", b, container="full", h=300)
 
 
 # =============================================================================
