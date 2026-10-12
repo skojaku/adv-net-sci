@@ -662,7 +662,7 @@ def fig_genealogy():
                 f"the {a} and {b} labels overlap -- stagger them further"
     for b in boxes.values():
         assert 6 <= b[0] and b[2] <= 1074, f"a timeline label runs off the canvas: {b}"
-    banner = "one equation, six times: $Ac = \\lambda c$"
+    banner = "a node's score is built from its neighbours' scores"
     bb = F.label_box(540, 312, banner, "center")
     for b in boxes.values():
         assert not F.boxes_overlap(bb, b), "the banner collides with a label"

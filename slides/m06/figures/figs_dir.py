@@ -303,15 +303,33 @@ def fig_pr_teleport():
     name = "pr-teleport"
     xy = PR_XY
     assert_same_positions(name, xy)
-    edges = S.PR_EDGES
+    edges = S.PR_DEAD
+    assert ("E", "A") not in edges and not [e for e in edges if e[0] == "E"], "E must be a dead end"
     assert_planar(xy, edges, name)
-    sc = N["PR"]
+    assert abs(float(S.PR_R) - 0.15) < 1e-12
+    sc = N["PR_dead"]
     assert abs(sum(sc.values()) - 1) < 1e-9
-    assert [dec(sc[k]) for k in "CEABD"] == ["0.276", "0.265", "0.255", "0.102", "0.102"]
+    assert _top(sc) == "E"
+    assert [dec(sc[k]) for k in "ECBDA"] == ["0.359", "0.316", "0.117", "0.117", "0.091"]
     shade = {n: float(sc[n]) / max(sc.values()) for n in xy}
-    body = anchors(xy) + pr_links(edges) + pages(xy, shade=shade, marks=["C"])
-    sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["C"])
+    body = anchors(xy) + pr_links(edges) + pages(xy, shade=shade, marks=["E"])
+    sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["E"])
     check_clear(xy, edges, lb, name)
+    tot_r = f"r = {float(S.PR_R):.2f}"
+    tot_t = f"total {sum(float(v) for v in sc.values()):.2f}"
+    assert tot_t == "total 1.00"
+    tx, ty = F.COL_W - 14, 88
+    lines = [(tot_r, ty + 18), (tot_t, ty - 18)]
+    for s_, y_ in lines:
+        tb = text_box(tx, y_, s_, anchor="east")
+        assert tb[0] >= 4, f"{name}: {s_!r} runs off the canvas"
+        for m in xy:
+            assert not F.boxes_overlap(tb, box_of(xy, m, 2)), f"{name}: {s_!r} sits on page {m}"
+        for a_, b_ in edges:
+            assert not hits_seg(tb, xy[a_], xy[b_]), f"{name}: {s_!r} sits on arrow {a_}->{b_}"
+        for n_, bb_ in lb.items():
+            assert not F.boxes_overlap(tb, bb_), f"{name}: {s_!r} overlaps the score of {n_}"
+        body += txt(tx, y_, s_, color=A2, anchor="east")
     F.emit(name, body + sl, container="col", h=372)
 
 
@@ -324,11 +342,13 @@ def fig_ppr():
     name = "ppr"
     xy = PR_XY
     assert_same_positions(name, xy)
-    edges = S.PR_EDGES
+    edges = S.PR_DEAD
+    assert ("E", "A") not in edges and not [e for e in edges if e[0] == "E"], "E must be a dead end"
     assert_planar(xy, edges, name)
-    sc = N["PPR_A"]
+    sc = N["PPR_A_dead"]
     assert abs(sum(sc.values()) - 1) < 1e-9
     assert dec(sc["A"]) == "0.335"
+    assert all(abs(sc[k] - N["PPR_A"][k]) < 1e-9 for k in sc)
     shade = {n: float(sc[n]) / max(sc.values()) for n in xy}
     body = anchors(xy) + pr_links(edges)
     ex, ey = xy["E"]
@@ -336,11 +356,10 @@ def fig_ppr():
     tele = ""
     for src in "BCD":
         tele += edge(src, "A", color=GY, w=GRAY_W, dash=F.DASH, bend=PPR_BEND[src])
-    # E -> A teleport: a second return, outside the solid one
-    ylo, xlo = PR_LOOP_Y - 18.0, PR_LOOP_X - 18.0
+    # E -> A jump: E has no link out, so the jump takes the free return along the bottom
     tele += (f"\\draw[line width={GRAY_W}bp,draw={GY},{F.DASH},{ARROW},rounded corners=16bp] "
-             f"({ex + 12:.1f},{ey - HALF:.1f}) -- ({ex + 12:.1f},{ylo}) -- ({xlo},{ylo}) -- "
-             f"({xlo},{ay + LOOP_DY:.1f}) -- ({ax - HALF:.1f},{ay + LOOP_DY:.1f});\n")
+             f"(E.south) -- ({ex:.1f},{PR_LOOP_Y}) -- ({PR_LOOP_X},{PR_LOOP_Y}) -- "
+             f"({PR_LOOP_X},{ay:.1f}) -- ({ax - HALF:.1f},{ay:.1f});\n")
     body += tele + pages(xy, shade=shade, marks=["A"])
     sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["A"])
     body += sl
@@ -348,6 +367,32 @@ def fig_ppr():
 
 
 # --------------------------------------------------------------------------- pr-leak
+def removed_link():
+    """The link E -> A that was cut: grey, dashed, with a small black cross on it."""
+    ex, ey = PR_XY["E"]
+    ay = PR_XY["A"][1]
+    ax = PR_XY["A"][0]
+    out = (f"\\draw[line width={GRAY_W}bp,draw={GY},{F.DASH},{ARROW},rounded corners=16bp] "
+           f"(E.south) -- ({ex:.1f},{PR_LOOP_Y}) -- ({PR_LOOP_X},{PR_LOOP_Y}) -- "
+           f"({PR_LOOP_X},{ay - LOOP_DY:.1f}) -- ({ax - HALF:.1f},{ay - LOOP_DY:.1f});\n")
+    cx, cy, d = CROSS_AT, PR_LOOP_Y, 7.0
+    for sgn in (1, -1):
+        out += (f"\\draw[line width=3bp,draw=black,line cap=round] "
+                f"({cx - d:.1f},{cy - sgn * d:.1f}) -- ({cx + d:.1f},{cy + sgn * d:.1f});\n")
+    return out
+
+
+def removed_segments():
+    ex, ey = PR_XY["E"]
+    ax, ay = PR_XY["A"]
+    return [((ex, ey - HALF), (ex, PR_LOOP_Y)), ((ex, PR_LOOP_Y), (PR_LOOP_X, PR_LOOP_Y)),
+            ((PR_LOOP_X, PR_LOOP_Y), (PR_LOOP_X, ay - LOOP_DY)),
+            ((PR_LOOP_X, ay - LOOP_DY), (ax - HALF, ay - LOOP_DY))]
+
+
+CROSS_AT = 340.0
+
+
 def fig_pr_leak():
     xy = PR_XY
     assert_same_positions("pr-leak", xy)
@@ -365,17 +410,20 @@ def fig_pr_leak():
         assert abs(total - LEAK_TOTALS[k]) < 1e-9
         body = anchors(xy) + pr_links(edges) + pages(xy, shade=shade)
         ex, ey = xy["E"]
-        body += txt(F.COL_W - 14, ey - 46, "dead end", color=GY, anchor="east")
+        body += removed_link()
+        body += txt(F.COL_W - 14, ey + 46, "dead end", color=GY, anchor="east")
         body += txt(xy["D"][0], 48, f"total {total:.2f}", color=A2)
         frames.append(body)
     # tag and counter must clear every page and arrow
-    tb = text_box(F.COL_W - 14, xy["E"][1] - 46, "dead end", anchor="east")
+    tb = text_box(F.COL_W - 14, xy["E"][1] + 46, "dead end", anchor="east")
     cb = text_box(xy["D"][0], 48, "total 0.00")
     for lb, nm in ((tb, "dead end"), (cb, "total")):
         for m in xy:
             assert not F.boxes_overlap(lb, box_of(xy, m, 2)), f"pr-leak: {nm!r} sits on page {m}"
         for a, b in edges:
             assert not hits_seg(lb, xy[a], xy[b]), f"pr-leak: {nm!r} sits on arrow {a}->{b}"
+        for p, q in removed_segments():
+            assert not hits_seg(lb, p, q), f"pr-leak: {nm!r} sits on the removed link"
     F.emit_gif("pr-leak", frames, container="col", h=372, ms=1100, hold=4)
 
 
