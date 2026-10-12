@@ -98,16 +98,17 @@ def argbest(d, best=max):
 # Left: a hub with four leaves (E), a bridge (F), a small cluster (G, H, I, J) with a tail K.
 CA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G",
             "G-H", "G-I", "G-J", "H-I", "I-J", "J-K"])
-# E sits 1.8 from F (not 1.4) and its leaves reach 1.5, so a value printed beside E reads as E's.
-CA_XY = {"E": (1.2, 2.0), "A": (1.2, 3.5), "B": (0.4, 2.7), "C": (0.4, 1.3), "D": (1.2, 0.5),
-         "F": (3.0, 2.0), "G": (4.3, 2.0), "H": (5.1, 3.0), "I": (5.85, 2.0), "J": (5.1, 1.0),
-         "K": (6.1, 0.35)}
+# The hub E is drawn at the centre of the picture, with long spokes to its leaves, and the
+# winner F sits off-centre: picking "the middle of the drawing" must not give the answer.
+CA_XY = {"E": (2.6, 2.0), "A": (2.0, 3.6), "B": (0.0, 3.0), "C": (0.0, 1.0), "D": (2.0, 0.4),
+         "F": (3.8, 2.0), "G": (4.6, 2.0), "H": (5.3, 2.85), "I": (6.0, 2.0), "J": (5.3, 1.15),
+         "K": (6.0, 0.3)}
 
 # Right: N carries a triangle (L, M) and a leaf O; P carries two long arms (Q-R-S, T-U).
 CB = graph(["N-L", "N-M", "L-M", "N-O", "N-P", "P-Q", "Q-R", "R-S", "P-T", "T-U"])
-CB_XY = {"N": (1.4, 2.0), "L": (0.5, 3.0), "M": (0.0, 1.9), "O": (0.6, 0.85),
-         "P": (2.8, 2.0), "Q": (3.7, 2.9), "R": (4.8, 2.9), "S": (5.9, 2.9),
-         "T": (3.7, 1.0), "U": (4.8, 1.0)}
+CB_XY = {"N": (2.5, 2.0), "L": (1.1, 3.4), "M": (-0.2, 2.3), "O": (1.1, 0.5),
+         "P": (3.6, 2.0), "Q": (4.3, 2.9), "R": (5.1, 3.5), "S": (5.9, 3.0),
+         "T": (4.3, 1.1), "U": (5.2, 0.6)}
 
 # The same left graph with the road E-F closed: two pieces.
 CA_CUT = CA.copy()
@@ -194,6 +195,31 @@ def power_trace(A, steps):
     return out
 
 
+# --------------------------------------------------------------------------- eigenvector quiz
+# Two candidates per side; only they carry letters. Left: M has three neighbours, two of them
+# hubs; X has four, three of them leaves. Right: H has six neighbours, five of them leaves;
+# K has three, all in a clique.
+EQ_L = graph(["M-H1", "M-H2", "H1-H2", "H1-a", "H1-b", "H1-c", "H2-d", "H2-e", "H2-f",
+              "M-X", "X-p", "X-q", "X-r"])
+EQ_L_XY = {"H1": (1.4, 3.0), "H2": (1.4, 1.0), "M": (2.6, 2.0), "X": (3.9, 2.0),
+           "a": (0.5, 3.8), "b": (0.2, 3.0), "c": (1.4, 4.1), "d": (0.5, 0.2), "e": (0.2, 1.0),
+           "f": (1.4, -0.1), "p": (4.6, 2.9), "q": (5.0, 2.0), "r": (4.6, 1.1)}
+EQ_R = graph(["H-a", "H-b", "H-c", "H-d", "H-e", "H-K1", "K1-K", "K1-K3", "K1-K4",
+              "K-K3", "K-K4", "K3-K4"])
+EQ_R_XY = {"H": (1.6, 2.0), "a": (0.6, 3.1), "b": (0.2, 2.0), "c": (0.6, 0.9), "d": (1.6, 3.3),
+           "e": (1.6, 0.7), "K1": (3.0, 2.0), "K": (5.0, 3.4), "K4": (5.0, 0.6), "K3": (4.3, 2.0)}
+EQ_LABELS = {"left": ["M", "X"], "right": ["H", "K"]}
+
+
+def eigvec(G):
+    """Eigenvector centrality with the largest entry set to 1."""
+    nodes = sorted(G)
+    A = nx.to_numpy_array(G, nodelist=nodes)
+    w, V = np.linalg.eigh(A)
+    v = np.abs(V[:, -1])
+    return dict(zip(nodes, v / v.max()))
+
+
 # --------------------------------------------------------------------------- clique ring
 def clique_ring(sizes):
     """Cliques in a ring; clique k's second node is joined to clique k+1's first node."""
@@ -213,13 +239,15 @@ RING_KATZ = (4, 4, 4, 6)                 # the graph under the alpha slider
 
 
 def eig_share(sizes):
-    """Share of the leading eigenvector's squared mass that sits in the last clique."""
+    """Share of the total eigenvector-centrality score (the sum of the leading eigenvector's
+    entries) that sits in the last clique. A share of the SQUARED entries would read higher
+    (89% instead of 68% at K = 5) and is not what "share of the score" means."""
     G = clique_ring(sizes)
     A = nx.to_numpy_array(G, nodelist=sorted(G))
     w, V = np.linalg.eigh(A)
-    v = V[:, -1]
+    v = np.abs(V[:, -1])
     big = range(sum(sizes[:-1]), sum(sizes))
-    return float(sum(v[i] ** 2 for i in big)), float(w[-1])
+    return float(sum(v[i] for i in big) / v.sum()), float(w[-1])
 
 
 def katz(A, alpha, beta=1.0):
@@ -299,6 +327,7 @@ def compute():
     N["EIG_v"] = dict(zip(EIG_ORDER, v))
     N["EIG_trace"] = power_trace(A, 30)
     N["RING"] = {K: eig_share(s) for K, s in RING_SIZES.items()}
+    N["EQ"] = {"left": eigvec(EQ_L), "right": eigvec(EQ_R)}
     Gk = clique_ring(RING_KATZ)
     Ak = nx.to_numpy_array(Gk, nodelist=sorted(Gk))
     lam = np.linalg.eigvalsh(Ak)[-1]
@@ -309,6 +338,9 @@ def compute():
     N["PR_leak"], N["PR_leak_trace"] = pagerank(PR_DEAD, PR_ORDER, r=0.0, dangling="leak", steps=12)
     N["PR_dead"], _ = pagerank(PR_DEAD, PR_ORDER, r=float(PR_R))
     N["PPR_A"], _ = pagerank(PR_EDGES, PR_ORDER, r=float(PR_R), tele="A")
+    # On the dead-end graph a dangling page jumps to the teleport target, which for the
+    # personalized walk is A -- exactly what E's lost link did. Same scores.
+    N["PPR_A_dead"], _ = pagerank(PR_DEAD, PR_ORDER, r=float(PR_R), tele="A")
     return N
 
 
@@ -352,7 +384,13 @@ def check(N):
     assert np.allclose(N["EIG_trace"][-1], list(v.values()), atol=1e-3)
     # --- localization
     assert abs(N["RING"][4][0] - 0.25) < 1e-9
-    assert N["RING"][5][0] > 0.85 and N["RING"][6][0] > 0.95
+    assert [round(N["RING"][K][0], 2) for K in (5, 6, 7, 8)] == [0.68, 0.85, 0.91, 0.94]
+    # --- eigenvector quiz: in both networks the node with fewer neighbours scores higher
+    ev = N["EQ"]
+    assert ev["left"]["M"] > ev["left"]["X"] and dict(EQ_L.degree)["M"] < dict(EQ_L.degree)["X"]
+    assert ev["right"]["K"] > ev["right"]["H"] and dict(EQ_R.degree)["K"] < dict(EQ_R.degree)["H"]
+    assert [round(ev[s][n], 2) for s, n in (("left", "M"), ("left", "X"), ("right", "K"), ("right", "H"))] \
+        == [0.85, 0.46, 0.85, 0.62]
     # --- HITS
     h, a = N["HITS"]
     assert max(h, key=h.get) == "A" and max(a, key=a.get) == "E"
@@ -364,6 +402,8 @@ def check(N):
     assert sum(N["PR_leak"].values()) < 0.2              # the score drains through the dead end
     assert abs(sum(N["PR_dead"].values()) - 1) < 1e-9
     assert max(N["PPR_A"], key=N["PPR_A"].get) == "A"
+    assert all(abs(N["PPR_A"][k] - N["PPR_A_dead"][k]) < 1e-9 for k in PR_ORDER)
+    assert max(N["PR_dead"], key=N["PR_dead"].get) == "E"
 
 
 def show(N):
@@ -384,7 +424,9 @@ def show(N):
     for t in (0, 1, 2, 3, 5, 10, 30):
         print(f"  power step {t:2d}", np.round(N["EIG_trace"][t], 3))
     for K, (s, lam) in N["RING"].items():
-        print(f"ring 4,4,4,{K}: lambda_max {lam:.3f}, eigenvector mass in the big clique {s:.3f}")
+        print(f"ring 4,4,4,{K}: lambda_max {lam:.3f}, share of the eigenvector score in the big clique {s:.3f}")
+    print("eigenvector quiz left ", {k: round(v, 2) for k, v in N["EQ"]["left"].items()})
+    print("eigenvector quiz right", {k: round(v, 2) for k, v in N["EQ"]["right"].items()})
     print("katz ring", RING_KATZ, "lambda_max", round(N["KATZ_lam"], 4), "1/lambda_max", round(1 / N["KATZ_lam"], 4))
     h, a = N["HITS"]
     print("HITS hub ", {k: round(x, 2) for k, x in h.items()})
