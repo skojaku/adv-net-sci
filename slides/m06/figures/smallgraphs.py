@@ -123,8 +123,10 @@ HD_XY = {"N": (1.2, 2.9), "L": (1.2, 4.1), "M": (0.0, 2.9), "O": (2.4, 2.9), "P"
 # --------------------------------------------------------------------------- eccentricity quiz
 # Left: a broom. Hub E with leaves A-D and a tail F-G-H.
 EA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G", "G-H"])
-EA_XY = {"E": (1.4, 2.0), "A": (1.4, 3.2), "B": (0.25, 2.6), "C": (0.25, 1.4), "D": (1.4, 0.8),
-         "F": (2.7, 2.0), "G": (4.0, 2.0), "H": (5.3, 2.0)}
+# The hub E is drawn at the centre of the picture (long bristles); the eccentricity winner F
+# sits off-centre, so "the middle of the drawing" is not the answer.
+EA_XY = {"E": (1.3, 2.0), "A": (0.6, 3.6), "B": (-2.0, 3.0), "C": (-2.0, 1.0), "D": (0.6, 0.4),
+         "F": (2.3, 2.0), "G": (3.3, 2.0), "H": (4.3, 2.0)}
 
 # Right: a pentagon K-L-M-O-P. K carries leaves I, J; M carries the leaf N.
 EB = graph(["K-I", "K-J", "K-L", "K-P", "L-M", "M-N", "M-O", "O-P"])
@@ -146,8 +148,9 @@ DB_XY = {"E": (1.5, 2.0), "A": (1.5, 3.2), "B": (0.35, 2.6), "C": (0.35, 1.4), "
 
 # Quiz right: M forks to two leaves (L, N) and to O; O is a corner of the square O-P-R-Q.
 SQ = graph(["L-M", "N-M", "M-O", "O-P", "O-Q", "P-R", "Q-R"])
-SQ_XY = {"L": (0.0, 3.0), "N": (0.0, 1.0), "M": (1.2, 2.0), "O": (2.6, 2.0), "P": (3.6, 3.0),
-         "Q": (3.6, 1.0), "R": (4.6, 2.0)}
+# M (the loser, 9) is drawn at the centre of the picture; the winner O (19/2) is not.
+SQ_XY = {"L": (-1.6, 3.4), "N": (-1.6, 0.6), "M": (1.0, 2.0), "O": (2.0, 2.0), "P": (2.7, 2.7),
+         "Q": (2.7, 1.3), "R": (3.4, 2.0)}
 
 # --------------------------------------------------------------------------- two ways to count
 # Module 01's five-node graph (make_figures.py graph5, walk-power.js): the room has met it.
@@ -209,6 +212,15 @@ EQ_R = graph(["H-a", "H-b", "H-c", "H-d", "H-e", "H-K1", "K1-K", "K1-K3", "K1-K4
 EQ_R_XY = {"H": (1.6, 2.0), "a": (0.6, 3.1), "b": (0.2, 2.0), "c": (0.6, 0.9), "d": (1.6, 3.3),
            "e": (1.6, 0.7), "K1": (3.0, 2.0), "K": (5.0, 3.4), "K4": (5.0, 0.6), "K3": (4.3, 2.0)}
 EQ_LABELS = {"left": ["M", "X"], "right": ["H", "K"]}
+
+
+def katz_q(G, frac=0.5):
+    """Katz centrality (beta = 1) at alpha = frac / lambda_max of G, largest entry set to 1."""
+    nodes = sorted(G)
+    A = nx.to_numpy_array(G, nodelist=nodes)
+    lam = np.linalg.eigvalsh(A)[-1]
+    c = np.linalg.solve(np.eye(len(A)) - frac / lam * A, np.ones(len(A)))
+    return dict(zip(nodes, c / c.max()))
 
 
 def eigvec(G):
@@ -328,6 +340,7 @@ def compute():
     N["EIG_trace"] = power_trace(A, 30)
     N["RING"] = {K: eig_share(s) for K, s in RING_SIZES.items()}
     N["EQ"] = {"left": eigvec(EQ_L), "right": eigvec(EQ_R)}
+    N["KQ"] = {"left": katz_q(EQ_L), "right": katz_q(EQ_R)}
     Gk = clique_ring(RING_KATZ)
     Ak = nx.to_numpy_array(Gk, nodelist=sorted(Gk))
     lam = np.linalg.eigvalsh(Ak)[-1]
@@ -391,6 +404,18 @@ def check(N):
     assert ev["right"]["K"] > ev["right"]["H"] and dict(EQ_R.degree)["K"] < dict(EQ_R.degree)["H"]
     assert [round(ev[s][n], 2) for s, n in (("left", "M"), ("left", "X"), ("right", "K"), ("right", "H"))] \
         == [0.85, 0.46, 0.85, 0.62]
+    # --- Katz quiz (same graphs, alpha = 0.5 / lambda_max): left agrees with the eigenvector
+    #     (M above X), right agrees with degree (H above K)
+    kq = N["KQ"]
+    assert kq["left"]["M"] > kq["left"]["X"] and kq["right"]["H"] > kq["right"]["K"]
+    assert [round(kq[s][n], 2) for s, n in (("left", "M"), ("left", "X"), ("right", "H"), ("right", "K"))] \
+        == [0.87, 0.81, 1.0, 0.81]
+    # --- the quiz drawings: the drawn middle is never the answer
+    for xy, middle, winner in ((EA_XY, "E", "F"), (SQ_XY, "M", "O")):
+        xs, ys = [p[0] for p in xy.values()], [p[1] for p in xy.values()]
+        cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+        near = min(xy, key=lambda n: (xy[n][0] - cx) ** 2 + (xy[n][1] - cy) ** 2)
+        assert near == middle != winner, (near, middle, winner)
     # --- HITS
     h, a = N["HITS"]
     assert max(h, key=h.get) == "A" and max(a, key=a.get) == "E"
@@ -427,6 +452,8 @@ def show(N):
         print(f"ring 4,4,4,{K}: lambda_max {lam:.3f}, share of the eigenvector score in the big clique {s:.3f}")
     print("eigenvector quiz left ", {k: round(v, 2) for k, v in N["EQ"]["left"].items()})
     print("eigenvector quiz right", {k: round(v, 2) for k, v in N["EQ"]["right"].items()})
+    print("katz quiz left ", {k: round(v, 2) for k, v in N["KQ"]["left"].items()})
+    print("katz quiz right", {k: round(v, 2) for k, v in N["KQ"]["right"].items()})
     print("katz ring", RING_KATZ, "lambda_max", round(N["KATZ_lam"], 4), "1/lambda_max", round(1 / N["KATZ_lam"], 4))
     h, a = N["HITS"]
     print("HITS hub ", {k: round(x, 2) for k, x in h.items()})
