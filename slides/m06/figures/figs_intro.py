@@ -99,15 +99,16 @@ def fig_basemap():
     b = g.image() + g.frame()
     for c in R.CITIES:
         b += _pin(*g.pin[c])
-    # "Roma" sits to the west of its pin, in the Tyrrhenian Sea, with a white halo.
+    # "Roma" sits to the EAST of its pin, over Italy, with a white halo. West of the pin it
+    # landed under Massilia's pin and read as Massilia's name.
     x, y = g.pin["Roma"]
     for dx in (-2, 0, 2):
         for dy in (-2, 0, 2):
             if (dx, dy) != (0, 0):
-                b += text(x - 14 + dx, y + dy, "Roma", color="white", anchor="east")
-    b += text(x - 14, y, "Roma", color="black", anchor="east")
-    # Roma's name must stay on the map.
-    assert x - 14 - 0.55 * F.FONT * 4 > g.x0, "the label Roma runs off the map"
+                b += text(x + 14 + dx, y + dy, "Roma", color="white", anchor="west")
+    b += text(x + 14, y, "Roma", color="black", anchor="west")
+    # Roma's name must end before Thessalonica's pin.
+    assert x + 14 + 0.55 * F.FONT * 4 < g.pin["Thessalonica"][0] - 10, "the label Roma reaches Thessalonica"
     emit("roma-basemap", b, container="col", h=460)
 
 
