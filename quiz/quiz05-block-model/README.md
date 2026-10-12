@@ -33,13 +33,24 @@ adjacency matrix ordered by group, cut into blocks, and one block framed with
 the rest faded (w is a constant inside it); and Lagrange multipliers, with the
 general formula. θ̂ and ŵ are printed nowhere.
 
+**The course assistant is allowed.** The quiz is practice, so the back of the
+sheet tells a stuck student to run `pi --model netsci/assistant` and point it
+at `go.skojaku.com/quiz05-text`, which is this folder's `quiz05.tex` on GitHub.
+The assistant reads the sheet's own definitions from there, because copying
+text out of the PDF garbles the formulas, and since 2026-10-12 its system
+prompt (on the droplet) says to help with a weekly quiz without giving the
+answer and to judge a student's line against the sheet, not the textbook.
+`quiz05.tex`'s header comment therefore names no answers; keep them in
+`solutions.tex`.
+
 ## Files
 
 | File | What it is |
 |---|---|
-| `quiz05.tex` / `quiz05.pdf` | The sheet handed out. Questions on page 1, hints on page 2. |
-| `solutions.tex` / `solutions.pdf` | Answer key with marking notes. **Do not hand out.** |
+| `quiz05.tex` / `quiz05.pdf` | The sheet handed out. Questions on page 1; hints and the assistant box on page 2. |
+| `solutions.tex` / `solutions.pdf` | Answer key with marking notes. |
 | `quizkit.tex` | Shared preamble, Quiz 4's without the log–log grid. |
+| `build_form.py` | Builds the Google Form by copying Quiz 4's (the API cannot make upload questions); `--info` rewrites its words only. |
 | `quiz05-form-qr.png` | The QR square on the sheet. Encodes `go.skojaku.com/ans-quiz05`. |
 
 Build the PDFs (xelatex, run twice so the links resolve):
@@ -53,15 +64,40 @@ xelatex -interaction=nonstopmode solutions.tex
 ## The plumbing
 
 Each step is the one the `quiz02` and `quiz04` READMEs document in full.
-None is done yet.
 
+- [x] **The Google Form** — made 2026-10-12 with `build_form.py --create`: a
+      Drive copy of Quiz 4's form, so the two upload questions (`Question 1`,
+      `Question 2`: images, 1 file, 10 MB, required) came with it, then the
+      title, description and text item rewritten. Email collection
+      `VERIFIED`. The copy arrived unpublished; published and accepting
+      responses since 2026-10-12. No responses yet.
+      - Students: <https://go.skojaku.com/ans-quiz05> →
+        <https://docs.google.com/forms/d/e/1FAIpQLScH20NuJi9agoEN41TRt6N0SqIMOEMe-EKNxqOvTxqypSjbMg/viewform>
+      - Editor: <https://docs.google.com/forms/d/1O_sID_M5DdjbxegnPpCnQ0dZZ_FAw38SiLhpsYcZh84/edit>
+- [ ] **The file-responses folder.** The copied upload questions have no
+      folder yet; Google makes one at the first upload. Move it into
+      `SSIE 641 Advanced Topics in Network Science/Submission/` then, as for
+      Quiz 4.
+- [x] **Three short links** on the droplet, 2026-10-12, beside the `quiz04`
+      pair. Validated and reloaded; all answer 302. The pre-edit Caddyfile is
+      `/etc/caddy/Caddyfile.bak-2026-10-12-quiz05`.
+      - `go.skojaku.com/quiz05` → the PDF on Drive
+      - `go.skojaku.com/ans-quiz05` → the form
+      - `go.skojaku.com/quiz05-text` → `quiz05.tex` on GitHub `main`, for the
+        course assistant (exact match; `/quiz05*` would otherwise catch it)
+- [x] **`quiz05.pdf` on Drive**, in the `adv-net-sci-ops` folder beside
+      Quiz 4's, read-only to the `binghamton.edu` domain, link-only. File id
+      `1HqAuL2qP3oC7aO80LDeT4fDz2iEOvE9o`. Re-upload after any edit:
+
+      ```sh
+      GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
+      gws drive files update --params '{"fileId": "1HqAuL2qP3oC7aO80LDeT4fDz2iEOvE9o"}' \
+          --upload quiz05.pdf --upload-content-type application/pdf
+      ```
 - [ ] The date. The next class after fall break is Tue 2026-10-20, which
       would make the grade item and quiz `m05-1020`.
-- [ ] `build_form.py` and the Google Form, with the two upload questions
-      `Question 1` and `Question 2` added by hand.
 - [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/M05-<date>-.../`
-      (`session.json`, `q1.md`, `q2.md`), kept in step with `solutions.tex`.
-- [ ] The two short links on the droplet (`ans-quiz05`, `quiz05`).
-- [ ] `quiz05.pdf` on Drive.
+      (`session.json` with the form id above, `q1.md`, `q2.md`), kept in step
+      with `solutions.tex`.
 - [ ] The Brightspace grade item and quiz, and the `deadlines.yaml` row.
 - [ ] Print the sheet, double-sided.

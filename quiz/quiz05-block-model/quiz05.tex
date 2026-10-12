@@ -3,25 +3,24 @@
 % printed on the back, is hints for Question 2.
 %
 % Question 1 is last year's k-core item ("the largest k with a non-empty
-% k-core"), on a network built so that two shortcuts fail. Taking every node of
-% degree >= 3 gives A..H, but the removals cascade (I,J,K -> H -> G -> E,F) and
-% leave only A,B,C,D. Taking every node of degree >= 4 gives B,D,F,H, which is
-% not a 4-core. H, the node with the most neighbours, has shell 2.
-% Shells: A,B,C,D = 3; E,F,G,H = 2; I,J,K = 1 (checked with igraph).
+% k-core"), on a network built so that the two obvious shortcuts (reading the
+% core off the degrees) fail. The shells and the removal order are in
+% solutions.tex.
 %
 % Question 2 is the Karrer--Newman (2011) derivation: write the log-likelihood
 % in c, theta and w, fix c, find theta-hat and w-hat, substitute them back.
 % The self-loops are written exactly as in the paper: A_ii is twice the number
-% of self-loops, and that number is Poisson with mean theta_i^2 w / 2. With that
-% convention the pair terms and the self-loop terms merge into one sum
-% (1/2) sum_i sum_j, and the normalization collapses sum theta theta w to
-% sum w_rs exactly. The sheet warns about it; do not soften the warning.
+% of self-loops, and that number is Poisson with mean theta_i^2 w / 2. Only that
+% convention makes the sums in (a) close exactly. The sheet warns about it; do
+% not soften the warning.
 %
 % Page 2 gives the route as moves, not results: the Poisson pmf and the
 % self-loop identity, pair terms versus node terms, one block of the adjacency
-% matrix at a time, and Lagrange multipliers. theta-hat = k_i / kappa_r and
-% w-hat = m_rs are printed nowhere, because finding them is part (b). Do not
-% put them back.
+% matrix at a time, and Lagrange multipliers. The estimates of part (b) are
+% printed nowhere, because finding them is part (b). Do not put them back.
+%
+% go.skojaku.com/quiz05-text points the course assistant at this file, so this
+% header names no answers; they are in solutions.tex.
 %
 % Compile with: xelatex -interaction=nonstopmode quiz05.tex   (run twice)
 \documentclass[a4paper, 11pt]{extarticle}
@@ -82,7 +81,7 @@
 
 \quizhead{Quiz 5 \; --- \; Cores and blocks}
         {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
-         Closed notes, work on your own \quad$\cdot$\quad
+         Closed notes, course assistant allowed \quad$\cdot$\quad
          hints for Question 2 on the back}
         {Fall 2026}
 
@@ -271,5 +270,18 @@ new variable $\mu$ and maximize, with no constraint,
 With several constraints $g_r(x) = 0$, use one multiplier for each:
 $F = f - \sum_r \mu_r\, g_r$. Here there is one constraint per group,
 $\sum_{i:\,c_i = r} \theta_i - 1 = 0$.
+
+\vfill
+
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=2pt, left=6pt, right=6pt,
+                  top=4pt, bottom=4pt]
+\textbf{Still stuck? Ask the course assistant.} In a terminal, in a folder
+that is not a Pair Notebook lesson, run \texttt{pi --model netsci/assistant}
+and type: \emph{Help me with Quiz 5, question 2. The sheet is at
+\texttt{go.skojaku.com/quiz05-text}.} Then show it what you have written so
+far. It checks your lines against this sheet and names the next move; it will
+not give you the answer.
+\end{tcolorbox}
 
 \end{document}
