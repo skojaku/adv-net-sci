@@ -61,34 +61,24 @@
   const BIG = BLOCK[BLOCK.length - 1];    /* the clique of six */
 
   /* ------------------------------------------------------------ geometry ---
-     Four cliques on a rectangle, clockwise. Node 0 of each clique faces the
-     clique before it and node 1 faces the next, so every ring edge is short
-     and straight. Each clique is a regular polygon, the other nodes spread
-     evenly around the side away from the ring. */
-  const W = 460, H = 330;
-  const CENTER = [[112, 86], [348, 86], [348, 244], [112, 244]];
-  const RADIUS = [42, 42, 42, 60];
-  const POS = [];
-  (function () {
-    const dirTo = function (a, b) {
-      return Math.atan2(CENTER[b][1] - CENTER[a][1], CENTER[b][0] - CENTER[a][0]) * 180 / Math.PI;
-    };
-    SIZES.forEach(function (s, k) {
-      const next = (k + 1) % SIZES.length, prev = (k + SIZES.length - 1) % SIZES.length;
-      const a1 = dirTo(k, next), a0 = dirTo(k, prev);
-      let d = ((a0 - a1 + 540) % 360) - 180;           /* +-90 */
-      const sgn = d > 0 ? 1 : -1;
-      const gap = 270 / (s - 1);
-      const ang = [];
-      ang[0] = a0; ang[1] = a1;
-      for (let j = 1; j <= s - 2; j++) ang[1 + j] = a1 - sgn * gap * j;
-      ang.forEach(function (a) {
-        const r = a * Math.PI / 180;
-        POS.push([CENTER[k][0] + RADIUS[k] * Math.cos(r), CENTER[k][1] + RADIUS[k] * Math.sin(r)]);
-      });
-    });
-  })();
-  const NODE_R = 12;
+     The same drawing as the K = 6 frame of the lecture-note GIF ring-local
+     (figs_eigen.ring_layout(sizes, 395, 105, radius), radius 42 for the three
+     4-cliques, 53 for the 6-clique): four cliques on an ellipse, the clique of
+     six at the right. Each 4-clique is a triangle with its fourth node in the
+     middle, so no edge crosses another. Coordinates are that function's output
+     with y flipped (SVG y runs down), origin at the ellipse's centre, pasted
+     rather than recomputed. */
+  const POS = [
+    [36.4, -84.0], [-36.4, -84.0], [0.0, -147.0], [0.0, -105.0],
+    [-374.0, -36.4], [-374.0, 36.4], [-437.0, -0.0], [-395.0, -0.0],
+    [-36.4, 84.0], [36.4, 84.0], [-0.0, 147.0], [-0.0, 105.0],
+    [349.1, 26.5], [349.1, -26.5], [395.0, -53.0], [440.9, -26.5],
+    [440.9, 26.5], [395.0, 53.0]
+  ];
+  const CENTER_BIG = [395, 0];
+  const RADIUS_BIG = 53;
+  const VIEW = "-460 -165 940 330";
+  const NODE_R = 17;
 
   /* ----------------------------------------------------------------- math --- */
   function solve(alpha) {
@@ -171,12 +161,12 @@
         sideBox.textContent = "";
 
         /* ------------------------------------------------------- the ring */
-        const svg = ctx.svgRoot("0 0 " + W + " " + H);
+        const svg = ctx.svgRoot(VIEW);
         const gHull = svg.appendChild(ctx.svgEl("g"));
         const gEdge = svg.appendChild(ctx.svgEl("g"));
         const gNode = svg.appendChild(ctx.svgEl("g"));
         gHull.appendChild(ctx.svgEl("circle", {
-          cx: CENTER[3][0], cy: CENTER[3][1], r: RADIUS[3] + NODE_R + 9, "class": "kd-hull"
+          cx: CENTER_BIG[0], cy: CENTER_BIG[1], r: RADIUS_BIG + NODE_R + 10, "class": "kd-hull"
         }));
         EDGES.forEach(function (e) {
           gEdge.appendChild(ctx.svgEl("line", {

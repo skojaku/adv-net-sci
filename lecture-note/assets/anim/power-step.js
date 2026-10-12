@@ -50,30 +50,30 @@
      B and D are ringed while they are the story (they tie at t = 2 and 3, and
      B passes D at t = 4). */
   const STEPS = [
-    { t: 0, note: "start: every node holds 1" },
-    { t: 1, note: "every node now holds its degree, divided by the largest, 4" },
+    { t: 0, note: "x: one score per node. Start: every node holds 1" },
+    { t: 1, note: "step 1: x = A\u00B71, every node holds its degree (\u00F7 4)" },
     { t: 2, note: "B has caught up with D; F and G pull ahead of both", ring: ["B", "D"] },
     { t: 3, note: "G passes F; B and D are still tied", ring: ["B", "D"] },
-    { t: 4, note: "B passes D, and stays ahead from here on", ring: ["B", "D"] },
-    { t: 5, note: "the order A G F B D E C is settled" },
-    { t: 6, note: "values still wobble, D most (0.60 to 0.58)" },
-    { t: 7, note: "D back up to 0.59: the wobble shrinks every step" },
-    { t: 8, note: "D down to 0.58: same order, changes under 0.01" },
-    { t: 30, note: "converged: B (2 neighbours) ends above D (3 neighbours)",
+    { t: 4, note: "B passes D: the order A G F B D E C is fixed from here", ring: ["B", "D"] },
+    { t: 5, note: "same order; only the second decimal moves" },
+    { t: 6, note: "D goes from 0.60 to 0.58; the order stays" },
+    { t: 7, note: "D is back at 0.59; the order stays" },
+    { t: 8, note: "D at 0.58 again; no node changes rank" },
+    { t: 30, note: "converged: eigenvector centrality. B (2 neighbours) ends above D (3)",
       label: "converged", ring: ["B", "D"] }
   ];
 
   /* ------------------------------------------------------------ geometry --- */
-  const W = 440, H = 345, R = 20;
+  const W = 440, H = 345, R = 23;
   const POS = {};
   NAMES.forEach(function (n) {
-    POS[n] = [80 + 88 * (XY[n][0] - 0.3), 312 - 90 * (XY[n][1] - 0.2)];
+    POS[n] = [62 + 88 * (XY[n][0] - 0.3), 296 - 78 * (XY[n][1] - 0.2)];
   });
-  /* Where each printed value sits relative to its disc, picked so that no label
-     lies on an edge. */
+  /* Where each printed value sits relative to its disc (28 px type), picked so that
+     no label lies on an edge or outside the frame. */
   const OFF = {
-    A: [-46, 7], B: [-49, -14], C: [-44, 8], D: [-54, 30],
-    E: [46, 8], F: [46, 6], G: [0, -29]
+    A: [-60, 9], B: [-62, 9], C: [0, 56], D: [-48, 46],
+    E: [58, 9], F: [58, 9], G: [0, -36]
   };
 
   /* white -> deck blue by the node's value. The floor keeps a score of 0.2
@@ -138,11 +138,11 @@
         NAMES.forEach(function (n) {
           const p = POS[n];
           S.ring[n] = gRing.appendChild(ctx.svgEl("circle",
-            { cx: p[0], cy: p[1], r: R + 7, "class": "ps-ring" }));
+            { cx: p[0], cy: p[1], r: R + 8, "class": "ps-ring" }));
           S.node[n] = gNode.appendChild(ctx.svgEl("circle",
             { cx: p[0], cy: p[1], r: R, "class": "ps-node" }));
           const t = ctx.svgEl("text",
-            { x: p[0], y: p[1] + 7, "text-anchor": "middle", "class": "ps-name" });
+            { x: p[0], y: p[1] + 9, "text-anchor": "middle", "class": "ps-name" });
           t.textContent = n;
           S.name[n] = gNode.appendChild(t);
           S.val[n] = gNode.appendChild(ctx.svgEl("text", {
