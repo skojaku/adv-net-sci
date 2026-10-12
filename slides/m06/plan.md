@@ -22,7 +22,7 @@ figures → デッキ → check_render → /slide-review。
 | 記法 | 講義ノート 01-concepts.qmd に合わせる。Katz の減衰パラメータは **α**(固有値の λ と区別するため。講師の指示では λ と書かれていたが、固有値分解のスライドで λ_k と衝突する)、PageRank のテレポート確率は r |
 | 固有値分解の図 | lecture-note/figs/spectral-decomposition.jpg と同じ表し方:固有値 = 丸(大きさ = |λ|)、固有ベクトル = 縦長の長方形、その転置 = 横長の長方形、行列 = 正方形 |
 | 色 | 固有ベクトルの符号は 青(+)/ オレンジ(−)、濃さで大きさ。緑は使わない。赤は強調文字だけ |
-| 削除 | 旧93枚目以降(地図の描き直しによる頑健性、計算コスト、星とパス、応用3題、Module 07 予告)。旧10〜12枚目(クラブ網の3つの答え)。旧42〜43枚目(M03 の攻撃比較)。旧44枚目の配布物の案内 |
+| 削除 | 旧10〜12(クラブ網の3つの答え)。旧41〜45(2位の都市、ブリッジとブローカー、M03 の攻撃比較、配布物の案内)。旧87〜88 は分類表(2日目32枚目)に置き換え。旧90〜92(ローマ網の描き直し。ローマ網を作業グラフにしないため)。旧93以降(描き直し、計算コスト、星とパス、応用3題、Module 07 予告) |
 | 残すクイズ | 「次数・近接・離心・媒介の1位がすべて別のノードになるグラフを作れ」を最後に置く |
 
 ## 1日目 (10/20) — 最短パスで測る
@@ -58,7 +58,7 @@ figures → デッキ → check_render → /slide-review。
 
 12. パート扉 **Close to everything**
 13. **Closeness centrality**。GIF:1つのノードから距離の輪が広がり、各ノードに距離が書かれ、合計 → 式 (N−1)/Σ ℓ_ij
-14. **Why N−1?**(旧25・26 → 1枚)。星グラフの中心でちょうど1
+14. **Why N−1?**(旧26・27 → 1枚)。星グラフの中心でちょうど1
 15. **Q: which node is closest to everything?** 2つのグラフ。(A) 真ん中に描かれた次数最大のノードが1位ではない、(B) 2候補が僅差
 16. **A**。各ノードの横に距離の合計、1位に王冠
 17. **NY: closeness**。右にNY網(道路 km で計算)、左に箇条書き(1位の場所と、なぜそこか)
@@ -73,7 +73,7 @@ figures → デッキ → check_render → /slide-review。
 
 ### 離心(4枚)
 
-23. **Would you site a fire station on the average?**(旧31を維持)
+23. **Would you site a fire station on the average?**(旧32を維持)
 24. **Eccentricity**。式 e_i = max_j ℓ_ij、中心性 1/e_i。GIF:各ノードから一番遠いノードに線が伸びる
 25. **Q: eccentricity** 2つのグラフ。近接の1位と離心の1位が違う例
 26. **A**
@@ -97,7 +97,7 @@ figures → デッキ → check_render → /slide-review。
 ### 固有ベクトル(6枚)
 
 1. パート扉 **Known by the company you keep**。イソップの絵(ベラスケス「イソップ」1638年)と "A man is known by the company he keeps"
-2. **Importance you inherit**(旧47〜49 → 1枚)。GIF:隣のスコアが流れ込む。式 λ c_i = Σ_j A_ij c_j
+2. **Importance you inherit**(旧48・49 → 1枚)。GIF:隣のスコアが流れ込む。式 λ c_i = Σ_j A_ij c_j
 3. **It is an eigenvector equation**(旧50の図を維持。小さな例のグラフに合わせて描き直す)
 4. **Q: N eigenvectors. Which one?**
 5. **All the eigenvectors**。小さなグラフ(7ノード)を固有ベクトルの数だけ並べ、ノードを符号(青 +、オレンジ −)と大きさ(濃さ)で塗る。
@@ -130,7 +130,7 @@ figures → デッキ → check_render → /slide-review。
 22. **Why 1/λ_max?**(旧67)。丸の図で (I − αA)⁻¹ = Σ_k 1/(1 − αλ_k) u_k u_kᵀ。α → 1/λ_1 で最初の丸が膨らみ、超えると符号が反転する
 23. **The walk row, filled**。分類表のウォークの行(次数 = 長さ1、Katz = 割引した全長、固有ベクトル = α → 1/λ_max の極限)
 
-### HITS(3枚、旧68〜76 の9枚から短縮)
+### HITS(3枚、旧69〜77 の9枚から短縮)
 
 24. パート扉 **The Web has direction**。道は両向き、リンクは片向き
 25. **Hubs and authorities**。左に箇条書きと2本の式、右に小さな有向グラフ(王冠2つ)
@@ -138,7 +138,7 @@ figures → デッキ → check_render → /slide-review。
 
 ### PageRank(5枚)
 
-27. **The same equation, six times**(旧77の系譜図を維持)
+27. **The same equation, six times**(旧78の系譜図を維持)
 28. **Divide the vote**。左に箇条書きと式 c_i = Σ_j A_ji c_j / d_j^out、右に小さな有向グラフ(5〜6ページ。旧より小さく)
 29. **Q: the walker reaches a dead end**。左右の配置は28と同じ
 30. **Teleportation**。式 c_i = (1−r) Σ_j A_ji c_j / d_j^out + r/N。左右の配置は同じ
