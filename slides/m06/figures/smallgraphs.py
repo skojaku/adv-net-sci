@@ -98,7 +98,8 @@ def argbest(d, best=max):
 # Left: a hub with four leaves (E), a bridge (F), a small cluster (G, H, I, J) with a tail K.
 CA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G",
             "G-H", "G-I", "G-J", "H-I", "I-J", "J-K"])
-CA_XY = {"E": (1.6, 2.0), "A": (1.6, 3.25), "B": (0.45, 2.55), "C": (0.45, 1.45), "D": (1.6, 0.75),
+# E sits 1.8 from F (not 1.4) and its leaves reach 1.5, so a value printed beside E reads as E's.
+CA_XY = {"E": (1.2, 2.0), "A": (1.2, 3.5), "B": (0.4, 2.7), "C": (0.4, 1.3), "D": (1.2, 0.5),
          "F": (3.0, 2.0), "G": (4.3, 2.0), "H": (5.1, 3.0), "I": (5.85, 2.0), "J": (5.1, 1.0),
          "K": (6.1, 0.35)}
 
@@ -115,7 +116,7 @@ CA_CUT.remove_edge("E", "F")
 # --------------------------------------------------------------------------- harmonic quiz
 # Right: two pieces. A star (centre N, leaves L M O P) and a path of seven (Q ... W).
 HD = graph(["N-L", "N-M", "N-O", "N-P", "Q-R", "R-S", "S-T", "T-U", "U-V", "V-W"])
-HD_XY = {"N": (1.0, 2.6), "L": (1.0, 3.6), "M": (0.0, 2.6), "O": (2.0, 2.6), "P": (1.0, 1.6),
+HD_XY = {"N": (1.2, 2.9), "L": (1.2, 4.1), "M": (0.0, 2.9), "O": (2.4, 2.9), "P": (1.2, 1.7),
          **{c: (0.0 + 1.0 * i, 0.3) for i, c in enumerate("QRSTUVW")}}
 
 # --------------------------------------------------------------------------- eccentricity quiz
