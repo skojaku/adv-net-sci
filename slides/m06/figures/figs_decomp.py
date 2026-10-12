@@ -40,8 +40,8 @@ assert (LAM[2] > 0) and (LAM[-1] < 0)
 # --------------------------------------------------------------------------- style
 BLUE = "accent!65"                    # positive eigenvalue / coefficient
 GOLD = "accentthree"                  # negative
-UFILL = "accent!25"                   # eigenvectors: neutral
-UFILL2 = "accent!55"                  # a second, different eigenvector
+UFILL = "accent"                      # eigenvectors: solid accent (the bars carry the contrast)
+UFILL2 = "accent"                     # a second eigenvector: told apart by its label, not a paler fill
 OUTLINE = "annot!45"                  # the (implied) square matrix
 RED = "accenttwo"
 
@@ -104,17 +104,12 @@ TG = 10                                         # gap between a term's circle sl
 
 
 def term(x, ytop, slot, lam_str, d, color, mlabel, top_label=None, side=S, fade=1.0,
-         cap_break=False, below_circle=None):
+         dy_label=32):
     """One term: circle in a slot of width `slot`, then the matrix; labels beneath."""
     cx, cy = x + slot / 2, ytop - side / 2
     mx = x + slot + TG
-    ylab = ytop - side - 32
+    ylab = ytop - side - dy_label
     o = circle(cx, cy, d, color)
-    if cap_break:                               # a white band: the drawn circle is capped
-        r = d / 2
-        o += (f"\\begin{{scope}}\\clip ({cx:.1f},{cy:.1f}) circle ({r:.2f}bp);"
-              f"\\draw[white,line width=6bp] ({cx - r:.1f},{cy - 0.35 * r:.1f}) -- "
-              f"({cx + r:.1f},{cy + 0.35 * r - 18:.1f});\\end{{scope}}\n")
     o += matrix(mx, ytop, side)
     if lam_str:
         o += F.text(cx, ylab, lam_str)
@@ -204,8 +199,8 @@ def pair(x, ytop, k, l, fade=1.0, tint=False):
     m2 = c2 + PSLOT + 6
     o = circle(x + PSLOT / 2, cy, C2 * abs(LAM[k]), sgn_color(LAM[k]))
     o += circle(c2 + PSLOT / 2, cy, C2 * abs(LAM[l]), sgn_color(LAM[l]))
-    o += matrix(m1, ytop, PS, bar=PBAR, rowfill=RED + "!45" if tint else UFILL)
-    o += matrix(m2, ytop, PS, bar=PBAR, colfill=RED + "!45" if tint else UFILL)
+    o += matrix(m1, ytop, PS, bar=PBAR, rowfill=RED if tint else UFILL)
+    o += matrix(m2, ytop, PS, bar=PBAR, colfill=RED if tint else UFILL)
     return scope(o, fade) if fade < 1 else o
 
 
@@ -240,8 +235,9 @@ def square_final_frame():
     ymid = ytop - side / 2
     o = F.text(pos["lhs"] + 42, ymid, "$\\mathbf{A}^2=$")
     for k in SHOW:
+        top = lambda cx, y, k=k: F.text(cx, y, "$\\lambda_%s^2$" % KLAB[k])
         o += term(pos[f"t{k if k < 3 else 6}"], ytop, slot[k], val(LAM[k] ** 2),
-                  C2 * LAM[k] ** 2, BLUE, uu(KLAB[k]), side=side)
+                  C2 * LAM[k] ** 2, BLUE, uu(KLAB[k]), top, side=side)
     o += F.text(pos["p1"] + 18, ymid, "$+$") + F.text(pos["p2"] + 18, ymid, "$+$")
     o += F.text(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     return o
@@ -261,21 +257,24 @@ D1 = 72.0                                      # diameter of the first circle, b
 TS = [1, 2, 3, 4, 8, 16]      # t = 3 shows the last term flip back to gold
 
 
+PSIDE = 72                                    # matrix side here: the "+ ... +" needs 126 bp
+
+
 def power_frame(t):
     ytop = 170
     # The circles are divided by lambda_1^t, so the left side says so: "A^t =" with
     # normalised circles would be a false equation.
-    items = [("lhs", 118), ("t0", SLOT[0] + TG + S), ("p1", 26), ("t1", SLOT[1] + TG + S),
-             ("p2", 26), ("t2", SLOT[2] + TG + S), ("dots", 96), ("t6", SLOT[N - 1] + TG + S)]
+    items = [("lhs", 118), ("t0", SLOT[0] + TG + PSIDE), ("p1", 26), ("t1", SLOT[1] + TG + PSIDE),
+             ("p2", 26), ("t2", SLOT[2] + TG + PSIDE), ("dots", 126), ("t6", SLOT[N - 1] + TG + PSIDE)]
     pos = centred(items)
-    ymid = ytop - S / 2
+    ymid = ytop - PSIDE / 2
     o = F.text(pos["lhs"] + 59, ymid, "$\\mathbf{A}^t/\\lambda_1^t=$")
     for k in SHOW:
         r = (LAM[k] / LAM[0]) ** t
         o += term(pos[f"t{k if k < 3 else 6}"], ytop, SLOT[k], val(r), D1 * abs(r),
-                  sgn_color(r), uu(KLAB[k]))
+                  sgn_color(r), uu(KLAB[k]), side=PSIDE)
     o += F.text(pos["p1"] + 13, ymid, "$+$") + F.text(pos["p2"] + 13, ymid, "$+$")
-    o += F.text(pos["dots"] + 48, ymid, "$+\\;\\cdots\\;+$")
+    o += F.text(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     o += F.text(20, ytop + 60, "$t=%d$" % t, color=RED, anchor="west")
     return o
 
@@ -289,34 +288,37 @@ def f_power():
 
 
 # --------------------------------------------------------------------------- katz-why
-KC = 18.0                                      # bp of diameter per unit of coefficient
-KCAP = 100.0
-KSLOT = {0: 96, 1: 76, 2: 76, N - 1: 96}
+KC = 13.0                                      # bp of diameter per sqrt(|coefficient|)
+KSLOT = {0: 136, 1: 76, 2: 76, N - 1: 96}
 KSTEPS = [(0.0, "$\\alpha=0$"), (0.5, "$\\alpha=0.5/\\lambda_1$"), (0.8, "$\\alpha=0.8/\\lambda_1$"),
           (0.95, "$\\alpha=0.95/\\lambda_1$"), (0.99, "$\\alpha=0.99/\\lambda_1$"),
           (1.1, "$\\alpha=1.1/\\lambda_1$")]
+KDUR = [1300, 1300, 1300, 2000, 2000, 2500]    # the 0.95, 0.99 and 1.1 frames are held >= 2 s
 
 
 def coef(frac, k):
     return 1.0 / (1.0 - frac / LAM[0] * LAM[k])
 
 
+KSIDE = 72                                    # matrix side: the 130 bp circle and "+ ... +" must fit
+
+
 def katz_frame(frac, alabel):
-    ytop = 170
-    items = [("lhs", 30), ("t0", KSLOT[0] + TG + S), ("p1", 36), ("t1", KSLOT[1] + TG + S),
-             ("p2", 36), ("t2", KSLOT[2] + TG + S), ("dots", 126), ("t6", KSLOT[N - 1] + TG + S)]
+    ytop = 190
+    items = [("lhs", 30), ("t0", KSLOT[0] + TG + KSIDE), ("p1", 36), ("t1", KSLOT[1] + TG + KSIDE),
+             ("p2", 36), ("t2", KSLOT[2] + TG + KSIDE), ("dots", 126), ("t6", KSLOT[N - 1] + TG + KSIDE)]
     pos = centred(items)
-    ymid = ytop - S / 2
+    ymid = ytop - KSIDE / 2
     o = F.text(pos["lhs"] + 15, ymid, "$=$")
     for k in SHOW:
         c = coef(frac, k)
-        d = min(KC * abs(c), KCAP)
-        capped = KC * abs(c) > KCAP
+        d = KC * np.sqrt(abs(c))                # area ~ |coefficient|: 1, 2, 5, 20, 100 read as growing
         top = None
         if c < 0:
             top = lambda cx, y: F.text(cx, y, "negative", color=RED)
+        # labels sit below the largest possible circle (130 bp), at one height in every frame
         o += term(pos[f"t{k if k < 3 else 6}"], ytop, KSLOT[k], val(c), d, sgn_color(c),
-                  uu(KLAB[k]), top, cap_break=capped)
+                  uu(KLAB[k]), top, dy_label=56, side=KSIDE)
     o += F.text(pos["p1"] + 18, ymid, "$+$") + F.text(pos["p2"] + 18, ymid, "$+$")
     o += F.text(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     o += F.text(20, ytop + 84, "$(\\mathbf{I}-\\alpha\\mathbf{A})^{-1}$", anchor="west")
@@ -331,7 +333,7 @@ def f_katz():
     assert all(coef(f, 0) > 0 for f, _ in KSTEPS[:-1]) and coef(1.1, 0) < 0
     assert all(coef(f, k) > 0 for f, _ in KSTEPS for k in range(1, N)), "only term 1 flips"
     frames = [katz_frame(f, lab) for f, lab in KSTEPS]
-    F.emit_gif("katz-why", frames, container="full", h=300, ms=1300, hold=4, nodes=False)
+    F.emit_gif("katz-why", frames, container="full", h=330, hold=1, nodes=False, durations=KDUR)
 
 
 FIGURES = [
