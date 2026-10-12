@@ -1,11 +1,10 @@
 % Quiz 05 --- answer key with marking notes. DO NOT HAND OUT.
 %
-% Question 1's numbers are measured: Leiden (igraph, modularity objective,
-% best of three runs) on Erdos--Renyi networks, N = 10,000, three draws per
-% <k>. Question 2's result was checked numerically on a simulated
-% degree-corrected network (N = 300, K = 3): the simplified log-likelihood,
-% the estimates and the final formula agree with the Poisson likelihood
-% computed pair by pair.
+% Question 1's shells and pruning rounds were checked with igraph (coreness,
+% and the rounds by repeated deletion). Question 2's result was checked
+% numerically on a simulated degree-corrected network (N = 300, K = 3): the
+% simplified log-likelihood, the estimates and the final formula agree with
+% the Poisson likelihood computed term by term, self-loops included.
 %
 % Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
 \documentclass[a4paper, 11pt]{extarticle}
@@ -24,47 +23,49 @@
         {Instructor copy \quad$\cdot$\quad do not hand out}
         {Fall 2026}
 
-\question{1}{4}{Communities in pure noise.}
+\question{1}{4}{Peel the network.}
 
-Measured, Leiden on Erd\H{o}s--R\'enyi networks with $N = 10{,}000$:
+Edges: the four-clique A, B, C, D; B--E, D--F; the triangle E, F, G; F--H,
+G--H; H--I, H--J, H--K. Degrees: A 3, B 4, C 3, D 4, E 3, F 4, G 3, H 5,
+I, J, K 1.
 
-\begin{center}
-{\renewcommand{\arraystretch}{1.1}
-\begin{tabular}{|c||*{8}{c|}}
-\hline
-$\langle k \rangle$ & 1 & 2 & 4 & 8 & 16 & 32 & 64 & 128 \\ \hline
-$Q_{\max}$ & 0.99 & 0.85 & 0.56 & 0.36 & 0.24 & 0.17 & 0.11 & 0.08 \\ \hline
-\end{tabular}}
-\end{center}
+(a) [2] \ans{$k = 3$}, and the 3-core is \ans{A, B, C, D}. Removal order for
+$k = 3$: \ans{I, J, K} (degree 1) $\to$ \ans{H} (left with F, G) $\to$
+\ans{G} (left with E, F) $\to$ \ans{E, F} (each left with two). There is no
+4-core: C has only three neighbors, so it goes, and the rest follow.
+Marking: $k = 3$, $+1$; the 3-core with a removal order that is right, $+1$.
 
-(a) [2] $Q_{\max}$ \ans{goes down}, steadily, as $\langle k \rangle$ grows.
-Very sparse: \ans{toward 1}. The network falls apart into small trees, and
-each tree is a community with no edge leaving it. Complete:
-\ans{exactly 0}. Every group of a complete graph has exactly the edges chance
-predicts or fewer, so the best partition is everyone in one group, $Q = 0$.
-Marking: the direction, with a falling sketch, $+1$; the two ends, $+0.5$ each.
-A sketch that falls but is not labelled at the ends keeps the first point only.
+\emph{The two shortcuts.} ``The 3-core is every node of degree $\ge 3$''
+gives A--H: the removals cascade, and only A--D survive. Keep the first point
+if $k = 3$ is stated, lose the second. ``There is a 4-core, B, D, F, H'' (the
+nodes of degree $\ge 4$): those four have at most two neighbors among
+themselves. $0$ for (a), unless the 3-core is also found and the 4-core is
+not claimed.
 
-(b) [2] \emph{Why.} Modularity rewards groups that hold more edges than chance
-predicts. In a sparse network chance is lumpy: a node has a handful of edges,
-the network is tree-like, and it can be cut into chunks with almost no edges
-between them. As $\langle k \rangle$ grows, each node's edges spread evenly
-over any group you propose, the fluctuations average out (relative size
-$\sim 1/\sqrt{\text{expected count}}$), and no group beats chance by much.
-\emph{The check.} Compare against randomized networks of the \ans{same size and
-density} (or the same degree sequence): pure noise at $N = 10{,}000$,
-$\langle k \rangle = 4$ already gives $Q_{\max} \approx 0.56$, so $0.45$ is no
-evidence of communities at all. Marking: the reason $+1$; the check $+1$.
-
-``Sparse networks have fewer edges, so less to cut'' with no mention of chance
-or fluctuation: $+0.5$ for the reason. ``$Q$ cannot be compared across
-networks'' with no baseline named: $+0.5$ for the check. The student does not
-need the number 0.56; naming the right comparison is the point.
+(b) [2] Shells: \ans{A, B, C, D: 3}; \ans{E, F, G, H: 2}; \ans{I, J, K: 1}.
+H has five neighbors, but three of them are leaves. A shell counts only the
+neighbors that \emph{stay} while the network is peeled: the leaves go at
+$k = 2$, H keeps F and G, so it is in the 2-core and not the 3-core.
+\ans{Degree counts neighbors; the shell counts neighbors that are themselves
+well connected.}
+Marking: every shell right, $+1$ ($+0.5$ with one or two wrong); the reason for
+H, $+1$. ``Its neighbors have low degree'' is the reason in short and earns
+the point.
 
 \question{2}{6}{The likelihood of the degree-corrected block model.}
 
-(a) [2] Poisson pmf, summed over pairs, with the sheet's convention and the
-$\log A_{ij}!$ term dropped (it depends on none of $c, \theta, w$):
+(a) [2] One Poisson factor per pair $i<j$ and one per node for its
+self-loops:
+\[
+  \mathcal{L}
+  = \sum_{i<j} \Big[ A_{ij} \log(\theta_i\theta_j w_{c_ic_j})
+        - \theta_i\theta_j w_{c_ic_j} \Big]
+  + \sum_i \Big[ \frac{A_{ii}}{2} \log\!\big(\tfrac12 \theta_i^2 w_{c_ic_i}\big)
+        - \tfrac12 \theta_i^2 w_{c_ic_i} \Big] + \text{const.}
+\]
+The self-loop term is half the pair term at $j = i$, plus
+$-\tfrac{A_{ii}}{2}\log 2$, a constant. So the two sums merge
+\emph{exactly} (Hint 1):
 \[
   \mathcal{L}
   = \frac12 \sum_i \sum_j \Big[ A_{ij} \log\!\big(\theta_i\theta_j w_{c_ic_j}\big)
@@ -80,9 +81,17 @@ $\tfrac12\sum_{ij} A_{ij} \log w_{c_ic_j} = \tfrac12 \sum_{rs} m_{rs}\log w_{rs}
   \mathcal{L}(c, \theta, w) = {\color{pltblue} \sum_i k_i \log\theta_i
   + \frac12 \sum_{r,s} \big( m_{rs} \log w_{rs} - w_{rs} \big)} .
 \]
-Marking: the log-likelihood as a sum over pairs, $+1$ (keeping $\log A_{ij}!$
-or writing $\sum_{i<j}$ is fine); the simplified form, $+1$, half for the
-$\theta$ term and half for the $w$ terms with the last one collapsed.
+Marking: the log-likelihood with the self-loop factor written correctly and
+merged into $\tfrac12\sum_i\sum_j$, $+1$; the simplified form, $+1$, half for
+the $\theta$ term and half for the $w$ terms with the last one collapsed.
+Keeping $\log A_{ij}!$ is fine.
+
+\emph{The self-loop slips.} Treating $A_{ii}$ as an ordinary pair, with mean
+$\theta_i^2 w_{c_ic_i}$: the self-loop term is no longer half the pair term,
+and the sums do not merge; $+0.5$ of the first point. Dropping the self-loops: the last term becomes
+$\tfrac12\sum_{rs} w_{rs} - \tfrac12\sum_i \theta_i^2 w_{c_ic_i}$, and the
+collapse is no longer exact; $+0.5$ of the first point, and the second point
+in full only if the leftover term is carried or named as the approximation.
 
 (b) [2] $\partial\mathcal{L}/\partial w_{rs} = m_{rs}/w_{rs} - 1 = 0$, so
 \ans{$\hat w_{rs} = m_{rs}$}. (For $r \ne s$, $w_{rs}$ and $w_{sr}$ are one

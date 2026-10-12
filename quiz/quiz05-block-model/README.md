@@ -1,38 +1,38 @@
-# Quiz 5 — Communities: noise and likelihood
+# Quiz 5 — Cores and blocks
 
 **Draft.** An in-class quiz, 20 minutes, 10 points. Page 1 is every question;
 page 2, printed on the back, is hints for Question 2. Students answer in their
 own notebook, one page per question, and upload one photo per question.
 Covers M05 (clustering).
 
-1. **Communities in pure noise** (4 pts). A trend question: Erdős–Rényi
-   networks with N = 10,000 and ⟨k⟩ = 1, 2, 4, …, 128, no communities planted.
-   (a) Does the best modularity Q_max go up or down with ⟨k⟩, and where does it
-   head at each end (2). Answer: down; toward 1 when very sparse, 0 when
-   complete. (b) Why, and what to check before believing Q = 0.45 at
-   ⟨k⟩ = 4 (2). Answer: chance is lumpy in sparse networks; compare against
-   randomized networks of the same size and density, where noise alone gives
-   ≈ 0.56.
+1. **Peel the network** (4 pts), last year's k-core item on an 11-node
+   network. (a) The largest k with a non-empty k-core, its nodes, and the
+   removal order (2). Answer: k = 3, {A, B, C, D}; removed I, J, K → H → G →
+   E, F. (b) Every node's shell, and why H, the node with the most neighbors,
+   is not in the top shell (2). Answer: A–D 3, E–H 2, I–K 1; three of H's five
+   neighbors are leaves, and a shell counts only neighbors that stay.
+   The network is built so that two shortcuts fail: "every node of degree ≥ 3"
+   (A–H) and "every node of degree ≥ 4" (B, D, F, H, not a 4-core).
 2. **The likelihood of the degree-corrected block model** (6 pts), the
    Karrer–Newman (2011) derivation. (a) The log-likelihood in c, θ, w,
-   simplified until no sum over node pairs is left (2):
+   self-loops included, simplified until no sum over node pairs is left (2):
    `Σ_i k_i log θ_i + ½ Σ_rs (m_rs log w_rs − w_rs)`. (b) θ̂_i and ŵ_rs for a
    fixed c (2): `k_i / κ_{c_i}` and `m_rs`. (c) Substitute back (2):
    `½ Σ_rs m_rs log(m_rs / κ_r κ_s)` + const.
 
-**Page 1 gives the model, not the route.** It has to state the normalization
-`Σ_{i in r} θ_i = 1` (without it θ and w trade scale and the estimates are not
-unique) and the large-N convention `Σ_{i<j} → ½ Σ_i Σ_j` (it removes the
-self-pairs). **Page 2 gives the route as moves, not results**: the Poisson
-pmf, pulling a one-end factor out of the inner sum, collecting a sum over
-pairs by groups, and a Lagrange multiplier per group. θ̂ and ŵ are printed
-nowhere.
+**The self-loops are written exactly as in the paper, and the sheet warns
+about them.** A_ii is twice the number of self-loops at i, and that number is
+Poisson with mean ½ θ_i² w. With this convention the pair terms and the
+self-loop terms merge into one sum ½ Σ_i Σ_j, exactly, and the normalization
+`Σ_{i in r} θ_i = 1` collapses `Σ θ_i θ_j w` to `Σ_rs w_rs`, exactly. Without
+the normalization, θ and w trade scale and the estimates are not unique.
 
-Q_max values measured with Leiden (igraph), three draws each:
-
-| ⟨k⟩   | 1    | 2    | 4    | 8    | 16   | 32   | 64   | 128  |
-|-------|------|------|------|------|------|------|------|------|
-| Q_max | 0.99 | 0.85 | 0.56 | 0.36 | 0.24 | 0.17 | 0.11 | 0.08 |
+**Page 2 gives the route as moves, not results**: the Poisson pmf and the
+self-loop identity `Σ_{i<j} F_ij + ½ Σ_i F_ii = ½ Σ_i Σ_j F_ij`; pair terms
+versus node terms (a node term leaves the inner sum as a coefficient); the
+adjacency matrix ordered by group, cut into blocks, and one block framed with
+the rest faded (w is a constant inside it); and Lagrange multipliers, with the
+general formula. θ̂ and ŵ are printed nowhere.
 
 ## Files
 

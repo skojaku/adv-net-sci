@@ -1,21 +1,25 @@
-% Quiz 05 --- Modularity in noise, and the likelihood of the degree-corrected
-% block model. Printed, worked in class, 20 minutes. Page 1 is every question;
-% page 2, printed on the back, is hints for Question 2.
+% Quiz 05 --- The k-core, and the likelihood of the degree-corrected block
+% model. Printed, worked in class, 20 minutes. Page 1 is every question; page 2,
+% printed on the back, is hints for Question 2.
 %
-% Question 1 asks for a trend and its reason: how the best modularity of a
-% random network moves with its average degree. Measured with Leiden on
-% Erdos--Renyi networks of N = 10,000 (three draws each):
-%   <k>   = 1     2     4     8     16    32    64    128
-%   Q_max = 0.99  0.85  0.56  0.36  0.24  0.17  0.11  0.08
+% Question 1 is last year's k-core item ("the largest k with a non-empty
+% k-core"), on a network built so that two shortcuts fail. Taking every node of
+% degree >= 3 gives A..H, but the removals cascade (I,J,K -> H -> G -> E,F) and
+% leave only A,B,C,D. Taking every node of degree >= 4 gives B,D,F,H, which is
+% not a 4-core. And H, the node with the most neighbours, has shell 2.
+% Shells: A,B,C,D = 3; E,F,G,H = 2; I,J,K = 1 (checked with igraph).
 %
 % Question 2 is the Karrer--Newman (2011) derivation: write the log-likelihood
 % in c, theta and w, fix c, find theta-hat and w-hat, substitute them back.
-% Page 1 gives the model, the normalization of theta (without it theta and w
-% trade scale and the estimates are not unique), the large-N convention that
-% removes the self-pairs, and the notation the answer is written in. It gives
-% nothing of the route.
+% The self-loops are written exactly as in the paper: A_ii is twice the number
+% of self-loops, and that number is Poisson with mean theta_i^2 w / 2. With that
+% convention the pair terms and the self-loop terms merge into one sum
+% (1/2) sum_i sum_j, and the normalization collapses sum theta theta w to
+% sum w_rs exactly. The sheet warns about it; do not soften the warning.
 %
-% Page 2 gives the route as moves, not results. theta-hat = k_i / kappa_r and
+% Page 2 gives the route as moves, not results: the Poisson pmf and the
+% self-loop identity, pair terms versus node terms, one block of the adjacency
+% matrix at a time, and Lagrange multipliers. theta-hat = k_i / kappa_r and
 % w-hat = m_rs are printed nowhere, because finding them is part (b). Do not
 % put them back.
 %
@@ -29,9 +33,54 @@
   {\large\bfseries Question #1 \quad #3\quad\normalsize\mdseries (#2 points)}\par
   \vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par}
 
+\tikzset{
+  gnode/.style={circle, draw=pltblue, fill=pltblue!12, line width=0.9pt,
+                minimum size=6.5mm, inner sep=0pt, font=\small\bfseries},
+  gedge/.style={line width=0.9pt, draw=rulegrey}
+}
+
+% ---------------------------------------------------------------------------
+% The adjacency matrix of Hint 3: ten nodes in three groups, {1..4}, {5,6,7},
+% {8,9,10}, and one self-loop at node 6 (A_66 = 2). The framed block is
+% (r, s) = (2, 2); its entries sum to 8 = 2 x 3 edges + 2 for the self-loop,
+% which is m_22. #1 = 0 the bare matrix, 1 cut into blocks, 2 one block.
+% ---------------------------------------------------------------------------
+\newcommand{\Arows}{%
+  {0,1,1,0,0,0,0,1,0,0},{1,0,1,1,0,0,0,0,0,0},{1,1,0,1,0,0,0,0,0,0},%
+  {0,1,1,0,1,0,0,0,0,0},{0,0,0,1,0,1,1,0,0,0},{0,0,0,0,1,2,1,0,0,0},%
+  {0,0,0,0,1,1,0,0,1,0},{1,0,0,0,0,0,0,0,1,1},{0,0,0,0,0,0,1,1,0,1},%
+  {0,0,0,0,0,0,0,1,1,0}}
+\newcommand{\matpanel}[1]{%
+\begin{tikzpicture}[x=0.36cm, y=0.36cm]
+  \ifnum#1>0
+    \foreach \a/\b [count=\r] in {0/4,4/7,7/10}
+      \foreach \c/\d [count=\s] in {0/4,4/7,7/10} {
+        \pgfmathsetmacro{\tint}{\r==\s ? 16 : 6}
+        \pgfmathsetmacro{\fade}{(#1==2 && !(\r==2 && \s==2)) ? 0.35 : 1}
+        \fill[pltblue!\tint, opacity=\fade] (\c,-\a) rectangle (\d,-\b);}
+    \foreach \x in {4,7} {
+      \draw[pltblue!60, line width=0.5pt] (\x,0) -- (\x,-10);
+      \draw[pltblue!60, line width=0.5pt] (0,-\x) -- (10,-\x);}
+    \foreach \m/\g in {2/1,5.5/2,8.5/3} {
+      \node[font=\scriptsize, pltblue!80!black] at (\m,0.6) {\g};
+      \node[font=\scriptsize, pltblue!80!black] at (-0.6,-\m) {\g};}
+  \else
+    \foreach \i in {1,...,10}
+      \node[font=\tiny, rulegrey] at (-0.6,-\i+0.5) {\i};
+  \fi
+  \foreach \row [count=\i] in \Arows
+    \foreach \v [count=\j] in \row {
+      \pgfmathsetmacro{\op}{(#1==2 && (\i<5 || \i>7 || \j<5 || \j>7)) ? 0.2 : 1}
+      \node[font=\scriptsize, opacity=\op] at (\j-0.5,-\i+0.5) {\v};}
+  \draw[line width=0.5pt] (0,0) rectangle (10,-10);
+  \ifnum#1=2
+    \draw[line width=1.4pt] (4,-4) rectangle (7,-7);
+  \fi
+\end{tikzpicture}}
+
 \begin{document}
 
-\quizhead{Quiz 5 \; --- \; Communities: noise and likelihood}
+\quizhead{Quiz 5 \; --- \; Cores and blocks}
         {20 minutes \quad$\cdot$\quad 10 points \quad$\cdot$\quad
          Closed notes, work on your own \quad$\cdot$\quad
          hints for Question 2 on the back}
@@ -55,23 +104,41 @@ square, or type \formshort.
 \end{tcolorbox}
 
 % ---------------------------------------------------------------------------
-\question{1}{4}{Communities in pure noise.}
+\question{1}{4}{Peel the network.}
 
-You generate Erd\H{o}s--R\'enyi random networks with $N = 10{,}000$ nodes:
-every pair of nodes is joined with the same probability, so no communities are
-planted. You make one at each average degree
-$\langle k \rangle = 1, 2, 4, \dots, 128$, and on each you find the partition
-with the highest modularity, $Q_{\max}$.
+\begin{minipage}[c]{0.47\textwidth}
+The $k$-core is the largest set of nodes in which every node has at least
+$k$ neighbors inside the set. A node's \emph{shell} is the largest $k$ for
+which the node is in the $k$-core.
 
-(a) [2 pts] As $\langle k \rangle$ grows, does $Q_{\max}$ go up, go down, or
-stay flat? Sketch $Q_{\max}$ against $\langle k \rangle$ (log scale for
-$\langle k \rangle$). What value does $Q_{\max}$ head toward when the network
-is very sparse, and when it is complete ($\langle k \rangle = N - 1$)?
+\vspace{0.3em}
+(a) [2 pts] What is the largest $k$ for which the $k$-core is non-empty? List
+its nodes, and show the order in which you removed the others.
 
-(b) [2 pts] Explain why $Q_{\max}$ moves this way. Then: a paper reports
-$Q = 0.45$ for a network with $N = 10{,}000$ and $\langle k \rangle = 4$, and
-calls it strong community structure. What would you check before believing
-it?
+\vspace{0.3em}
+(b) [2 pts] Give the shell of every node. Node H has more neighbors than any
+other node. Why is its shell not the largest?
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.5\textwidth}
+\centering
+\begin{tikzpicture}[x=1.12cm, y=1.12cm]
+  \node[gnode] (A) at (0.0, 1.3) {A};
+  \node[gnode] (B) at (1.3, 1.3) {B};
+  \node[gnode] (C) at (0.0, 0.0) {C};
+  \node[gnode] (D) at (1.3, 0.0) {D};
+  \node[gnode] (E) at (2.6, 1.6) {E};
+  \node[gnode] (F) at (2.6,-0.3) {F};
+  \node[gnode] (G) at (3.7, 0.65) {G};
+  \node[gnode] (H) at (4.8, 0.2) {H};
+  \node[gnode] (I) at (5.8, 0.9) {I};
+  \node[gnode] (J) at (6.0, 0.1) {J};
+  \node[gnode] (K) at (5.7,-0.6) {K};
+  \foreach \a/\b in {A/B, A/C, A/D, B/C, B/D, C/D, B/E, D/F, E/F, E/G, F/G,
+                     F/H, G/H, H/I, H/J, H/K}
+    \draw[gedge] (\a) -- (\b);
+\end{tikzpicture}
+\end{minipage}
 
 % ---------------------------------------------------------------------------
 \question{2}{6}{The likelihood of the degree-corrected block model.}
@@ -80,29 +147,38 @@ it?
                   sharp corners, boxsep=2pt, left=6pt, right=6pt,
                   top=4pt, bottom=4pt]
 {\small
-An undirected network has $N$ nodes and $M$ edges. $A_{ij} = A_{ji}$ is the
-number of edges between nodes $i$ and $j$ ($A_{ii} = 0$), and
-$k_i = \sum_j A_{ij}$ is the degree of node $i$. Node $i$ belongs to group
-$c_i \in \{1, \dots, K\}$. The \emph{degree-corrected block model} draws, for
-every pair $i < j$ independently,
+An undirected network has $N$ nodes. It may have several edges between two
+nodes, and self-loops. For $i \neq j$, $A_{ij} = A_{ji}$ is the number of edges
+between $i$ and $j$; $A_{ii}$ is \emph{twice} the number of self-loops at $i$,
+because a self-loop has both its ends at $i$. The degree is
+$k_i = \sum_j A_{ij}$. Node $i$ belongs to group $c_i \in \{1, \dots, K\}$.
+The \emph{degree-corrected block model} draws, all independently,
 \[
-  A_{ij} \sim \mathrm{Poisson}\!\left(\theta_i \theta_j\, w_{c_i c_j}\right),
+  A_{ij} \sim \mathrm{Poisson}\!\left(\theta_i \theta_j\, w_{c_i c_j}\right)
+  \ \text{ for every pair } i < j,
   \qquad
-  \text{with} \quad \sum_{i:\,c_i = r} \theta_i = 1 \ \text{ for every group } r,
+  \frac{A_{ii}}{2} \sim \mathrm{Poisson}\!\left(\tfrac12\, \theta_i^2\, w_{c_i c_i}\right)
+  \ \text{ for every node } i,
 \]
-where $\theta_i > 0$ and $w_{rs} = w_{sr} > 0$. Write $m_{rs}$ for the number
-of edge ends in group $r$ whose other end is in group $s$ (an edge inside
-group $r$ counts twice in $m_{rr}$), and
-$\kappa_r = \sum_{i:\,c_i = r} k_i$ for the total degree of group $r$.
+where $\theta_i > 0$, $w_{rs} = w_{sr} > 0$, and
+$\sum_{i:\,c_i = r} \theta_i = 1$ for every group $r$. Write $m_{rs}$ for the
+number of edge ends in group $r$ whose other end is in group $s$ (an edge
+inside $r$, and a self-loop in $r$, count twice in $m_{rr}$), and
+$\kappa_r = \sum_{i:\,c_i = r} k_i$ for the total degree of group $r$. Drop
+any term that depends on none of $c$, $\theta$, $w$.
 
-$N$ is large: you may replace $\sum_{i<j}$ by $\tfrac{1}{2}\sum_i \sum_j$, and
-drop any term that depends on none of $c$, $\theta$, $w$.
+\vspace{0.3em}
+\textbf{Careful with the self-loops.} Keep them, exactly as defined: a
+self-loop counts 2 in $A_{ii}$ and in $k_i$, and the \emph{number} of
+self-loops is the Poisson variable, with mean $\tfrac12 \theta_i^2 w_{c_ic_i}$.
+Drop them, or treat $A_{ii}$ like any other pair, and the sums in (a) no
+longer close.
 }
 \end{tcolorbox}
 
 (a) [2 pts] Write the log-likelihood
-$\mathcal{L}(c, \theta, w) = \log P(A \mid c, \theta, w)$. Simplify it until no
-sum over pairs of nodes is left.
+$\mathcal{L}(c, \theta, w) = \log P(A \mid c, \theta, w)$, self-loops
+included. Simplify it until no sum over pairs of nodes is left.
 
 (b) [2 pts] Fix the assignment $c$. Find the maximum-likelihood estimates
 $\hat{\theta}_i$ and $\hat{w}_{rs}$.
@@ -129,44 +205,78 @@ still yours.}
 
 \vspace{0.6em}
 
-\textbf{Hint 1 --- The Poisson distribution.}
-If $A \sim \mathrm{Poisson}(\lambda)$, then
+\textbf{Hint 1 --- The Poisson distribution, and the self-loops.}
+If $X \sim \mathrm{Poisson}(\lambda)$, then
+$P(X = x) = \lambda^{x} e^{-\lambda} / x!$. Everything is independent, so the
+likelihood is a product: one factor for each pair $i < j$, and one for each
+node $i$, its self-loops. The logarithm turns the product into sums. At a
+self-loop the Poisson variable is $A_{ii}/2$ and its mean is
+$\tfrac12 \theta_i^2 w_{c_ic_i}$, not $A_{ii}$ and $\theta_i^2 w_{c_ic_i}$.
+That convention makes each self-loop term exactly half of what the pair term
+would be at $j = i$, up to a constant. Then, for any symmetric $F_{ij}$,
 \[
-  P(A = a) = \frac{\lambda^{a} e^{-\lambda}}{a!} .
+  \sum_{i<j} F_{ij} \;+\; \frac12 \sum_i F_{ii}
+  \;=\; \frac12 \sum_i \sum_j F_{ij} .
 \]
-The pairs are independent, so the likelihood is a product over pairs, and its
-logarithm is a sum over pairs.
 
-\vspace{0.6em}
+\vspace{0.4em}
 
-\textbf{Hint 2 --- From pairs to nodes.}
-A factor that depends on only one end of the pair can leave the inner sum:
+\textbf{Hint 2 --- Pair terms and node terms.}
+Inside $\sum_i \sum_j$, $A_{ij}$ is a \emph{pair} term: it depends on both $i$
+and $j$. $\theta_i$ is a \emph{node} term: it depends on $i$ alone. In the
+inner sum over $j$, a node term of $i$ never changes, so it comes out as a
+coefficient:
 \[
-  \sum_i \sum_j A_{ij}\, f(i) \;=\; \sum_i f(i) \Big( \sum_j A_{ij} \Big) .
+  \sum_i \sum_j A_{ij}\, f(\theta_i) \;=\; \sum_i f(\theta_i) \Big( \sum_j A_{ij} \Big) .
 \]
-What is the bracket? Since $A_{ij} = A_{ji}$, a factor $f(j)$ goes the same
-way.
+What is the bracket? Since $A_{ij} = A_{ji}$, a node term of $j$ comes out of
+the sum over $i$ the same way.
 
-\vspace{0.6em}
+\vspace{0.4em}
 
-\textbf{Hint 3 --- From pairs to groups.}
-A factor that depends only on the groups of the two ends can be collected one
-pair of groups at a time:
+\textbf{Hint 3 --- One block at a time.}
+
+\vspace{0.2em}
+\begin{center}
+\begin{tabular}{c@{\hspace{0.5cm}}c@{\hspace{0.5cm}}c@{\hspace{0.5cm}}c@{\hspace{0.5cm}}c}
+\matpanel{0} & \raisebox{1.8cm}{$\Rightarrow$} &
+\matpanel{1} & \raisebox{1.8cm}{$\Rightarrow$} &
+\matpanel{2} \\[0.2em]
+\parbox[t]{3.9cm}{\centering\footnotesize the adjacency matrix, nodes ordered
+  by group; $A_{66} = 2$ is one self-loop} & &
+\parbox[t]{3.9cm}{\centering\footnotesize cut into blocks, one for each pair
+  of groups $(r, s)$} & &
+\parbox[t]{3.9cm}{\centering\footnotesize one block, $(r, s) = (2, 2)$: every
+  entry in it has $c_i = 2$ and $c_j = 2$}
+\end{tabular}
+\end{center}
+
+Order the nodes by group and the adjacency matrix falls into $K \times K$
+blocks. Inside the framed block every entry has $c_i = r$ and $c_j = s$, so
+$w_{c_ic_j} = w_{rs}$ is a constant there: it comes out of the block's sum,
+just as a node term did in Hint 2. So sum one block at a time,
 \[
-  \sum_i \sum_j A_{ij}\, g(c_i, c_j)
-  \;=\; \sum_r \sum_s g(r, s) \sum_{i:\,c_i = r} \ \sum_{j:\,c_j = s} A_{ij} .
+  \sum_i \sum_j \;=\; \sum_r \sum_s \ \sum_{i:\,c_i = r} \ \sum_{j:\,c_j = s} .
 \]
-What does the last double sum count? Make the same move on the term that has
-no $A_{ij}$ in it, and then use the normalization of $\theta$.
+What does the sum of the entries in the framed block count? Do the same with
+the term that has no $A_{ij}$ in it, and then use the normalization of
+$\theta$.
 
-\vspace{0.6em}
+\vspace{0.4em}
 
-\textbf{Hint 4 --- Maximizing under a constraint.}
-The $\theta_i$ of one group must sum to 1, so you cannot just set
-$\partial \mathcal{L} / \partial \theta_i = 0$. Add one Lagrange multiplier
-per group and maximize
+\textbf{Hint 4 --- Lagrange multipliers.}
+A Lagrange multiplier turns a maximization \emph{with} a constraint into one
+\emph{without}. To maximize $f(x_1, \dots, x_n)$ subject to $g(x) = 0$, add a
+new variable $\mu$ and maximize, with no constraint,
 \[
-  \mathcal{L} \;-\; \sum_r \mu_r \Big( \sum_{i:\,c_i = r} \theta_i - 1 \Big) .
+  F(x, \mu) \;=\; f(x) - \mu\, g(x) :
+  \qquad
+  \frac{\partial F}{\partial x_i} = 0 \ \text{ for every } i,
+  \qquad
+  \frac{\partial F}{\partial \mu} = 0 \ \ (\text{which is } g(x) = 0 \text{ again}).
 \]
+With several constraints $g_r(x) = 0$, use one multiplier for each:
+$F = f - \sum_r \mu_r\, g_r$. Here there is one constraint per group,
+$\sum_{i:\,c_i = r} \theta_i - 1 = 0$.
 
 \end{document}
