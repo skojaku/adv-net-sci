@@ -18,7 +18,7 @@ math: katex
 <div class="credit">Sadamori Kojaku · Binghamton University</div>
 
 <!--
-Day 1 (10/20): slides 1 to 34, measured by shortest paths. Day 2 (10/22): slides 35 to 70, measured by walks.
+Day 1 (10/20): slides 1 to 34, measured by shortest paths. Day 2 (10/22): slides 35 to 72, measured by walks.
 The pen-and-paper sheet has already been done, so the room has met degree, average distance, "indispensable" and passing scores around. Name things; do not re-derive what is in their hands.
 -->
 
@@ -38,7 +38,7 @@ The pen-and-paper sheet has already been done, so the room has met degree, avera
 
 <div class="photo-credit">Julius Caesar (photo Marie-Lan Taÿ Pamart, CC BY 4.0) · Augustus of Prima Porta (photo Justin Benttinen, CC BY-SA 4.0) · remains labelled Milliarium Aureum (photo Krzysztof Golik, CC BY-SA 4.0) · Wikimedia Commons</div>
 
-* Augustus, Caesar's adopted heir, set up the **Golden Milestone** in 20 BC.
+* Augustus (Caesar's heir) set up the **Golden Milestone** in 20 BC.
 * A gilded column in the Forum, by the Temple of Saturn.
 * Its text is lost. It is said to have listed cities and their distances in miles.
 * Plutarch: every road of Italy ended at it.
@@ -168,8 +168,6 @@ On a road map almost every junction joins three or four roads. A measure that on
 
 ---
 
-<!-- _class: mid -->
-
 ## How far is u from v?
 
 <hr>
@@ -188,7 +186,7 @@ The network from Module 01.
 </div>
 
 <!--
-Take answers. Someone says 2. Ask: in how many ways can you get there in 3 steps? In 4?
+Take answers. Ask: in how many ways can you get there in 3 steps? In 4?
 -->
 
 ---
@@ -259,7 +257,7 @@ $$c_i = \frac{N-1}{\sum_{j \ne i} \ell_{ij}}$$
 
 </div>
 
-$\ell_{ij}$: the length of a shortest path from $i$ to $j$. $N$: the number of nodes.
+$\ell_{ij}$: shortest-path length from $i$ to $j$; $N$: number of nodes.
 
 </div>
 <div class="fig">
@@ -300,7 +298,7 @@ Then the score is exactly 1.
 
 <hr>
 
-The smallest sum of distances wins. Left and right are separate networks.
+Smallest sum of distances wins. Two separate networks.
 
 <div class="fig">
 
@@ -345,7 +343,7 @@ Right: P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arm
 
 * Distance: km of highway.
 * Winner: NY 17 near Middletown, in the Hudson Valley.
-* 31% of the interchanges lie within 60 km of Manhattan.
+* 31% of the interchanges lie within 60 km of Manhattan, so the winner sits near the city.
 
 </div>
 <div class="fig">
@@ -361,8 +359,6 @@ Closeness is pulled toward where the nodes are. 91 of 289 interchanges are withi
 -->
 
 ---
-
-<!-- _class: mid -->
 
 ## What if one road closes?
 
@@ -431,7 +427,7 @@ $$h_i = \sum_{j \ne i} \frac{1}{\ell_{ij}}$$
 
 **Harmonic centrality**.
 
-An unreachable node adds $1/\infty = 0$.
+$1/\infty = 0$: an unreachable node adds nothing.
 
 </div>
 <div class="fig">
@@ -451,7 +447,7 @@ Invert each distance, then add. An unreachable node adds 0 instead of making the
 
 <hr>
 
-Left: the closeness network, with the road E–F open again. Right: two pieces.
+Left: the closeness network, road E–F open. Right: two pieces.
 
 <div class="fig">
 
@@ -531,6 +527,12 @@ The best fire station: the smallest worst case.
 <div class="fig">
 
 ![w:1080](figures/quiz-ecc.png)
+
+</div>
+
+<div class="cue">
+
+*Take a minute.*
 
 </div>
 
@@ -631,6 +633,7 @@ $\sigma_{st}$: the number of shortest paths from $s$ to $t$; $\sigma_{st}(i)$: t
 <div class="fig">
 
 ![w:1080](figures/sigma-answer.png)
+<figcaption>S to D: two shortest paths, so A and B each carry half of this pair</figcaption>
 
 </div>
 
@@ -649,6 +652,12 @@ Count the shortest paths through each node; a tie splits the count.
 <div class="fig">
 
 ![w:1080](figures/quiz-btw.png)
+
+</div>
+
+<div class="cue">
+
+*Take a minute.*
 
 </div>
 
@@ -689,7 +698,7 @@ Right: O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: t
 <div class="fig">
 
 ![w:537](figures/ny-betweenness.png)
-<figcaption>darker, larger dot: more shortest paths pass through</figcaption>
+<figcaption>darker, larger dot: more paths pass through</figcaption>
 
 </div>
 </div>
@@ -731,7 +740,7 @@ Is a city important because its neighbours are important?
 
 <div class="band"><span>Part Three</span><span class="count">03 / 05</span></div>
 
-## Known by the company you keep
+## The company you keep
 
 importance you inherit
 
@@ -750,7 +759,7 @@ Day 2 starts here.
 
 <div class="formula">
 
-"A man is known by the company he keeps."
+“A man is known by the company he keeps.”
 
 </div>
 
@@ -821,13 +830,19 @@ It is circular: a score defined by scores. The constant lambda keeps the scores 
 
 This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality?
 
+<div class="cue">
+
+*Take 30 seconds.*
+
+</div>
+
 ---
 
 ## Perron and Frobenius
 
 <hr>
 
-In a connected network, only the eigenvector of the largest eigenvalue is positive (blue) everywhere.
+In a connected network, only the eigenvector of the largest eigenvalue is positive (blue) everywhere. Gold: a negative entry.
 
 <div class="fig tall">
 
@@ -864,11 +879,11 @@ The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducib
 
 ---
 
-## Which marked node scores higher?
+## Which lettered node scores higher?
 
 <hr>
 
-Eigenvector centrality. In each network, compare the two lettered nodes.
+Eigenvector centrality: compare the lettered nodes.
 
 <div class="fig">
 
@@ -997,8 +1012,6 @@ Divide everything by lambda_1^t: term k shrinks like (lambda_k / lambda_1)^t. Th
 Press the right arrow once per step. Each press applies x <- A x once and divides by the largest entry; the disc shade and the printed number are the entry.
 
 Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F 3, G 3, B 2, E 2, C 1), divided by 4, so A is 1.00 and C is 0.25. So degree is the first guess, and each further step looks one step farther. Step 2: B has caught up with D (both 0.64) and F, G pull ahead of both (0.82). Step 3: G passes F; B and D are still exactly tied (0.625). Step 4: B passes D (0.63 against 0.59) and stays ahead; the order is now fixed. B has two neighbours and D has three, but B's two neighbours (A and G) are the strongest nodes. D's third neighbour is the leaf C. From step 4 the order A G F B D E C no longer changes; steps 5 to 8 only move the second decimal. Step 30 (the last dot): nothing moves; these seven numbers are the eigenvector of the largest eigenvalue, 2.884, with its largest entry set to 1.
-
-Ask before step 3: which of B and D will end up higher? Most of the room says D (three neighbours).
 -->
 
 ---
@@ -1037,7 +1050,7 @@ Four cliques of four, in a ring. Add one node to one clique. Where does the scor
 <div class="fig">
 
 ![w:1080](figures/ring-local.gif)
-<figcaption>share of the total score inside the growing clique</figcaption>
+<figcaption>K: the size of the last clique; the share of the total score inside it</figcaption>
 
 </div>
 
@@ -1061,7 +1074,7 @@ One extra node, and 68% of the total score moves into that clique; with two, 85%
 <div class="fig">
 
 ![w:537](figures/ny-eigenvector.png)
-<figcaption>darker, larger dot: higher score; dashed circle: 60 km</figcaption>
+<figcaption>darker dot: higher score; dashed: 60 km</figcaption>
 
 </div>
 </div>
@@ -1099,6 +1112,8 @@ $$\mathbf{c} = \beta\, (I - \alpha A)^{-1} \mathbf{1}$$
 
 **Katz centrality**: $\beta$ for free, plus $\alpha$ times each neighbour's score.
 
+$I$: the identity matrix; $\mathbf{1}$: all ones.
+
 </div>
 <div class="fig">
 
@@ -1127,6 +1142,12 @@ $$\frac{1}{1-x} = 1 + x + x^2 + \cdots \quad \text{for } |x| < 1$$
 
 </div>
 
+<div class="cue">
+
+*Take 30 seconds.*
+
+</div>
+
 ---
 
 ## The same series for matrices
@@ -1138,7 +1159,7 @@ $$\frac{1}{1-x} = 1 + x + x^2 + \cdots \quad \text{for } |x| < 1$$
 
 <div class="formula">
 
-$$(I - \alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$$
+$$\begin{aligned}(I-\alpha A)^{-1} &= I + \alpha A \\ &\quad + \alpha^2 A^2 + \cdots\end{aligned}$$
 
 </div>
 
@@ -1204,12 +1225,51 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 <div class="fig">
 
 ![w:1080](figures/katz-why.gif)
-<figcaption>circle: the weight of term k, 1 / (1 - alpha lambda_k)</figcaption>
+<figcaption>circle: the weight of term k, 1 / (1 − α λₖ)</figcaption>
 
 </div>
 
 <!--
 Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+-->
+
+---
+
+## Which lettered node scores higher now?
+
+<hr>
+
+Katz centrality, $\alpha = 0.5/\lambda_{\max}$. The same two networks.
+
+<div class="fig">
+
+![w:1080](figures/quiz-eig.png)
+
+</div>
+
+<div class="cue">
+
+*Take a minute.*
+
+</div>
+
+---
+
+## Answer
+
+<hr>
+
+Katz centrality, largest = 1.
+
+<div class="fig">
+
+![w:1080](figures/quiz-katz-answer.png)
+<figcaption>left: as the eigenvector ranks them; right: as degree ranks them</figcaption>
+
+</div>
+
+<!--
+Left: M 0.87, X 0.81. Right: H 1.00, K 0.81. At alpha = 0.5/lambda_max short walks still weigh a lot, so H's six neighbours count; as alpha approaches 1/lambda_max, Katz turns into the eigenvector and K passes H.
 -->
 
 ---
@@ -1221,7 +1281,7 @@ Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes
 <div class="fig">
 
 ![w:1080](figures/grid-row2.png)
-<figcaption>degree and eigenvector centrality are the two ends of Katz: alpha near 0 ranks by degree, alpha near 1 / lambda_max by the eigenvector</figcaption>
+<figcaption>degree and eigenvector centrality are the two ends of Katz: α near 0 ranks by degree, α near 1/λmax by the eigenvector</figcaption>
 
 </div>
 
@@ -1451,9 +1511,7 @@ Replace r/N by r on A and 0 elsewhere. "More like this" on a website: teleport t
 <div class="cols">
 <div>
 
-Closeness: Middletown. Harmonic: the Bronx. Eccentricity: east of Binghamton.
-
-Betweenness: Monticello. Eigenvector: Hempstead.
+Closeness: Middletown. Harmonic: the Bronx. Eccentricity: east of Binghamton. Betweenness: Monticello. Eigenvector: Hempstead.
 
 </div>
 <div class="fig">

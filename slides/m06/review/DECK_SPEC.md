@@ -1,7 +1,7 @@
 # m06 "All Roads Lead to Rome" — deck spec v2
 
 Slide-by-slide plan for `m06-centrality.md`, expanded from `plan.md` (v2, 2026-10-12).
-Sessions **10/20** (slides 1–34) and **10/22** (slides 35–70). One minute per slide.
+Sessions **10/20** (slides 1–34) and **10/22** (slides 35–72). One minute per slide.
 
 Every number below comes from `figures/smallgraphs.py` (small graphs) or
 `figures/data/ny_network.json` (built by `figures/make_ny.py`). A figure imports the value;
@@ -36,35 +36,35 @@ A figure authored for `full` must not be used in a `cols` column, and vice versa
 | # | title | class/layout | figure (container) | content |
 |---|---|---|---|---|
 | 1 | All Roads Lead to Rome | lead | — | eyebrow "Module 06", sub "… do they?" |
-| 2 | 20 BC, the Forum Romanum | photos row + 4 bullets | `photos/caesar.jpg`, `augustus.jpg`, `milliarium.jpg` (hand-placed) | Augustus set up the Golden Milestone in 20 BC / a gilded column in the Forum / inscription lost, said to list cities and miles / "Plutarch: every road of Italy ended at it." Credit line from `photos/CREDITS.md`. |
+| 2 | 20 BC, the Forum Romanum | photos row + 4 bullets | `photos/caesar.jpg`, `augustus.jpg`, `milliarium.jpg` (hand-placed) | Augustus (Caesar's heir) set up the Golden Milestone in 20 BC / a gilded column in the Forum / inscription lost, said to list cities and miles / "Plutarch: every road of Italy ended at it." Credit line from `photos/CREDITS.md`. |
 | 3 | Twelve cities of the empire | cols | `roma-basemap` (col) | "Roads and sea lanes joined these twelve cities." Credit "© OpenStreetMap contributors" |
 | 4 | Keep the links, drop the map | one line + fig tall | `roma-to-graph.gif` (full, tall) | Q line: "Which city is the most important?" |
 | 5 | Today's question, at home | cols | `ny-overview` (col) | "New York State highways: 289 interchanges." Q: "Which of these eight cities do the most cross-state trips pass through?" (answer: slide 32) |
 | 6 | Degree centrality | formula + fig tall | `roma-degree` (full, tall) | $d_i = \sum_j A_{ij}$, $A_{ij} = 1$ if a road joins $i$ and $j$; caption "darker: more roads; Roma has the most, 5" |
 | 7 | New York: degree | cols | `ny-degree` (col) | "201 interchanges have degree 3, and 57 have degree 4." "Degree cannot tell them apart." |
-| 8 | How far is u from v? | mid, cols | `w5-blank` (col) | question only |
+| 8 | How far is u from v? | cols | `w5-blank` (col) | question only |
 | 9 | Two ways to count | cols | `w5-walks.gif` (col) | shortest path: one number, 2 / walk: a count for every length: 2, 1, 11, … |
 | 10 | Two choices make a centrality | one line + fig | `grid-empty` (full) | "Which routes count, and how do they become one number?" |
 | 11 | Close to everything | part | — | |
-| 12 | Closeness centrality | cols | `closeness-def.gif` (col) | $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$; $\ell_{ij}$ = length of a shortest path; $N$ = number of nodes |
+| 12 | Closeness centrality | cols | `closeness-def.gif` (col) | $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$; $\ell_{ij}$: shortest-path length from $i$ to $j$; $N$: number of nodes |
 | 13 | Why N − 1? | cols | `star-closeness` (col) | "Best case: every other node is one step away. Then the score is exactly 1." |
-| 14 | Which node is closest to everything? | one line + fig | `quiz-close` (full) | question only |
+| 14 | Which node is closest to everything? | one line + fig | `quiz-close` (full) | "Smallest sum of distances wins. Two separate networks." question only |
 | 15 | Answer | line + fig | `quiz-close-answer` (full) | line "The sum of distances, beside each candidate."; left F (19) beats E and G (20); right P (16) beats N (18) |
 | 16 | New York: closeness | cols | `ny-closeness` (col) | km of highway; winner NY 17 near Middletown; 31% of the interchanges within 60 km of Manhattan |
-| 17 | What if one road closes? | mid, cols + cue | `cut-blank` (col) | left quiz graph with E–F removed; question only; "Take 30 seconds." |
+| 17 | What if one road closes? | cols + cue | `cut-blank` (col) | left quiz graph with E–F removed; question only; "Take 30 seconds." |
 | 18 | Every score drops to zero | cols | `cut-closeness` (col) | "Some ℓ = ∞, so every sum = ∞, so every c = 0." |
-| 19 | Take the reciprocal first | cols | `harmonic-def.gif` (col) | $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$; "An unreachable node adds $1/\infty = 0$." |
-| 20 | Which node has the highest harmonic centrality? | one line + fig | `quiz-harm` (full) | "Left: the closeness network, with the road E–F open again. Right: two pieces." question only |
+| 19 | Take the reciprocal first | cols | `harmonic-def.gif` (col) | $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$; "**Harmonic centrality**." then "$1/\infty = 0$: an unreachable node adds nothing." |
+| 20 | Which node has the highest harmonic centrality? | one line + fig | `quiz-harm` (full) | "Left: the closeness network, road E–F open. Right: two pieces." question only |
 | 21 | Answer | line + fig | `quiz-harm-answer` (full) | line "Harmonic centrality, beside each candidate."; left E (27/4) beats G (19/3) and F (35/6); right N (4) beats T (11/3) |
 | 22 | Would you site a fire station on the average? | mid | — | question only; cue "Take 30 seconds." |
 | 23 | Eccentricity | cols | `ecc-def.gif` (col) | $e_i = \max_{j} \ell_{ij}$, eccentricity centrality $= 1/e_i$ |
-| 24 | Which node has the smallest eccentricity? | one line + fig | `quiz-ecc` (full) | question only |
+| 24 | Which node has the smallest eccentricity? | one line + fig | `quiz-ecc` (full) | question only; "Take a minute." |
 | 25 | Answer | line + fig | `quiz-ecc-answer` (full) | line "Eccentricity, beside every node."; left F (2) while E wins closeness; right L (2, degree 2) while K wins closeness |
 | 26 | New York: eccentricity | cols | `ny-eccentricity` (col) | the smallest worst-case drive: 473 km, NY 17 east of Binghamton |
 | 27 | The broker | part | — | |
 | 28 | Trace a letter | cols | `btw-def.gif` (col) | "A letter for every pair, along a shortest path. Count the letters each node carries." |
-| 29 | Betweenness centrality | formula + line + fig | `sigma-answer` (full) | $b_i = \sum_{s<t} \dfrac{\sigma_{st}(i)}{\sigma_{st}}$; $\sigma_{st}$, $\sigma_{st}(i)$ defined; caption on the two shortest paths S to D |
-| 30 | Which node carries the most? | one line + fig | `quiz-btw` (full) | "Count the shortest paths through each node; a tie splits the count." question only |
+| 29 | Betweenness centrality | formula + line + fig | `sigma-answer` (full, caption "S to D: two shortest paths, so A and B each carry half of this pair") | $b_i = \sum_{s<t} \dfrac{\sigma_{st}(i)}{\sigma_{st}}$; $\sigma_{st}$, $\sigma_{st}(i)$ defined; caption on the two shortest paths S to D |
+| 30 | Which node carries the most? | one line + fig | `quiz-btw` (full) | "Count the shortest paths through each node; a tie splits the count." question only; "Take a minute." |
 | 31 | Answer | line + fig | `quiz-btw-answer` (full) | line "Betweenness, beside each candidate."; left E and G (30) beat the bridge F (25); right O (19/2) beats M (9) |
 | 32 | New York: betweenness | cols | `ny-betweenness` (col) | top interchange NY 17 at Monticello; Binghamton first of the eight (3.5 times Syracuse); four of the top five interchanges on NY 17 |
 | 33 | The shortest-path row | fig | `grid-row1` (full) | |
@@ -74,14 +74,14 @@ A figure authored for `full` must not be used in a `cols` column, and vice versa
 
 | # | title | class/layout | figure (container) | content |
 |---|---|---|---|---|
-| 35 | Known by the company you keep | part | — | importance you inherit |
-| 36 | Aesop | cols | `photos/aesop.jpg` (hand-placed) | "A man is known by the company he keeps." — The Ass and His Purchaser (Perry 237) |
+| 35 | The company you keep | part | — | importance you inherit |
+| 36 | Aesop | cols | `photos/aesop.jpg` (hand-placed) | “A man is known by the company he keeps.” — The Ass and His Purchaser (Perry 237) |
 | 37 | Importance you inherit | cols | `eigen-inherit.gif` (col) | $c_i = \dfrac{1}{\lambda} \sum_j A_{ij} c_j$; "divided by a constant $\lambda$" |
 | 38 | It is an eigenvector equation | fig | `eigen-equation` (full) | $A\mathbf{c} = \lambda \mathbf{c}$ on the 7-node graph |
-| 39 | Seven eigenvectors. Which one? | mid | — | "This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality?" |
+| 39 | Seven eigenvectors. Which one? | mid | — | "This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality?"; cue "Take 30 seconds." |
 | 40 | Perron and Frobenius | line + fig tall | `eig-all` (full, tall) | 7 copies of the graph, nodes coloured by sign and size of the entry; eigenvalues on a number line; "only the eigenvector of the largest eigenvalue is positive everywhere" |
 | 41 | Eigenvector centrality | cols | `eig-pf` (col) | the largest-eigenvalue eigenvector, largest entry set to 1 |
-| 42 | Which marked node scores higher? | line + fig + cue | `quiz-eig` (full) | question only; "Take a minute." |
+| 42 | Which lettered node scores higher? | line + fig + cue | `quiz-eig` (full) | question only; "Take a minute." |
 | 43 | Answer | line + fig | `quiz-eig-answer` (full) | line "Eigenvector centrality, largest = 1."; left M 0.85 beats X 0.46; right K 0.85 beats H 0.62; the node with fewer neighbours scores higher |
 | 44 | Eigendecomposition | line + fig | `decomp-sum.gif` (full) | $A = \sum_k \lambda_k \mathbf{u}_k \mathbf{u}_k^\top$; $\lambda_1 = \lambda_{\max}$ |
 | 45 | The eigenvectors are orthogonal | fig | `decomp-orth` (full) | $\mathbf{u}_k^\top \mathbf{u}_\ell = 0$ for $k \ne \ell$, $= 1$ for $k = \ell$ |
@@ -92,24 +92,26 @@ A figure authored for `full` must not be used in a `cols` column, and vice versa
 | 50 | Localization | fig | `ring-local.gif` (full) | one clique grows 4 → 8; share of the total score in it: 25% → 68% → 85% → 91% → 94% |
 | 51 | New York: eigenvector | cols | `ny-eigenvector` (col) | 96% of the score within 60 km of Manhattan, where 31% of the interchanges sit |
 | 52 | Everyone gets a baseline | part | — | Katz centrality |
-| 53 | Give everybody a baseline | cols | `katz-floor` (col) | $c_i = \beta + \alpha \sum_j A_{ij} c_j \;\Rightarrow\; \mathbf{c} = \beta (I - \alpha A)^{-1} \mathbf{1}$ |
-| 54 | What is that inverse? | mid | — | $(I - \alpha A)^{-1} = \;?$ and $\dfrac{1}{1-x} = 1 + x + x^2 + \cdots$ for $\lvert x \rvert < 1$ |
+| 53 | Give everybody a baseline | cols | `katz-floor` (col) | $c_i = \beta + \alpha \sum_j A_{ij} c_j \;\Rightarrow\; \mathbf{c} = \beta (I - \alpha A)^{-1} \mathbf{1}$; "$I$: the identity matrix; $\mathbf{1}$: all ones." |
+| 54 | What is that inverse? | mid | — | $(I - \alpha A)^{-1} = \;?$ and $\dfrac{1}{1-x} = 1 + x + x^2 + \cdots$ for $\lvert x \rvert < 1$; cue "Take 30 seconds." |
 | 55 | The same series for matrices | cols | `walks-discount.gif` (col) | $(I - \alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$; $A^k$ counts walks of length $k$ |
 | 56 | Turn the dial | stage | `katz-dial` (stage) | α slider, 0 to 1.2 × 1/λ_max, on the ring (4,4,4,6) |
 | 57 | Why 1/λ_max? | fig | `katz-why.gif` (full) | $(I-\alpha A)^{-1} = \sum_k \dfrac{1}{1-\alpha\lambda_k} \mathbf{u}_k\mathbf{u}_k^\top$ |
-| 58 | The walk row | fig | `grid-row2` (full) | degree and eigenvector centrality are the two ends of Katz |
-| 59 | The Web has direction | part | — | "A road runs both ways. A link does not." |
-| 60 | Hubs and authorities | cols | `hits-graph` (col) | $a_i = \sum_j A_{ji} h_j$, $h_i = \sum_j A_{ij} a_j$, $A_{ij}$ defined; HITS (Kleinberg, 1999); hub A, authority E |
-| 61 | On a road map, HITS is eigenvector centrality | cols | `eig-centrality` (col) | $A^\top A = A^2$ when $A$ is symmetric (not bipartite: 2.88 > 2.26) |
-| 62 | The same idea, six times | fig | `genealogy` (full) | |
-| 63 | Divide the vote | cols + cue | `pr-split` (col) | $c_i = \sum_j A_{ji}\, c_j / d^{\text{out}}_j$; Q: "C has three links in, and E has one. Which ranks higher?"; "Take 30 seconds." |
-| 64 | A three-way tie | cols | `pr-split-answer` (col) | A, C, E: 3/11 each; B, D: 1/11 |
-| 65 | A dead end | cols | `pr-leak.gif` (col) | E loses its only outgoing link; the total drains 1 → 0.8 → 0.6 → 0.13 → 0 |
-| 66 | Teleportation | cols | `pr-teleport` (col) | $c_i = (1-r)\sum_j A_{ji}\, c_j / d^{\text{out}}_j + r/N$, r = 0.15; a dead end always jumps |
-| 67 | Personalized PageRank | cols | `ppr` (col) | teleport only to A; dashed jump arrows |
-| 68 | New York: five measures, five places | cols | `ny-five` (col) | closeness Middletown, harmonic the Bronx, eccentricity east of Binghamton, betweenness Monticello, eigenvector Hempstead |
-| 69 | Two choices, every centrality | fig tall | `grid-final` (full, tall) | the classification, completed |
-| 70 | Quiz | mid | — | "Draw a network in which degree, closeness, eccentricity and betweenness each rank a different node first." |
+| 58 | Which lettered node scores higher now? | line + fig + cue | `quiz-eig` (full) | line "Katz centrality, $\alpha = 0.5/\lambda_{\max}$. The same two networks."; question only; "Take a minute." |
+| 59 | Answer | line + fig | `quiz-katz-answer` (full) | line "Katz centrality, largest = 1."; left M 0.87 beats X 0.81 (as the eigenvector ranks them); right H 1.00 beats K 0.81 (as degree ranks them) |
+| 60 | The walk row | fig | `grid-row2` (full) | degree and eigenvector centrality are the two ends of Katz |
+| 61 | The Web has direction | part | — | "A road runs both ways. A link does not." |
+| 62 | Hubs and authorities | cols | `hits-graph` (col) | $a_i = \sum_j A_{ji} h_j$, $h_i = \sum_j A_{ij} a_j$, $A_{ij}$ defined; HITS (Kleinberg, 1999); hub A, authority E |
+| 63 | On a road map, HITS is eigenvector centrality | cols | `eig-centrality` (col) | $A^\top A = A^2$ when $A$ is symmetric (not bipartite: 2.88 > 2.26) |
+| 64 | The same idea, six times | fig | `genealogy` (full) | |
+| 65 | Divide the vote | cols + cue | `pr-split` (col) | $c_i = \sum_j A_{ji}\, c_j / d^{\text{out}}_j$; Q: "C has three links in, and E has one. Which ranks higher?"; "Take 30 seconds." |
+| 66 | A three-way tie | cols | `pr-split-answer` (col) | A, C, E: 3/11 each; B, D: 1/11 |
+| 67 | A dead end | cols | `pr-leak.gif` (col) | E loses its only outgoing link; the total drains 1 → 0.8 → 0.6 → 0.13 → 0 |
+| 68 | Teleportation | cols | `pr-teleport` (col) | $c_i = (1-r)\sum_j A_{ji}\, c_j / d^{\text{out}}_j + r/N$, r = 0.15; a dead end always jumps |
+| 69 | Personalized PageRank | cols | `ppr` (col) | teleport only to A; dashed jump arrows |
+| 70 | New York: five measures, five places | cols | `ny-five` (col) | closeness Middletown, harmonic the Bronx, eccentricity east of Binghamton, betweenness Monticello, eigenvector Hempstead |
+| 71 | Two choices, every centrality | fig tall | `grid-final` (full, tall) | the classification, completed |
+| 72 | Quiz | mid | — | "Draw a network in which degree, closeness, eccentricity and betweenness each rank a different node first." |
 
 ---
 
