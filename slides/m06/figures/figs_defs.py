@@ -25,11 +25,13 @@ CAP_ARROW = "-{Stealth[length=13bp,width=13bp]}"
 
 
 # --------------------------------------------------------------------------- helpers
-def place(XY, s, ox, oy):
-    """Grid units -> bp, y up, with grid (0, 0) of the lowest-left node at (ox, oy)."""
+def place(XY, s, ox, oy, sy=None):
+    """Grid units -> bp, y up, with grid (0, 0) of the lowest-left node at (ox, oy).
+    `sy`: a different vertical scale, when the drawing needs a flatter angle for its labels."""
+    sy = s if sy is None else sy
     x0 = min(p[0] for p in XY.values())
     y0 = min(p[1] for p in XY.values())
-    return {n: (ox + (x - x0) * s, oy + (y - y0) * s) for n, (x, y) in XY.items()}
+    return {n: (ox + (x - x0) * s, oy + (y - y0) * sy) for n, (x, y) in XY.items()}
 
 
 def pin(box, c="black!30"):
@@ -88,6 +90,7 @@ def sides_for(names, pos, edges, bounds):
 
 
 SIDE = {"N": ("south", 0, 26), "S": ("north", 0, -26), "E": ("west", 26, 0), "W": ("east", -26, 0),
+        "SL": ("north", -12, -30),          # below, nudged left: clear of an edge leaving to the SE
         "NE": ("south west", 20, 20), "NW": ("south east", -20, 20),
         "SE": ("north west", 20, -20), "SW": ("north east", -20, -20)}
 
@@ -336,10 +339,10 @@ def btw_def():
 
 
 # =========================================================================== harmonic on CA_CUT
-CA_S = 60
-CA_POS = place(S.CA_XY, CA_S, 96, 124)
+CA_S, CA_SY = 66, 58          # horizontal, vertical bp per grid unit: flat enough that G's value
+CA_POS = place(S.CA_XY, CA_S, 34, 104, CA_SY)     # fits under G between the edges G-F and G-J
 CA_CAP_Y = 30
-CA_BOUNDS = (8, 56, F.COL_W - 8, 400)
+CA_BOUNDS = (8, 56, F.COL_W - 8, 380)
 CA_H = 420
 F.assert_planar_drawing(list(S.CA.edges), CA_POS, "CA")
 
@@ -359,9 +362,19 @@ def harmonic_def():
     edges = list(S.CA.edges)
     final = {n: frac(x) for n, x in h.items()}
     names = widest(final, {n: "1/1" for n in one})
-    pref = {"A": ["W", "E", "NE"], "B": ["W"], "C": ["W"], "D": ["S", "SE"], "E": ["SE", "NE"], "F": ["N", "NW", "S"],
-            "G": ["SW", "S"], "H": ["E", "NE"], "I": ["E"], "J": ["S", "SW"], "K": ["E"]}
+    # G's value goes directly below G (nudged left to clear the edge G-J), so it sits near G
+    # and not near F, which is 0.8 grid units away and carries its own value above it.
+    pref = {"A": ["N", "NE", "NW"], "B": ["NW", "W"], "C": ["SW", "W"], "D": ["S", "SE", "SW"],
+            "E": ["SE", "NE"], "F": ["NW", "N"], "G": ["SL", "S"], "H": ["E", "NE"], "I": ["E"],
+            "J": ["S", "SW"], "K": ["E", "S"]}
     ch = sides_pref(names, CA_POS, [tuple(e) for e in edges], CA_BOUNDS, pref)
+
+    def centre(n):                       # where the value of n is drawn
+        anc, dx, dy = ch[n]
+        return CA_POS[n][0] + dx, CA_POS[n][1] + dy + (-14 if dy < 0 else 14 if dy > 0 else 0)
+    gx, gy = centre("G")
+    assert (math.hypot(gx - CA_POS["G"][0], gy - CA_POS["G"][1])
+            < 0.85 * math.hypot(gx - CA_POS["F"][0], gy - CA_POS["F"][1])), "G's value is not clearly nearer G than F"
 
     def scene(vals=None, colors=None, caption="", marks=()):
         o = nodes_tex(CA_POS) + edges_tex(edges, dashed=[cut]) + cross_out(CA_POS["E"], CA_POS["F"])
@@ -395,21 +408,24 @@ GM = 14                           # outer margin
 LAB_W = 111                       # width of the widest row label ("shortest")
 GX0, GX1 = GM + LAB_W + 10, GW - GM
 LINE = int(F.FONT * 1.15)
-PADY = 7
+PADY = 5
 ROW1_H = 3 * LINE + 2 * PADY      # name + two lines
 ROW2_H = 4 * LINE + 2 * PADY      # name + three lines
-ROW_GAP = 14
+ROW_GAP = 8
 ROW2_Y0 = 22
 ROW2_Y1 = ROW2_Y0 + ROW2_H
 ROW1_Y0 = ROW2_Y1 + ROW_GAP
 ROW1_Y1 = ROW1_Y0 + ROW1_H
-GRID_PIN = (GM, ROW2_Y0 - 6, GW - GM, ROW1_Y1 + 6)
+HEAD_Y = ROW1_Y1 + 20                  # the two axis headers (grey, horizontal)
+HEAD_ROUTES = "which routes count"
+HEAD_NUMBER = "how they become one number"
+GRID_PIN = (GM, ROW2_Y0 - 1, GW - GM, HEAD_Y + 14)
 
 # (metric, description lines); the description of every cell is the spec's text, only broken
 # into lines. Nothing is shortened.
 ROW1 = [("closeness", ["sum of", "lengths"]),
         ("harmonic", ["sum of", "1/length"]),
-        ("eccentricity", ["longest"]),
+        ("eccentricity", ["longest", "distance"]),
         ("betweenness", ["paths passing", "through"])]
 ROW2 = [("degree", ["walks of", "length 1"]),
         ("Katz", ["all lengths,", "discounted"]),
@@ -440,11 +456,12 @@ assert CELLS1[0]["x1"] - CELLS1[0]["x0"] > 200 and CELLS2[0]["x1"] - CELLS2[0]["
 assert ROW1_Y1 + 12 <= F.FIG_H[""] - 12 + ROW2_Y0                     # whole picture fits a plain figure
 
 
-def _cell_tex(c):
+def _cell_tex(c, new=False):
     w = c["x1"] - c["x0"]
     o = (f"\\draw[line width=1.6bp,draw={DIM},rounded corners=9bp] "
          f"({c['x0']:.1f},{c['y0']}) rectangle ({c['x1']:.1f},{c['y1']});\n")
-    s = "\\textcolor{accenttwo}{%s}\\\\ %s" % (c["name"], "\\\\ ".join(c["desc"]))
+    s = "\\textcolor{%s}{%s}\\\\ %s" % ("accenttwo" if new else "black", c["name"],
+                                          "\\\\ ".join(c["desc"]))
     o += F.text((c["x0"] + c["x1"]) / 2, c["y1"] - PADY, s, anchor="north")
     return o
 
@@ -453,20 +470,21 @@ def _rowlabel(text_lines, y0, y1):
     return F.text(GM, (y0 + y1) / 2, "\\\\ ".join(text_lines), color=BLUE, anchor="west")
 
 
-def _grid(row1, row2):
-    """row1, row2: how many cells of each row to draw (a prefix)."""
+def _grid(row1, row2, new=()):
+    """row1, row2: how many cells of each row to draw (a prefix). `new`: names of the cells
+    that are new on this slide; their centrality name is accent-2, every other name black."""
     o = pin(GRID_PIN)
+    o += F.text(GM, HEAD_Y, HEAD_ROUTES, color=DIM, anchor="west")
+    o += F.text((GX0 + GX1) / 2, HEAD_Y, HEAD_NUMBER, color=DIM)
     o += _rowlabel(["shortest", "paths"], ROW1_Y0, ROW1_Y1)
     o += _rowlabel(["walks"], ROW2_Y0, ROW2_Y1)
-    for c in CELLS1[:row1]:
-        o += _cell_tex(c)
-    for c in CELLS2[:row2]:
-        o += _cell_tex(c)
+    for c in CELLS1[:row1] + CELLS2[:row2]:
+        o += _cell_tex(c, c["name"] in new)
     return o
 
 
-def _grid_fig(name, row1, row2, hmod):
-    F.emit(name, _grid(row1, row2), container="full", h=GH, hmod=hmod, nodes=False)
+def _grid_fig(name, row1, row2, hmod, new=()):
+    F.emit(name, _grid(row1, row2, new), container="full", h=GH, hmod=hmod, nodes=False)
 
 
 def grid_empty():
@@ -474,11 +492,11 @@ def grid_empty():
 
 
 def grid_row1():
-    _grid_fig("grid-row1", 4, 0, "")
+    _grid_fig("grid-row1", 4, 0, "", new=[c[0] for c in ROW1])
 
 
 def grid_row2():
-    _grid_fig("grid-row2", 4, 3, "")
+    _grid_fig("grid-row2", 4, 3, "", new=["Katz", "eigenvector"])
 
 
 def grid_final():
@@ -489,10 +507,13 @@ def grid_final():
 
 def _grid_same_picture():
     """The four states are one picture: every cell that appears is drawn at the same place."""
-    big = _grid(4, 5)
-    for part in (_grid(0, 1), _grid(4, 0), _grid(4, 3)):
-        for line in part.splitlines():
-            assert line in big.splitlines(), f"grid state differs from the final picture: {line[:60]}"
+    plain = lambda t: t.replace("{accenttwo}", "{black}")          # colour aside, the same lines
+    big = plain(_grid(4, 5)).splitlines()
+    parts = (_grid(0, 1), _grid(4, 0, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"]))
+    for part in parts:
+        for line in plain(part).splitlines():
+            assert line in big, f"grid state differs from the final picture: {line[:60]}"
+    assert "accenttwo" not in _grid(4, 5)                              # the final table: all black
 
 
 _grid_same_picture()
