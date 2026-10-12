@@ -170,7 +170,7 @@ def calibrate():
 
 
 # --------------------------------------------------------------------------- emit
-def crop_and_check(name, im, container, hmod):
+def crop_and_check(name, im, container, hmod, nodes=True):
     """Crop the height to the ink and assert what the student will actually see."""
     w = DESIGN[container]
     a = np.array(im.convert("L"))
@@ -207,13 +207,15 @@ def crop_and_check(name, im, container, hmod):
         f"widen the drawing, do not shrink the canvas")
 
     node_px = NODE * factor
-    assert NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
+    # nodes=False: a data map (the NY highways) draws hundreds of small dots, not discs a
+    # student reads one by one. The deck's check_render.py exempts the same figures.
+    assert not nodes or NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
     x_px = FONT * calibrate() * factor
     assert x_px >= TEXT_MIN_PX, f"{name}: text x-height {x_px:.1f}px on the slide"
     return im, fw, fh, node_px, x_px, span
 
 
-def emit(name, body, container="col", h=None, hmod=""):
+def emit(name, body, container="col", h=None, hmod="", nodes=True):
     """Render one figure and record the failure rather than stopping the build.
 
     A generator that stops at the first failed assertion hides the rest, and these
@@ -225,11 +227,74 @@ def emit(name, body, container="col", h=None, hmod=""):
     try:
         w = DESIGN[container]
         im = render(body, w, h or int(w * 0.70))
-        im, fw, fh, node_px, x_px, span = crop_and_check(name, im, container, hmod)
+        im, fw, fh, node_px, x_px, span = crop_and_check(name, im, container, hmod, nodes)
         im.save(OUT / f"{name}.png")
         _built.append(name)
         print(f"  {name}.png  {fw//4}x{fh//4}bp  node {node_px:.0f}px  x-h {x_px:.1f}px  "
               f"ink {span:.0%}  [{container}{'/' + hmod if hmod else ''}]")
+    except (AssertionError, SystemExit) as e:
+        _failures.append((name, str(e)))
+        print(f"  FAIL {name}: {e}")
+
+
+HOLD = 6            # frames of pause on the settled state
+MS = 700            # ms per frame
+
+
+def emit_gif(name, frames, container="full", h=None, hmod="", hold=HOLD, ms=MS, nodes=True,
+             durations=None):
+    """Render every frame, crop them all to ONE box, and assert the same floors as emit().
+
+    Cropping each frame to its own ink would make the drawing jump between frames, which
+    reads as a fault in the projector rather than as a build. The last frame is held
+    (`hold` extra frames) so the loop rests on the complete picture. `durations`, if given,
+    is one ms value per frame and overrides `ms` (the hold repeats the last one).
+    """
+    if _only and not any(k in name for k in _only):
+        return
+    try:
+        w = DESIGN[container]
+        ims = [render(body, w, h or int(w * 0.70)) for body in frames]
+        box = None
+        for im in ims:
+            a = np.array(im.convert("L"))
+            ys, xs = np.where(a < 200)
+            assert len(ys), f"{name}: a frame is blank"
+            b = (xs.min(), ys.min(), xs.max(), ys.max())
+            box = b if box is None else (min(box[0], b[0]), min(box[1], b[1]),
+                                         max(box[2], b[2]), max(box[3], b[3]))
+        edge = 2
+        assert not (box[0] <= edge or box[1] <= edge or box[2] >= ims[0].size[0] - 1 - edge
+                    or box[3] >= ims[0].size[1] - 1 - edge), (
+            f"{name}: ink runs off the canvas in some frame -- it is being CLIPPED")
+        pad = int(PAD * PXBP)
+        lo, hi = max(0, box[1] - pad), min(ims[0].size[1], box[3] + pad)
+        ims = [im.crop((0, lo, im.size[0], hi)) for im in ims]
+        fw, fh = ims[0].size
+        scale = min(CONTAINER[container] / fw, FIG_H[hmod] / fh, 1.0)
+        factor = scale * PXBP
+        assert abs(factor - CONTAINER[container] / w) < 1e-6, (
+            f"{name}: the HEIGHT binds the scale -- the frames are {fh / PXBP:.0f}bp tall "
+            f"and a '{hmod or 'plain'}' figure may be at most {FIG_H[hmod]}bp")
+        span = (box[2] - box[0] + 1) / fw
+        assert span >= INK_FILL_MIN, f"{name}: ink spans {span:.0%} of the canvas width"
+        node_px = NODE * factor
+        assert not nodes or NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
+        x_px = FONT * calibrate() * factor
+        assert x_px >= TEXT_MIN_PX, f"{name}: text x-height {x_px:.1f}px on the slide"
+        seq = ims + [ims[-1]] * hold
+        dur = None
+        if durations is not None:
+            assert len(durations) == len(frames), f"{name}: {len(durations)} durations for {len(frames)} frames"
+            dur = list(durations) + [durations[-1]] * hold
+        # Downscale to slide pixels: a GIF at 4x raster is needlessly heavy for the deck.
+        seq = [im.resize((im.size[0] // 2, im.size[1] // 2), Image.LANCZOS) for im in seq]
+        pal = [im.convert("P", palette=Image.ADAPTIVE) for im in seq]
+        pal[0].save(OUT / f"{name}.gif", save_all=True, append_images=pal[1:],
+                    duration=dur or ms, loop=0, optimize=True, disposal=2)
+        _built.append(name)
+        print(f"  {name}.gif  {len(seq)} frames  {fw // 4}x{fh // 4}bp  node {node_px:.0f}px  "
+              f"x-h {x_px:.1f}px  ink {span:.0%}  [{container}{'/' + hmod if hmod else ''}]")
     except (AssertionError, SystemExit) as e:
         _failures.append((name, str(e)))
         print(f"  FAIL {name}: {e}")
