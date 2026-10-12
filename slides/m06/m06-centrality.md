@@ -18,57 +18,9 @@ math: katex
 <div class="credit">Sadamori Kojaku · Binghamton University</div>
 
 <!--
-Open on a stone in a forum, not on a definition of centrality. The whole module is one question asked seven ways.
+Day 1 (10/20): slides 1 to 35, measured by shortest paths. Day 2 (10/22): slides 36 to 70, measured by walks.
+The pen-and-paper sheet has already been done, so the room has met degree, average distance, "indispensable" and passing scores around. Name things; do not re-derive what is in their hands.
 -->
-
----
-
-<!-- _class: mid -->
-
-## The question for today
-
-<hr>
-
-<div class="formula">
-
-Which city is the most important — and important in *what sense*?
-
-</div>
-
-The second half of that question is the whole module.
-
-<!--
-Do not answer. Part Eight answers it, and the answer is that there is no single answer.
--->
-
----
-
-## Roadmap for today
-
-<hr>
-
-<div class="steps-list">
-
-<div><div class="i">01</div><div>The Golden Milestone — importance by decree</div></div>
-<div><div class="i">02</div><div>Count the roads</div></div>
-<div><div class="i">03</div><div>Close to everything — and what breaks when the network does</div></div>
-<div><div class="i">04</div><div>The broker — who the traffic cannot avoid</div></div>
-<div><div class="i">05</div><div>Known by the company you keep</div></div>
-<div><div class="i">06</div><div>Everyone gets a floor — Katz, and the dial that breaks it</div></div>
-<div><div class="i">07</div><div>The Web has direction — hubs, authorities, PageRank</div></div>
-<div><div class="i">08</div><div>Which one should you use?</div></div>
-
-</div>
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part One</span><span class="count">01 / 08</span></div>
-
-## The Golden Milestone
-
-Rome decided who mattered, and wrote it in bronze
 
 ---
 
@@ -76,36 +28,27 @@ Rome decided who mattered, and wrote it in bronze
 
 <hr>
 
-Augustus raises the **Milliarium Aureum** at the head of the Forum.
+<div class="photos">
 
-<div class="fig tall">
-
-![w:1080](figures/milestone.png)
-<figcaption>the marble core is still there, at the foot of the Temple of Saturn</figcaption>
-
-</div>
-
-<!--
-20 BC. Newly made curator viarum — commissioner of roads — and the first thing he builds is a measuring point. The gilding is long gone; the marble core survives.
--->
-
----
-
-## Every distance in the empire was measured from it
-
-<hr>
-
-Not the distance between cities. The distance **from here**.
-
-<div class="fig tall">
-
-![w:1080](figures/milestone-radial.png)
-<figcaption>outward, never across — roughly, in Roman miles by road</figcaption>
+![](figures/photos/caesar.jpg)
+![](figures/photos/augustus.jpg)
+![](figures/photos/milliarium.jpg)
 
 </div>
 
+<div class="photo-credit">Julius Caesar (photo Marie-Lan Taÿ Pamart, CC BY 4.0) · Augustus of Prima Porta (photo Justin Benttinen, CC BY-SA 4.0) · remains labelled Milliarium Aureum (photo Krzysztof Golik, CC BY-SA 4.0) · Wikimedia Commons</div>
+
+* Augustus, Caesar's adopted heir, set up the **Golden Milestone** in 20 BC.
+* A gilded column in the Forum, by the Temple of Saturn.
+* Its text is lost. It is said to have listed cities and their distances in miles.
+* All the roads of Italy were said to end at it.
+
 <!--
-Importance by decree: one authority declares a centre, and every other place is described by how far it is from that centre. This is the last time in the course that importance is something anyone can simply declare.
+Caesar had been curator of the Via Appia (Plutarch, Caesar 5) and named Octavian his heir in his will, 44 BC. As Augustus, he took charge of the roads around Rome and set up the column in 20 BC (Cassius Dio 54.8.4).
+Plutarch (Galba 24) calls it a gilded column at which all the roads of Italy end. Pliny (NH 3.66) puts it at the head of the Forum.
+What was written on it is not recorded by any ancient source. "The names of the cities and their distances" is a modern reconstruction, so say "said to". Distances along the roads were counted from the gates of the city wall, not from this column.
+The fragments in the photo are the ones the Forum labels as the milestone; whether they belong to it is doubtful.
+"All roads lead to Rome" is medieval: Alain de Lille, about 1175.
 -->
 
 ---
@@ -114,126 +57,70 @@ Importance by decree: one authority declares a centre, and every other place is 
 
 <hr>
 
-Twelve cities, eighteen routes — every one of them a real road or a real sea lane.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+The main roads of the empire joined these twelve cities.
 
-![w:1080](figures/roma-map.png)
-<figcaption>the Via Aurelia, the Via Egnatia, the Via Domitia, and the grain fleets</figcaption>
+</div>
+<div class="fig">
 
+![w:537](figures/roma-basemap.png)
+<figcaption>map © OpenStreetMap contributors</figcaption>
+
+</div>
 </div>
 
 <!--
-Name three out loud: Aurelia up the coast from Rome, Egnatia across from Brundisium to Byzantium, Domitia running into Spain. The grain runs from Carthage and Alexandria were sea lanes and carried more tonnage than any road.
+The pins are the real places: Londinium, Colonia, Lugdunum, Massilia, Tarraco, Mediolanum, Roma, Carthago, Thessalonica, Athenae, Byzantium, Alexandria.
 -->
 
 ---
 
-## The same picture, without the coastline
+## Keep the roads, drop the map
 
 <hr>
 
-Cities become discs, routes become edges. Nothing else changes.
+Which city is the most important?
 
 <div class="fig tall">
 
-![w:1080](figures/roma-graph.png)
-<figcaption>this one drawing is the whole of today</figcaption>
+![w:1080](figures/roma-to-graph.gif)
 
 </div>
 
 <!--
-Stress that the geometry never moves again. What changes on later slides is only how dark a city is, and where the crown sits.
+The coastline goes, the roads become straight lines, the cities move to where their names fit. What is left is a network: twelve nodes, the roads between them.
+Take answers. The room will give at least two kinds of reason (many roads; close to everything). Both are right. That is the module.
 -->
 
 ---
 
-## Which one is the most important?
+## Today's question, at home
 
 <hr>
 
-Point at a city. Do not explain yet.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+New York State highways: 289 interchanges.
 
-![w:1080](figures/roma-graph.png)
-<figcaption>twelve cities, eighteen routes, no scores</figcaption>
+Which of these eight cities do the most cross-state trips pass through?
 
+</div>
+<div class="fig">
+
+![w:537](figures/ny-overview.png)
+<figcaption>highway data © OpenStreetMap contributors</figcaption>
+
+</div>
 </div>
 
 <!--
-The map has to be on the slide they are pointing at, not on the one before it. Take a show of hands for two or three cities. Do not confirm anything, do not hint, and above all do not say the word "degree".
+Do not answer. It comes back at the end of today (betweenness).
+The network: OpenStreetMap motorways and trunk roads in New York State, one node per interchange (junctions within 3.5 km merged), 289 nodes and 433 road segments. Distance is km of road.
+Take a vote: Buffalo, Rochester, Syracuse, Utica, Albany, NYC, Binghamton, Watertown.
 -->
-
----
-
-## Your turn: your own network
-
-<hr>
-
-Draw a line between two students who share a club.
-
-<div class="fig tall">
-
-![w:1080](figures/club-clubs.png)
-<figcaption>each gold shape is a club — thirteen students, eight clubs</figcaption>
-
-</div>
-
-<!--
-Three minutes, on paper. This is Question 1 of tonight's handout, so they are starting it now whether they know it or not.
--->
-
----
-
-<!-- _class: mid -->
-
-## Two jobs, one network
-
-<hr>
-
-<div class="formula">
-
-Who do you tell first, to spread news through the whole network fastest?
-
-And who would you make Club Coordinator?
-
-</div>
-
-Same thirteen students. Two different jobs.
-
-<!--
-Let them argue. Do not write any name on the board, and do not confirm either answer — the next slide does it.
--->
-
----
-
-## You have already invented three answers
-
-<hr>
-
-Nobody has defined anything yet, and the room already disagrees.
-
-<div class="fig tall">
-
-![w:1080](figures/club-three-answers.png)
-<figcaption>red Noah: tell first · gold Sophia: closest to everyone · black Alex: coordinates</figcaption>
-
-</div>
-
-<!--
-Noah has six friends and is the obvious broadcast choice. Sophia is closest to everyone on average. Alex is the one every path between the clubs has to use — on four friends, against Noah's six.
--->
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part Two</span><span class="count">02 / 08</span></div>
-
-## Count the roads
-
-The cheapest question you can ask
 
 ---
 
@@ -243,133 +130,136 @@ The cheapest question you can ask
 
 <div class="formula">
 
-$$c_i = \sum_j A_{ij}$$
+$$d_i = \sum_j A_{ij}$$
 
 </div>
-
-
-<div class="fig tall">
-
-![w:1080](figures/degree-count.png)
-
-</div>
-
-<!--
-Count the edges that end at a node. That is degree centrality, and it is the whole definition — the cheapest question in the module.
--->
-
----
-
-## Your turn: count the roads
-
-<hr>
-
-Count the roads at **Rome**. Then at **Alexandria**. Call both numbers out.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-graph.png)
-<figcaption>no shading, no crown — just the map</figcaption>
-
-</div>
-
-<!--
-Thirty seconds. Two numbers from the room before the next slide. Somebody will miscount Rome as four by missing the sea lane to Alexandria, which is worth catching out loud.
--->
-
----
-
-## The first crown
-
-<hr>
-
-Rome, with five roads. Alexandria second, with four. **The proverb checks out.**
 
 <div class="fig tall">
 
 ![w:1080](figures/roma-degree.png)
-<figcaption>darker means higher degree; the crown marks the highest</figcaption>
+<figcaption>degree counts the neighbours and nothing beyond them</figcaption>
+
+</div>
+
+<!--
+The sheet's first question. Name it and move on.
+-->
+
+---
+
+## Degree sees one step
+
+<hr>
+
+<div class="fig tall">
+
+![w:1080](figures/two-roads-ahead.png)
+<figcaption>same degree, different reach two steps out</figcaption>
 
 </div>
 
 ---
 
-## Nobody has to see the whole map
+## New York: degree
 
 <hr>
 
-Degree is the only measure today that a city could compute for itself.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+201 interchanges have degree 3, and 57 have degree 4.
 
-![w:1080](figures/degree-local.png)
-<figcaption>what Rome can see from where it stands; the rest is out of reach</figcaption>
+Degree cannot tell them apart.
 
+</div>
+<div class="fig">
+
+![w:537](figures/ny-degree.png)
+
+</div>
 </div>
 
 <!--
-Stand in Rome, count the roads leaving, and you are done. Every other measure today needs somebody who can see the entire network at once.
+On a road map almost every junction joins three or four roads. A measure that only looks one step out sees almost nothing.
 -->
 
 ---
 
 <!-- _class: mid -->
 
-## Is counting roads enough?
+## How far is u from v?
 
 <hr>
 
-<div class="formula">
+<div class="cols">
+<div>
 
-Rome has five. Alexandria has four.
+The network from Module 01.
 
-Is that the whole story?
+</div>
+<div class="fig">
 
+![w:537](figures/w5-blank.png)
+
+</div>
 </div>
 
 <!--
-Fish for "it depends what the roads lead to". Do not resolve it; the next slide names the two ways out and Parts 3 to 7 walk them.
+Take answers. Someone says 2. Ask: in how many ways can you get there in 3 steps? In 4?
 -->
 
 ---
 
-## Degree sees exactly one step
+## Two ways to count
 
 <hr>
 
-Two ways to see further: **distance** (Parts Three and Four) and **walks** (Parts Five to Seven).
+<div class="cols">
+<div>
 
-<div class="fig tall">
-
-![w:1080](figures/two-roads-ahead.png)
-<figcaption>red Rome, blue one step, gold two — white is what degree cannot see</figcaption>
+* **Shortest path**: the fewest steps. One number: 2.
+* **Walk**: any route, revisits allowed. A count for each length: 2, 1, 11, …
 
 </div>
+<div class="fig">
+
+![w:537](figures/w5-walks.gif)
+
+</div>
+</div>
+
+<!--
+The walk counts are the entries of A, A squared, A cubed, ... from Module 01. Walks of length 2: 2; length 3: 1; length 4: 11.
+-->
+
+---
+
+## Two choices make a centrality
+
+<hr>
+
+Which routes count, and how do they become one number?
+
+<div class="fig">
+
+![w:1080](figures/grid-empty.png)
+
+</div>
+
+<!--
+Every measure today is one choice on each axis. We fill this in as we go.
+Degree sits at the corner: a walk of length 1 is also a shortest path of length 1.
+-->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Three</span><span class="count">03 / 08</span></div>
+<div class="band"><span>Part One</span><span class="count">01 / 05</span></div>
 
 ## Close to everything
 
-And what breaks when the network breaks
-
----
-
-## The Milliarium's own logic
-
-<hr>
-
-A place is central when it is **close to everything else**. That is what the stone was claiming.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-distance-rings.png)
-<figcaption>each city carrying its number of steps from Rome; darker means fewer</figcaption>
-
-</div>
+near every other node, on average, at worst
 
 ---
 
@@ -380,149 +270,157 @@ A place is central when it is **close to everything else**. That is what the sto
 <div class="cols">
 <div>
 
-Add up the distances from a city to every other city, and invert.
-
 <div class="formula">
 
-$$c_i = \frac{N-1}{\sum_j d(i,j)}$$
+$$c_i = \frac{N-1}{\sum_{j \ne i} \ell_{ij}}$$
 
 </div>
 
-**Closeness centrality**: small total distance, large score.
+$\ell_{ij}$: the length of a shortest path from $i$ to $j$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/closeness-idea.png)
-<figcaption>one node, and its distance to each of the others</figcaption>
+![w:537](figures/closeness-def.gif)
 
 </div>
-</div>
-
----
-
-## Your turn: do one by hand
-
-<hr>
-
-Take **Massilia**. Write the distance to each of the eleven others, add them up, divide eleven by the total.
-
-<div class="fig tall">
-
-![w:1080](figures/closeness-blank.png)
-<figcaption>Massilia is crowned; every other city is holding a question mark</figcaption>
-
 </div>
 
 <!--
-Ninety seconds. Then take the total from the room before showing the next slide.
+Add up the distances to every other node, then invert: a small total gives a large score. The animation does it for A (sum 15), then shows every node's sum; D has the smallest, 9.
 -->
 
 ---
 
-## Massilia's eleven distances
-
-<hr>
-
-Three cities one step away, five at two steps, three at three. They sum to **22**, so Massilia scores $11/22 = 0.50$.
-
-<div class="fig tall">
-
-![w:1080](figures/closeness-one-city.png)
-<figcaption>each city carrying its distance from Massilia</figcaption>
-
-</div>
-
----
-
-## The second crown
-
-<hr>
-
-Rome's distances sum to 18, so Rome scores **0.61** — and takes a second crown.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-closeness.png)
-<figcaption>darker means higher closeness; the crown marks the highest</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Why divide by $N-1$?
-
-<hr>
-
-<div class="formula">
-
-We could have used the raw total distance. Why put the number of other cities on top?
-
-</div>
-
-<!--
-Someone will say "to compare networks of different sizes", which is right but not the sharpest answer. The sharpest answer is on the next slide: it fixes the ceiling at 1.
--->
-
----
-
-## So the best possible score is exactly 1
+## Why N − 1?
 
 <hr>
 
 <div class="cols">
 <div>
 
-In a **star**, the centre is one step from everybody.
+Best case: every other node is one step away.
 
-Its total distance is $N-1$, so its score is $(N-1)/(N-1) = 1$ — the largest closeness any node in any network can have.
+Then the score is exactly 1.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/star-closeness.png)
-<figcaption>the only shape that reaches the ceiling</figcaption>
 
 </div>
 </div>
+
+---
+
+## Which node is closest to everything?
+
+<hr>
+
+The smallest sum of distances wins. Left and right are separate networks.
+
+<div class="fig">
+
+![w:1080](figures/quiz-close.png)
+
+</div>
+
+<div class="cue">
+
+*Take a minute. Pick one on each side.*
+
+</div>
+
+---
+
+## Answer
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/quiz-close-answer.png)
+<figcaption>in both networks, the node with the most neighbours is not the closest</figcaption>
+
+</div>
+
+<!--
+Left: F has degree 2 and a sum of 19. The hub E (degree 5) and G both have 20. Moving from E to F, five nodes get one step farther (A, B, C, D, E) and six get one step closer.
+Right: P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arms hold more nodes.
+-->
+
+---
+
+## New York: closeness
+
+<hr>
+
+<div class="cols">
+<div>
+
+* Distance: km of highway.
+* Winner: NY 17 at Middletown, in the Hudson Valley.
+* A third of the interchanges lie within 60 km of Manhattan.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ny-closeness.png)
+
+</div>
+</div>
+
+<!--
+Closeness is pulled toward where the nodes are. 91 of 289 interchanges are within 60 km of Manhattan, so the best average sits just north of the city, not in the middle of the state.
+-->
 
 ---
 
 <!-- _class: mid -->
 
-## What if the network is cut?
+## What if one road closes?
 
 <hr>
 
-A winter storm closes the Channel crossing for the season. What happens to the closeness scores?
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Close the road between E and F.
 
-![w:1080](figures/roma-cut.png)
-<figcaption>one route, gone — the dashed edge is the closed crossing</figcaption>
+What happens to closeness?
 
 </div>
+<div class="fig">
 
-<!--
-Do not say "zero" and do not say "Londinium". The trap is that it is not only Londinium's score that dies.
--->
+![w:537](figures/cut-blank.png)
+
+</div>
+</div>
 
 ---
 
-## Every score dies, not just one
+## Every score drops to zero
 
 <hr>
 
-One unreachable city makes **every** sum infinite. Twelve cities, one value, no ranking at all.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Some distances are now $\infty$.
 
-![w:1080](figures/roma-cut-closeness.png)
-<figcaption>every city the same shade, because every city now scores exactly 0</figcaption>
+Every sum is $\infty$, so every closeness is 0.
 
 </div>
+<div class="fig">
+
+![w:537](figures/cut-closeness.png)
+
+</div>
+</div>
+
+<!--
+Not just the nodes near the cut: all eleven. Closeness cannot rank a disconnected network at all.
+-->
 
 ---
 
@@ -533,39 +431,63 @@ One unreachable city makes **every** sum infinite. Twelve cities, one value, no 
 <div class="cols">
 <div>
 
-Invert each distance *before* adding, and an unreachable city contributes $1/\infty = 0$ instead of poisoning the total.
-
 <div class="formula">
 
-$$c_i = \sum_{j \neq i} \frac{1}{d(i,j)}$$
+$$h_i = \sum_{j \ne i} \frac{1}{\ell_{ij}}$$
 
 </div>
 
-**Harmonic centrality** survives the cut.
+**Harmonic centrality**, with $1/\infty = 0$.
 
 </div>
 <div class="fig">
 
-![w:537](figures/harmonic-idea.png)
-<figcaption>an unreachable node adds nothing instead of adding infinity</figcaption>
+![w:537](figures/harmonic-def.gif)
 
 </div>
+</div>
+
+<!--
+Invert each distance, then add. An unreachable node adds 0 instead of making the whole sum infinite. From G: four nodes at distance 1, K at 2, the other piece unreachable: 4 + 1/2 = 9/2.
+-->
+
+---
+
+## Which node has the highest harmonic centrality?
+
+<hr>
+
+Left: the same network as before. Right: two pieces.
+
+<div class="fig">
+
+![w:1080](figures/quiz-harm.png)
+
+</div>
+
+<div class="cue">
+
+*Does the left winner change?*
+
 </div>
 
 ---
 
-## The same broken map, still ranked
+## Answer
 
 <hr>
 
-Rome scores 7.5, Massilia 6.2, and Londinium alone scores 0.
+<div class="fig">
 
-<div class="fig tall">
-
-![w:1080](figures/roma-cut-harmonic.png)
-<figcaption>darker means higher harmonic centrality; the crossing is still cut</figcaption>
+![w:1080](figures/quiz-harm-answer.png)
+<figcaption>on the left, closeness and harmonic crown different nodes</figcaption>
 
 </div>
+
+<!--
+Left: E 27/4 beats G 19/3 and F 35/6. With 1/distance, the four leaves at distance 1 count fully for E; with the sum of distances, they barely helped.
+Right: the star's centre, 4, beats the middle of the path, 11/3. The bigger piece is not the better one.
+-->
 
 ---
 
@@ -575,46 +497,98 @@ Rome scores 7.5, Massilia 6.2, and Londinium alone scores 0.
 
 <hr>
 
+A fire station must reach its farthest house in time.
+
+---
+
+## Eccentricity
+
+<hr>
+
+<div class="cols">
+<div>
+
 <div class="formula">
 
-Closeness minimises your **average** trip.
+$$e_i = \max_{j} \ell_{ij}$$
 
-Is that what a fire station is for?
+</div>
+
+**Eccentricity**: the distance to the farthest node. Its centrality is $1/e_i$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ecc-def.gif)
+
+</div>
+</div>
+
+---
+
+## Which node has the smallest eccentricity?
+
+<hr>
+
+The best fire station: the smallest worst case.
+
+<div class="fig">
+
+![w:1080](figures/quiz-ecc.png)
+
+</div>
+
+---
+
+## Answer
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/quiz-ecc-answer.png)
+<figcaption>in both networks, the best average is not the best worst case</figcaption>
 
 </div>
 
 <!--
-Wait for someone to say "the worst case". That is the whole of the next slide.
+Left: E wins closeness (sum 10) but its worst case is 3, the end of the tail. F has worst case 2.
+Right: K wins closeness (11), worst case 3. L, with degree 2, has worst case 2.
 -->
 
 ---
 
-## The worst case, minimised
+## New York: eccentricity
 
 <hr>
 
-Score a city by its **longest** shortest path, not its average one.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+* The worst-case drive from each interchange.
+* Smallest: 473 km, on NY 17 east of Binghamton.
 
-![w:1080](figures/roma-eccentricity.png)
-<figcaption>three cities share the crown — each reaches the whole empire in three steps</figcaption>
+</div>
+<div class="fig">
 
+![w:537](figures/ny-eccentricity.png)
+
+</div>
 </div>
 
 <!--
-The definition is one over the largest distance: c_i = 1 / max_j d(i,j). Massilia and Mediolanum have three roads each and Rome has five, and all three reach everything in three steps. The first crack: a ruler coarse enough to tie is a ruler that cannot rank.
+If New York State had one fire station for its highways, it would go near us. From there the farthest interchange is where I-90 leaves the state west of Buffalo, 473 km; next is I-87 at the Canadian border.
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Four</span><span class="count">04 / 08</span></div>
+<div class="band"><span>Part Two</span><span class="count">02 / 05</span></div>
 
 ## The broker
 
-Who the traffic cannot avoid
+who the traffic cannot avoid
 
 ---
 
@@ -622,17 +596,23 @@ Who the traffic cannot avoid
 
 <hr>
 
-You are carrying a letter from **Londinium** to **Alexandria**. Which cities do you have to pass through?
+<div class="cols">
+<div>
 
-<div class="fig tall">
+Send a letter between every pair of nodes, along a shortest path.
 
-![w:1080](figures/roma-graph.png)
-<figcaption>the same map</figcaption>
+Count the letters each node carries.
 
+</div>
+<div class="fig">
+
+![w:537](figures/btw-def.gif)
+
+</div>
 </div>
 
 <!--
-Let two or three students trace different routes out loud. Do not count anything yet, and do not name a winner.
+D carries 9: every letter between the left triangle and the right triangle. C and E carry 8 each.
 -->
 
 ---
@@ -643,218 +623,149 @@ Let two or three students trace different routes out loud. Do not count anything
 
 <div class="formula">
 
-$$c_i = \sum_{j<k} \frac{\sigma_{jk}(i)}{\sigma_{jk}}$$
+$$b_i = \sum_{s < t} \frac{\sigma_{st}(i)}{\sigma_{st}}$$
 
 </div>
 
-
-<div class="fig tall">
-
-![w:1080](figures/betweenness-idea.png)
-
-</div>
-
-<!--
-Betweenness centrality counts how often a node lies on the shortest path between two others: traffic it can broker, or block.
--->
-
----
-
-## Counting the paths
-
-<hr>
-
-$\sigma_{jk}$ counts the shortest $j$–$k$ paths; $\sigma_{jk}(i)$ counts the ones through $i$. **Ties are shared, never double counted.**
-
-<div class="fig tall">
-
-![w:1080](figures/sigma-graph.png)
-<figcaption>S to D, two ways round</figcaption>
-
-</div>
-
----
-
-## Your turn: count them
-
-<hr>
-
-How many shortest **S–D** routes are there? How many go through **A**? Through **T**?
-
-<div class="fig tall">
-
-![w:1080](figures/sigma-blank.png)
-<figcaption>five nodes, count carefully</figcaption>
-
-</div>
-
-<!--
-Sixty seconds. Take all three numbers from the room before the next slide.
--->
-
----
-
-## Two routes, so a half each
-
-<hr>
-
-$\sigma_{SD} = 2$. A carries one route and B the other, so each earns $\tfrac12$ — and T earns a whole one, because **every** route uses it.
-
-<div class="fig tall">
+<div class="fig">
 
 ![w:1080](figures/sigma-answer.png)
-<figcaption>one route in blue, one in red, and the credit each node earns</figcaption>
-
-</div>
-
----
-
-## The third crown
-
-<hr>
-
-Rome again — 0.50, half of all the traffic in the empire.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-betweenness.png)
-<figcaption>darker means higher betweenness; the crown marks the highest</figcaption>
-
-</div>
-
----
-
-## Now look at second place
-
-<hr>
-
-**Mediolanum** brokers 0.27 on three roads. Alexandria brokers 0.18 on four.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-betweenness-runnerup.png)
-<figcaption>the gold ring is the runner-up; the red crown is still the winner</figcaption>
+<figcaption>sigma counts shortest paths; with two of them, each carries half</figcaption>
 
 </div>
 
 <!--
-This is the first time in the deck that fewer connections beat more, and it is the idea the next slide isolates.
+sigma_st: the number of shortest paths from s to t. sigma_st(i): how many of them pass through i.
 -->
 
 ---
 
-## Bridges and brokers
+## Which node carries the most?
 
 <hr>
 
-Two tight groups, joined through one node holding **two** edges.
+Count the shortest paths through each node.
 
-<div class="fig tall">
+<div class="fig">
 
-![w:1080](figures/broker.png)
-<figcaption>degree 2, and all sixteen crossing pairs</figcaption>
+![w:1080](figures/quiz-btw.png)
+
+</div>
+
+---
+
+## Answer
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/quiz-btw-answer.png)
+<figcaption>the bridge F carries every left-right pair, and each hub carries more</figcaption>
 
 </div>
 
 <!--
-It is nobody by degree. Burt called the gap it sits in a structural hole; Module 05 cuts networks apart at exactly these edges.
+Left: F carries 5 x 5 = 25 pairs. E carries the 6 pairs among its leaves plus 4 x 6 pairs between a leaf and the rest: 30. Same for G.
+Right: O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: through O and through R): 19/2. M carries 9.
 -->
 
 ---
 
-## Module 03, revisited: strike by degree
-
-<hr>
-
-Take out Rome, then Alexandria — the two cities with the most roads. **Seven** of twelve stay joined.
-
-<div class="fig tall">
-
-![w:1080](figures/attack-compare-1.png)
-<figcaption>red rim: removed · blue: the surviving network · gray: cut off from it</figcaption>
-
-</div>
-
----
-
-## Now strike by betweenness
-
-<hr>
-
-Rome again — and then **Tarraco, which has two roads**. Only **five** stay joined.
-
-<div class="fig tall">
-
-![w:1080](figures/attack-compare-2.png)
-<figcaption>same marks, but the second strike chosen by traffic, not by count</figcaption>
-
-</div>
-
-<!--
-Module 03 showed that networks die fastest when the attacker chooses well. This is what "well" means.
--->
-
----
-
-## Tonight, and a question to sleep on
+## New York: betweenness
 
 <hr>
 
 <div class="cols">
 <div>
 
-Handout: **"Who's the Big Cheese in the University Clubs?"** — the same thirteen students you drew this morning.
-
-<div class="formula">
-
-Is a city important because it is important?
-
-</div>
+* Binghamton is first of the eight cities.
+* Three and a half times Syracuse, the second.
+* NY 17 joins New York City to the rest of the state.
 
 </div>
 <div class="fig">
 
-![w:537](figures/club-three-kings-small.png)
-<figcaption>three questions, three students</figcaption>
+![w:537](figures/ny-betweenness.png)
 
 </div>
 </div>
 
 <!--
-The cliffhanger is deliberately circular. Tomorrow it turns into an eigenvector equation.
+The answer to this morning's question. Four of the top five interchanges in the whole state are on NY 17 between Binghamton and Middletown: the corridor between the NYC cluster and upstate. Binghamton is where that corridor meets I-81 and I-88.
 -->
+
+---
+
+## The shortest-path row
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/grid-row1.png)
+<figcaption>four ways to turn shortest paths into one number</figcaption>
+
+</div>
+
+---
+
+<!-- _class: mid -->
+
+## A question to sleep on
+
+<hr>
+
+<div class="formula">
+
+Is a city important because its neighbours are important?
+
+</div>
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Five</span><span class="count">05 / 08</span></div>
+<div class="band"><span>Part Three</span><span class="count">03 / 05</span></div>
 
 ## Known by the company you keep
 
-Importance you inherit
+importance you inherit
+
+<!--
+Day 2 starts here.
+-->
 
 ---
 
-## Aesop, sixth century BC
+## Aesop
 
 <hr>
 
 <div class="cols">
 <div>
 
-*A man is known by the company he keeps.*
+<div class="formula">
 
-Two cities with the same number of roads are not the same city, if one of them is connected to the capital and the other to two villages.
+"A man is known by the company he keeps."
+
+</div>
+
+The moral of *The Ass and His Purchaser* (Perry 237).
 
 </div>
 <div class="fig">
 
-![w:537](figures/same-degree-different-friends.png)
-<figcaption>equal degree, unequal company</figcaption>
+![w:537](figures/photos/aesop.jpg)
+<figcaption>Diego Velázquez, Aesop, c. 1638–41, Museo del Prado</figcaption>
 
 </div>
 </div>
+
+<!--
+The English moral is a 19th-century translation (Townsend); the fable is attributed to Aesop by tradition.
+A man buys a donkey on trial. It walks straight to the laziest donkey in the yard, and he returns it.
+-->
 
 ---
 
@@ -865,45 +776,24 @@ Two cities with the same number of roads are not the same city, if one of them i
 <div class="cols">
 <div>
 
-Stop counting neighbours. Add up their **scores** instead.
-
 <div class="formula">
 
-$$c_i \propto \sum_j A_{ij}\, c_j$$
+$$c_i = \frac{1}{\lambda} \sum_j A_{ij}\, c_j$$
 
 </div>
 
-A node is important if its neighbours are.
+A node's score is the sum of its neighbours' scores.
 
 </div>
 <div class="fig">
 
-![w:537](figures/recursive-flow.png)
-<figcaption>score arriving from each neighbour</figcaption>
+![w:537](figures/eigen-inherit.gif)
 
 </div>
 </div>
-
----
-
-<!-- _class: mid -->
-
-## Isn't that circular?
-
-<hr>
-
-<div class="formula">
-
-To know Rome's score I need Milan's.
-
-To know Milan's I need Rome's.
-
-</div>
-
-Can this be computed at all?
 
 <!--
-Let the objection stand for a moment. It is a good objection. The answer is that the circularity is exactly what makes it solvable.
+It is circular: a score defined by scores. The constant lambda keeps the scores from growing without bound. Next slide: this is an eigenvector equation.
 -->
 
 ---
@@ -912,53 +802,34 @@ Let the objection stand for a moment. It is a good objection. The answer is that
 
 <hr>
 
-<div class="cols">
-<div>
-
-Write that one line for all twelve cities at once and the sum becomes a matrix product.
-
-<div class="formula">
-
-$$\lambda\, c = A\, c$$
-
-</div>
-
-**Eigenvector centrality** is the vector that comes back unchanged, up to scale.
-
-</div>
 <div class="fig">
 
-![w:537](figures/eigen-equation.png)
-<figcaption>the matrix acting on the scores</figcaption>
+![w:1080](figures/eigen-equation.png)
 
 </div>
-</div>
-
-<!--
-Eigenvector centrality is the vector that comes back unchanged, up to scale. Say the words "eigenvector centrality" here for the first time.
--->
 
 ---
 
 <!-- _class: mid -->
 
-## Which eigenvector?
+## Seven eigenvectors. Which one?
 
 <hr>
 
-<div class="formula">
+A 7 × 7 matrix has seven eigenvectors. Which one is the centrality?
 
-A twelve-by-twelve matrix has twelve of them.
+---
 
-Most have negative entries.
+## All seven
+
+<hr>
+
+<div class="fig tall">
+
+![w:1080](figures/eig-all.png)
+<figcaption>blue: positive entry, gold: negative; only one is blue everywhere</figcaption>
 
 </div>
-
-What would a negative importance mean?
-
-<!--
-No hints. The next slide names the theorem.
--->
 
 ---
 
@@ -969,21 +840,79 @@ No hints. The next slide names the theorem.
 <div class="cols">
 <div>
 
-For a connected network with non-negative $A$, **one** eigenvalue is larger than all the others, and its eigenvector is unique and **strictly positive**.
+In a connected network, the eigenvector of the largest eigenvalue is the only one with every entry positive.
 
-Perron proved it in **1907**; Frobenius extended it in **1912**.
+That one is **eigenvector centrality**.
 
 </div>
 <div class="fig">
 
-![w:537](figures/spectrum.png)
-<figcaption>twelve eigenvalues, one usable</figcaption>
+![w:537](figures/eig-pf.png)
 
 </div>
 </div>
 
 <!--
-That theorem is the licence to say "the" eigenvector centrality. Without it the definition would not pick out a single answer.
+The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducible = the network is connected). A negative score would mean nothing, so this is the only eigenvector that can be a centrality.
+-->
+
+---
+
+## Eigendecomposition
+
+<hr>
+
+A symmetric matrix is a sum of rank-1 matrices.
+
+<div class="fig">
+
+![w:1080](figures/decomp-sum.gif)
+<figcaption>circle: an eigenvalue; tall bar: its eigenvector; wide bar: the same vector, transposed</figcaption>
+
+</div>
+
+---
+
+## The eigenvectors are orthogonal
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/decomp-orth.png)
+<figcaption>two different eigenvectors multiply to 0; one with itself gives 1</figcaption>
+
+</div>
+
+---
+
+## Square it
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/decomp-square.gif)
+<figcaption>every cross term contains a product of two different eigenvectors, which is 0</figcaption>
+
+</div>
+
+---
+
+## Keep multiplying
+
+<hr>
+
+Each term grows as $\lambda_k^t$. The largest $\lambda$ wins.
+
+<div class="fig">
+
+![w:1080](figures/decomp-power.gif)
+
+</div>
+
+<!--
+Divide everything by lambda_1^t: term k shrinks like (lambda_k / lambda_1)^t. The second largest in size is -2.26, so the error shrinks by a factor 0.78 per step. After 16 steps it is about 2%.
 -->
 
 ---
@@ -992,16 +921,7 @@ That theorem is the licence to say "the" eigenvector centrality. Without it the 
 
 <hr>
 
-<div class="fig tall">
-
-![w:1080](figures/power-iteration.gif)
-<figcaption>everyone starts at 1 — add up your neighbours, rescale, repeat</figcaption>
-
-</div>
-
-<!--
-No eigenvalue solver anywhere: just addition, over and over. Watch the crown appear at step 1 and never move.
--->
+<!-- STAGE power-step: markup goes here from review/STAGES.md -->
 
 ---
 
@@ -1012,90 +932,24 @@ No eigenvalue solver anywhere: just addition, over and over. Watch the crown app
 <div class="cols">
 <div>
 
-Step 0 is flat: everybody equal.
+<div class="formula">
 
-**Step 1 is exactly the degree ranking**, because the first sum is only a count.
+$$A\mathbf{1} = (d_1, d_2, \ldots, d_N)$$
 
-After that the score arrives from further away, and the order stops changing by step 4.
+</div>
+
+Start from all ones. One multiplication gives each node its degree.
 
 </div>
 <div class="fig">
 
-![w:537](figures/power-step-2.png)
-<figcaption>two rounds of adding up neighbours</figcaption>
+![w:537](figures/power-step1.png)
 
 </div>
 </div>
 
 <!--
-The crown is decided after a single step. Everything after that is sorting out the rest of the ranking.
--->
-
----
-
-## Why it converges
-
-<hr>
-
-<div class="cols">
-<div>
-
-Write the starting vector in the eigenbasis. Multiplying by $A$ multiplies each piece by its own $\lambda$.
-
-So every piece but the leading one shrinks like $|\lambda_i/\lambda_1|^t$ — and the slowest here is **0.80**.
-
-</div>
-<div class="fig">
-
-![w:537](figures/decay.png)
-<figcaption>every other mode, dying</figcaption>
-
-</div>
-</div>
-
-<!--
-Write the starting vector in the eigenbasis: multiplying by A multiplies each piece by its own eigenvalue, so every piece except the leading one shrinks geometrically.
--->
-
----
-
-## Module 01, revisited
-
-<hr>
-
-<div class="cols">
-<div>
-
-$A^t$ counts **walks of length $t$**.
-
-Power iteration counts walks and lets the long ones dominate — so eigenvector centrality answers "where do most walks end up?"
-
-</div>
-<div class="fig">
-
-![w:537](figures/walks-arrive.png)
-<figcaption>one of the fourteen walks of length 3 that end at the ringed node</figcaption>
-
-</div>
-</div>
-
----
-
-## The fourth crown
-
-<hr>
-
-Rome again — but **Alexandria is within 8%** with one road fewer.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-eigenvector.png)
-<figcaption>darker means higher eigenvector centrality; the crown marks the highest</figcaption>
-
-</div>
-
-<!--
-The company you keep nearly closes a gap that counting cannot.
+So degree is the first guess, and every further step corrects it by looking one step farther. B starts below D (degree 2 against 3), ties it at steps 2 and 3, and passes it at step 4.
 -->
 
 ---
@@ -1106,46 +960,71 @@ The company you keep nearly closes a gap that counting cannot.
 
 <hr>
 
-<div class="formula">
+<div class="cols">
+<div>
 
-Describe a network where this ranking would be useless.
+Four cliques of four, in a ring.
+
+Add one node to one clique.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ring-4444.png)
+
+</div>
+</div>
+
+---
+
+## Localization
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/ring-local.gif)
+<figcaption>share of the eigenvector inside the growing clique</figcaption>
 
 </div>
 
-Thirty seconds with your neighbour.
-
 <!--
-Steer nobody. If someone says "a network with one dense clump", they have it exactly, and the next slide is their answer drawn.
+One extra node, and 89% of the eigenvector moves into that clique; with two, 97%. The other three cliques, identical to each other, score almost nothing. The eigenvector concentrates on the densest part of the network.
 -->
 
 ---
 
-## It piles up in one place
+## New York: eigenvector
 
 <hr>
 
-A tight cluster feeds itself, and the far end of the tail is *invisible*.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+* 99.7% of the score lies within 60 km of Manhattan.
+* 31% of the interchanges lie there.
 
-![w:1080](figures/localization.png)
-<figcaption>five nodes take almost everything; the ringed node scores 0.0045 of the top</figcaption>
+</div>
+<div class="fig">
 
+![w:537](figures/ny-eigenvector.png)
+
+</div>
 </div>
 
 <!--
-0.0045 is not "small", it is below anything a ranking can distinguish. This is the failure Katz was written to repair, and Part Six opens on it.
+The real network localizes: the densest cluster, Long Island and the city, takes almost everything. Upstate interchanges all score close to zero.
 -->
 
 ---
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Six</span><span class="count">06 / 08</span></div>
+<div class="band"><span>Part Four</span><span class="count">04 / 05</span></div>
 
 ## Everyone gets a floor
 
-Katz, and the dial that breaks it
+Katz centrality
 
 ---
 
@@ -1156,189 +1035,111 @@ Katz, and the dial that breaks it
 <div class="cols">
 <div>
 
-Hand every node a fixed amount $\beta$ before any inheriting happens.
-
 <div class="formula">
 
-$$c = \beta\mathbf{1} + \lambda A c$$
+$$c_i = \beta + \alpha \sum_j A_{ij}\, c_j$$
+
+$$\mathbf{c} = \beta\, (I - \alpha A)^{-1} \mathbf{1}$$
 
 </div>
 
-**Katz centrality**: now nothing can be stuck at zero.
+**Katz centrality**.
 
 </div>
 <div class="fig">
 
 ![w:537](figures/katz-floor.png)
-<figcaption>the same tail, lifted off the floor</figcaption>
 
 </div>
 </div>
 
 <!--
-0.0045 becomes 0.184 — a factor of forty on the node the previous measure could not see.
--->
-
----
-
-## Solve it once
-
-<hr>
-
-<div class="cols">
-<div>
-
-Collect the $c$ terms on one side and invert.
-
-<div class="formula">
-
-$$c = \beta\,(I - \lambda A)^{-1}\mathbf{1}$$
-
-</div>
-
-One matrix inverse, and the recursion is gone.
-
-</div>
-<div class="fig">
-
-![w:537](figures/katz-solve-2.png)
-<figcaption>the same equation, rearranged</figcaption>
-
-</div>
-</div>
-
----
-
-<!-- _class: mid -->
-
-## What is that inverse counting?
-
-<hr>
-
-<div class="formula">
-
-$$(I - \lambda A)^{-1}$$
-
-</div>
-
-It came out of algebra. What does it *mean*?
-
-<!--
-If nobody bites, remind them what one over one minus x expands into. Do not say the word "walks" yet.
--->
-
----
-
-## Walks, discounted by length
-
-<hr>
-
-<div class="cols">
-<div>
-
-Expand the inverse as a series and every power of $A$ appears.
-
-<div class="formula">
-
-$$c = \beta \sum_{t \ge 0} \lambda^t A^t \mathbf{1}$$
-
-</div>
-
-Katz counts **every walk of every length**, discounting a walk of length $t$ by $\lambda^t$.
-
-</div>
-<div class="fig">
-
-![w:537](figures/katz-series-4.png)
-<figcaption>each term smaller than the last</figcaption>
-
-</div>
-</div>
-
----
-
-## $\lambda$ is a dial
-
-<hr>
-
-<div class="cols">
-<div>
-
-Turn $\lambda$ down and only the shortest walks survive: Katz becomes **degree**.
-
-Turn it up and long walks count as much as short ones: Katz becomes **eigenvector centrality**.
-
-Everything useful is in between.
-
-</div>
-<div class="fig">
-
-![w:537](figures/katz-dial.png)
-<figcaption>the top of the ranking, at three settings</figcaption>
-
-</div>
-</div>
-
-<!--
-Everything useful is in between. Turning the dial down keeps only the shortest walks; turning it up lets long walks count as much as short ones.
+Every node gets beta for free, so no node can be driven to zero. Move the sum to the left: (I - alpha A) c = beta 1, and invert.
 -->
 
 ---
 
 <!-- _class: mid -->
 
-## How far can you turn it?
+## What is that inverse?
 
 <hr>
 
 <div class="formula">
 
-Predict first: what happens if I keep raising $\lambda$?
+$$\frac{1}{1-x} = 1 + x + x^2 + x^3 + \cdots \qquad \text{for } |x| < 1$$
 
 </div>
 
-Say it out loud before we run it.
-
-<!--
-Collect two or three predictions. "It grows" is the common one. "It stops working" is the right one, and the next slide says exactly when.
--->
-
 ---
 
-## Past $1/\lambda_{\max}$ it stops meaning anything
+## The same series for matrices
 
 <hr>
 
 <div class="cols">
 <div>
 
-The series converges only while $\lambda < 1/\lambda_{\max}$.
+<div class="formula">
 
-Here $\lambda_{\max} = 3.35$, so the ceiling is **0.299**.
+$$(I - \alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$$
 
-Set $\lambda = 0.344$ and **eleven of the twelve scores go negative**.
+</div>
+
+$A^k$ counts walks of length $k$: Katz counts walks, discounted by length.
 
 </div>
 <div class="fig">
 
-![w:537](figures/katz-diverge.png)
-<figcaption>scores against lambda, crossing zero</figcaption>
+![w:537](figures/walks-discount.gif)
 
 </div>
 </div>
+
+<!--
+Multiply both sides by (I - alpha A) to check. The series converges only if alpha is small enough: next slide.
+-->
 
 ---
 
-## The fifth crown
+## Turn the dial
 
 <hr>
 
-Rome, with Alexandria at 0.89 behind it. Five measures now, and the crown has not moved.
+<!-- STAGE katz-dial: markup goes here from review/STAGES.md -->
 
-<div class="fig tall">
+---
 
-![w:1080](figures/roma-katz.png)
-<figcaption>darker means higher Katz score; the crown marks the highest</figcaption>
+## Why 1/λ<sub>max</sub>?
+
+<hr>
+
+<div class="formula">
+
+$$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \mathbf{u}_k^\top$$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/katz-why.gif)
+
+</div>
+
+<!--
+Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+-->
+
+---
+
+## The walk row
+
+<hr>
+
+<div class="fig">
+
+![w:1080](figures/grid-row2.png)
+<figcaption>degree, Katz and eigenvector centrality: one series, cut at different lengths</figcaption>
 
 </div>
 
@@ -1346,154 +1147,64 @@ Rome, with Alexandria at 0.89 behind it. Five measures now, and the crown has no
 
 <!-- _class: part -->
 
-<div class="band"><span>Part Seven</span><span class="count">07 / 08</span></div>
+<div class="band"><span>Part Five</span><span class="count">05 / 05</span></div>
 
 ## The Web has direction
 
-Hubs, authorities, and PageRank
+A road runs both ways. A link does not.
 
 ---
 
-## A road runs both ways. A link does not.
+## Hubs and authorities
 
 <hr>
 
-Write $A_{ij} = 1$ when **$i$ links to $j$**. One page here links to four others; one links to nothing at all.
-
-<div class="fig tall">
-
-![w:1080](figures/web-graph.png)
-<figcaption>eight pages, fourteen links, arrows pointing where they point</figcaption>
-
-</div>
-
-<!--
-Say the second half out loud: a link is not a road, it is a recommendation. That asymmetry is the whole of Part Seven.
--->
-
----
-
-<!-- _class: mid -->
-
-## Which page is important?
-
-<hr>
-
-A page that links to everything, or a page that everything links to?
-
-<div class="fig tall">
-
-![w:1080](figures/web-blank.png)
-<figcaption>eight pages, no scores</figcaption>
-
-</div>
-
-<!--
-Both answers are defensible and that is the point. Do not resolve it.
--->
-
----
-
-## Both — and they are different quantities
-
-<hr>
-
-A good **hub** points at good authorities. A good **authority** is pointed at by good hubs. Two scores per page, each defined through the other.
-
-<div class="fig tall">
-
-![w:1080](figures/hub-authority.png)
-<figcaption>the two roles a page can play</figcaption>
-
-</div>
-
----
-
-## Two coupled equations
-
-<hr>
+<div class="cols">
+<div>
 
 <div class="formula">
 
-$$x = A y \qquad y = A^{\top} x$$
+$$a_i = \sum_j A_{ji}\, h_j \qquad h_i = \sum_j A_{ij}\, a_j$$
 
 </div>
 
+**Authority**: pointed to by good hubs. **Hub**: points to good authorities.
 
-<div class="fig tall">
+</div>
+<div class="fig">
 
-![w:1080](figures/hits-equations.png)
+![w:537](figures/hits-graph.png)
 
+</div>
 </div>
 
 <!--
-Substitute one into the other and each is an eigenvector problem: hubs are the leading eigenvector of A A-transpose, authorities of A-transpose A. HITS, Kleinberg 1999.
+HITS (Kleinberg, 1999). Two scores per page. A links out three times and is the best hub; E is linked to three times and is the best authority.
 -->
 
 ---
 
-## Your turn: pick them by eye
+## On a road map, HITS is eigenvector centrality
 
 <hr>
 
-Which page is the best **hub**? Which is the best **authority**? Argue from the arrows, not from a formula.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+<div class="formula">
 
-![w:1080](figures/web-blank.png)
-<figcaption>eight pages, no scores</figcaption>
+$$\mathbf{a} \propto A^\top A\, \mathbf{a}$$
 
 </div>
 
-<!--
-Sixty seconds. Two crowns to collect, and they must not land on the same page.
--->
-
----
-
-## Two crowns, two pages
-
-<hr>
-
-The first time today that one network gave two different answers at the same time.
-
-<div class="fig tall">
-
-![w:1080](figures/web-hits.png)
-<figcaption>the hub crown and the authority crown, on different pages</figcaption>
+If $A$ is symmetric, $A^\top A = A^2$: the same eigenvectors as $A$.
 
 </div>
+<div class="fig">
 
----
-
-<!-- _class: mid -->
-
-## What if you run HITS on a road map?
-
-<hr>
-
-Our Roman network is undirected — every road runs both ways, so $A = A^{\top}$. What do hubs and authorities become?
-
-<div class="fig tall">
-
-![w:1080](figures/roma-graph.png)
-<figcaption>no arrows anywhere</figcaption>
+![w:537](figures/eig-centrality.png)
 
 </div>
-
----
-
-## It collapses back to Part Five
-
-<hr>
-
-With $A$ symmetric, $A^{\top}A = A^2$, so $A^{\top} A\, c = \lambda^2 c$: the same vector, and only the eigenvalue is squared.
-
-<div class="fig tall">
-
-![w:1080](figures/roma-eigenvector.png)
-<figcaption>the Part Five picture, unchanged: hubs and authorities are that same vector</figcaption>
-
 </div>
 
 ---
@@ -1502,38 +1213,11 @@ With $A$ symmetric, $A^{\top}A = A^2$, so $A^{\top} A\, c = \lambda^2 c$: the sa
 
 <hr>
 
-Chess players, popular children, sociograms, web pages. Parts Five to Seven are one idea rediscovered.
-
-<div class="fig tall">
+<div class="fig">
 
 ![w:1080](figures/genealogy.png)
-<figcaption>a century of people solving the same problem without knowing it</figcaption>
 
 </div>
-
-<!--
-Landau 1895 was ranking chess tournaments. Seeley 1949 was ranking children by who liked whom. Katz 1953, Hubbell 1965, Bonacich 1972 — all sociology. Brin and Page arrive in 1998 and none of the earlier work is cited.
--->
-
----
-
-<!-- _class: mid -->
-
-## 1998, Stanford
-
-<hr>
-
-<div class="formula">
-
-You are ranking the entire Web by counting links.
-
-What is the first thing somebody does to you?
-
-</div>
-
-<!--
-"They make a page with a thousand links on it." Exactly. Do not say how PageRank answers it.
--->
 
 ---
 
@@ -1541,57 +1225,69 @@ What is the first thing somebody does to you?
 
 <hr>
 
+<div class="cols">
+<div>
+
 <div class="formula">
 
-$$c_i = (1-\beta)\sum_j \frac{A_{ji}\,c_j}{d^{\text{out}}_j} + \frac{\beta}{N}$$
+$$c_i = \sum_j A_{ji}\, \frac{c_j}{d^{\text{out}}_j}$$
 
 </div>
 
+C has three links in, and E has one. Which ranks higher?
 
-<div class="fig tall">
+</div>
+<div class="fig">
 
-![w:1080](figures/pagerank-split.png)
+![w:537](figures/pr-split.png)
 
+</div>
 </div>
 
 <!--
-A page has one vote and splits it among its out-links, so a link from a page that links to everything is worth almost nothing.
+A page splits its score equally among the pages it links to. A gives a third to each of B, C, D.
 -->
 
 ---
 
-## A different crown
+## A three-way tie
 
 <hr>
 
-The page HITS crowned as the best hub is the page PageRank ranks **eighth of eight**.
+<div class="cols">
+<div>
 
-<div class="fig tall">
+A, C and E: 3/11 each. B and D: 1/11.
 
-![w:1080](figures/web-pagerank.png)
-<figcaption>darker means higher PageRank; the crown marks the highest</figcaption>
+E's one link comes from C, and C passes on everything.
 
 </div>
+<div class="fig">
 
-<!--
-This is the payoff the whole module has been walking toward. Same network, same arrows, two defensible definitions, and they disagree completely.
--->
+![w:537](figures/pr-split-answer.png)
+
+</div>
+</div>
 
 ---
 
-<!-- _class: mid -->
-
-## The walker reaches a dead end
+## A dead end
 
 <hr>
 
-Follow the links at random. Sooner or later you land on a page with nothing to click. Now what?
+<div class="cols">
+<div>
 
-<div class="fig tall">
+E loses its only link. Its score has nowhere to go.
 
-![w:1080](figures/web-dangling.png)
-<figcaption>one page, no way out</figcaption>
+The total drains to zero.
 
+</div>
+<div class="fig">
+
+![w:537](figures/pr-leak.gif)
+
+</div>
 </div>
 
 ---
@@ -1600,12 +1296,86 @@ Follow the links at random. Sooner or later you land on a page with nothing to c
 
 <hr>
 
-With probability $\beta$ the walker ignores the links and jumps to a random page. PageRank is **where the walker spends its time** in the long run.
+<div class="cols">
+<div>
+
+<div class="formula">
+
+$$c_i = (1-r) \sum_j A_{ji}\, \frac{c_j}{d^{\text{out}}_j} + \frac{r}{N}$$
+
+</div>
+
+With probability $r = 0.15$, jump to a random page. This is **PageRank**.
+
+</div>
+<div class="fig">
+
+![w:537](figures/pr-teleport.png)
+
+</div>
+</div>
+
+<!--
+Brin and Page, 1998. A dead end hands its score to the jump. The jump also makes the answer unique.
+-->
+
+---
+
+## Personalized PageRank
+
+<hr>
+
+<div class="cols">
+<div>
+
+Jump back to A only.
+
+The scores now measure how close each page is to A.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ppr.png)
+
+</div>
+</div>
+
+<!--
+Replace r/N by r on A and 0 elsewhere. "More like this" on a website: teleport to the page you are on.
+-->
+
+---
+
+## New York: five measures, five places
+
+<hr>
+
+<div class="cols">
+<div>
+
+One network. Each measure crowns a different place.
+
+</div>
+<div class="fig">
+
+![w:537](figures/ny-five.png)
+
+</div>
+</div>
+
+<!--
+Closeness: NY 17 at Middletown. Harmonic: I-95 in the Bronx. Eccentricity: NY 17 east of Binghamton. Betweenness: NY 17 at Monticello. Eigenvector: I-495 on Long Island.
+-->
+
+---
+
+## Two choices, every centrality
+
+<hr>
 
 <div class="fig tall">
 
-![w:1080](figures/teleport.png)
-<figcaption>the only way out of a dead end — without it, every drop of score drains away</figcaption>
+![w:1080](figures/grid-final.png)
 
 </div>
 
@@ -1613,323 +1383,14 @@ With probability $\beta$ the walker ignores the links and jumps to a random page
 
 <!-- _class: mid -->
 
-## How would you build "more like this"?
+## Quiz
 
 <hr>
 
-<div class="formula">
+Draw a network in which degree, closeness, eccentricity and betweenness each crown a different node.
 
-A student is reading the course page.
+<div class="cue">
 
-What should the sidebar show — and how would you compute it?
-
-</div>
-
-<!--
-Fish for "things near it". Then ask what "near" means in a directed network, and let them arrive at biasing the walk.
--->
-
----
-
-## Bias the teleport
-
-<hr>
-
-<div class="formula">
-
-$$c_i = \sum_k \beta(1-\beta)^k p_i^{(k)}$$
+*Bring it to the next class.*
 
 </div>
-
-
-<div class="fig tall">
-
-![w:1080](figures/ppr.png)
-
-</div>
-
-<!--
-Send every jump back to one page and the ranking bends toward it. Globally Blog leads Course by 0.009; personalized on Course, Course leads by 0.125.
-The formula is the same score read a second way: the chance of reaching i in k steps, discounted by distance from the focus. Personalized PageRank is discounted reachability.
--->
-
----
-
-<!-- _class: part -->
-
-<div class="band"><span>Part Eight</span><span class="count">08 / 08</span></div>
-
-## Which one should you use?
-
-Everything above, and the cost of choosing wrong
-
----
-
-## Six measures, one map
-
-<hr>
-
-Rome took every crown outright but one, and shares that one with two three-road cities.
-
-<div class="fig tall">
-
-![w:1080](figures/crown-summary.png)
-<figcaption>red: six crowns held alone. gold: the two that tie it on eccentricity</figcaption>
-
-</div>
-
-<!--
-Do not present this as a disappointment. It is a finding, and the next four slides are what it means.
--->
-
----
-
-<!-- _class: mid -->
-
-## So which one do you use?
-
-<hr>
-
-<div class="formula">
-
-You will have to pick one on Thursday.
-
-On what grounds?
-
-</div>
-
-<!--
-"It depends" is correct and useless. Push for what it depends ON.
--->
-
----
-
-## Match the measure to the job
-
-<hr>
-
-The measure is not a property of the network. It is a property of **your question**.
-
-<div class="fig tall">
-
-![w:1080](figures/purpose-5.png)
-<figcaption>five jobs, five answers</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## How much of that was the map we drew?
-
-<hr>
-
-We chose eighteen routes out of the documented ones. Suppose we had chosen differently — which answers would change?
-
-<div class="fig tall">
-
-![w:1080](figures/roma-graph.png)
-<figcaption>one map out of many we could have drawn</figcaption>
-
-</div>
-
-<!--
-This is the question the module was really about. Take predictions on which measure is most fragile before showing the numbers.
--->
-
----
-
-## Some answers survive redrawing. Some do not.
-
-<hr>
-
-Counting roads gives the same answer on **every** map anyone could have drawn. Who is *influential* does not.
-
-<div class="fig tall">
-
-![w:1080](figures/robustness.png)
-<figcaption>share of 4992 drawable maps in which Rome keeps that crown</figcaption>
-
-</div>
-
----
-
-## The map we drew
-
-<hr>
-
-Betweenness crowns Rome — 0.50 against Mediolanum's 0.27.
-
-<div class="fig tall">
-
-![w:1080](figures/redraw-1.png)
-<figcaption>darker means higher betweenness; the road to be traded is red</figcaption>
-
-</div>
-
----
-
-## One redraw, one moved crown
-
-<hr>
-
-Trade the Thessaly road for the Balkan road and the Africa–Gaul lane. Every route is as documented as before.
-
-<div class="fig tall">
-
-![w:1080](figures/redraw-2.png)
-<figcaption>betweenness now crowns Mediolanum; nothing else moves</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## A million nodes. Which of these can you run?
-
-<hr>
-
-<div class="formula">
-
-Ten million edges, and an afternoon.
-
-Which measures are still available to you?
-
-</div>
-
-<!--
-Push them to think about what each definition needs to look at.
--->
-
----
-
-## Cost is part of the choice
-
-<hr>
-
-Degree reads the edges once. Closeness and betweenness need a shortest-path sweep from **every** node.
-
-<div class="fig tall">
-
-![w:1080](figures/cost.png)
-<figcaption>work against network size, log axes — 33,000x apart at a million nodes</figcaption>
-
-</div>
-
----
-
-<!-- _class: mid -->
-
-## Predict: the star and the path
-
-<hr>
-
-<div class="formula">
-
-In a star, do these measures agree with each other?
-
-In a path?
-
-</div>
-
-Answer both before the next slide.
-
-<!--
-Star: everyone says yes, and they are right. Path: the interesting one.
--->
-
----
-
-## Total agreement
-
-<hr>
-
-In a star **every** measure crowns the hub, because there is only one shape of node to argue about.
-
-<div class="fig tall">
-
-![w:1080](figures/star-vs-path-1.png)
-<figcaption>one node wins everything</figcaption>
-
-</div>
-
----
-
-## Then total disagreement
-
-<hr>
-
-In a path, degree cannot separate the five interior nodes at all. Betweenness ranks them completely and crowns exactly one.
-
-<div class="fig tall">
-
-![w:1080](figures/star-vs-path-2.png)
-<figcaption>five tie on degree; one wins on betweenness</figcaption>
-
-</div>
-
----
-
-## Three places this pays rent
-
-<hr>
-
-Module 04's friendship paradox, used deliberately: ask a random person to name a friend, and vaccinate **them**.
-
-<div class="fig tall">
-
-![w:1080](figures/applications-1.png)
-<figcaption>the named friends, marked — no census of the network required</figcaption>
-
-</div>
-
----
-
-## Defending infrastructure
-
-<hr>
-
-The defender reads the attacker's ranking. **Betweenness** names the substations whose loss splits the grid, not the ones with the most cables.
-
-<div class="fig tall">
-
-![w:1080](figures/applications-2.png)
-<figcaption>the nodes worth hardening first</figcaption>
-
-</div>
-
----
-
-## Systemic risk
-
-<hr>
-
-Regulators score institutions on their **position**, not their balance sheet. A bank that is not large can still be the one every exposure runs through.
-
-<div class="fig tall">
-
-![w:1080](figures/applications-3.png)
-<figcaption>small bank, unavoidable position</figcaption>
-
-</div>
-
----
-
-## Coming up in Module 07
-
-<hr>
-
-That walker was not a metaphor. **PageRank is a random walk** — and next time the walker is the subject rather than the tool.
-
-<div class="fig tall">
-
-![w:1080](figures/next-module.png)
-<figcaption>the walker, mid-jump</figcaption>
-
-</div>
-
-<!--
-Hand off explicitly: everything in Parts Five to Seven was one equation. Module 07 shows it is also one walk.
--->
