@@ -172,7 +172,7 @@ A figure authored for `full` must not be used in a `cols` column, and vice versa
   `purpose-5.png` if it fits at the 26 px disc floor (drop the icons if not).
 - Definition GIFs on `BT` (`BT_XY`), each col:
   - `closeness-def.gif`: from A, distances appear ring by ring next to each node; "sum = 15";
-    last frame: every node's sum (D smallest, 9). Assert from `dsum(BT)`.
+    last frame: every node's sum (D smallest, 10). Assert from `dsum(BT)`.
   - `ecc-def.gif`: for each node in turn an arrow to its farthest node with the distance; last frame
     every node's eccentricity, D = 2 marked.
   - `btw-def.gif`: pairs (s, t) one at a time, the shortest path highlighted, the counter on each

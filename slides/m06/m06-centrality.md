@@ -287,7 +287,7 @@ $\ell_{ij}$: the length of a shortest path from $i$ to $j$.
 </div>
 
 <!--
-Add up the distances to every other node, then invert: a small total gives a large score. The animation does it for A (sum 15), then shows every node's sum; D has the smallest, 9.
+Add up the distances to every other node, then invert: a small total gives a large score. The animation does it for A (sum 15), then shows every node's sum; D has the smallest, 10.
 -->
 
 ---
