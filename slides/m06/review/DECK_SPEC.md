@@ -1,251 +1,114 @@
-# m06 "All Roads Lead to Rome" — deck spec v2
+# m06 deck spec, v3 (2026-10-13)
 
-Slide-by-slide plan for `m06-centrality.md`, expanded from `plan.md` (v2, 2026-10-12).
-Sessions **10/20** (slides 1–34) and **10/22** (slides 35–72). One minute per slide.
+v2 (72 slides) was reviewed by the lecturer. v3 answers that review:
 
-Every number below comes from `figures/smallgraphs.py` (small graphs) or
-`figures/data/ny_network.json` (built by `figures/make_ny.py`). A figure imports the value;
-it never types it.
+1. **Small differences between consecutive slides.** The cost of new information grows like
+   n² in its amount n, so information arrives in small steps. Consecutive slides keep the same
+   drawing at the same place and add one thing (a value, a mark, a bullet).
+2. **One layout, almost everywhere:** the figure fixed in the right half (`cols`, 537 px),
+   minimal bullets in the left half, revealed one by one (`*` fragments). Exceptions (full
+   width): the classification grid, the seven eigenvectors, the eigendecomposition row, the
+   two live stages, the genealogy.
+3. **A two-graph question becomes two one-graph questions:** Q1 → A1 → Q2 → A2. Q and A share
+   the title, the left text (A adds one line) and the crop (A = Q + marks and values).
+4. **Figures over text, and little text.** No fact that the lecture does not use (the Temple of
+   Saturn, the lost inscription, Caesar as curator).
+5. **No autoplay.** Every build is a set of frames the lecturer steps with a slider, ◀ ▶, or
+   the clicker (`scrub.js`). The PNG/PDF export shows the last frame.
+6. **The lecturer's figure style** (his reference figures): hand-drawn nodes with a dark pencil
+   outline, grain, brush strokes for routes and underlines, MesloLGS NF for every label, muted
+   colours with saturation only on what matters, no pure black. See `figures/figlib.py`.
 
-    python3 figures/smallgraphs.py      # prints every quoted number, asserts them
+Day 1 (10/20): slides 1–41. Day 2 (10/22): slides 42–82.
 
-## Non-negotiables (SLIDE_RUBRIC.md, DECK_BUILD_GUIDE.md)
+Markup for the right half: `<div class="cols"><div>` bullets `</div><div class="fig">` image
+`</div></div>`. A build: `<div class="fig scrub">` with the still `figures/<name>.png`; the
+script finds `figures/frames/<name>/NN.png`.
 
-- One point per slide. At most **two lines of body text**; the lecturer says the rest.
-- Fragments use `*`. No tables, no code, `cols` is text + figure only.
-- A question slide carries no answer anywhere. The answer is on the next slide.
-- Every concept slide has a figure. Bold marks key terms only.
-- KaTeX does not run inside `<figcaption>` or raw HTML blocks: write symbols as words there.
-- Figures: TikZ through `figlib` (never matplotlib), 1 bp = 1 slide px, in-figure text ≥ 36 pt
-  (x-height ≥ 15.5 px), node discs 26–52 px (40 bp by default), palette tokens only,
-  **no green, no bar charts**, no edge crossings where the graph is planar.
+## Slides
 
-## Containers
-
-| container | authored width | height cap (`.fig` / `tight` / `stack` / `tall`) |
-|---|---|---|
-| `full` | 1080 bp | 380 / 320 / 190 / 400 |
-| `col` (right half of `cols`) | 537 bp | same |
-
-A figure authored for `full` must not be used in a `cols` column, and vice versa.
-
----
-
-# Day 1 (10/20): measured by shortest paths
-
-| # | title | class/layout | figure (container) | content |
+| # | title | left | right | what changes |
 |---|---|---|---|---|
-| 1 | All Roads Lead to Rome | lead | — | eyebrow "Module 06", sub "… do they?" |
-| 2 | 20 BC, the Forum Romanum | photos row + 4 bullets | `photos/caesar.jpg`, `augustus.jpg`, `milliarium.jpg` (hand-placed) | Augustus (Caesar's heir) set up the Golden Milestone in 20 BC / a gilded column in the Forum / inscription lost, said to list cities and miles / "Plutarch: every road of Italy ended at it." Credit line from `photos/CREDITS.md`. |
-| 3 | Twelve cities of the empire | cols | `roma-basemap` (col) | "Roads and sea lanes joined these twelve cities." Credit "© OpenStreetMap contributors" |
-| 4 | Keep the links, drop the map | one line + fig tall | `roma-to-graph.gif` (full, tall) | Q line: "Which city is the most important?" |
-| 5 | Today's question, at home | cols | `ny-overview` (col) | "New York State highways: 289 interchanges." Q: "Which of these eight cities do the most cross-state trips pass through?" (answer: slide 32) |
-| 6 | Degree centrality | formula + fig tall | `roma-degree` (full, tall) | $d_i = \sum_j A_{ij}$, $A_{ij} = 1$ if a road joins $i$ and $j$; caption "darker: more roads; Roma has the most, 5" |
-| 7 | New York: degree | cols | `ny-degree` (col) | "201 interchanges have degree 3, and 57 have degree 4." "Degree cannot tell them apart." |
-| 8 | How far is u from v? | cols | `w5-blank` (col) | question only |
-| 9 | Two ways to count | cols | `w5-walks.gif` (col) | shortest path: one number, 2 / walk: a count for every length: 2, 1, 11, … |
-| 10 | Two choices make a centrality | one line + fig | `grid-empty` (full) | "Which routes count, and how do they become one number?" |
-| 11 | Close to everything | part | — | |
-| 12 | Closeness centrality | cols | `closeness-def.gif` (col) | $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$; $\ell_{ij}$: shortest-path length from $i$ to $j$; $N$: number of nodes |
-| 13 | Why N − 1? | cols | `star-closeness` (col) | "Best case: every other node is one step away. Then the score is exactly 1." |
-| 14 | Which node is closest to everything? | one line + fig | `quiz-close` (full) | "Smallest sum of distances wins. Two separate networks." question only |
-| 15 | Answer | line + fig | `quiz-close-answer` (full) | line "The sum of distances, beside each candidate."; left F (19) beats E and G (20); right P (16) beats N (18) |
-| 16 | New York: closeness | cols | `ny-closeness` (col) | km of highway; winner NY 17 near Middletown; 31% of the interchanges within 60 km of Manhattan |
-| 17 | What if one road closes? | cols + cue | `cut-blank` (col) | left quiz graph with E–F removed; question only; "Take 30 seconds." |
-| 18 | Every score drops to zero | cols | `cut-closeness` (col) | "Some ℓ = ∞, so every sum = ∞, so every c = 0." |
-| 19 | Take the reciprocal first | cols | `harmonic-def.gif` (col) | $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$; "**Harmonic centrality**." then "$1/\infty = 0$: an unreachable node adds nothing." |
-| 20 | Which node has the highest harmonic centrality? | one line + fig | `quiz-harm` (full) | "Left: the closeness network, road E–F open. Right: two pieces." question only |
-| 21 | Answer | line + fig | `quiz-harm-answer` (full) | line "Harmonic centrality, beside each candidate."; left E (27/4) beats G (19/3) and F (35/6); right N (4) beats T (11/3) |
-| 22 | Would you site a fire station on the average? | mid | — | question only; cue "Take 30 seconds." |
-| 23 | Eccentricity | cols | `ecc-def.gif` (col) | $e_i = \max_{j} \ell_{ij}$, eccentricity centrality $= 1/e_i$ |
-| 24 | Which node has the smallest eccentricity? | one line + fig | `quiz-ecc` (full) | question only; "Take a minute." |
-| 25 | Answer | line + fig | `quiz-ecc-answer` (full) | line "Eccentricity, beside every node."; left F (2) while E wins closeness; right L (2, degree 2) while K wins closeness |
-| 26 | New York: eccentricity | cols | `ny-eccentricity` (col) | the smallest worst-case drive: 473 km, NY 17 east of Binghamton |
-| 27 | The broker | part | — | |
-| 28 | Trace a letter | cols | `btw-def.gif` (col) | "A letter for every pair, along a shortest path. Count the letters each node carries." |
-| 29 | Betweenness centrality | formula + line + fig | `sigma-answer` (full, caption "S to D: two shortest paths, so A and B each carry half of this pair") | $b_i = \sum_{s<t} \dfrac{\sigma_{st}(i)}{\sigma_{st}}$; $\sigma_{st}$, $\sigma_{st}(i)$ defined; caption on the two shortest paths S to D |
-| 30 | Which node carries the most? | one line + fig | `quiz-btw` (full) | "Count the shortest paths through each node; a tie splits the count." question only; "Take a minute." |
-| 31 | Answer | line + fig | `quiz-btw-answer` (full) | line "Betweenness, beside each candidate."; left E and G (30) beat the bridge F (25); right O (19/2) beats M (9) |
-| 32 | New York: betweenness | cols | `ny-betweenness` (col) | top interchange NY 17 at Monticello; Binghamton first of the eight (3.5 times Syracuse); four of the top five interchanges on NY 17 |
-| 33 | The shortest-path row | fig | `grid-row1` (full) | |
-| 34 | A question to sleep on | mid | — | "Is a city important because its neighbours are important?" |
+| 1 | All Roads Lead to Rome | lead | | |
+| 2 | The Golden Milestone | * 20 BC: Augustus, Caesar's heir, set it up in Rome. * Every road of Italy ended at it. * Distances were counted in miles from Rome. | photos (Caesar, Augustus, milestone) | |
+| 3 | Twelve cities of the empire | - Roads and sea lanes joined them. | roma-basemap | new figure |
+| 4 | Keep the links, drop the map | * Node: a city. Edge: a road or a sea lane. * Which city is the most important? | scrub roma-to-graph (frame 0 = slide 3) | the map goes, the links come |
+| 5 | Degree centrality | * **Degree**: the number of roads at a city. * $d_i=\sum_j A_{ij}$ … * Roma: 5, the most. * It sees only the neighbours. | roma-degree | shading added |
+| 6 | New York State highways | * 289 interchanges, 433 road segments. * Which of the eight cities do the most cross-state trips pass through? | ny-overview | new figure |
+| 7 | New York: degree | - Degree 3: 201 interchanges. Degree 4: 57. - Degree cannot tell them apart. | ny-degree | same map, dots shaded |
+| 8 | How far is u from v? | - The network from Module 01. | w5-blank | new figure |
+| 9 | Two ways to count | * Shortest path … * Walk … | scrub w5-walks (frame 0 = slide 8) | path, then walks |
+| 10 | Two choices make a centrality | (none) | grid-empty (full) | |
+| 11 | Part One | | | |
+| 12 | Closeness centrality | 4 fragments, formula third, "$N-1$: a star's centre scores exactly 1." | scrub closeness-def (bowtie) | |
+| 13–16 | Which node is closest to everything? | Q: - Smallest sum of distances wins. / A adds one line | q-close-CB, -ans, q-close-CA, -ans | |
+| 17–18 | What if one road closes? | Q / A adds "every closeness is 0" | cut-blank, cut-closeness | CA group |
+| 19 | Take the reciprocal first | 3 fragments (harmonic, formula, 1/∞) | scrub harmonic-def (frame 0 = cut-blank) | CA group |
+| 20–23 | Which node has the highest harmonic centrality? | Q/A ×2 | q-close-CA (reused), q-harm-CA-ans, q-harm-HD, -ans | CA group, then HD |
+| 24 | New York: closeness | 3 fragments | ny-closeness | |
+| 25 | Would you site a fire station on the average? | - Closeness picks D: the smallest sum. | bowtie-closeness | bowtie group |
+| 26 | Eccentricity | 3 fragments | scrub ecc-def (frame 0 = slide 25) | bowtie group |
+| 27–30 | Which node has the smallest eccentricity? | Q/A ×2 | q-ecc-EA, -ans, q-ecc-EB, -ans | |
+| 31 | New York: eccentricity | 2 fragments | ny-eccentricity | |
+| 32 | Part Two | | | |
+| 33 | Trace a letter | 2 fragments | scrub btw-def (bowtie) | bowtie group |
+| 34 | Betweenness centrality | 3 fragments | sigma-answer (col) | |
+| 35–38 | Which node carries the most? | Q/A ×2 | q-btw-DB, -ans, q-btw-SQ, -ans | |
+| 39 | New York: betweenness | 3 fragments | ny-betweenness | |
+| 40 | The shortest-path row | | grid-row1 (full) | grid group |
+| 41 | A question to sleep on | mid | | |
+| 42 | Part Three | | | |
+| 43 | Aesop | quote | aesop.jpg | |
+| 44 | Importance you inherit | 2 fragments | scrub eigen-inherit | EIG group |
+| 45 | It is an eigenvector equation | 2 fragments | eigen-equation (col) | |
+| 46–47 | Seven eigenvectors. Which one? | one line above (same length on both) | eig-all-q, eig-all (full) | highlight added |
+| 48 | Eigenvector centrality | 1 fragment | eig-pf | EIG group |
+| 49–52 | Which lettered node scores higher? | Q/A ×2 | q-eig-L, -ans, q-eig-R, -ans | |
+| 53–56 | Eigendecomposition / orthogonal / Square it / Keep multiplying | one line above each | decomp-sum, decomp-orth, decomp-square, decomp-power (full; builds are scrubs) | |
+| 57 | Power iteration | stage | power-step | |
+| 58 | Where does eigenvector centrality break? | 2 lines + cue | ring-4444 | ring group |
+| 59 | Localization | 2 fragments | scrub ring-local (frame 0 = ring-4444) | ring group |
+| 60 | New York: eigenvector | 2 fragments | ny-eigenvector | |
+| 61 | Part Four | | | |
+| 62 | Give everybody a baseline | 3 fragments | katz-floor | |
+| 63 | What is that inverse? | 2 lines + cue | katz-floor (same) | text only |
+| 64 | The same series for matrices | 3 fragments | scrub walks-discount | |
+| 65 | Turn the dial | stage | katz-dial | |
+| 66 | Why 1/λmax? | formula above | scrub katz-why (full) | |
+| 67–70 | Which lettered node scores higher now? | Q/A ×2 | q-eig-L, q-katz-L-ans, q-eig-R, q-katz-R-ans | |
+| 71 | The walk row | | grid-row2 (full) | grid group |
+| 72 | Part Five | | | |
+| 73 | Hubs and authorities | 3 fragments (the last: on a road map, eigenvector centrality) | hits-graph | |
+| 74 | The same idea, six times | | genealogy (full) | |
+| 75–76 | Divide the vote | Q (3 fragments) / A (2 lines) | pr-split, pr-split-answer | PR group |
+| 77 | A dead end | 2 fragments | scrub pr-leak | PR group |
+| 78 | Teleportation | 4 fragments | pr-teleport | PR group |
+| 79 | Personalized PageRank | 2 fragments | ppr | PR group |
+| 80 | New York: five measures, five places | 2 lines | ny-five | |
+| 81 | Two choices, every centrality | | grid-final (full) | grid group |
+| 82 | Quiz | mid | | |
 
-# Day 2 (10/22): measured by walks
+Dropped from v2: "Why N − 1?" (now a bullet; star-closeness is no longer built), the "fire
+station" text-only slide (now on the bowtie), "On a road map, HITS is eigenvector centrality"
+(now a bullet; eig-centrality is no longer built).
 
-| # | title | class/layout | figure (container) | content |
-|---|---|---|---|---|
-| 35 | The company you keep | part | — | importance you inherit |
-| 36 | Aesop | cols | `photos/aesop.jpg` (hand-placed) | “A man is known by the company he keeps.” — The Ass and His Purchaser (Perry 237) |
-| 37 | Importance you inherit | cols | `eigen-inherit.gif` (col) | $c_i = \dfrac{1}{\lambda} \sum_j A_{ij} c_j$; "divided by a constant $\lambda$" |
-| 38 | It is an eigenvector equation | fig | `eigen-equation` (full) | $A\mathbf{c} = \lambda \mathbf{c}$ on the 7-node graph |
-| 39 | Seven eigenvectors. Which one? | mid | — | "This symmetric 7 × 7 matrix has seven eigenvectors. Which one is the centrality?"; cue "Take 30 seconds." |
-| 40 | Perron and Frobenius | line + fig tall | `eig-all` (full, tall) | 7 copies of the graph, nodes coloured by sign and size of the entry; eigenvalues on a number line; "only the eigenvector of the largest eigenvalue is positive everywhere" |
-| 41 | Eigenvector centrality | cols | `eig-pf` (col) | the largest-eigenvalue eigenvector, largest entry set to 1 |
-| 42 | Which lettered node scores higher? | line + fig + cue | `quiz-eig` (full) | question only; "Take a minute." |
-| 43 | Answer | line + fig | `quiz-eig-answer` (full) | line "Eigenvector centrality, largest = 1."; left M 0.85 beats X 0.46; right K 0.85 beats H 0.62; the node with fewer neighbours scores higher |
-| 44 | Eigendecomposition | line + fig | `decomp-sum.gif` (full) | $A = \sum_k \lambda_k \mathbf{u}_k \mathbf{u}_k^\top$; $\lambda_1 = \lambda_{\max}$ |
-| 45 | The eigenvectors are orthogonal | fig | `decomp-orth` (full) | $\mathbf{u}_k^\top \mathbf{u}_\ell = 0$ for $k \ne \ell$, $= 1$ for $k = \ell$ |
-| 46 | Square it | line + fig | `decomp-square.gif` (full) | $A^2 = \sum_k \lambda_k^2 \mathbf{u}_k \mathbf{u}_k^\top$ |
-| 47 | Keep multiplying | line + fig | `decomp-power.gif` (full) | $A^t$ counts walks; divided by $\lambda_1^t$ every term but the first fades |
-| 48 | Power iteration | stage | `power-step` (stage) | button "× A"; colours and values per node; step 1 is the degrees; B overtakes D at step 4 |
-| 49 | Where does eigenvector centrality break? | mid, cols + cue | `ring-4444` (col) | question only; "Take 30 seconds." |
-| 50 | Localization | fig | `ring-local.gif` (full) | one clique grows 4 → 8; share of the total score in it: 25% → 68% → 85% → 91% → 94% |
-| 51 | New York: eigenvector | cols | `ny-eigenvector` (col) | 96% of the score within 60 km of Manhattan, where 31% of the interchanges sit |
-| 52 | Everyone gets a baseline | part | — | Katz centrality |
-| 53 | Give everybody a baseline | cols | `katz-floor` (col) | $c_i = \beta + \alpha \sum_j A_{ij} c_j \;\Rightarrow\; \mathbf{c} = \beta (I - \alpha A)^{-1} \mathbf{1}$; "$I$: the identity matrix; $\mathbf{1}$: all ones." |
-| 54 | What is that inverse? | mid | — | $(I - \alpha A)^{-1} = \;?$ and $\dfrac{1}{1-x} = 1 + x + x^2 + \cdots$ for $\lvert x \rvert < 1$; cue "Take 30 seconds." |
-| 55 | The same series for matrices | cols | `walks-discount.gif` (col) | $(I - \alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$; $A^k$ counts walks of length $k$ |
-| 56 | Turn the dial | stage | `katz-dial` (stage) | α slider, 0 to 1.2 × 1/λ_max, on the ring (4,4,4,6) |
-| 57 | Why 1/λ_max? | fig | `katz-why.gif` (full) | $(I-\alpha A)^{-1} = \sum_k \dfrac{1}{1-\alpha\lambda_k} \mathbf{u}_k\mathbf{u}_k^\top$ |
-| 58 | Which lettered node scores higher now? | line + fig + cue | `quiz-eig` (full) | line "Katz centrality, $\alpha = 0.5/\lambda_{\max}$. The same two networks."; question only; "Take a minute." |
-| 59 | Answer | line + fig | `quiz-katz-answer` (full) | line "Katz centrality, largest = 1."; left M 0.87 beats X 0.81 (as the eigenvector ranks them); right H 1.00 beats K 0.81 (as degree ranks them) |
-| 60 | The walk row | fig | `grid-row2` (full) | degree and eigenvector centrality are the two ends of Katz |
-| 61 | The Web has direction | part | — | "A road runs both ways. A link does not." |
-| 62 | Hubs and authorities | cols | `hits-graph` (col) | $a_i = \sum_j A_{ji} h_j$, $h_i = \sum_j A_{ij} a_j$, $A_{ij}$ defined; HITS (Kleinberg, 1999); hub A, authority E |
-| 63 | On a road map, HITS is eigenvector centrality | cols | `eig-centrality` (col) | $A^\top A = A^2$ when $A$ is symmetric (not bipartite: 2.88 > 2.26) |
-| 64 | The same idea, six times | fig | `genealogy` (full) | |
-| 65 | Divide the vote | cols + cue | `pr-split` (col) | $c_i = \sum_j A_{ji}\, c_j / d^{\text{out}}_j$; Q: "C has three links in, and E has one. Which ranks higher?"; "Take 30 seconds." |
-| 66 | A three-way tie | cols | `pr-split-answer` (col) | A, C, E: 3/11 each; B, D: 1/11 |
-| 67 | A dead end | cols | `pr-leak.gif` (col) | E loses its only outgoing link; the total drains 1 → 0.8 → 0.6 → 0.13 → 0 |
-| 68 | Teleportation | cols | `pr-teleport` (col) | $c_i = (1-r)\sum_j A_{ji}\, c_j / d^{\text{out}}_j + r/N$, r = 0.15; a dead end always jumps |
-| 69 | Personalized PageRank | cols | `ppr` (col) | teleport only to A; dashed jump arrows |
-| 70 | New York: five measures, five places | cols | `ny-five` (col) | closeness Middletown, harmonic the Bronx, eccentricity east of Binghamton, betweenness Monticello, eigenvector Hempstead |
-| 71 | Two choices, every centrality | fig tall | `grid-final` (full, tall) | the classification, completed |
-| 72 | Quiz | mid | — | "Draw a network in which degree, closeness, eccentricity and betweenness each rank a different node first." |
+## Figure groups (one drawing, one crop)
 
----
+A group's figures use the same canvas, the same node coordinates and the same crop
+(`figlib.emit_group`, or `box=` for figures built in different functions). A build's frame 0
+is pixel-identical to the slide before it.
 
-# Figure contract (every figure agent reads this)
-
-## Pipeline
-- Read `slides/FIGURE_GUIDE.md` first, then `figures/figlib.py` (docstrings and the drawing helpers).
-- One module per agent, `figures/figs_<part>.py`, exposing `FIGURES = [(name, fn), ...]`. Build and
-  check your own module only:
-
-      cd slides/m06/figures && python3 -c "import figlib, figs_<part> as m; figlib.run(m.FIGURES)"
-
-  Do not edit another agent's module, `make_figures.py`, the deck, or `smallgraphs.py`
-  (ask the lead if a number is missing).
-- Stills: `figlib.emit(name, body, container=..., h=..., hmod=...)`.
-  GIFs: `figlib.emit_gif(name, frames, container=..., h=..., hmod=..., ms=..., hold=..., durations=...)`.
-  A GIF's **last frame is the complete picture** (it is held), and where a still of the same scene
-  exists the last frame equals it.
-- Every number on a figure comes from `smallgraphs.py` or `data/ny_network.json`. Assert the facts a
-  figure depends on (who wins, ties) at build time.
-- **Open every PNG you write with the Read tool** and check it against this spec before you report.
-  For a GIF, also check a middle frame (extract it with PIL into `figures/data/`).
-
-## Visual language (shared by all modules)
-- Node: `figlib.disc` (40 bp, accent blue fill, white letter inside). Letters are the node names in
-  `smallgraphs.py`. Edges black 2.6 bp.
-- The winner of a question: `figlib.mark` (thick accent-2 border) plus its value printed beside it
-  in accent-2. Other candidates' values in black. Never a ring (the gate measures it as a disc).
-- A score shown as colour: a sequential ramp from white-ish (`accent!10`) to full `accent`; the
-  number itself printed beside the node when the slide quotes it.
-- A sign: positive = `accent` (blue), negative = `accentthree` (gold), strength = shade (`!xx`).
-- Accent-2 red is for the one thing the slide is about (winner, emphasised label). Never a group colour.
-- Text ≥ 36 pt. Figure text in Latin Modern (the preamble default). Math via `$...$` inside TikZ nodes.
-- Quiz figures (`full`): left graph in x ∈ [20, 520], right graph in x ∈ [560, 1060], a thin gray
-  vertical rule between them is optional. Scale grid units of `smallgraphs.*_XY` uniformly; the
-  same scale for both graphs on one slide. Answer figures are the question figure plus values and
-  marks, same geometry (assert it).
-
-## NY maps (`figs_ny.py`)
-- Data: `figures/data/ny_network.json` (nodes with lon/lat and all measures, edges with km,
-  cities, outline). Project lon/lat with a simple equirectangular map scaled by cos(42.5°).
-- `col` container, map about 490 bp wide. Outline in gray, edges in light gray, nodes as small
-  dots (`figlib.dot`, 8–12 bp), so call `emit(..., nodes=False)`. Colour/size the dots by the
-  measure (sequential ramp). Mark the winner with a larger accent-2 dot and a short label.
-- Labels: at most 4 place names per map at 36 pt, with short leader lines if needed.
-- `ny-overview`: the 8 cities as accent dots with names (abbreviate "New York City" to "NYC").
-- `ny-five`: five winners, each marked and labelled with the measure name.
-
-## Small graphs and quizzes (`figs_quiz.py`)
-- `w5-blank` (col): Module 01's 5-node graph (`W5`, `W5_XY`), u and v marked, other nodes unlabeled.
-- `w5-walks.gif` (col): stage 1 the shortest path u → n2 → v drawn heavy, "shortest path: 2";
-  stage 2 the two walks of length 2 one after the other ("length 2: 2 walks"); stage 3 the one walk
-  of length 3 ("length 3: 1"); last frame: the numbers 2, 1, 11 listed as "walks of length 2, 3, 4".
-- `grid-empty`, `grid-row1`, `grid-row2`, `grid-final` (full): two rows, "shortest paths" and
-  "walks". Shortest-path row cells: closeness "sum of lengths", harmonic "sum of 1/length",
-  eccentricity "longest", betweenness "paths passing through". Walk row cells: degree "walks of
-  length 1", Katz "all lengths, discounted", eigenvector "the longest walks", PageRank "walks that
-  split the vote", HITS "walks that alternate direction". `grid-empty` shows the two row labels and
-  only degree; `grid-row1` adds the first row; `grid-row2` adds degree, Katz and eigenvector;
-  `grid-final` (tall) has everything plus a small icon per cell in the manner of the old
-  `purpose-5.png` if it fits at the 26 px disc floor (drop the icons if not).
-- Definition GIFs on `BT` (`BT_XY`), each col:
-  - `closeness-def.gif`: from A, distances appear ring by ring next to each node; "sum = 15";
-    last frame: every node's sum (D smallest, 10). Assert from `dsum(BT)`.
-  - `ecc-def.gif`: for each node in turn an arrow to its farthest node with the distance; last frame
-    every node's eccentricity, D = 2 marked.
-  - `btw-def.gif`: pairs (s, t) one at a time, the shortest path highlighted, the counter on each
-    inner node increases; last frame all counts (D 9, C and E 8).
-- `harmonic-def.gif` (col) on `CA_CUT` (`CA_XY`, edge E–F drawn dashed and crossed out): from G,
-  "1/1" on F, H, I, J, "1/2" on K, "1/∞ = 0" on the other piece; "sum = 9/2"; last frame every
-  node's harmonic value. Assert from `harmonic(CA_CUT)`.
-- `cut-blank` (col): `CA_CUT`, no numbers. `cut-closeness` (col): same, "0" beside every node.
-- `quiz-close`, `quiz-close-answer`: `CA` left, `CB` right. Answer prints the sum of distances next
-  to the candidates (E, F, G; N, P) and marks F and P.
-- `quiz-harm`, `quiz-harm-answer`: `CA` left, `HD` right. Answer prints harmonic values as
-  fractions (E 27/4, G 19/3, F 35/6; N 4, T 11/3) and marks E and N.
-- `quiz-ecc`, `quiz-ecc-answer`: `EA` left, `EB` right. Answer prints the eccentricity beside every
-  node and marks F and L; the closeness winners (E, K) get "closeness" as a small gray tag.
-- `quiz-btw`, `quiz-btw-answer`: `DB` left, `SQ` right. Answer prints the betweenness of the
-  candidates (E 30, F 25, G 30; M 9, O 19/2) and marks E, G and O.
-
-## Eigenvectors, decomposition, Katz (`figs_eigen.py`)
-- Graph `EIG` (`EIG_XY`, `EIG_ORDER`), spectrum from `smallgraphs.spectrum`.
-- `eigen-inherit.gif` (col): node A's score is the sum of its neighbours' scores: arrows from
-  B, D, F, G into A light up one at a time; then the same for B. Last frame: the graph with the
-  eigenvector shading.
-- `eigen-equation` (full): in the style of the old `eigen-equation.png` (A as a square labelled
-  "7 × 7", c as a shaded column, "= λ c"), λ = 2.88.
-- `eig-all` (full, tall): seven small copies of the graph (disc 26–28 bp, no letters), one per
-  eigenvector, nodes filled by sign and strength (blue positive, gold negative, white near 0); a
-  number line below with the seven eigenvalues as dots and their values, an arrow from each dot
-  to its copy. The largest (2.88) copy marked with accent-2. Assert exactly one all-positive.
-- `eig-pf` (col): the largest eigenvalue's copy, large, letters in discs, every entry printed.
-- Decomposition figures use the notation of `lecture-note/figs/spectral-decomposition.jpg`:
-  eigenvalue = filled circle whose diameter ∝ |λ| (blue for positive, gold for negative) with its
-  value printed; u_k = tall rectangle; u_kᵀ = wide rectangle; matrix = square. Show the first
-  three terms, "+ ⋯", and the last term.
-  - `decomp-sum.gif`: "A =" then the terms appear one at a time; last frame complete.
-  - `decomp-orth`: u_kᵀ u_ℓ as a wide-rect × tall-rect = 0 for k ≠ ℓ, = 1 for k = ℓ.
-  - `decomp-square.gif`: A² written as the product of two sums; the cross terms fade out (marked
-    "= 0"); the circles become λ_k² (sizes and values update).
-  - `decomp-power.gif`: t = 1, 2, 4, 8, 16: circle k drawn with diameter ∝ (|λ_k|/λ_1)^t, values
-    (λ_k/λ_1)^t printed; by t = 16 only the first circle is visible.
-- `power-step1` (col): the graph with each node's degree printed; caption-free.
-- `ring-4444` (col): `clique_ring((4,4,4,4))` drawn as four cliques on a ring, shaded by the
-  eigenvector (all equal).
-- `ring-local.gif` (full): K = 4, 5, 6, 7, 8 for the last clique, shaded by the eigenvector,
-  share printed: 25%, 68%, 85%, 91%, 94% (share of the summed entries, from `eig_share`; use `figlib.pct`).
-- `katz-floor` (col): the 7-node graph, each disc with a small "β" tag, arrow-in from neighbours
-  labelled α.
-- `walks-discount.gif` (col): on `W5`, walks from u of length 1, 2, 3 drawn in turn, the weight
-  α, α², α³ beside them, each longer walk drawn fainter.
-- `katz-why.gif` (full): the circle picture of Σ_k 1/(1 − αλ_k) u_k u_kᵀ for α = 0, 0.5, 0.8, 0.95,
-  0.99 × 1/λ_1, then 1.1 × 1/λ_1 (first circle turns gold: negative). Values printed.
-- `eig-centrality` (col): the 7-node graph shaded by the eigenvector, values printed.
-
-## Directed (`figs_dir.py`)
-- Pages as rounded boxes with a letter, arrows with arrowheads that stop at the box border.
-- `hits-graph` (col): `HITS_EDGES`; A marked "hub", E marked "authority" (values 1.0).
-- `pr-split` (col): `PR_EDGES`; each arrow labelled with the share it carries (1/3 from A, 1 from
-  the others). No scores (question slide).
-- `pr-split-answer` (col): same + scores: A, C, E 3/11; B, D 1/11.
-- `pr-leak.gif` (col): `PR_DEAD` (E→A removed, E drawn as a dead end); frames = steps 0..4, page
-  shading by score, "total = 1, 0.8, 0.6, 0.13, 0" (from `PR_leak_trace`).
-- `pr-teleport` (col): `PR_EDGES` with r = 0.15; scores printed (C 0.276, E 0.265, A 0.255,
-  B 0.102, D 0.102), C marked.
-- `ppr` (col): teleport only to A (dashed arrows from every page back to A); scores printed, A marked.
-
-## Rome (`figs_intro.py`)
-- `roma-basemap` (col): `figures/data/roma-basemap-pale.png` (from `make_basemap.py`) placed with
-  `\includegraphics` in TikZ, about 416 bp wide × 380 bp tall; pins (accent-2 dots, 14 bp) at the 12
-  cities from `roma-basemap.json`; label only "Roma"; small "© OpenStreetMap contributors" in the
-  corner at 36 pt is too large, so the credit goes in the slide's figcaption instead.
-- `roma-to-graph.gif` (full, tall, h = 470 like the old map): frame 0 the map with pins (map at the
-  left, scaled to the 396 bp ink height); the map fades (3 frames); straight edges appear between
-  pins (`romelib.EDGES`); the pins slide to `romelib.NODE_XY` (6 frames, linear interpolation) and
-  become discs; last frame = the old `roma-graph.png` picture (names placed by `romelib`).
+- **Rome** (figs_intro, figs_rome, romelib): roma-basemap → roma-to-graph frames → roma-degree.
+- **NY** (figs_ny): every ny-* map, one canvas and one crop.
+- **W5** (figs_defs): w5-blank → w5-walks frames.
+- **Bowtie** (figs_defs): closeness-def frames, bowtie-closeness (= its last frame), ecc-def
+  frames (frame 0 = bowtie-closeness), btw-def frames.
+- **CA** (figs_quiz): q-close-CA, q-close-CA-ans, cut-blank, cut-closeness, harmonic-def frames
+  (frame 0 = cut-blank), q-harm-CA-ans.
+- **Quiz pairs** (figs_quiz): each Q with its answer(s): CB, HD, EA, EB, DB, SQ, EQ_L (eig +
+  Katz answers), EQ_R (eig + Katz answers).
+- **EIG** (figs_eigen): eigen-inherit frames, eig-pf.
+- **Eigen panels** (figs_eigen): eig-all-q, eig-all.
+- **Ring** (figs_eigen): ring-4444, ring-local frames.
+- **Grid** (figs_defs): grid-empty, grid-row1, grid-row2, grid-final.
+- **PR** (figs_dir): pr-split, pr-split-answer, pr-leak frames, pr-teleport, ppr.

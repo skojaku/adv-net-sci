@@ -3,7 +3,7 @@
 
 Pipeline, unchanged from m02/m03 because it works:
 
-    TikZ body  ->  pdflatex (page pinned to the design canvas)  ->  pdftoppm -r 288
+    TikZ body  ->  xelatex (page pinned to the design canvas)  ->  pdftoppm -r 288  ->  grain
 
 **One bp is one slide pixel.**  m03 authored a 1100bp canvas for a container it
 believed was 1120px wide and got a scale of 1.018; the container is actually 1080px
@@ -30,11 +30,35 @@ from PIL import Image
 OUT = Path(__file__).resolve().parent
 
 # --------------------------------------------------------------------------- palette
-ACCENT = "3959A6"     # the object under discussion
-ACCENT2 = "B14434"    # what THIS slide is about
-ACCENT3 = "DAB167"    # fills and rings only -- 2.0:1 on white, never text or a thin stroke
-GRAY = "6b6b6b"       # annotation only
-INK = "000000"
+# The lecturer's own slide style (his reference figures, 2026-10-13): muted colours
+# overall, saturation reserved for what matters, and no pure black. Hand-drawn nodes
+# with a dark grainy outline, brush strokes for highlights and underlines, and
+# MesloLGS NF for every label. Math stays in Latin Modern, as in his slides.
+#
+#   INK      text, outlines, edges      a dark slate, not #000
+#   MUTED    what is NOT the point      warm grey: de-emphasised text, edges, nodes
+#   PALE     a de-emphasised fill       light warm grey
+#   HOT      the point of the slide     orange: the answer, the winner, "this one"
+#   COOL     the second emphasis        sky blue: high scores, the other side
+#   TEAL, OLIVE, DEEP                   extra categories, used sparingly (desaturated)
+#   GOLD     a route / a walk           the brush that traces a path
+INK = "30323D"
+MUTED = "8C847F"
+PALE = "D9D3CF"
+FAINT = "EFEBE8"     # the low end of a value scale: almost paper, slightly warm
+HOT = "D9631E"
+COOL = "1E96DC"
+TEAL = "3F8A88"
+OLIVE = "9B9922"
+DEEP = "2F6FB4"
+GOLD = "C08A1F"
+
+# The names older modules import. They map onto the new palette so nothing reads the
+# old blue/red; new code uses the TikZ names hot, cool, ink, muted, pale directly.
+ACCENT = COOL
+ACCENT2 = HOT
+ACCENT3 = GOLD
+GRAY = MUTED
 
 # --------------------------------------------------------------------------- geometry
 DPI = 288
@@ -55,7 +79,7 @@ CONTAINER = {"col": COL_W, "full": FULL_W}       # authored 1:1, so the scale is
 NODE = 40          # disc diameter in bp -> 40px on the slide (band is 26-52)
 SMALLNODE = 28     # only where a figure draws dozens of discs
 DOT = 14
-EDGE_W = 2.6
+EDGE_W = 2.4
 HEAVY_W = 5.0
 PAD = 12           # bp of white kept around the ink when the height is cropped
 
@@ -63,12 +87,13 @@ PAD = 12           # bp of white kept around the ink when the height is cropped
 # generator asserts -- asserting cap height instead let 30pt Latin Modern pass at
 # 21px cap while landing 13px x-height on forty of m03's figures. XHEIGHT_RATIO is
 # not a constant here: calibrate() compiles a glyph and measures it (see below).
-FONT = 36
+FONT = 30                   # MesloLGS NF: its x-height is 0.55 em, so 30pt lands 16.5px
+FONT_MATH = 38              # Latin Modern math: x-height 0.43 em, so it needs the larger size
 NODE_MIN_PX, NODE_MAX_PX = 26, 52
 TEXT_MIN_PX = 15.5          # check_render.py fails below 15
 INK_FILL_MIN = 0.76         # ink must span this share of the canvas width
 
-CHAR_W = 0.55               # em per character, for the label collision boxes
+CHAR_W = 0.61               # em per character (Meslo is monospaced: 0.60 em)
 LINE_H = 1.05
 
 DASH = "dash pattern=on 7bp off 6bp"
@@ -83,26 +108,43 @@ _failures = []
 PREAMBLE = r"""
 \documentclass{article}
 \usepackage[paperwidth=%(W)dbp,paperheight=%(H)dbp,margin=0bp]{geometry}
-\usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{tikz}
 \usepackage{amsmath}
+\usepackage{fontspec}
+\setmainfont{MesloLGS NF}
+\usepackage{tikz}
 \usetikzlibrary{calc,positioning,arrows.meta,decorations.pathmorphing,decorations.markings,
                 backgrounds,fit,shapes.geometric,patterns}
-\definecolor{accent}{HTML}{%(ACCENT)s}
-\definecolor{accenttwo}{HTML}{%(ACCENT2)s}
-\definecolor{accentthree}{HTML}{%(ACCENT3)s}
-\definecolor{annot}{HTML}{%(GRAY)s}
+\definecolor{black}{HTML}{%(INK)s}
+\definecolor{ink}{HTML}{%(INK)s}
+\definecolor{muted}{HTML}{%(MUTED)s}
+\definecolor{pale}{HTML}{%(PALE)s}
+\definecolor{faint}{HTML}{%(FAINT)s}
+\definecolor{hot}{HTML}{%(HOT)s}
+\definecolor{cool}{HTML}{%(COOL)s}
+\definecolor{tealc}{HTML}{%(TEAL)s}
+\definecolor{olivec}{HTML}{%(OLIVE)s}
+\definecolor{deep}{HTML}{%(DEEP)s}
+\definecolor{gold}{HTML}{%(GOLD)s}
+\definecolor{accent}{HTML}{%(COOL)s}
+\definecolor{accenttwo}{HTML}{%(HOT)s}
+\definecolor{accentthree}{HTML}{%(GOLD)s}
+\definecolor{annot}{HTML}{%(MUTED)s}
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \begin{document}%%
+\pgfmathsetseed{%(SEED)d}%%
 \vbox to \paperheight{\vss\hbox to \paperwidth{\hss%%
 \begin{tikzpicture}[x=1bp,y=1bp,
     every node/.style={inner sep=0pt,outer sep=0pt},
     disc/.style={circle,draw=none,minimum size=%(NODE)dbp,inner sep=0pt,
-                 text=white,font=\fontsize{%(FONT)d}{%(FONT)d}\selectfont},
+                 text=ink,font=\fontsize{%(FONT)d}{%(FONT)d}\selectfont},
     lab/.style={font=\fontsize{%(FONT)d}{%(LEAD)d}\selectfont,align=center},
-    ed/.style={line width=%(EDGE)sbp,draw=black},
+    ed/.style={line width=%(EDGE)sbp,draw=ink},
+    pencil/.style={decorate,decoration={random steps,segment length=3.2bp,amplitude=0.55bp},
+                   rounded corners=1.4bp},
+    rough/.style={decorate,decoration={random steps,segment length=5bp,amplitude=0.9bp},
+                  rounded corners=2.2bp},
 ]
 \useasboundingbox (0,0) rectangle (%(W)d,%(H)d);
 """
@@ -114,10 +156,43 @@ POSTAMBLE = r"""
 """
 
 
+SEED = 20261013     # TikZ's random steps: fixed, so a question and its answer draw identically
+
+
 def _tex(body, w, h):
-    return PREAMBLE % dict(W=w, H=h, ACCENT=ACCENT, ACCENT2=ACCENT2, ACCENT3=ACCENT3,
-                           GRAY=GRAY, NODE=NODE, FONT=FONT, LEAD=int(FONT * 1.15),
+    return PREAMBLE % dict(W=w, H=h, INK=INK, MUTED=MUTED, PALE=PALE, FAINT=FAINT, HOT=HOT, COOL=COOL,
+                           TEAL=TEAL, OLIVE=OLIVE, DEEP=DEEP, GOLD=GOLD, SEED=SEED,
+                           NODE=NODE, FONT=FONT, LEAD=int(FONT * 1.15),
                            EDGE=EDGE_W) + body + POSTAMBLE
+
+
+# Grain: the lecturer's figures have a chalky, mottled fill and a grainy outline. It is
+# added to the raster, keyed to the pixel position only, so two renders of the same
+# drawing (a question and its answer, the frames of a build) carry the same grain.
+GRAIN = 0.075
+_noise = {}
+
+
+def _grain_field(h, w):
+    if (h, w) not in _noise:
+        from PIL import ImageFilter
+        rng = np.random.default_rng(SEED)
+        n = rng.normal(0.5, 0.18, (h, w)).clip(0, 1)
+        im = Image.fromarray((n * 255).astype(np.uint8), "L").filter(ImageFilter.GaussianBlur(1.1))
+        f = np.asarray(im).astype(np.float32) / 255.0
+        _noise[(h, w)] = (f - f.mean()) / (f.std() + 1e-6)
+    return _noise[(h, w)]
+
+
+def grain(im):
+    """Mottle every coloured or grey pixel; leave white paper and solid ink alone."""
+    a = np.asarray(im).astype(np.float32)
+    lum = a.mean(axis=2)
+    n = _grain_field(*lum.shape)
+    m = (lum < 247) & (lum > 64)
+    k = 1.0 + GRAIN * n
+    a[m] = a[m] * k[m][:, None]
+    return Image.fromarray(a.clip(0, 255).astype(np.uint8), "RGB")
 
 
 def render(body, w, h):
@@ -125,10 +200,10 @@ def render(body, w, h):
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
         (td / "f.tex").write_text(_tex(body, w, h))
-        r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "f.tex"],
+        r = subprocess.run(["xelatex", "-interaction=nonstopmode", "-halt-on-error", "f.tex"],
                            cwd=td, capture_output=True, text=True)
         if r.returncode:
-            raise SystemExit("pdflatex failed\n" + "\n".join(r.stdout.splitlines()[-25:]))
+            raise SystemExit("xelatex failed\n" + "\n".join(r.stdout.splitlines()[-25:]))
         # Stock Computer Modern has no 36pt design size and LaTeX substitutes silently;
         # m02 shipped a whole deck 17% under the type floor that way. lmodern fixes it,
         # and this turns any remaining substitution into a build failure.
@@ -139,7 +214,7 @@ def render(body, w, h):
                        cwd=td, check=True)
         im = Image.open(td / "f.png").convert("RGB")
         im.load()
-    return im
+    return grain(im)
 
 
 # --------------------------------------------------------------------------- calibration
@@ -163,7 +238,7 @@ def calibrate():
     if not _CAL:
         _CAL["x"] = _measure_ink_height("x") / FONT
         _CAL["X"] = _measure_ink_height("X") / FONT
-        assert 0.38 < _CAL["x"] < 0.50, f"measured x-height ratio {_CAL['x']:.3f} is implausible"
+        assert 0.45 < _CAL["x"] < 0.62, f"measured x-height ratio {_CAL['x']:.3f} is implausible"
         print(f"  calibration: x-height {_CAL['x']:.4f} em, cap height {_CAL['X']:.4f} em "
               f"-> {FONT}pt lands {FONT * _CAL['x']:.1f}px x-height at scale 1.0")
     return _CAL["x"]
@@ -215,7 +290,49 @@ def crop_and_check(name, im, container, hmod, nodes=True):
     return im, fw, fh, node_px, x_px, span
 
 
-def emit(name, body, container="col", h=None, hmod="", nodes=True):
+def _emit_set(items, container, h, hmod, nodes, box):
+    """Render several bodies and crop them all to ONE box: a question and its answer, or
+    the frames of a build, sit at exactly the same place on consecutive slides.
+
+    box=None crops to the union of the ink; box=(top, bottom) in bp from the canvas top
+    fixes the crop, so figures built in different functions (or modules) that share a
+    drawing line up too. Every image also passes the single-figure gates.
+    """
+    w = DESIGN[container]
+    hh = h or int(w * 0.70)
+    ims = [render(body, w, hh) for _, body in items]
+    H = ims[0].size[1]
+    rows = []
+    for (name, _), im in zip(items, ims):
+        a = np.asarray(im.convert("L"))
+        ys, _x = np.where(a < 200)
+        assert len(ys), f"{name}: blank figure"
+        rows.append((ys.min(), ys.max()))
+        crop_and_check(name, im, container, hmod, nodes)        # the gates, per image
+    if box is None:
+        pad = int(PAD * PXBP)
+        lo = max(0, min(r[0] for r in rows) - pad)
+        hi = min(H, max(r[1] for r in rows) + pad)
+    else:
+        lo, hi = int(round(box[0] * PXBP)), int(round(box[1] * PXBP))
+        assert 0 <= lo < hi <= H, f"box {box} is outside the {hh}bp canvas"
+        for (name, _), r in zip(items, rows):
+            assert lo <= r[0] and r[1] < hi, (
+                f"{name}: ink at rows {r[0] / PXBP:.0f}-{r[1] / PXBP:.0f}bp falls outside the "
+                f"fixed box {box}")
+    assert (hi - lo) / PXBP <= FIG_H[hmod] + 0.5, (
+        f"{items[0][0]}: the shared crop is {(hi - lo) / PXBP:.0f}bp tall; a "
+        f"'{hmod or 'plain'}' figure may be at most {FIG_H[hmod]}bp")
+    return [im.crop((0, lo, im.size[0], hi)) for im in ims]
+
+
+def _report(name, im, container, hmod, ext="png", extra=""):
+    fw, fh = im.size
+    print(f"  {name}.{ext}  {fw // 4}x{fh // 4}bp  node {NODE:.0f}px  "
+          f"x-h {FONT * calibrate():.1f}px  [{container}{'/' + hmod if hmod else ''}]{extra}")
+
+
+def emit(name, body, container="col", h=None, hmod="", nodes=True, box=None):
     """Render one figure and record the failure rather than stopping the build.
 
     A generator that stops at the first failed assertion hides the rest, and these
@@ -225,134 +342,242 @@ def emit(name, body, container="col", h=None, hmod="", nodes=True):
     if _only and not any(k in name for k in _only):
         return
     try:
-        w = DESIGN[container]
-        im = render(body, w, h or int(w * 0.70))
-        im, fw, fh, node_px, x_px, span = crop_and_check(name, im, container, hmod, nodes)
+        (im,) = _emit_set([(name, body)], container, h, hmod, nodes, box)
         im.save(OUT / f"{name}.png")
         _built.append(name)
-        print(f"  {name}.png  {fw//4}x{fh//4}bp  node {node_px:.0f}px  x-h {x_px:.1f}px  "
-              f"ink {span:.0%}  [{container}{'/' + hmod if hmod else ''}]")
+        _report(name, im, container, hmod)
     except (AssertionError, SystemExit) as e:
         _failures.append((name, str(e)))
         print(f"  FAIL {name}: {e}")
 
 
-HOLD = 6            # frames of pause on the settled state
-MS = 700            # ms per frame
+def emit_group(items, container="col", h=None, hmod="", nodes=True, box=None, prefix=True):
+    """A question and its answers (or any run of slides on one drawing), one crop.
+
+    items: [(name, body), ...]. With prefix=True every later body must start with the
+    first one: the answer is the question plus marks and values, never a redraw.
+    """
+    names = [n for n, _ in items]
+    if _only and not any(k in n for n in names for k in _only):
+        return
+    try:
+        if prefix:
+            for n, body in items[1:]:
+                assert body.startswith(items[0][1]), (
+                    f"{n}: must be {items[0][0]} plus marks and values (body is not a prefix)")
+        for (n, _), im in zip(items, _emit_set(items, container, h, hmod, nodes, box)):
+            im.save(OUT / f"{n}.png")
+            _built.append(n)
+            _report(n, im, container, hmod)
+    except (AssertionError, SystemExit) as e:
+        _failures.append(("/".join(names), str(e)))
+        print(f"  FAIL {'/'.join(names)}: {e}")
 
 
-def emit_gif(name, frames, container="full", h=None, hmod="", hold=HOLD, ms=MS, nodes=True,
-             durations=None):
-    """Render every frame, crop them all to ONE box, and assert the same floors as emit().
+FRAMES = OUT / "frames"
 
-    Cropping each frame to its own ink would make the drawing jump between frames, which
-    reads as a fault in the projector rather than as a build. The last frame is held
-    (`hold` extra frames) so the loop rests on the complete picture. `durations`, if given,
-    is one ms value per frame and overrides `ms` (the hold repeats the last one).
+
+def emit_frames(name, frames, container="col", h=None, hmod="", nodes=True, box=None, **_ignored):
+    """A build the lecturer steps through: every frame on one crop.
+
+    Writes figures/frames/<name>/00.png, 01.png, ... for the slide's scrubber
+    (slides/m06/scrub.js) and figures/<name>.png, the LAST frame, which is the picture
+    the PDF/PNG export and the render gate see. No GIF: the lecturer drives the build
+    with the slider, so nothing moves on its own.
     """
     if _only and not any(k in name for k in _only):
         return
     try:
-        w = DESIGN[container]
-        ims = [render(body, w, h or int(w * 0.70)) for body in frames]
-        box = None
-        for im in ims:
-            a = np.array(im.convert("L"))
-            ys, xs = np.where(a < 200)
-            assert len(ys), f"{name}: a frame is blank"
-            b = (xs.min(), ys.min(), xs.max(), ys.max())
-            box = b if box is None else (min(box[0], b[0]), min(box[1], b[1]),
-                                         max(box[2], b[2]), max(box[3], b[3]))
-        edge = 2
-        assert not (box[0] <= edge or box[1] <= edge or box[2] >= ims[0].size[0] - 1 - edge
-                    or box[3] >= ims[0].size[1] - 1 - edge), (
-            f"{name}: ink runs off the canvas in some frame -- it is being CLIPPED")
-        pad = int(PAD * PXBP)
-        lo, hi = max(0, box[1] - pad), min(ims[0].size[1], box[3] + pad)
-        ims = [im.crop((0, lo, im.size[0], hi)) for im in ims]
-        fw, fh = ims[0].size
-        scale = min(CONTAINER[container] / fw, FIG_H[hmod] / fh, 1.0)
-        factor = scale * PXBP
-        assert abs(factor - CONTAINER[container] / w) < 1e-6, (
-            f"{name}: the HEIGHT binds the scale -- the frames are {fh / PXBP:.0f}bp tall "
-            f"and a '{hmod or 'plain'}' figure may be at most {FIG_H[hmod]}bp")
-        span = (box[2] - box[0] + 1) / fw
-        assert span >= INK_FILL_MIN, f"{name}: ink spans {span:.0%} of the canvas width"
-        node_px = NODE * factor
-        assert not nodes or NODE_MIN_PX <= node_px <= NODE_MAX_PX, f"{name}: node disc {node_px:.0f}px"
-        x_px = FONT * calibrate() * factor
-        assert x_px >= TEXT_MIN_PX, f"{name}: text x-height {x_px:.1f}px on the slide"
-        seq = ims + [ims[-1]] * hold
-        dur = None
-        if durations is not None:
-            assert len(durations) == len(frames), f"{name}: {len(durations)} durations for {len(frames)} frames"
-            dur = list(durations) + [durations[-1]] * hold
-        # The PNG and PDF exports show a GIF's FIRST frame, and so does check_render. So the
-        # file opens on the complete picture, then plays the build from the start. (Kept at
-        # the full 4x raster: check_render infers the authored container from the width.)
-        if frames[0] != frames[-1]:
-            seq = [ims[-1]] + seq
-            if dur is not None:
-                dur = [dur[-1]] + dur
-        pal = [im.convert("P", palette=Image.ADAPTIVE) for im in seq]
-        pal[0].save(OUT / f"{name}.gif", save_all=True, append_images=pal[1:],
-                    duration=dur or ms, loop=0, optimize=True, disposal=2)
+        ims = _emit_set([(f"{name}[{i}]", b) for i, b in enumerate(frames)],
+                        container, h, hmod, nodes, box)
+        d = FRAMES / name
+        d.mkdir(parents=True, exist_ok=True)
+        for old in d.glob("*.png"):
+            old.unlink()
+        for i, im in enumerate(ims):
+            im.save(d / f"{i:02d}.png")
+        ims[-1].save(OUT / f"{name}.png")
         _built.append(name)
-        print(f"  {name}.gif  {len(seq)} frames  {fw // 4}x{fh // 4}bp  node {node_px:.0f}px  "
-              f"x-h {x_px:.1f}px  ink {span:.0%}  [{container}{'/' + hmod if hmod else ''}]")
+        _report(name, ims[-1], container, hmod, extra=f"  {len(ims)} frames")
     except (AssertionError, SystemExit) as e:
         _failures.append((name, str(e)))
         print(f"  FAIL {name}: {e}")
 
 
+def emit_gif(name, frames, container="full", h=None, hmod="", nodes=True, box=None, **_ignored):
+    """Old name: every build is now stepped by the lecturer (emit_frames)."""
+    emit_frames(name, frames, container=container, h=h, hmod=hmod, nodes=nodes, box=box)
+
+
 # --------------------------------------------------------------------------- drawing
-def disc(x, y, label="", fill="accent", name=None, size=NODE, text_col="white"):
+# Hand-drawn, after the lecturer's reference figures: a node is a filled disc (white by
+# default) with a dark pencil outline drawn twice, slightly off each other; an edge is a
+# soft-ink line with a fainter second stroke; a highlight is a brush stroke. The raster
+# grain (grain()) does the rest.
+
+def _lum(hexcol):
+    r, g, b = (int(hexcol[i:i + 2], 16) for i in (0, 2, 4))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+_NAMED = {"ink": INK, "black": INK, "muted": MUTED, "pale": PALE, "faint": FAINT, "hot": HOT, "cool": COOL,
+          "tealc": TEAL, "olivec": OLIVE, "deep": DEEP, "gold": GOLD, "white": "FFFFFF",
+          "accent": COOL, "accenttwo": HOT, "accentthree": GOLD, "annot": MUTED}
+
+
+def mix(a, b, t):
+    """xcolor's a!t!b as an expression (t in 0..1 is the share of a)."""
+    return f"{a}!{t * 100:.0f}!{b}"
+
+
+def shade(v, lo="faint", hi="cool"):
+    """A value in 0..1 as a fill: near-paper warm grey (low, unimportant) to saturated
+    cool (high, important). Saturation carries the importance, as on his slides."""
+    v = min(max(v, 0.0), 1.0)
+    return mix(hi, lo, v)
+
+
+def _text_on(fill):
+    """Ink on light fills, white on saturated or dark ones."""
+    if "!" in fill:                     # a mix "a!p!b": estimate its lightness
+        parts = fill.split("!")
+        a, t = parts[0], float(parts[1]) / 100
+        b = parts[2] if len(parts) > 2 else "white"
+        L = t * _lum(_NAMED.get(a, "808080")) + (1 - t) * _lum(_NAMED.get(b, "FFFFFF"))
+    else:
+        L = _lum(_NAMED.get(fill, "FFFFFF"))
+    return "white" if L < 120 else "ink"
+
+
+def _seed(*xs):
+    """Reseed TikZ's random steps from an element's own coordinates, so every element is
+    drawn the same way whatever was drawn before it: a build's frames and a question and
+    its answer never jitter."""
+    v = 1 + int(abs(sum((i + 1) * 97.0 * float(x) for i, x in enumerate(xs)))) % 2147480000
+    return f"\\pgfmathsetseed{{{v}}}"
+
+
+def sketch_circle(x, y, d, color="ink", w=2.0):
+    """A pencil circle: two strokes, slightly different radii, jittered."""
+    r = d / 2
+    return _seed(x, y, d) + (f"\\draw[{color},line width={w}bp,pencil,opacity=0.92] ({x:.2f},{y:.2f}) circle ({r:.2f}bp);\n"
+            f"\\draw[{color},line width={w * 0.55:.2f}bp,pencil,opacity=0.75] "
+            f"({x + 0.5:.2f},{y - 0.4:.2f}) circle ({r + 0.7:.2f}bp);\n")
+
+
+def disc(x, y, label="", fill="white", name=None, size=NODE, text_col=None, outline="ink"):
+    """A node: a filled disc with a pencil outline and its label in MesloLGS NF.
+
+    fill: "white" (the default node), "pale" (de-emphasised), "hot" (the point), "cool",
+    or a shade() mix for a value. The label is ink on light fills and white on dark ones.
+    """
     nm = f"({name})" if name else ""
-    opt = f"disc,fill={fill},minimum size={size}bp"
-    if text_col != "white":
-        opt += f",text={text_col}"
-    return f"\\node[{opt}] {nm} at ({x},{y}) {{{label}}};\n"
+    tc = text_col or _text_on(fill)
+    out = f"\\fill[{fill}] ({x:.2f},{y:.2f}) circle ({size / 2:.2f}bp);\n"
+    out += sketch_circle(x, y, size, color=outline, w=2.1 if size >= 30 else 1.6)
+    out += (f"\\node[disc,minimum size={size}bp,text={tc}] {nm} at ({x:.2f},{y:.2f}) "
+            f"{{{label}}};\n")
+    return out
 
 
-def opendisc(x, y, color="accenttwo", size=NODE, w=4.0):
-    return f"\\draw[line width={w}bp,draw={color},fill=white] ({x},{y}) circle ({size/2}bp);\n"
+def opendisc(x, y, color="ink", size=NODE, w=2.1):
+    return disc(x, y, "", fill="white", size=size, outline=color)
 
 
-def ring(x, y, size=NODE, color="accenttwo", w=4.0, grow=11):
-    """A ring OUTSIDE a disc. Use `mark()` instead on anything the gate measures.
-
-    check_render.py finds node discs by masking the node fill colours and then
-    filling holes, so an accent-2 ring around an accent disc reads to it as one
-    solid disc of the ring's diameter. m06 failed the 26-52px band on ten slides
-    that way, at a measured 57px, while every disc was drawn at 40.
-    """
-    assert color not in ("accent", "accenttwo") or grow >= 26, (
-        f"a {color} ring {grow}bp outside a disc will be measured as one "
-        f"{size + grow}bp disc -- use mark() for a highlight on a node")
-    return f"\\draw[line width={w}bp,draw={color}] ({x},{y}) circle ({(size+grow)/2}bp);\n"
+def ring(x, y, size=NODE, color="hot", w=3.0, grow=14):
+    """A hand-drawn ring around a disc: the "this one" mark."""
+    return sketch_circle(x, y, size + grow, color=color, w=w)
 
 
-def mark(x, y, color="accenttwo", size=NODE, w=5.0):
-    """Highlight a node by thickening its own border, not by ringing it.
-
-    Says the same thing as a ring and leaves the disc the size it actually is, so
-    the render gate measures what was drawn.
-    """
-    return f"\\draw[line width={w}bp,draw={color}] ({x},{y}) circle ({size/2}bp);\n"
+def mark(x, y, color="hot", size=NODE, w=3.0):
+    """Mark a node as the point of the slide: a saturated ring just outside its outline."""
+    return sketch_circle(x, y, size + 12, color=color, w=w)
 
 
-def dot(x, y, color="accent", d=DOT):
-    return f"\\fill[{color}] ({x},{y}) circle ({d/2}bp);\n"
+def dot(x, y, color="cool", d=DOT):
+    return f"\\fill[{color}] ({x:.2f},{y:.2f}) circle ({d / 2:.2f}bp);\n"
 
 
-def seg(p, q, color="black", w=EDGE_W, dash="", arrow="", opacity=None):
+def seg(p, q, color="ink", w=EDGE_W, dash="", arrow="", opacity=None, sketch=True):
+    """An edge. Undashed, unarrowed edges get a faint second pencil stroke."""
     o = [f"line width={w}bp", f"draw={color}"]
     for extra in (dash, arrow):
         if extra:
             o.append(extra)
     if opacity is not None:
         o.append(f"opacity={opacity}")
-    return f"\\draw[{','.join(o)}] ({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f});\n"
+    out = f"\\draw[{','.join(o)}] ({p[0]:.1f},{p[1]:.1f}) -- ({q[0]:.1f},{q[1]:.1f});\n"
+    if sketch and not dash and w >= 1.5:
+        out += _seed(p[0], p[1], q[0], q[1])
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        L = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / L * 0.8, dx / L * 0.8
+        out += (f"\\draw[line width={w * 0.45:.2f}bp,draw={color},opacity=0.55,pencil] "
+                f"({p[0] + nx:.1f},{p[1] + ny:.1f}) -- ({q[0] + nx:.1f},{q[1] + ny:.1f});\n")
+    return out
+
+
+def _resample(pts, step=6.0):
+    """The polyline as evenly spaced points (so a brush can be trimmed and jittered)."""
+    pts = [np.array(p, float) for p in pts]
+    out = [pts[0]]
+    for a, b in zip(pts, pts[1:]):
+        L = np.linalg.norm(b - a)
+        n = max(1, int(L // step))
+        for k in range(1, n + 1):
+            out.append(a + (b - a) * k / n)
+    return out
+
+
+def _trim(pts, frac):
+    n = len(pts)
+    k = int(round(n * frac))
+    return pts[k:n - k] if n - 2 * k >= 2 else pts
+
+
+def brush(pts, color="hot", w=10.0, opacity=0.85, strands=7, seed=0):
+    """A brush stroke along a polyline, after the lecturer's hand-drawn highlights: a
+    bundle of thin strands across the width, each with its own opacity, ragged edge and
+    trimmed ends, so the stroke tapers and shows bristle streaks. Draw it BEFORE the
+    discs it passes, so the nodes stay on top. Deterministic (seeded by the points), so a
+    question and its answer carry the same stroke."""
+    P = _resample(pts, step=5.0)
+    if len(P) < 2:
+        return ""
+    key = int(sum(abs(q[0]) * 7.3 + abs(q[1]) * 3.1 for q in P[:4])) + seed
+    rng = np.random.default_rng(key % (2 ** 32))
+    N = []
+    for i in range(len(P)):
+        a_, b_ = P[max(i - 1, 0)], P[min(i + 1, len(P) - 1)]
+        d = b_ - a_
+        L = float(np.hypot(*d)) or 1.0
+        N.append(np.array([-d[1] / L, d[0] / L]))
+    n = len(P)
+    out = _seed(P[0][0], P[0][1], P[-1][0], P[-1][1], seed)
+    # a translucent body first, then the strands on top of it
+    body = " -- ".join(f"({q[0]:.1f},{q[1]:.1f})" for q in _trim(P, 0.06))
+    out += (f"\\draw[{color},line width={w * 0.8:.2f}bp,line cap=round,line join=round,"
+            f"opacity={opacity * 0.35:.2f},rough] {body};\n")
+    for k in range(strands):
+        off = (k / (strands - 1) - 0.5) * w * 0.9 if strands > 1 else 0.0
+        ww = w * rng.uniform(0.16, 0.32)
+        op = opacity * rng.uniform(0.45, 1.0)
+        t0 = int(n * rng.uniform(0.0, 0.10 + 0.25 * abs(off) / w))
+        t1 = n - int(n * rng.uniform(0.0, 0.10 + 0.25 * abs(off) / w))
+        if t1 - t0 < 2:
+            continue
+        path = " -- ".join(f"({P[i][0] + N[i][0] * off:.1f},{P[i][1] + N[i][1] * off:.1f})"
+                           for i in range(t0, t1))
+        out += (f"\\draw[{color},line width={ww:.2f}bp,line cap=round,line join=round,"
+                f"opacity={op:.2f},rough] {path};\n")
+    return out
+
+
+def underline(x0, x1, y, color="hot", w=6.0, bow=1.5):
+    """A hand-drawn underline from x0 to x1 at height y: a thin tapered brush stroke,
+    rising very slightly to the right, as in the lecturer's "query vector" figure."""
+    pts = [(x0 + (x1 - x0) * t, y + bow * t - bow * 2.5 * t * (1 - t)) for t in np.linspace(0, 1, 30)]
+    return brush(pts, color=color, w=w, opacity=0.95, strands=5)
 
 
 def polyline(pts, color="accent", w=3.4, dash=""):
@@ -370,13 +595,17 @@ def fill_poly(pts, color="accenttwo", opacity=0.25):
 _fontsizes = set()
 
 
-def text(x, y, s, color="black", anchor="center", size=FONT, width=None, rot=None):
+def text(x, y, s, color="ink", anchor="center", size=FONT, width=None, rot=None):
     _fontsizes.add(size)
     assert size >= FONT, f"font {size}pt is below the {FONT}pt floor"
+    # Latin Modern math has a smaller x-height than MesloLGS NF: a label with $...$
+    # in it must be set at FONT_MATH or it lands under the floor on the slide.
+    assert "$" not in s or size >= FONT_MATH, (
+        f"math in {s!r} at {size}pt -- use size=FONT_MATH ({FONT_MATH}) for any label with $...$")
     # A bare % is a TeX comment: it swallowed the rest of a \node line once and the
     # build died with "Undefined control sequence" pointing at the wrong token.
     assert not re.search(r"(?<!\\)%", s), f"unescaped % in {s!r} -- write \\%"
-    assert color != "accentthree", "accent-3 is not a text colour (2.0:1 on white)"
+    assert color not in ("accentthree", "gold", "pale"), f"{color} is not a text colour"
     o = [f"font=\\fontsize{{{size}}}{{{int(size*1.15)}}}\\selectfont",
          f"text={color}", f"anchor={anchor}", "align=center"]
     if width:
