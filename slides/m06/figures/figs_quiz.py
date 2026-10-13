@@ -316,6 +316,93 @@ CA_SLOTS = {"E": ("south", 0, 46), "F": ("north", 0, -28), "G": ("south", 0, 46)
 VSIDES = [(a, 0, d) for r in (28, 32, 38, 46, 56, 64, 72, 80) for a, d in (("south", r), ("north", -r))]
 
 
+def _arrow(box, target, gap):
+    """Start and end of figlib.callout's arrow, so that a placement can be checked first."""
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    dx, dy = target[0] - cx, target[1] - cy
+    hw, hh = (box[2] - box[0]) / 2, (box[3] - box[1]) / 2
+    t = min(hw / abs(dx) if dx else 1e9, hh / abs(dy) if dy else 1e9)
+    L = np.hypot(dx, dy) or 1.0
+    sx, sy = cx + dx * t + dx / L * 4, cy + dy * t + dy / L * 4
+    L = np.hypot(target[0] - sx, target[1] - sy) or 1.0
+    return (sx, sy), (target[0] - (target[0] - sx) / L * gap, target[1] - (target[1] - sy) / L * gap)
+
+
+def _seg_hits_disc(p, q, c, r):
+    p, q, c = np.array(p, float), np.array(q, float), np.array(c, float)
+    d = q - p
+    t = max(0.0, min(1.0, float((c - p) @ d) / float(d @ d))) if float(d @ d) else 0.0
+    return float(np.linalg.norm(p + t * d - c)) < r
+
+
+def place_callouts(steps, bodies, pos, edges, slots, specs_of, box0, blockers=(), max_arrow=170):
+    """One muted callout per build step, placed where it touches nothing and its arrow crosses nothing.
+
+    steps: (labels, G state, lifted, text variants, ("disc"|"label", node)).  The first variant that
+    fits with a short arrow wins.  The callouts are searched inside box0 (the crop of the drawing),
+    then in a band growing outwards, so that a group's crop only grows if it has to.
+    Returns the list of callout TikZ strings.
+    """
+    y_lo0, y_hi0 = CANVAS_H - box0[1], CANVAS_H - box0[0]
+    out = []
+    for (vals, state, lift, variants, (kind, who)), _ in zip(steps, bodies):
+        specs = specs_of(vals, state, lift)
+        boxes = {}
+        for n, sp in specs:
+            anc, dx, dy = slots[n]
+            b = F.label_box(pos[n][0] + dx, pos[n][1] + lifted(sp, anc, dy), sp.sizing, anc)
+            boxes[n] = (b[0] - GAP, b[1] - GAP - (8 if sp.kind == "win" else 0), b[2] + GAP, b[3] + GAP)
+        if kind == "disc":
+            target, gap = pos[who], F.NODE / 2 + 6
+        else:
+            b = boxes[who]
+            target, gap = ((b[0] + b[2]) / 2, (b[1] + b[3]) / 2), 14
+        done = None
+        for e in (0, 3, 6):
+            for text in variants:
+                best = None
+                for x in range(int(BOUNDS[0]), int(BOUNDS[2]), 4):
+                    for y in range(int(max(BOUNDS[1], y_lo0 - e)), int(min(BOUNDS[3], y_hi0 + e)), 4):
+                        b = F.label_box(x, y, text, "center", pad=2)
+                        if not (BOUNDS[0] <= b[0] and b[2] <= BOUNDS[2] and max(BOUNDS[1], y_lo0 - e) <= b[1]
+                                and b[3] <= min(BOUNDS[3], y_hi0 + e)):
+                            continue
+                        if any(F.box_hits_disc(b, px, py, DISC_R + 4) for px, py in pos.values()):
+                            continue
+                        if any(F.box_hits_segment(b, pos[u], pos[w], pad=6) for u, w in edges):
+                            continue
+                        if any(F.boxes_overlap((b[0] - 4, b[1] - 4, b[2] + 4, b[3] + 4), o)
+                               for o in list(boxes.values()) + list(blockers)):
+                            continue
+                        p0, p1 = _arrow(b, target, gap)
+                        length = float(np.hypot(p1[0] - p0[0], p1[1] - p0[1]))
+                        if length < 24 or length > max_arrow:
+                            continue
+                        if any(F.box_hits_segment(o, p0, p1, pad=3) for k, o in boxes.items()
+                               if not (kind == "label" and k == who)):
+                            continue
+                        if any(_seg_hits_disc(p0, p1, c, DISC_R + 3) for k, c in pos.items()
+                               if not (kind == "disc" and k == who)):
+                            continue
+                        if any(F.box_hits_segment(o, p0, p1, pad=3) for o in blockers):
+                            continue
+                        cross = sum(F._seg_cross(p0, p1, pos[u], pos[w]) for u, w in edges
+                                    if not (kind == "disc" and who in (u, w)))
+                        score = length + 60 * cross
+                        if best is None or score < best[0]:
+                            best = (score, x, y, b, cross)
+                if best:
+                    done = (text, best)
+                    break
+            if done:
+                break
+        assert done, f"no room for the callout {variants[0]!r}"
+        text, (score, x, y, b, cross) = done
+        tikz, box = F.callout(text, (x, y), target, anchor="center", gap=gap)
+        out.append(tikz)
+    return out
+
+
 def ca_group():
     sumL, _ = _close_facts()
     hL = S.harmonic(S.CA)
@@ -376,24 +463,34 @@ def ca_group():
             body += draw(Spec(vals[n], n, kind), slots[n], pos)
         return body
 
-    frames = [cut, frame({}, source="G")]
-    v = {}
-    for n in one:
-        v[n] = "1/1"
-        frames.append(frame(v, source="G"))
-    v["K"] = "1/2"
-    frames.append(frame(v, source="G"))
-    v.update({n: "0" for n in other})
-    frames.append(frame(v, source="G"))                                   # 07: G's terms
+    # --- the build: six slides, one change each, a muted callout on every step after the first
+    v1 = {n: "1/1" for n in one}
+    v2 = {**v1, "K": "1/2"}
+    v3 = {**v2, **{n: "0" for n in other}}
     g = {"G": frac(hc["G"])}
-    frames.append(frame({**v, **g}, source="G", lift="G"))                # 08: their sum, in ink
-    frames.append(frame(g, source="G", lift="G"))                         # 09: the terms cleared
     star = {n: frac(hc[n]) for n in other}
-    frames.append(frame({**g, **star}, source="G", lift="G"))             # 10: the star piece's scores
     rest = {n: frac(hc[n]) for n in "FHIJK"}
-    frames.append(frame(final, win="G"))                                  # 11: the other piece, then G wins
-    assert len(frames) == 12 and final == {**g, **star, **rest}
-    assert frames[0] == cut
+    assert final == {**g, **star, **rest}
+    assert 4 * Fraction(1) + Fraction(1, 2) == hc["G"] == Fraction(9, 2)     # 4 + 1/2 = 9/2
+    assert S.dist(Gc, "G")["K"] == 2 and all(n not in S.dist(Gc, "G") for n in other)
+    steps = [  # (labels drawn, G state, lifted labels, callout variants, what the arrow points at)
+        (v1, "cool", (), ["G's neighbours:\\\\1/1 each", "G's neighbours: 1/1 each"], ("disc", "G")),
+        (v2, "cool", (), ["K: 2 steps, 1/2", "K: 2 steps,\\\\1/2", "K: 2 steps"], ("disc", "K")),
+        (v3, "cool", (), ["unreachable:\\\\1/\u221e = 0", "unreachable: 1/\u221e = 0"], ("label", "E")),
+        (g, "cool", "G", ["4 + 1/2 = 9/2"], ("label", "G")),
+        (final, "hot", (), ["highest: G"], ("disc", "G")),
+    ]
+    plain = [cut]
+    for vals, state, lift, _, _ in steps:
+        plain.append(frame(vals, win="G" if state == "hot" else None,
+                           source="G" if state == "cool" else None, lift=lift))
+    base = [q, close_ans, harm_ans, cut, cut_close] + plain[1:]
+    box0 = union_box(base)
+    placed = place_callouts(steps, plain[1:], pos, edges, slots, specs_of=lambda vals, state, lift: [
+        (n, Spec(t, n, "win" if (state == "hot" and n == "G") else "lift" if n in lift else "val"))
+        for n, t in vals.items()], box0=box0, blockers=[CROSS_BLOCK])
+    frames = [cut] + [p + c for p, c in zip(plain[1:], placed)]
+    assert frames[0] == cut and len(frames) == 6
 
     bodies = [q, close_ans, harm_ans, cut, cut_close] + frames[1:]
     box = union_box(bodies)

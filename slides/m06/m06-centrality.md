@@ -744,7 +744,7 @@ Step 1 of 5: G's neighbours: 1/1 each.
 </div>
 
 <!--
-Step 2 of 5: K: 2 steps, 1/2.
+Step 2 of 5: K is 2 steps from G, so it adds 1/2.
 -->
 
 ---
