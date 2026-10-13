@@ -74,7 +74,7 @@ The fragments in the photo are the ones the Forum labels as the milestone; wheth
 - Roads and sea lanes joined them.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/roma-basemap.png)
 <figcaption>map © OpenStreetMap contributors</figcaption>
@@ -99,7 +99,7 @@ The pins are the real places: Londinium, Colonia, Lugdunum, Massilia, Tarraco, M
 * Which city is the most important?
 
 </div>
-<div class="fig scrub">
+<div class="fig scrub tall">
 
 ![w:537](figures/roma-to-graph.png)
 
@@ -126,7 +126,7 @@ Take answers. The room will give at least two kinds of reason (many roads; close
 * It sees only the neighbours.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/roma-degree.png)
 

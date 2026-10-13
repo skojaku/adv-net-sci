@@ -518,15 +518,34 @@ def seg(p, q, color="ink", w=EDGE_W, dash="", arrow="", opacity=None, sketch=Tru
 
 
 def _resample(pts, step=6.0):
-    """The polyline as evenly spaced points (so a brush can be trimmed and jittered)."""
-    pts = [np.array(p, float) for p in pts]
-    out = [pts[0]]
-    for a, b in zip(pts, pts[1:]):
-        L = np.linalg.norm(b - a)
-        n = max(1, int(L // step))
-        for k in range(1, n + 1):
-            out.append(a + (b - a) * k / n)
+    """The polyline as points evenly spaced along its length, at least `step` apart.
+
+    Uniform arc-length spacing matters to TikZ: `random steps` with rounded corners on a run
+    of sub-bp segments (duplicate points, or a short underline sampled densely) dies with
+    "Dimension too large".
+    """
+    P = [np.array(p, float) for p in pts]
+    P = [p for i, p in enumerate(P) if i == 0 or np.linalg.norm(p - P[i - 1]) > 1e-6]
+    if len(P) < 2:
+        return P
+    seg = [float(np.linalg.norm(b - a)) for a, b in zip(P, P[1:])]
+    total = sum(seg)
+    n = max(1, int(total // step))
+    targets = np.linspace(0.0, total, n + 1)
+    out, k, acc = [], 0, 0.0
+    for t in targets:
+        while k < len(seg) - 1 and acc + seg[k] < t:
+            acc += seg[k]
+            k += 1
+        u = 0.0 if seg[k] == 0 else min(1.0, max(0.0, (t - acc) / seg[k]))
+        out.append(P[k] + (P[k + 1] - P[k]) * u)
     return out
+
+
+def _plen(P):
+    """Length of a polyline. TikZ's `rough` (random steps, rounded corners) needs a few
+    segment lengths of path; on a shorter stroke it dies with "Dimension too large"."""
+    return sum(float(np.linalg.norm(b - a)) for a, b in zip(P, P[1:]))
 
 
 def _trim(pts, frac):
@@ -540,24 +559,41 @@ def brush(pts, color="hot", w=10.0, opacity=0.85, strands=7, seed=0):
     bundle of thin strands across the width, each with its own opacity, ragged edge and
     trimmed ends, so the stroke tapers and shows bristle streaks. Draw it BEFORE the
     discs it passes, so the nodes stay on top. Deterministic (seeded by the points), so a
-    question and its answer carry the same stroke."""
-    P = _resample(pts, step=5.0)
+    question and its answer carry the same stroke.
+
+    The raggedness is computed here (a smoothed random offset per point), not by a TikZ
+    decoration: `random steps` with rounded corners fails on short strokes."""
+    P = _resample(pts, step=4.0)
     if len(P) < 2:
         return ""
+    if len(P) < 6:                       # a short stroke: densify so it can taper
+        P = _resample(pts, step=max(0.8, _plen(P) / 6))
     key = int(sum(abs(q[0]) * 7.3 + abs(q[1]) * 3.1 for q in P[:4])) + seed
     rng = np.random.default_rng(key % (2 ** 32))
+    n = len(P)
     N = []
-    for i in range(len(P)):
-        a_, b_ = P[max(i - 1, 0)], P[min(i + 1, len(P) - 1)]
+    for i in range(n):
+        a_, b_ = P[max(i - 1, 0)], P[min(i + 1, n - 1)]
         d = b_ - a_
         L = float(np.hypot(*d)) or 1.0
         N.append(np.array([-d[1] / L, d[0] / L]))
-    n = len(P)
-    out = _seed(P[0][0], P[0][1], P[-1][0], P[-1][1], seed)
-    # a translucent body first, then the strands on top of it
-    body = " -- ".join(f"({q[0]:.1f},{q[1]:.1f})" for q in _trim(P, 0.06))
+
+    def wobble(amp):
+        r = rng.normal(0.0, 1.0, n)
+        k = np.ones(3) / 3.0
+        r = np.convolve(np.pad(r, 1, mode="edge"), k, mode="valid")
+        return r * amp
+
+    def path(idx, off, amp):
+        jit = wobble(amp)
+        return " -- ".join(f"({P[i][0] + N[i][0] * (off + jit[i]):.2f},"
+                           f"{P[i][1] + N[i][1] * (off + jit[i]):.2f})" for i in idx)
+
+    out = ""
+    lo = int(round(n * 0.06))
+    idx = range(lo, n - lo) if n - 2 * lo >= 2 else range(n)
     out += (f"\\draw[{color},line width={w * 0.8:.2f}bp,line cap=round,line join=round,"
-            f"opacity={opacity * 0.35:.2f},rough] {body};\n")
+            f"opacity={opacity * 0.35:.2f}] {path(idx, 0.0, 0.5)};\n")
     for k in range(strands):
         off = (k / (strands - 1) - 0.5) * w * 0.9 if strands > 1 else 0.0
         ww = w * rng.uniform(0.16, 0.32)
@@ -566,10 +602,8 @@ def brush(pts, color="hot", w=10.0, opacity=0.85, strands=7, seed=0):
         t1 = n - int(n * rng.uniform(0.0, 0.10 + 0.25 * abs(off) / w))
         if t1 - t0 < 2:
             continue
-        path = " -- ".join(f"({P[i][0] + N[i][0] * off:.1f},{P[i][1] + N[i][1] * off:.1f})"
-                           for i in range(t0, t1))
         out += (f"\\draw[{color},line width={ww:.2f}bp,line cap=round,line join=round,"
-                f"opacity={op:.2f},rough] {path};\n")
+                f"opacity={op:.2f}] {path(range(t0, t1), off, 0.45)};\n")
     return out
 
 
