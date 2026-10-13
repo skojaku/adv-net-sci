@@ -76,12 +76,12 @@
     E: [58, 9], F: [58, 9], G: [0, -36]
   };
 
-  /* white -> deck blue by the node's value. The floor keeps a score of 0.2
-     visibly a disc; the ink outline keeps it a disc on white paper. */
+  /* near-paper warm grey -> saturated sky blue by the node's value (the m06 palette:
+     saturation carries importance). The ink outline keeps a low score a disc. */
   function blue(v) {
-    const a = 0.08 + 0.92 * Math.max(0, Math.min(1, v));
-    const m = (c, k) => Math.round(255 + (c - 255) * k);
-    return "rgb(" + m(57, a) + "," + m(89, a) + "," + m(166, a) + ")";
+    const a = Math.max(0, Math.min(1, v));
+    const m = (lo, hi) => Math.round(lo + (hi - lo) * a);
+    return "rgb(" + m(239, 30) + "," + m(235, 150) + "," + m(232, 220) + ")";
   }
 
   /* The ranking, largest first, with "=" where two values agree to four places. */
@@ -166,7 +166,7 @@
         NAMES.forEach(function (n, i) {
           S.node[n].style.fill = blue(x[i]);
           /* white lettering once the disc is dark enough to need it */
-          S.name[n].style.fill = x[i] > 0.55 ? "#fff" : "#000";
+          S.name[n].style.fill = x[i] > 0.72 ? "#fff" : "#30323D";
           S.val[n].textContent = x[i].toFixed(2);
           S.ring[n].style.opacity = ring.indexOf(n) >= 0 ? "1" : "0";
         });

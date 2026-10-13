@@ -121,12 +121,14 @@
     return { c: c, v: c.map(function (x) { return x / top; }) };
   }
 
-  /* white -> blue for a positive score, white -> gold for a negative one. */
+  /* near-paper warm grey -> sky blue for a positive score, -> orange for a negative one
+     (the m06 palette: saturation carries importance). */
   function tint(v) {
-    const base = v >= 0 ? [57, 89, 166] : [218, 177, 103];
-    const a = 0.08 + 0.92 * Math.min(1, Math.abs(v));
-    const m = function (c) { return Math.round(255 + (c - 255) * a); };
-    return "rgb(" + m(base[0]) + "," + m(base[1]) + "," + m(base[2]) + ")";
+    const base = v >= 0 ? [30, 150, 220] : [217, 99, 30];
+    const lo = [239, 235, 232];
+    const a = Math.min(1, Math.abs(v));
+    const m = function (k) { return Math.round(lo[k] + (base[k] - lo[k]) * a); };
+    return "rgb(" + m(0) + "," + m(1) + "," + m(2) + ")";
   }
 
   /* --------------------------------------------------------------- scenes */
