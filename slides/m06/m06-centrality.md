@@ -21,9 +21,9 @@ math: katex
 <script>window.animStepOnly = true;</script>
 
 <!--
-Day 1 (10/20): slides 1 to 41, measured by shortest paths. Day 2 (10/22): slides 42 to 82, measured by walks.
+Day 1 (10/20): slides 1 to 62, measured by shortest paths. Day 2 (10/22): slides 63 to 122, measured by walks. About a third are build steps, a few seconds each.
 The pen-and-paper sheet has already been done, so the room has met degree, average distance, "indispensable" and passing scores around. Name things; do not re-derive what is in their hands.
-A figure with a slider under it is a build: the right arrow (or the clicker) steps it, then moves on to the next bullet and the next slide.
+A build is a run of slides with the same title: explain the bullets on the first, then step; the grey note on each figure says what changed.
 -->
 
 ---
@@ -99,7 +99,7 @@ The pins are the real places: Londinium, Colonia, Lugdunum, Massilia, Tarraco, M
 * Which city is the most important?
 
 </div>
-<div class="fig scrub tall">
+<div class="fig tall">
 
 ![w:537](figures/roma-to-graph.png)
 
@@ -107,7 +107,7 @@ The pins are the real places: Londinium, Colonia, Lugdunum, Massilia, Tarraco, M
 </div>
 
 <!--
-Step the build first: the map fades and the links are drawn between the pins. Then the two bullets.
+The same twelve cities at the same places: the map is gone, the roads are straight links.
 Take answers. The room will give at least two kinds of reason (many roads; close to everything). Both are right. That is the module.
 -->
 
@@ -236,16 +236,112 @@ Ask: in how many ways can you get there in 3 steps? In 4?
 * **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig scrub" data-at="1">
+<div class="fig">
 
-![w:537](figures/w5-walks.png)
+![w:537](figures/frames/w5-walks/00.png)
 
 </div>
 </div>
 
 <!--
-First bullet, then step the build: the shortest path, then the walks of each length. Then the second bullet.
+Explain the bullets on this slide; the next 4 slides step the figure, one change each (the grey note says which).
 The walk counts are the entries of A, A squared, A cubed, ... from Module 01. Walks of length 2: 2; length 3: 1; length 4: 11.
+-->
+
+---
+
+## Two ways to count
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Shortest path**: the fewest steps. One number: 2.
+- **Walk**: any route, revisits allowed. A count per length.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/w5-walks/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 4: shortest path: 2 steps.
+-->
+
+---
+
+## Two ways to count
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Shortest path**: the fewest steps. One number: 2.
+- **Walk**: any route, revisits allowed. A count per length.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/w5-walks/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 4: length 2: 2 walks.
+-->
+
+---
+
+## Two ways to count
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Shortest path**: the fewest steps. One number: 2.
+- **Walk**: any route, revisits allowed. A count per length.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/w5-walks/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 4: length 3: 1 walk.
+-->
+
+---
+
+## Two ways to count
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Shortest path**: the fewest steps. One number: 2.
+- **Walk**: any route, revisits allowed. A count per length.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/w5-walks/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 4: length 4: 11 walks; this one revisits a node.
 -->
 
 ---
@@ -289,16 +385,142 @@ near every other node, on average, at worst
 * $N-1$: a star's centre scores exactly 1.
 
 </div>
-<div class="fig scrub" data-at="1">
+<div class="fig">
 
-![w:537](figures/closeness-def.png)
+![w:537](figures/frames/closeness-def/00.png)
 
 </div>
 </div>
 
 <!--
-First bullet, then step the build: each node's sum of distances appears (A 15, C and E 11, D 10); then each sum turns into closeness, (N - 1)/sum with N = 7: A, B, F, G 6/15 = 0.40; C, E 6/11 = 0.55; D 6/10 = 0.60, the highest. Then the rest.
+Explain the bullets on this slide; the next 5 slides step the figure, one change each (the grey note says which).
+The steps: each node's sum of distances (A 15, C and E 11, D 10); then each sum turns into closeness, (N - 1)/sum with N = 7: A, B, F, G 6/15 = 0.40; C, E 6/11 = 0.55; D 6/10 = 0.60, the highest.
 The sum is not the score: closeness is its inverse, so higher is better. N - 1 makes the best case, a star's centre, exactly 1.
+-->
+
+---
+
+## Closeness centrality
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
+- $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
+- $N-1$: a star's centre scores exactly 1.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/closeness-def/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 5: distances from A.
+-->
+
+---
+
+## Closeness centrality
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
+- $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
+- $N-1$: a star's centre scores exactly 1.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/closeness-def/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 5: 1+1+2+3+4+4 = 15.
+-->
+
+---
+
+## Closeness centrality
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
+- $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
+- $N-1$: a star's centre scores exactly 1.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/closeness-def/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 5: every node's sum.
+-->
+
+---
+
+## Closeness centrality
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
+- $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
+- $N-1$: a star's centre scores exactly 1.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/closeness-def/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 5: 6/15 = 0.40.
+-->
+
+---
+
+## Closeness centrality
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
+- $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
+- $N-1$: a star's centre scores exactly 1.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/closeness-def/05.png)
+
+</div>
+</div>
+
+<!--
+Step 5 of 5: highest: D, 0.60.
 -->
 
 ---
@@ -463,15 +685,141 @@ Not just the nodes near the cut: all eleven. Every sum is infinite. Closeness ca
 * $1/\infty = 0$: an unreachable node adds nothing.
 
 </div>
-<div class="fig scrub" data-at="2">
+<div class="fig">
 
-![w:537](figures/harmonic-def.png)
+![w:537](figures/frames/harmonic-def/00.png)
 
 </div>
 </div>
 
 <!--
-Two bullets, then step the build: from G, four nodes at distance 1, K at 2, the other piece unreachable: 4 + 1/2 = 9/2. Then every node's score. Then the last bullet.
+Explain the bullets on this slide; the next 5 slides step the figure, one change each (the grey note says which).
+The steps, from G: four nodes at distance 1, K at 2, the other piece unreachable: 4 + 1/2 = 9/2. Then every node's score.
+-->
+
+---
+
+## Take the reciprocal first
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Harmonic centrality**: add $1/\ell_{ij}$ instead.
+- $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$
+- $1/\infty = 0$: an unreachable node adds nothing.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/harmonic-def/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 5: G's neighbours: 1/1 each.
+-->
+
+---
+
+## Take the reciprocal first
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Harmonic centrality**: add $1/\ell_{ij}$ instead.
+- $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$
+- $1/\infty = 0$: an unreachable node adds nothing.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/harmonic-def/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 5: K: 2 steps, 1/2.
+-->
+
+---
+
+## Take the reciprocal first
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Harmonic centrality**: add $1/\ell_{ij}$ instead.
+- $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$
+- $1/\infty = 0$: an unreachable node adds nothing.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/harmonic-def/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 5: unreachable: 1/inf = 0.
+-->
+
+---
+
+## Take the reciprocal first
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Harmonic centrality**: add $1/\ell_{ij}$ instead.
+- $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$
+- $1/\infty = 0$: an unreachable node adds nothing.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/harmonic-def/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 5: 4 + 1/2 = 9/2.
+-->
+
+---
+
+## Take the reciprocal first
+
+<hr>
+
+<div class="cols">
+<div>
+
+- **Harmonic centrality**: add $1/\ell_{ij}$ instead.
+- $h_i = \sum_{j \ne i} \dfrac{1}{\ell_{ij}}$
+- $1/\infty = 0$: an unreachable node adds nothing.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/harmonic-def/05.png)
+
+</div>
+</div>
+
+<!--
+Step 5 of 5: highest: G.
 -->
 
 ---
@@ -637,15 +985,91 @@ Closeness is pulled toward where the nodes are. 91 of 289 interchanges are withi
 * Smallest $e_i$ wins; its centrality is $1/e_i$.
 
 </div>
-<div class="fig scrub" data-at="2">
+<div class="fig">
 
-![w:537](figures/ecc-def.png)
+![w:537](figures/frames/ecc-def/00.png)
 
 </div>
 </div>
 
 <!--
-Two bullets, then step the build: the sums give way to each node's farthest distance. D is still best here, 2. The next question is built so that it is not.
+Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
+The steps: the closeness values give way to each node's farthest distance. D is still best here, 2. The next question is built so that it is not.
+-->
+
+---
+
+## Eccentricity
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A fire station must reach its farthest house.
+- **Eccentricity**: $e_i = \max_j \ell_{ij}$.
+- Smallest $e_i$ wins; its centrality is $1/e_i$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ecc-def/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 3: A's farthest: 4 steps.
+-->
+
+---
+
+## Eccentricity
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A fire station must reach its farthest house.
+- **Eccentricity**: $e_i = \max_j \ell_{ij}$.
+- Smallest $e_i$ wins; its centrality is $1/e_i$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ecc-def/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 3: every node's worst case.
+-->
+
+---
+
+## Eccentricity
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A fire station must reach its farthest house.
+- **Eccentricity**: $e_i = \max_j \ell_{ij}$.
+- Smallest $e_i$ wins; its centrality is $1/e_i$.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ecc-def/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 3: smallest: D, 2.
 -->
 
 ---
@@ -793,15 +1217,112 @@ who the traffic cannot avoid
 * Count the letters each node carries.
 
 </div>
-<div class="fig scrub" data-at="2">
+<div class="fig">
 
-![w:537](figures/btw-def.png)
+![w:537](figures/frames/btw-def/00.png)
 
 </div>
 </div>
 
 <!--
-Both bullets, then step the build. D carries 9: every letter between the left triangle and the right triangle. C and E carry 8 each.
+Explain the bullets on this slide; the next 4 slides step the figure, one change each (the grey note says which).
+D carries 9: every letter between the left triangle and the right triangle. C and E carry 8 each.
+-->
+
+---
+
+## Trace a letter
+
+<hr>
+
+<div class="cols">
+<div>
+
+- One letter per pair, along a shortest path.
+- Count the letters each node carries.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/btw-def/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 4: A to F passes C, D, E.
+-->
+
+---
+
+## Trace a letter
+
+<hr>
+
+<div class="cols">
+<div>
+
+- One letter per pair, along a shortest path.
+- Count the letters each node carries.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/btw-def/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 4: all of A's letters.
+-->
+
+---
+
+## Trace a letter
+
+<hr>
+
+<div class="cols">
+<div>
+
+- One letter per pair, along a shortest path.
+- Count the letters each node carries.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/btw-def/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 4: every pair.
+-->
+
+---
+
+## Trace a letter
+
+<hr>
+
+<div class="cols">
+<div>
+
+- One letter per pair, along a shortest path.
+- Count the letters each node carries.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/btw-def/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 4: D carries the most, 9.
 -->
 
 ---
@@ -1041,16 +1562,89 @@ A man buys a donkey on trial. It walks straight to the laziest donkey in the yar
 * $c_i = \dfrac{1}{\lambda} \displaystyle\sum_j A_{ij}\, c_j$
 
 </div>
-<div class="fig scrub" data-at="1">
+<div class="fig">
 
-![w:537](figures/eigen-inherit.png)
+![w:537](figures/frames/eigen-inherit/00.png)
 
 </div>
 </div>
 
 <!--
-First bullet, then step the build: A's neighbours hand over their scores, and the sum is 2.88 times A's own. Then the formula.
+Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
+The steps: A's neighbours hand over their scores, and the sum is 2.88 times A's own.
 It is circular: a score defined by scores. The constant lambda keeps the scores from growing without bound.
+-->
+
+---
+
+## Importance you inherit
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A node's score ∝ the sum of its neighbours' scores.
+- $c_i = \dfrac{1}{\lambda} \displaystyle\sum_j A_{ij}\, c_j$
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/eigen-inherit/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 3: A's neighbours: B, D, F, G.
+-->
+
+---
+
+## Importance you inherit
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A node's score ∝ the sum of its neighbours' scores.
+- $c_i = \dfrac{1}{\lambda} \displaystyle\sum_j A_{ij}\, c_j$
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/eigen-inherit/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 3: their sum = 2.88 x A's score.
+-->
+
+---
+
+## Importance you inherit
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A node's score ∝ the sum of its neighbours' scores.
+- $c_i = \dfrac{1}{\lambda} \displaystyle\sum_j A_{ij}\, c_j$
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/eigen-inherit/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 3: true at every node: lambda = 2.88.
 -->
 
 ---
@@ -1240,7 +1834,7 @@ K 0.85, H 0.62. K sits in the dense corner.
 
 $A$ is a sum of rank-1 pieces, one per eigenvalue.
 
-<div class="fig scrub">
+<div class="fig">
 
 ![w:1080](figures/decomp-sum.png)
 <figcaption>circle: eigenvalue · tall bar: eigenvector · wide bar: its transpose</figcaption>
@@ -1277,14 +1871,33 @@ Each eigenvector scaled to length 1: two different ones multiply to 0, one with 
 
 $A^2$: every eigenvalue squared, the same vectors.
 
-<div class="fig scrub">
+<div class="fig">
 
-![w:1080](figures/decomp-square.png)
+![w:1080](figures/frames/decomp-square/00.png)
 
 </div>
 
 <!--
+Explain the bullets on this slide; the next 1 slides step the figure, one change each (the grey note says which).
 A squared = sum of lambda_k squared u_k u_kᵀ. Every cross term contains a product of two different eigenvectors, which is 0.
+-->
+
+---
+
+## Square it
+
+<hr>
+
+$A^2$: every eigenvalue squared, the same vectors.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-square/01.png)
+
+</div>
+
+<!--
+Step 1 of 1: the result: each eigenvalue squared.
 -->
 
 ---
@@ -1295,14 +1908,69 @@ A squared = sum of lambda_k squared u_k u_kᵀ. Every cross term contains a prod
 
 $A^t / \lambda_1^t$: every term but the first fades.
 
-<div class="fig scrub">
+<div class="fig">
 
-![w:1080](figures/decomp-power.png)
+![w:1080](figures/frames/decomp-power/00.png)
 
 </div>
 
 <!--
+Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
 A^t counts walks of length t. Divide everything by lambda_1^t: term k shrinks like (lambda_k / lambda_1)^t. The next largest in size is lambda = -2.26, so the error shrinks by a factor 0.78 per step (2.26 / 2.88). After 16 steps it is about 2%. So A^t 1 points along u_1.
+-->
+
+---
+
+## Keep multiplying
+
+<hr>
+
+$A^t / \lambda_1^t$: every term but the first fades.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-power/01.png)
+
+</div>
+
+<!--
+Step 1 of 3: t = 2: the negative term turns positive.
+-->
+
+---
+
+## Keep multiplying
+
+<hr>
+
+$A^t / \lambda_1^t$: every term but the first fades.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-power/02.png)
+
+</div>
+
+<!--
+Step 2 of 3: t = 4: the small terms fade.
+-->
+
+---
+
+## Keep multiplying
+
+<hr>
+
+$A^t / \lambda_1^t$: every term but the first fades.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-power/03.png)
+
+</div>
+
+<!--
+Step 3 of 3: t = 16: only the first is left (2%).
 -->
 
 ---
@@ -1381,15 +2049,112 @@ Ask: one clique of 5, three of 4. Who gets the score? Most will say "a bit more 
 * The densest part takes almost all the score.
 
 </div>
-<div class="fig scrub" data-at="1">
+<div class="fig">
 
-![w:537](figures/ring-local.png)
+![w:537](figures/frames/ring-local/00.png)
 
 </div>
 </div>
 
 <!--
-First bullet, then step the build: one extra node, and 68% of the total score moves into that clique; with two, 85%; at K = 8, 94%. The other three cliques, identical to each other, score almost nothing. Then the bullet.
+Explain the bullets on this slide; the next 4 slides step the figure, one change each (the grey note says which).
+One extra node, and 68% of the total score moves into that clique; with two, 85%; at K = 8, 94%. The other three cliques, identical to each other, score almost nothing.
+-->
+
+---
+
+## Localization
+
+<hr>
+
+<div class="cols">
+<div>
+
+- Grow one clique to K nodes, one node at a time.
+- The densest part takes almost all the score.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ring-local/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 4: K = 4: equal cliques, equal shares (25%).
+-->
+
+---
+
+## Localization
+
+<hr>
+
+<div class="cols">
+<div>
+
+- Grow one clique to K nodes, one node at a time.
+- The densest part takes almost all the score.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ring-local/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 4: K = 5: one more node, 68%.
+-->
+
+---
+
+## Localization
+
+<hr>
+
+<div class="cols">
+<div>
+
+- Grow one clique to K nodes, one node at a time.
+- The densest part takes almost all the score.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ring-local/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 4: K = 6: 85%.
+-->
+
+---
+
+## Localization
+
+<hr>
+
+<div class="cols">
+<div>
+
+- Grow one clique to K nodes, one node at a time.
+- The densest part takes almost all the score.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/ring-local/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 4: K = 8: 94%.
 -->
 
 ---
@@ -1492,15 +2257,91 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 * Katz counts walks, discounted by length
 
 </div>
-<div class="fig scrub" data-at="2">
+<div class="fig">
 
-![w:537](figures/walks-discount.png)
+![w:537](figures/frames/walks-discount/00.png)
 
 </div>
 </div>
 
 <!--
+Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
 Multiply both sides by (I - alpha A) to check. The series converges only if alpha is small enough: the dial on the next slide.
+-->
+
+---
+
+## The same series for matrices
+
+<hr>
+
+<div class="cols">
+<div>
+
+- $(I-\alpha A)^{-1} = \displaystyle\sum_{k \ge 0} \alpha^k A^k$
+- $A^k$ counts the walks of length $k$
+- Katz counts walks, discounted by length
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/walks-discount/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 3: 2 walks of length 2, alpha^2 each.
+-->
+
+---
+
+## The same series for matrices
+
+<hr>
+
+<div class="cols">
+<div>
+
+- $(I-\alpha A)^{-1} = \displaystyle\sum_{k \ge 0} \alpha^k A^k$
+- $A^k$ counts the walks of length $k$
+- Katz counts walks, discounted by length
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/walks-discount/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 3: 1 walk of length 3: alpha^3.
+-->
+
+---
+
+## The same series for matrices
+
+<hr>
+
+<div class="cols">
+<div>
+
+- $(I-\alpha A)^{-1} = \displaystyle\sum_{k \ge 0} \alpha^k A^k$
+- $A^k$ counts the walks of length $k$
+- Katz counts walks, discounted by length
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/walks-discount/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 3: every length, discounted.
 -->
 
 ---
@@ -1548,14 +2389,59 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 
 </div>
 
-<div class="fig scrub">
+<div class="fig">
 
-![w:1080](figures/katz-why.png)
+![w:1080](figures/frames/katz-why/00.png)
 
 </div>
 
 <!--
+Explain the bullets on this slide; the next 2 slides step the figure, one change each (the grey note says which).
 The 7-node network of the eigenvector slides (lambda_max = 2.884). Circle: the weight of term k, 1/(1 - alpha lambda_k). Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+-->
+
+---
+
+## Why 1/λ<sub>max</sub>?
+
+<hr>
+
+<div class="formula">
+
+$$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \mathbf{u}_k^\top$$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/frames/katz-why/01.png)
+
+</div>
+
+<!--
+Step 1 of 2: alpha near 1/lambda_max: the first term dominates.
+-->
+
+---
+
+## Why 1/λ<sub>max</sub>?
+
+<hr>
+
+<div class="formula">
+
+$$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \mathbf{u}_k^\top$$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/frames/katz-why/02.png)
+
+</div>
+
+<!--
+Step 2 of 2: past 1/lambda_max: the first weight is negative.
 -->
 
 ---
@@ -1799,15 +2685,88 @@ A, C and E: 3/11 each. B and D: 1/11.
 * Its score has nowhere to go: the total drains to zero.
 
 </div>
-<div class="fig scrub" data-at="1">
+<div class="fig">
 
-![w:537](figures/pr-leak.png)
+![w:537](figures/frames/pr-leak/00.png)
 
 </div>
 </div>
 
 <!--
-First bullet, then step the build: the total goes 1, 0.8, 0.6, ... 0. Then the second bullet.
+Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
+The total goes 1, 0.8, 0.6, ... 0.
+-->
+
+---
+
+## A dead end
+
+<hr>
+
+<div class="cols">
+<div>
+
+- E loses its only link out.
+- Its score has nowhere to go: the total drains to zero.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-leak/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 3: E's only link out is gone.
+-->
+
+---
+
+## A dead end
+
+<hr>
+
+<div class="cols">
+<div>
+
+- E loses its only link out.
+- Its score has nowhere to go: the total drains to zero.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-leak/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 3: score leaks out at E: total 0.60.
+-->
+
+---
+
+## A dead end
+
+<hr>
+
+<div class="cols">
+<div>
+
+- E loses its only link out.
+- Its score has nowhere to go: the total drains to zero.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-leak/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 3: nothing left: total 0.00.
 -->
 
 ---
