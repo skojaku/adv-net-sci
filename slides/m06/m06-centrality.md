@@ -206,7 +206,7 @@ On a road map almost every junction joins three or four roads. A measure that on
 - The network from Module 01.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/w5-blank.png)
 
@@ -236,7 +236,7 @@ Ask: in how many ways can you get there in 3 steps? In 4?
 * **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/w5-walks/00.png)
 
@@ -261,7 +261,7 @@ The walk counts are the entries of A, A squared, A cubed, ... from Module 01. Wa
 - **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/w5-walks/01.png)
 
@@ -285,7 +285,7 @@ Step 1 of 4: shortest path: 2 steps.
 - **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/w5-walks/02.png)
 
@@ -309,7 +309,7 @@ Step 2 of 4: length 2: 2 walks.
 - **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/w5-walks/03.png)
 
@@ -333,7 +333,7 @@ Step 3 of 4: length 3: 1 walk.
 - **Walk**: any route, revisits allowed. A count per length.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/w5-walks/04.png)
 
@@ -2257,7 +2257,7 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 * Katz counts walks, discounted by length
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/walks-discount/00.png)
 
@@ -2283,7 +2283,7 @@ Multiply both sides by (I - alpha A) to check. The series converges only if alph
 - Katz counts walks, discounted by length
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/walks-discount/01.png)
 
@@ -2308,7 +2308,7 @@ Step 1 of 3: 2 walks of length 2, alpha^2 each.
 - Katz counts walks, discounted by length
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/walks-discount/02.png)
 
@@ -2333,7 +2333,7 @@ Step 2 of 3: 1 walk of length 3: alpha^3.
 - Katz counts walks, discounted by length
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/walks-discount/03.png)
 

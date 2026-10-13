@@ -445,6 +445,17 @@ def fig_sigma_answer():
     b += F.text(xy["T"][0], xy["T"][1] - 36, words["T"], color="hot")
     b += F.underline(xy["T"][0] - 16, xy["T"][0] + 16, xy["T"][1] - 54, color="hot")
     b += F.text(xy["D"][0], xy["D"][1] + 70, "pair s, t", color="muted", anchor="east")
+    # callouts naming the two routes, each pointing at its own brush (outside the diamond)
+    mid = lambda p, q: ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
+    valbox = [F.label_box(xy["A"][0], xy["A"][1] + 36, words["A"], "center", pad=2),
+              F.label_box(xy["B"][0], xy["B"][1] - 36, words["B"], "center", pad=2),
+              F.label_box(xy["T"][0], xy["T"][1] - 36, words["T"], "center", pad=2)]
+    for text, at, tgt in (("s\u2013A\u2013C\u2013t", (14, 262), mid(xy["S"], xy["A"])),
+                          ("s\u2013B\u2013C\u2013t", (14, 50), mid(xy["S"], xy["B"]))):
+        tikz, box = F.callout(text, at, (tgt[0] - 4, tgt[1] + (7 if text[2] == "A" else -7)), anchor="west", gap=6)
+        assert not any(F.boxes_overlap(box, v) for v in valbox)
+        assert not any(F.box_hits_disc(box, x, y, F.NODE / 2 + 3) for x, y in xy.values())
+        b += tikz
     _DRAWN.extend(words.values())
     F.emit("sigma-answer", b, container="col", h=300)
 

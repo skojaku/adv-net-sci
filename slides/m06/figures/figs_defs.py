@@ -50,6 +50,17 @@ def discs_tex(pos, labels, hot=(), fill=None):
                    for n, (x, y) in pos.items())
 
 
+def callout(blockers, discs, text, at, target, anchor="south", gap=8.0, tip=None, bend=0):
+    """F.callout, with the build-time check that the note's box touches no disc and no value
+    box in `blockers` (the notes never lie on a number or a node)."""
+    tikz, b = F.callout(text, at, target, anchor=anchor, gap=gap, tip=tip, bend=bend)
+    for x, y in discs:
+        assert not F.box_hits_disc(b, x, y, F.NODE / 2 + 3), f"callout {text!r} touches a disc"
+    for o in blockers:
+        assert not F.boxes_overlap(b, o), f"callout {text!r} touches a value"
+    return tikz
+
+
 def route(pos, names, color="gold", w=14):
     return F.brush([pos[n] for n in names], color=color, w=w)
 
@@ -60,8 +71,7 @@ def route(pos, names, color="gold", w=14):
 W5_H = 420
 W5_SX, W5_SY, W5_OX, W5_OY = 400, 118, 68, 74
 W5_POS = {n: (W5_OX + x * W5_SX, W5_OY + (y + 0.9) * W5_SY) for n, (x, y) in S.W5_XY.items()}
-W5_CAP_Y = 24
-W5_BOX = (W5_H - 326, W5_H - 6)                       # bp from the canvas top, shared by every frame
+W5_BOX = (W5_H - 404, W5_H - 6)                       # shared by every frame: a band above the drawing holds the callouts
 F.assert_planar_drawing(list(S.W5.edges), W5_POS, "W5 stretched")
 W5_LAB = {"u": "u", "v": "v"}
 
@@ -95,38 +105,53 @@ def _w5_facts():
     return d, sp, w
 
 
-def _w5_scene(brushes="", label="", count=""):
-    """The blank graph, plus brushes under the discs, plus one caption: a muted label and
-    its number in hot.  Everything but the brushes and the caption is the same in every frame."""
-    o = edges_tex(S.W5.edges, W5_POS) + brushes + discs_tex(W5_POS, W5_LAB)
-    if label:
-        o += F.text(380, W5_CAP_Y, label, color="muted", anchor="east")
-        if count:
-            o += F.text(394, W5_CAP_Y, count, color="hot", anchor="west")
-    return o
+W5_HMOD = "tall"
+
+
+def _w5_scene(brushes="", note=None):
+    """The blank graph, plus brushes under the discs, plus one callout (tikz).  Everything
+    but the brushes and the callout is the same in every frame."""
+    return edges_tex(S.W5.edges, W5_POS) + brushes + discs_tex(W5_POS, W5_LAB) + (note or "")
+
+
+def _w5_note(text, at, target, anchor="south", gap=8.0):
+    return callout([], W5_POS.values(), text, at, target, anchor=anchor, gap=gap)
 
 
 def w5_blank():
-    F.emit("w5-blank", _w5_scene(), container="col", h=W5_H, box=W5_BOX)
+    F.emit("w5-blank", _w5_scene(), container="col", h=W5_H, hmod=W5_HMOD, box=W5_BOX)
 
 
 def w5_walks():
     d, sps, walks = _w5_facts()
+    P = W5_POS
     a, b = ("u", "n2", "v"), ("u", "n3", "v")
-    assert a in sps and b in sps
+    assert a in sps and b in sps and d == 2
     assert a in walks[2] and b in walks[2] and len(walks[2]) == 2
     c, = walks[3]
     assert c == ("u", "n0", "n2", "v"), c
     n2, n3, n4 = len(walks[2]), len(walks[3]), len(walks[4])
+    assert (n2, n3, n4) == (2, 1, 11)
+    e = ("u", "n0", "u", "n2", "v")                       # a length-4 walk that goes back to u
+    assert e in walks[4] and e.count("u") == 2
+    mid = ((P["n0"][0] + P["u"][0]) / 2, (P["n0"][1] + P["u"][1]) / 2 - 26)
+    e_pts = [P["u"], P["n0"], mid, P["u"], P["n2"], P["v"]]       # the way back is bowed, so it shows
+    top = 336                                              # the callout band above the drawing
+    mx = lambda p, q, t=0.5: (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
     frames = [
         _w5_scene(),                                                                       # = w5-blank
-        _w5_scene(route(W5_POS, a, "hot"), "shortest path:", f"{d} steps"),
-        _w5_scene(route(W5_POS, a) + route(W5_POS, b), "walks of length 2:", str(n2)),
-        _w5_scene(route(W5_POS, c), "walks of length 3:", str(n3)),
-        _w5_scene("", "walks of length 4:", str(n4)),
+        _w5_scene(route(P, a, "hot"), _w5_note(f"shortest path: {d} steps", (14, 26), mx(P["n2"], P["v"], 0.45),
+                                               anchor="west", gap=14)),
+        _w5_scene(route(P, a) + route(P, b), _w5_note(f"length 2: {n2} walks", (523, 26), mx(P["n3"], P["v"], 0.4),
+                                                      anchor="east", gap=14)),
+        _w5_scene(route(P, c, "cool"), _w5_note(f"length 3: {n3} walk", (P["n0"][0] + 200, top), (P["n0"][0] + 200, P["n0"][1] + 4),
+                                                gap=6)),
+        _w5_scene(F.brush(e_pts, color="cool", w=9),
+                  _w5_note(f"length 4: {n4} walks\\\\this one revisits u", (P["n0"][0] + 200, top - 4),
+                           (P["n0"][0] + 200, P["n0"][1] + 4), gap=6)),
     ]
     assert frames[0] == _w5_scene()
-    F.emit_frames("w5-walks", frames, container="col", h=W5_H, box=W5_BOX)
+    F.emit_frames("w5-walks", frames, container="col", h=W5_H, hmod=W5_HMOD, box=W5_BOX)
 
 
 # =========================================================================== BT (closeness, ecc, btw)
@@ -149,49 +174,78 @@ def bt_value(n, s, color="ink"):
     return F.text(x + BT_DX.get(n, 0), y + BT_SIDE[n] * BT_GAP, s, color=color)
 
 
-def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None, under_w=22):
+def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None, under_w=22, note=None):
     """The bowtie with its edges, optional brushes under the discs, values beside the nodes.
-    `hot`: nodes whose disc is the answer; `under`: the node whose value is underlined."""
+    `hot`: nodes whose disc is the answer; `under`: the node whose value is underlined.
+    `note`: (text, at, target, kwargs) of the muted callout; it must touch no disc and no value."""
     colors = colors or {}
     o = edges_tex(S.BT.edges, BT_POS) + brushes
     o += discs_tex(BT_POS, {n: n for n in BT_POS}, hot=hot, fill=fill)
+    boxes = []
     for n, s in (vals or {}).items():
         o += bt_value(n, s, colors.get(n, "ink"))
+        x, y = BT_POS[n]
+        boxes.append(F.label_box(x + BT_DX.get(n, 0), y + BT_SIDE[n] * BT_GAP, s, "center", pad=2))
     if under:
         x, y = BT_POS[under]
         yy = y + BT_SIDE[under] * BT_GAP - 18
         o += F.underline(x - under_w, x + under_w, yy, color="hot")
+    if note:
+        text, at, target, kw = note
+        kw = {"anchor": "center", **kw}
+        o += callout(boxes, BT_POS.values(), text, at, target, **kw)
     return o
 
 
+# the callout band: above the drawing between the two corner values, one line (or two) centred
+BT_TOP = (BT_POS["D"][0], 322)                        # one-line note, centred over D
+BT_TOP2 = (BT_POS["D"][0], 272)                       # two-line note, its bottom edge here
+BT_ABOVE_D = (BT_POS["D"][0], BT_POS["D"][1] + 24)     # arrow stops above D's disc
+LB = "\\\\"
+
+
 def closeness_frames():
+    """Six frames; each has a callout.  Returns the callout frames, the last frame without its
+    callout (bowtie-closeness) and the closeness values."""
     G = S.BT
     sums = S.dsum(G)
     assert S.argbest(sums, min) == (["D"], 10) and sums["A"] == 15      # D smallest, A the example
     assert [sums[n] for n in BT_NODES] == [15, 15, 11, 10, 11, 15, 15]
     L = S.dist(G, "A")
     assert sum(L.values()) == 15 and sorted(L.values()) == [0, 1, 1, 2, 3, 4, 4]
+    assert sorted(L[n] for n in BT_NODES if n != "A") == [1, 1, 2, 3, 4, 4]
     N = len(G)
     clo = {n: f"{(N - 1) / sums[n]:.2f}" for n in BT_NODES}               # c_i = (N-1) / sum: higher is better
     assert clo == {"A": "0.40", "B": "0.40", "C": "0.55", "D": "0.60", "E": "0.55", "F": "0.40", "G": "0.40"}, clo
-    frames = [bt_scene()]                                                # the bare bowtie
-    frames.append(bt_scene({n: str(k) for n, k in L.items() if n != "A"}, fill={"A": "cool"}))
-    shown = {}
-    for n in BT_NODES:
-        shown[n] = str(sums[n])
-        frames.append(bt_scene(dict(shown)))                             # every sum in ink, nobody hot
-    shown["A"] = clo["A"]                                                # A's 15 turns into 0.40
-    frames.append(bt_scene(dict(shown)))
-    shown = dict(clo)                                                    # every other sum turns into its closeness
-    frames.append(bt_scene(dict(shown)))
-    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D", under_w=34))
-    return frames, clo
+    apos = BT_POS["A"]
+    a15 = (apos[0], apos[1] + BT_GAP)                                     # where A's number sits
+    allsum = {n: str(sums[n]) for n in BT_NODES}
+    dval = (BT_POS["D"][0], BT_POS["D"][1] - BT_GAP)
+    frames = [
+        bt_scene(),                                                       # the bare bowtie
+        bt_scene({n: str(k) for n, k in L.items() if n != "A"}, fill={"A": "cool"},
+                 note=("distances from A", (270, 324), (apos[0] + 24, apos[1] + 8),
+                       dict(gap=14, tip=(122, 322)))),
+        bt_scene({"A": "15"}, fill={"A": "cool"},
+                 note=("1+1+2+3+4+4 = 15", (290, 324), (a15[0] + 22, a15[1] - 4),
+                       dict(gap=6, tip=(146, 322)))),
+        bt_scene(allsum, note=("every node's sum", (BT_POS["D"][0], 64), (dval[0], dval[1] - 20),
+                               dict(gap=4))),
+        bt_scene({**allsum, "A": clo["A"]},
+                 note=("6/15 = 0.40", (290, 324), (a15[0] + 40, a15[1] - 4), dict(gap=6, tip=(184, 322)))),
+    ]
+    last = dict(clo)
+    kw = dict(colors={"D": "hot"}, hot=["D"], under="D", under_w=34)
+    plain = bt_scene(last, **kw)
+    frames.append(bt_scene(last, **kw, note=("highest: D", BT_TOP, BT_ABOVE_D, dict(gap=2))))
+    return frames, plain, clo
 
 
 def closeness_def():
-    frames, _ = closeness_frames()
+    frames, plain, _ = closeness_frames()
+    assert len(frames) == 6
     F.emit_frames("closeness-def", frames, container="col", h=BT_H, box=BT_BOX)
-    F.emit("bowtie-closeness", frames[-1], container="col", h=BT_H, box=BT_BOX)
+    F.emit("bowtie-closeness", plain, container="col", h=BT_H, box=BT_BOX)
 
 
 def ecc_def():
@@ -199,23 +253,23 @@ def ecc_def():
     ecc = S.eccentricity(G)
     assert S.argbest(ecc, min) == (["D"], 2)
     assert [ecc[n] for n in BT_NODES] == [4, 4, 3, 2, 3, 4, 4]
-    closeness, clo = closeness_frames()
-    sumtxt = dict(clo)                                                    # the closeness values, stepping back
-    frames = [closeness[-1]]                                              # = bowtie-closeness
-    muted = {n: "muted" for n in BT_NODES}
-    frames.append(bt_scene(sumtxt, colors=muted))                         # the closeness values step back
-    shown = {}
-    for u in BT_NODES:
-        L = S.dist(G, u)
-        far = min(n for n in sorted(L) if L[n] == ecc[u])                 # the alphabetically first farthest
-        path = tuple(nx.shortest_path(G, u, far))
-        adjacent(G, path)
-        assert len(path) - 1 == ecc[u] == L[far]
-        shown[u] = str(ecc[u])
-        vals = {**{n: sumtxt[n] for n in BT_NODES if n not in shown}, **shown}
-        cols = {n: ("muted" if n not in shown else "ink") for n in BT_NODES}
-        frames.append(bt_scene(vals, colors=cols, brushes=route(BT_POS, path)))
-    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D"))
+    _, plain, _ = closeness_frames()
+    L = S.dist(G, "A")
+    far = min(n for n in sorted(L) if L[n] == ecc["A"])                  # the alphabetically first farthest
+    path = tuple(nx.shortest_path(G, "A", far))
+    adjacent(G, path)
+    assert far == "F" and path == ("A", "C", "D", "E", "F") and len(path) - 1 == ecc["A"] == 4
+    allecc = {n: str(ecc[n]) for n in BT_NODES}
+    d = BT_POS["D"]
+    frames = [
+        plain,                                                            # = bowtie-closeness
+        bt_scene({"A": "4"}, brushes=route(BT_POS, path),
+                 note=(f"A's farthest:{LB}{ecc['A']} steps", (BT_POS["D"][0] + 52, BT_TOP2[1]),
+                       (BT_POS["D"][0] + 52, BT_POS["D"][1] + 11), dict(gap=3, anchor="south"))),
+        bt_scene(allecc, note=(f"every node's{LB}worst case", BT_TOP2, BT_ABOVE_D, dict(gap=2, anchor="south"))),
+        bt_scene(allecc, colors={"D": "hot"}, hot=["D"], under="D",
+                 note=("smallest: D", BT_TOP, BT_ABOVE_D, dict(gap=2))),
+    ]
     F.emit_frames("ecc-def", frames, container="col", h=BT_H, box=BT_BOX)
 
 
@@ -224,33 +278,41 @@ def btw_def():
     btw = S.betweenness(G)
     assert S.argbest(btw) == (["D"], 9) and btw["C"] == btw["E"] == 8
     pairs = []
-    for s, t in itertools.combinations(BT_NODES, 2):
-        ps = list(nx.all_shortest_paths(G, s, t))
+    for s_, t_ in itertools.combinations(BT_NODES, 2):
+        ps = list(nx.all_shortest_paths(G, s_, t_))
         assert len(ps) == 1                                     # every shortest path is unique here
         if len(ps[0]) > 2:
-            pairs.append((s, t, tuple(ps[0])))
+            pairs.append((s_, t_, tuple(ps[0])))
     count = {n: 0 for n in G}
-    for s, t, p in pairs:
+    for s_, t_, p in pairs:
         for i in p[1:-1]:
             count[i] += 1
     assert {n: count[n] for n in G} == {n: int(btw[n]) for n in G}
     assert len(pairs) == 13 and count["D"] == 9
-    frames = [bt_scene()]                                       # the bare bowtie
-    run = {n: 0 for n in G}
-    for src in BT_NODES:                                        # one frame per source: all its letters at once
-        mine = [(t, p) for s_, t, p in pairs if s_ == src]
-        if not mine:
-            continue
-        for t, p in mine:
-            for i in p[1:-1]:
-                run[i] += 1
-        brushes = "".join(route(BT_POS, p) for t, p in mine)
-        frames.append(bt_scene({n: str(c) for n, c in run.items() if c}, brushes=brushes))
-    assert run == count
-    assert len(frames) == 5
+    fromA = [(t_, p) for s_, t_, p in pairs if s_ == "A"]
+    assert len(fromA) == 4
+    cA = {n: 0 for n in G}
+    for _t, p in fromA:
+        for i in p[1:-1]:
+            cA[i] += 1
+    af = ("A", "C", "D", "E", "F")
+    assert af in [p for _t, p in fromA]
+    assert (cA["C"], cA["D"], cA["E"]) == (4, 3, 2)
     allc = {n: str(c) for n, c in count.items()}
-    frames.append(bt_scene(allc))                               # the ends carry nothing: 0
-    frames.append(bt_scene(allc, colors={"D": "hot"}, hot=["D"], under="D"))
+    assert [allc[n] for n in "CDE"] == ["8", "9", "8"] and allc["A"] == allc["G"] == "0"
+    one = {n: "1" for n in "CDE"}
+    frames = [
+        bt_scene(),                                             # the bare bowtie
+        bt_scene(one, brushes=route(BT_POS, af),
+                 note=("A to F passes C, D, E", BT_TOP, (BT_POS["C"][0] + 54, BT_POS["C"][1] + 9),
+                       dict(gap=2, tip=(BT_POS["C"][0] + 54, 304)))),
+        bt_scene({n: str(c) for n, c in cA.items() if c},
+                 brushes="".join(route(BT_POS, p) for _t, p in fromA),
+                 note=("all of A's letters", BT_TOP, BT_ABOVE_D, dict(gap=2))),
+        bt_scene(allc, note=("every pair", BT_TOP, BT_ABOVE_D, dict(gap=2))),
+        bt_scene(allc, colors={"D": "hot"}, hot=["D"], under="D",
+                 note=("D carries the most", BT_TOP, BT_ABOVE_D, dict(gap=2))),
+    ]
     F.emit_frames("btw-def", frames, container="col", h=BT_H, box=BT_BOX)
 
 
