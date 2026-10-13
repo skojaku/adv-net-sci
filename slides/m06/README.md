@@ -7,7 +7,7 @@ Lecturer decisions: `plan.md`. Slide list and figure groups: `review/DECK_SPEC.m
 
 ## Files
 
-    m06-centrality.md     the deck (82 slides: day 1 is 1-41, day 2 is 42-82)
+    m06-centrality.md     the deck (130 slides: day 1 is 1-61, day 2 is 62-130)
     network-science.css   the theme (this module's copy; MesloLGS NF body, brush underlines)
     scrub.js              steps a build's frames in the presentation (see below)
     figures/              generators; the PNGs and frames they write are not committed

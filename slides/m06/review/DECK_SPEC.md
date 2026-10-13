@@ -4,6 +4,15 @@
 > slide per step with a grey callout saying what changed; see `FIXES_R4.md`). The Roman
 > map-to-network and the eigendecomposition sum are static. The deck has 122 slides: day 1 is
 > 1–62, day 2 is 63–122. The slide numbers in the table are the v3 numbers (before the split).
+>
+> **Round 5 (2026-10-13):** 130 slides, day 1 is 1–61, day 2 is 62–130. "A question to sleep
+> on" is gone. Degree sits in both rows of the grid. The sigma example is a hexagon (two
+> disjoint routes, C carries 1/2). eigen-inherit ends on a second worked case at C. The
+> matrix figures have three terms with eigenvectors coloured by index, and A² is a product of
+> two bracketed sums (4 steps). Power iteration's stage plots one line per node, followed by
+> "Start anywhere" (power-starts, 2 steps). The PageRank answer is a 5-step flow build
+> (amounts, not shares), and every formula reads A_ij = i → j. katz-why has an α gauge and
+> the plot of 1/(1 − αx) (4 steps).
 
 v2 (72 slides) was reviewed by the lecturer. v3 answers that review:
 

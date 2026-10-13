@@ -21,7 +21,7 @@ math: katex
 <script>window.animStepOnly = true;</script>
 
 <!--
-Day 1 (10/20): slides 1 to 62, measured by shortest paths. Day 2 (10/22): slides 63 to 122, measured by walks. About a third are build steps, a few seconds each.
+Day 1 (10/20): slides 1 to 61, measured by shortest paths. Day 2 (10/22): slides 62 to 130, measured by walks. About a third are build steps, a few seconds each.
 The pen-and-paper sheet has already been done, so the room has met degree, average distance, "indispensable" and passing scores around. Name things; do not re-derive what is in their hands.
 A build is a run of slides with the same title: explain the bullets on the first, then step; the grey note on each figure says what changed.
 -->
@@ -1821,7 +1821,7 @@ $A$ is a sum of rank-1 pieces, one per eigenvalue.
 <div class="fig">
 
 ![w:1080](figures/decomp-sum.png)
-<figcaption>circle: eigenvalue · tall bar: eigenvector · wide bar: its transpose</figcaption>
+<figcaption>circle: eigenvalue · tall bar: eigenvector · wide bar: its transpose · colour: which eigenvector</figcaption>
 
 </div>
 
@@ -1835,7 +1835,7 @@ rank 1: every row of u_k u_kᵀ is a multiple of u_kᵀ. lambda_1 = lambda_max i
 
 <hr>
 
-Different eigenvectors multiply to 0.
+Two colours multiply to 0; one colour with itself, to 1.
 
 <div class="fig">
 
@@ -1853,7 +1853,7 @@ Each eigenvector scaled to length 1: two different ones multiply to 0, one with 
 
 <hr>
 
-$A^2$: every eigenvalue squared, the same vectors.
+$A^2 = A\,A$: the sum times itself.
 
 <div class="fig">
 
@@ -1862,8 +1862,8 @@ $A^2$: every eigenvalue squared, the same vectors.
 </div>
 
 <!--
-Explain the bullets on this slide; the next 1 slides step the figure, one change each (the grey note says which).
-A squared = sum of lambda_k squared u_k u_kᵀ. Every cross term contains a product of two different eigenvectors, which is 0.
+Explain the line on this slide; the next 3 slides step the figure, one change each (the grey note says which).
+Multiply the sum by itself. Every product of a term on the left and a term on the right contains u_kᵀ u_l in the middle: the wide bar of the left term against the tall bar of the right term. Colour says which eigenvector: u_1 blue, u_2 gold, u_7 grey. Two colours meeting give 0, so every cross term vanishes; one colour meeting itself gives 1. What is left is the sum of lambda_k squared u_k u_kᵀ.
 -->
 
 ---
@@ -1872,7 +1872,7 @@ A squared = sum of lambda_k squared u_k u_kᵀ. Every cross term contains a prod
 
 <hr>
 
-$A^2$: every eigenvalue squared, the same vectors.
+$A^2 = A\,A$: the sum times itself.
 
 <div class="fig">
 
@@ -1881,7 +1881,43 @@ $A^2$: every eigenvalue squared, the same vectors.
 </div>
 
 <!--
-Step 1 of 1: the result: each eigenvalue squared.
+Step 1 of 3: u1ᵀu2 = 0: different colours vanish.
+-->
+
+---
+
+## Square it
+
+<hr>
+
+$A^2 = A\,A$: the sum times itself.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-square/02.png)
+
+</div>
+
+<!--
+Step 2 of 3: u1ᵀu1 = 1: same colour.
+-->
+
+---
+
+## Square it
+
+<hr>
+
+$A^2 = A\,A$: the sum times itself.
+
+<div class="fig">
+
+![w:1080](figures/frames/decomp-square/03.png)
+
+</div>
+
+<!--
+Step 3 of 3: each eigenvalue squared, same colours (the same vectors).
 -->
 
 ---
@@ -1985,9 +2021,61 @@ Step 3 of 3: t = 16: only the first is left (2%).
 <script src="../../lecture-note/assets/anim.js"></script>
 
 <!--
-Press the ▶ button once per step. Each press applies x <- A x once and divides by the largest entry; the disc shade and the printed number are the entry.
+Press the ▶ button once per step. Each press applies x <- A x once and divides by the largest entry. On the left the disc shade and the printed number are the entry. On the right every node has one line: x axis = the iteration t, y axis = that node's score. Each press adds one point to every line, and the letter at the right end names the line. The axis jumps from t = 8 to t = 30 (the two slanted strokes on the axis); the dotted piece joins them.
 
-Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F 3, G 3, B 2, E 2, C 1), divided by 4, so A is 1.00 and C is 0.25. So degree is the first guess, and each further step looks one step farther. Step 2: B has caught up with D (both 0.64) and F, G pull ahead of both (0.82). Step 3: G passes F; B and D are still exactly tied (0.625). Step 4: B passes D (0.63 against 0.59) and stays ahead; the order is now fixed. B has two neighbours and D has three, but B's two neighbours (A and G) are the strongest nodes. D's third neighbour is the leaf C. From step 4 the order A G F B D E C no longer changes; steps 5 to 8 only move the second decimal. Step 30 (the last dot): nothing moves; these seven numbers are the eigenvector of the largest eigenvalue, 2.884, with its largest entry set to 1.
+Step 0: every node holds 1, so all seven lines start at the same point. Step 1: every node now holds its degree (A 4, D 3, F 3, G 3, B 2, E 2, C 1), divided by 4, so A stays at 1.00 and C drops to 0.25. The lines fan out: degree is the first guess, and each further step looks one step farther. Step 2 (B orange, D blue): B's line rises and D's falls until they meet (both 0.64), and F's and G's lines pull above both (0.82). Step 3: G's line goes above F's; B's and D's lines are still exactly tied (0.625). Step 4: B's line crosses D's (0.63 against 0.59) and stays above; no two lines cross after this. B has two neighbours and D has three, but B's two neighbours (A and G) are the strongest nodes. D's third neighbour is the leaf C. Steps 5 to 8: the lines are nearly flat and only the second decimal moves; the order A G F B D E C does not change. Step 30 (the last dot): nothing moves; these seven heights are the eigenvector of the largest eigenvalue, 2.884, with its largest entry set to 1. Ask: what do you expect if we start from random numbers instead of all ones? The next slide answers.
+-->
+
+---
+
+## Start anywhere
+
+<hr>
+
+<div class="cols">
+<div>
+
+* Random starts: every run ends on the same scores.
+* One run ends all negative: −c is an eigenvector too, with the same λ.
+* All negative? Flip the sign.
+
+</div>
+<div class="fig tall">
+
+![w:537](figures/frames/power-starts/00.png)
+
+</div>
+</div>
+
+<!--
+Explain the bullets on this slide; the next 1 slides step the figure, one change each (the grey note says which).
+Same lines as the stage, but the start is no longer all ones: x_0 is seven random numbers between -1 and 1, and every step is x <- A x divided by the entry with the largest absolute value. The three panels end on exactly the same heights: A 1.00, G 0.85, F 0.81, B 0.64, D 0.58, E 0.48, C 0.20. The start only changes how the first few steps wiggle. A start that is almost orthogonal to u_1 would take longer, which is why the seeds here have a clear component along u_1.
+-->
+
+---
+
+## Start anywhere
+
+<hr>
+
+<div class="cols">
+<div>
+
+- Random starts: every run ends on the same scores.
+- One run ends all negative: −c is an eigenvector too, with the same λ.
+- All negative? Flip the sign.
+
+</div>
+<div class="fig tall">
+
+![w:537](figures/frames/power-starts/01.png)
+
+</div>
+</div>
+
+<!--
+Step 1 of 1: the fourth start ends on the same seven heights with every sign flipped (A at -1.00, C at -0.20).
+Why: x_0 = c_1 u_1 + c_2 u_2 + ..., and the part along u_1 wins. If c_1 (the dot product of x_0 with u_1) is positive the run ends on +c, if it is negative it ends on -c. Both are eigenvectors with the same eigenvalue, because A(-c) = -(A c) = -(lambda c) = lambda (-c). Flipping the sign of an eigenvector never changes its eigenvalue. Eigenvector centrality needs positive scores (Perron-Frobenius), so if the run ends all negative, multiply by -1. Ask the room: which sign of x_0 gives the negative run? (Its dot product with u_1 is negative.)
 -->
 
 ---
@@ -2380,8 +2468,8 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 </div>
 
 <!--
-Explain the bullets on this slide; the next 2 slides step the figure, one change each (the grey note says which).
-The 7-node network of the eigenvector slides (lambda_max = 2.884). Circle: the weight of term k, 1/(1 - alpha lambda_k). Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+Explain the formula on this slide; the next 3 slides step the figure, one change each (the grey note says which).
+The 7-node network of the eigenvector slides (lambda_max = 2.884). Left: the dial for alpha, from 0 to past 1/lambda_max (the red part is past it). Right: the function 1/(1 - alpha x); the dots are its values at the seven eigenvalues of A, and those values are the weights of the terms below (the circles). The function has a wall at x = 1/alpha, where it goes to infinity, and on the far side of the wall it is negative. Raising alpha moves the wall left, towards lambda_1. At alpha = 0.5/lambda_max the weights are comparable (2, 1.30, ..., 0.72).
 -->
 
 ---
@@ -2403,7 +2491,7 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 </div>
 
 <!--
-Step 1 of 2: alpha near 1/lambda_max: the first term dominates.
+Step 1 of 3: lambda_1 nears the wall 1/alpha: its weight is 5.
 -->
 
 ---
@@ -2425,7 +2513,29 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 </div>
 
 <!--
-Step 2 of 2: past 1/lambda_max: the first weight is negative.
+Step 2 of 3: 1/alpha nears lambda_1: its weight blows up (20 at 0.95/lambda_max, 100 at 0.99, infinite at 1/lambda_max). The first term swamps the rest: Katz becomes eigenvector centrality.
+-->
+
+---
+
+## Why 1/λ<sub>max</sub>?
+
+<hr>
+
+<div class="formula">
+
+$$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \mathbf{u}_k^\top$$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/frames/katz-why/03.png)
+
+</div>
+
+<!--
+Step 3 of 3: past it, lambda_1 sits on the far side of the wall: its weight is negative (-10 at 1.1/lambda_max). The series no longer converges and the scores mean nothing; the character of the formula has changed completely.
 -->
 
 ---
@@ -2565,7 +2675,7 @@ A road runs both ways. A link does not.
 <div class="cols">
 <div>
 
-* <strong class="cool">Authority</strong> $a_i = \sum_j A_{ji}\, h_j$: pointed to by good hubs.
+* <strong class="cool">Authority</strong> $a_j = \sum_i A_{ij}\, h_i$: pointed to by good hubs.
 * **Hub** $h_i = \sum_j A_{ij}\, a_j$: points to good authorities.
 * On a road map, HITS is eigenvector centrality.
 
@@ -2611,7 +2721,7 @@ Landau (1895) ranked chess players by the scores of the players they beat. Seele
 <div>
 
 * A page splits its score among its links out.
-* $c_i = \sum_j A_{ji}\, \dfrac{c_j}{d^{\text{out}}_j}$
+* $c_j = \sum_i A_{ij}\, \dfrac{c_i}{d^{\text{out}}_i}$
 * C: three links in. E: one. Which ranks higher?
 
 </div>
@@ -2629,7 +2739,32 @@ Landau (1895) ranked chess players by the scores of the players they beat. Seele
 </div>
 
 <!--
-d_out j: the number of links out of j. A gives a third to each of B, C, D.
+A_ij = 1 means a link from i to j; d_out i is the number of links out of i. A gives a third to each of B, C, D.
+-->
+
+---
+
+## Divide the vote
+
+<hr>
+
+<div class="cols">
+<div>
+
+* A, C and E tie at 3/11.
+* A link carries its sender's score ÷ its links out.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-split-answer/00.png)
+
+</div>
+</div>
+
+<!--
+Explain the bullets on this slide; the next 4 slides step the figure, one change each (the grey note says which).
+A, C and E: 3/11 each. B and D: 1/11. Why C is not 7/3: 1 + 1 + 1/3 adds the shares, which are fractions of the sender's score. The amount a link carries is the sender's score times its share, and at the answer the amounts coming into a page add up to that page's own score.
 -->
 
 ---
@@ -2642,18 +2777,90 @@ d_out j: the number of links out of j. A gives a third to each of B, C, D.
 <div>
 
 - A, C and E tie at 3/11.
-- E's one link comes from C, which passes on everything.
+- A link carries its sender's score ÷ its links out.
 
 </div>
 <div class="fig">
 
-![w:537](figures/pr-split-answer.png)
+![w:537](figures/frames/pr-split-answer/01.png)
 
 </div>
 </div>
 
 <!--
-A, C and E: 3/11 each. B and D: 1/11.
+Step 1 of 4: 3/11 ÷ 3 = 1/11 each. A's 3/11 is split three ways, so each of its links carries 1/11. The 1/3 that was on the link is a fraction of A's score, not an amount.
+-->
+
+---
+
+## Divide the vote
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A, C and E tie at 3/11.
+- A link carries its sender's score ÷ its links out.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-split-answer/02.png)
+
+</div>
+</div>
+
+<!--
+Step 2 of 4: B and D pass on all of 1/11. B and D each have one link out, so each passes on all of its 1/11 to C.
+-->
+
+---
+
+## Divide the vote
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A, C and E tie at 3/11.
+- A link carries its sender's score ÷ its links out.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-split-answer/03.png)
+
+</div>
+</div>
+
+<!--
+Step 3 of 4: 1/11 + 1/11 + 1/11 = 3/11. C receives 1/11 from A, 1/11 from B and 1/11 from D: 3/11, exactly C's own score. Adding the fractions instead (1/3 + 1 + 1 = 7/3) gives one step of the iteration that starts from everyone holding 1; it is not the answer.
+-->
+
+---
+
+## Divide the vote
+
+<hr>
+
+<div class="cols">
+<div>
+
+- A, C and E tie at 3/11.
+- A link carries its sender's score ÷ its links out.
+
+</div>
+<div class="fig">
+
+![w:537](figures/frames/pr-split-answer/04.png)
+
+</div>
+</div>
+
+<!--
+Step 4 of 4: in = out at every page. C passes all 3/11 to E and E passes all 3/11 to A. Every page receives exactly what it holds, so nothing changes any more: that balance is the answer.
 -->
 
 ---
@@ -2764,7 +2971,7 @@ Step 3 of 3: nothing left: total 0.00.
 
 * With probability $r = 0.15$, jump to a random page.
 * A dead end links to every page.
-* $c_i = (1-r) \sum_j A_{ji}\, \dfrac{c_j}{d^{\text{out}}_j} + \dfrac{r}{N}$
+* $c_j = (1-r) \sum_i A_{ij}\, \dfrac{c_i}{d^{\text{out}}_i} + \dfrac{r}{N}$
 * This is **PageRank**.
 
 </div>

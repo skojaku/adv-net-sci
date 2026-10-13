@@ -719,8 +719,6 @@ section #power-step .anim-grid-2 { grid-template-columns: 440px minmax(0, 1fr); 
 section #power-step .anim-step { font-size: 34px; }
 section #power-step .anim-step .anim-num { display: none; }
 section #power-step .anim-note { font-size: 30px; min-height: 1.3em; }
-section #power-step .anim-caption { font-size: 24px; margin-top: 0; }
-section #power-step .anim-panel { padding: 12px 18px 14px; }
 section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.5s ease; filter: url(#m06-pencil); }
 section #power-step .ps-name {
   font-family: var(--_hand); font-size: 28px; font-weight: 700; fill: var(--_ink);
@@ -731,10 +729,20 @@ section #power-step .ps-ring {
   fill: none; stroke: var(--_amber); stroke-width: 2.6; stroke-dasharray: 5 4;
   opacity: 0; transition: opacity 0.4s ease;
 }
-section #power-step .ps-rank {
-  font-family: var(--_hand); font-size: 30px; font-weight: 700; line-height: 1.2;
-  letter-spacing: 0; margin: 2px 0 8px; white-space: nowrap;
+/* the line chart on the right: one line per node, x = iteration t, y = score */
+section #power-step .ps-chart { max-width: 100%; }
+section #power-step .ps-grid { stroke: var(--_ink-faint); stroke-width: 1.6; }
+section #power-step .ps-axis { stroke: var(--_ink-soft); stroke-width: 2; stroke-linecap: round; }
+section #power-step .ps-tick, section #power-step .ps-cap {
+  font-family: var(--_hand); font-size: 22px; fill: var(--_ink-soft);
 }
+section #power-step .ps-line {
+  fill: none; stroke: var(--_ink); stroke-width: 3.2; opacity: 0.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+section #power-step .ps-gap { stroke-dasharray: 1 8; }
+section #power-step .ps-dot { fill: var(--_ink); opacity: 0.8; }
+section #power-step .ps-end { font-family: var(--_hand); font-size: 24px; font-weight: 700; fill: var(--_ink); }
 
 /* Turn the dial (m06): the scenes are lecture-note/assets/anim/katz-dial.js.
    The knob wrapper is a block in a block here, but its auto side margins are

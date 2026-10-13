@@ -68,10 +68,10 @@ def dec(x, d=3):
 # --------------------------------------------------------------------------- geometry
 # The five PageRank pages.  A sends to B, C, D; B and D send to C; C sends to E; E
 # sends back to A by a loop under the whole drawing.  Planar, no arrow crosses another.
-PR_XY = {"A": (72.0, 205.0), "B": (212.0, 262.0), "D": (212.0, 148.0),
-         "C": (352.0, 205.0), "E": (480.0, 205.0)}
+PR_XY = {"A": (60.0, 205.0), "B": (200.0, 267.0), "D": (200.0, 143.0),
+         "C": (339.0, 205.0), "E": (484.0, 205.0)}
 PR_LOOP_Y = 26.0                                   # the E -> A return runs along this line
-PR_LOOP_X = 28.0                                   # ... and up this one, into A's west side
+PR_LOOP_X = 20.0                                   # ... and up this one, into A's west side
 LOOP_DY = 9.0                                      # the return enters A this far below centre
 LOOP_END_X = lambda ax: ax - (HALF + GAP) * 0.9    # a point on A's west border, LOOP_DY below centre
 CROSS_AT = (480.0, 110.0)                          # the hot cross sits on E's only link out, just under E
@@ -148,9 +148,9 @@ def hits_seg(b, p, q, pad=3):
     return F.box_hits_segment(b, p, q, pad=pad)
 
 
-def chip(x, y, s):
+def chip(x, y, s, color="ink"):
     """A share on an arrow: Meslo on a paper-white chip that interrupts the line."""
-    return (f"\\node[font=\\fontsize{{{F.FONT}}}{{{int(F.FONT * 1.15)}}}\\selectfont,text=ink,"
+    return (f"\\node[font=\\fontsize{{{F.FONT}}}{{{int(F.FONT * 1.15)}}}\\selectfont,text={color},"
             f"fill=white,inner sep={CHIP_PAD}bp] at ({x:.1f},{y:.1f}) {{{s}}};\n")
 
 
@@ -207,7 +207,7 @@ def assert_planar(xy, edges, what):
     assert PR_LOOP_Y + F.EDGE_W < min(y for _, y in xy.values()) - HALF - 2, f"{what}: return line hits a page"
 
 
-SPLIT_AT = dict(SCORE_AT, A=(-28, 44))     # pr-split-answer: A's share above-left of A, clear of every weight
+SPLIT_AT = dict(SCORE_AT, A=(-16, 44), B=(0, 50), C=(26, 54))     # pr-split-answer: A's share above-left of A, clear of every weight
 
 
 def tie_fill(winners):
@@ -250,9 +250,34 @@ def fig_hits_graph():
 
 
 # --------------------------------------------------------------------------- shares
-def share_chips(xy, edges, t_default=0.5, t_over=None):
-    """The vote each arrow carries, in a white chip ON the arrow (1/3 from A, 1 from the rest)."""
-    t_over = t_over or {}
+def link_amounts():
+    """What each link carries at the answer: its sender's score times its share.
+
+    A's 3/11 goes out on three links (1/11 each); B and D hand all of 1/11 to C; C hands all
+    of 3/11 to E; E hands all of 3/11 back to A.  Every page receives exactly what it holds.
+    """
+    outdeg = {}
+    for a, _ in S.PR_EDGES:
+        outdeg[a] = outdeg.get(a, 0) + 1
+    amt = {(a, b): FRAC[a] / outdeg[a] for a, b in S.PR_EDGES}
+    for n in S.PR_ORDER:
+        got = sum(v for (a, b), v in amt.items() if b == n)
+        sent = sum(v for (a, b), v in amt.items() if a == n)
+        assert got == FRAC[n] == sent, f"{n}: receives {got}, holds {FRAC[n]}, sends {sent}"
+    assert [amt[("A", x)] for x in "BCD"] == [Fraction(1, 11)] * 3
+    assert amt[("B", "C")] == amt[("D", "C")] == Fraction(1, 11)
+    assert amt[("C", "E")] == amt[("E", "A")] == Fraction(3, 11)
+    assert amt[("B", "C")] + amt[("D", "C")] + amt[("A", "C")] == Fraction(3, 11)
+    return amt
+
+
+AMOUNT = link_amounts()
+
+
+def share_chips(xy, edges, amounts=()):
+    """The label ON each arrow, in a white chip.  By default it is the SHARE of the sender's
+    score the link carries (1/3 from A, 1 from the rest), in ink.  A link listed in `amounts`
+    carries the AMOUNT instead (score x share, e.g. 1/11), in cool: how much, not what fraction."""
     out, boxes = "", []
     outdeg = {}
     for a, _ in edges:
@@ -263,33 +288,37 @@ def share_chips(xy, edges, t_default=0.5, t_over=None):
             assert s == "1/3"
         else:
             assert s == "1", f"{a} sends {outdeg[a]} links"
+        color = "ink"
+        if (a, b) in amounts:
+            s, color = frac(AMOUNT[(a, b)]), "cool"
         if (a, b) == ("E", "A"):
             ex, _ = xy["E"]
             cx, cy = (ex + PR_LOOP_X) / 2 + 40, PR_LOOP_Y
         else:
-            t = t_over.get((a, b), t_default)
+            t = 0.5
             (x0, y0), (x1, y1) = xy[a], xy[b]
             cx, cy = x0 + t * (x1 - x0), y0 + t * (y1 - y0)
-        out += chip(cx, cy, s)
+        out += chip(cx, cy, s, color)
         boxes.append(tbox(cx, cy, s))
     return out, boxes
 
 
-def split_body(answer=False):
-    """pr-split (links and weights) or pr-split-answer (plus the shares); returns the TikZ body."""
+def split_body(answer=False, amounts=()):
+    """pr-split (links and weights) or pr-split-answer (plus the scores); returns the TikZ body.
+    `amounts`: the links already relabelled with the amount they carry (answer only)."""
     name = "pr-split-answer" if answer else "pr-split"
     xy = PR_XY
     assert_same_positions(name, xy)
     edges = S.PR_EDGES
     assert_planar(xy, edges, name)
+    assert answer or not amounts
     body = anchors(xy) + pr_links(edges)
-    chips, cboxes = share_chips(xy, edges, t_default=0.5,
-                                t_over={("A", "B"): 0.45, ("A", "D"): 0.45, ("A", "C"): 0.5})
+    chips, cboxes = share_chips(xy, edges, amounts)
     for i, cb in enumerate(cboxes):
         for m in xy:
-            assert not F.boxes_overlap(cb, box_of(xy, m)), f"{name}: a share chip sits on page {m}"
+            assert not F.boxes_overlap(cb, box_of(xy, m)), f"{name}: a link label sits on page {m}"
         for cb2 in cboxes[i + 1:]:
-            assert not F.boxes_overlap(cb, cb2), f"{name}: two share chips overlap"
+            assert not F.boxes_overlap(cb, cb2), f"{name}: two link labels overlap"
     body += chips
     if answer:
         tie = [n for n in xy if FRAC[n] == Fraction(3, 11)]
@@ -300,15 +329,61 @@ def split_body(answer=False):
         body += sl
         for n, b in lb.items():
             for cb in cboxes:
-                assert not F.boxes_overlap(b, cb), f"{name}: score {n} overlaps a share chip"
+                assert not F.boxes_overlap(b, cb), f"{name}: score {n} overlaps a link label"
     else:
         body += pages(xy)
     return body
 
 
-def fig_pr_split(answer=False):
-    name = "pr-split-answer" if answer else "pr-split"
-    F.emit(name, split_body(answer), container="col", h=CANVAS_H, box=PR_BOX)
+def fig_pr_split():
+    F.emit("pr-split", split_body(False), container="col", h=CANVAS_H, box=PR_BOX)
+
+
+A_LINKS = [("A", "B"), ("A", "C"), ("A", "D")]
+BD_LINKS = [("B", "C"), ("D", "C")]
+CE_LINKS = [("C", "E"), ("E", "A")]
+AFTER_ANSWER = A_LINKS + BD_LINKS + CE_LINKS          # every link relabelled: the last frame
+
+
+def fig_pr_split_answer():
+    """The answer as a build on the question's canvas and crop.  00: the five scores, links still
+    labelled with the SHARE of the sender's score (ink).  Each later frame relabels some links
+    with the AMOUNT they carry, score x share (cool), and a grey note says which.  The last frame
+    is the balance: every page receives exactly what it holds, which is what 'the answer' means
+    (7/3 for C is one step of the iteration from 'everyone holds 1', not the answer)."""
+    name = "pr-split-answer"
+    xy = PR_XY
+    edges = S.PR_EDGES
+    segs = straight_segments(edges)
+    shown = [[], A_LINKS, A_LINKS + BD_LINKS, A_LINKS + BD_LINKS, AFTER_ANSWER]
+    # the numbers every note quotes, computed here and never typed
+    a_each, bd, ce = AMOUNT[("A", "B")], AMOUNT[("B", "C")], AMOUNT[("C", "E")]
+    c_in = [AMOUNT[(a, "C")] for a in "ABD"]
+    assert a_each == FRAC["A"] / 3 and bd == FRAC["B"] == FRAC["D"] and ce == FRAC["C"]
+    assert sum(c_in) == FRAC["C"] == Fraction(3, 11)
+    notes = [
+        None,
+        (f"{frac(FRAC['A'])} \u00f7 3 = {frac(a_each)} each", 14, "west", 130, (130.0, 252.0)),
+        (f"B and D pass on all of {frac(bd)}", 14, "west", 270, (270.0, 252.0)),
+        (" + ".join(frac(v) for v in c_in) + f" = {frac(sum(c_in))}", 38, "west", 365, (365.0, 275.0)),
+        ("in = out at every page", 14, "west", 412, (412.0, 222.0)),
+    ]
+    frames, texts = [], []
+    for k, (am, note) in enumerate(zip(shown, notes)):
+        body = split_body(True, amounts=am)
+        if note:
+            text, x, anchor, tx, target = note
+            _, cboxes = share_chips(xy, edges, am)
+            _, lb = score_labels(xy, FRAC, lambda n, v: frac(v), winners=["A", "C", "E"], at=SPLIT_AT)
+            co, cb = callout(text, (x, BAND_Y), target, anchor=anchor, gap=3, tip=(tx, BAND_Y - 18),
+                             blockers=cboxes + list(lb.values()), edges=segs)
+            body += co
+            texts.append(text.replace("\\\\", " "))
+        frames.append(body)
+    F.emit_frames(name, frames, container="col", h=CANVAS_H, box=PR_BOX)
+    d = F.FRAMES / name
+    if d.exists():
+        (d / "steps.txt").write_text("\n".join(texts) + "\n")
 
 
 # --------------------------------------------------------------------------- teleport / ppr
@@ -359,7 +434,7 @@ EB_C1, EB_C2 = (418, 226), (380, 372)               # control points of the E ->
 
 def eb_point(t):
     """A point on the E -> B curve (the callout points at it)."""
-    p0, p3 = (466.0, 216.0), (236.0, 266.0)
+    p0, p3 = (470.0, 216.0), (224.0, 270.0)
     p1, p2 = EB_C1, EB_C2
     return tuple((1 - t) ** 3 * p0[i] + 3 * (1 - t) ** 2 * t * p1[i] + 3 * (1 - t) * t ** 2 * p2[i]
                  + t ** 3 * p3[i] for i in (0, 1))
@@ -484,7 +559,7 @@ def fig_pr_leak():
         body += F.text(*tot_xy, f"total {total:.2f}", color="hot")
         return body, total
 
-    frames = [split_body(True)]
+    frames = [split_body(True, amounts=AFTER_ANSWER)]     # the answer build's last frame, no note
     # 01 the cut
     body = base + pages(xy, fills=answer_fills) + dead
     co, cb1 = callout("E's only link\\\\out is gone", (452, 78), CROSS_AT, anchor="east", gap=9,
@@ -500,7 +575,7 @@ def fig_pr_leak():
     # 03 nothing left
     body, t3 = drain(4)
     assert round(t3, 2) == 0.00
-    co, cb3 = callout("nothing left", (300, 106), (300, tot_xy[1] + 6), anchor="center", gap=6,
+    co, cb3 = callout("nothing left", (340, 106), (300, tot_xy[1] + 6), anchor="center", gap=6,
                       blockers=[dead_box, tot_box], edges=segs)
     frames.append(body + co)
     for lb, nm in ((dead_box, "dead end"), (tot_box, "total")):
@@ -515,8 +590,8 @@ def fig_pr_leak():
 
 FIGURES = [
     ("hits-graph", fig_hits_graph),
-    ("pr-split", lambda: fig_pr_split(False)),
-    ("pr-split-answer", lambda: fig_pr_split(True)),
+    ("pr-split", fig_pr_split),
+    ("pr-split-answer", fig_pr_split_answer),
     ("pr-leak", fig_pr_leak),
     ("pr-teleport", fig_pr_teleport),
     ("ppr", fig_ppr),

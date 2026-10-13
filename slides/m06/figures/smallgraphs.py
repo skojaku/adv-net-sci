@@ -318,7 +318,7 @@ def hits(edges, order):
 
 
 def pagerank(edges, order, r=0.15, tele=None, steps=2000, dangling="uniform"):
-    """c_i = (1-r) sum_j A_ji c_j / d_out_j + r t_i. A dead end hands its score to t ('uniform')
+    """c_j = (1-r) sum_i A_ij c_i / d_out_i + r t_j. A dead end hands its score to t ('uniform')
     or to nobody ('leak', the score drains away)."""
     n = len(order)
     A = adj_directed(edges, order)

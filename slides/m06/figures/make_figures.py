@@ -19,6 +19,7 @@ the deck, so the parts could be authored in parallel:
     figs_defs.py     definition animations, the two ways to count, the classification grid
     figs_quiz.py     the one-graph questions and their answers, and the CA group
     figs_eigen.py    eigenvectors, localization, Katz
+    figs_power.py    power iteration from random starts
     figs_decomp.py   the eigendecomposition in circles and bars
     figs_dir.py      HITS and PageRank
 
@@ -36,6 +37,7 @@ import figs_dir
 import figs_eigen
 import figs_intro
 import figs_ny
+import figs_power
 import figs_quiz
 import figs_rome
 import figs_small
@@ -46,7 +48,7 @@ from figlib import run
 KEPT_V1 = {"roma-degree", "sigma-answer", "genealogy"}
 
 FIGURES = (figs_ui.FIGURES + figs_intro.FIGURES + figs_ny.FIGURES + figs_defs.FIGURES + figs_quiz.FIGURES
-           + figs_eigen.FIGURES + figs_decomp.FIGURES + figs_dir.FIGURES
+           + figs_eigen.FIGURES + figs_power.FIGURES + figs_decomp.FIGURES + figs_dir.FIGURES
            + [f for f in figs_rome.FIGURES + figs_small.FIGURES + figs_web.FIGURES
               if f[0] in KEPT_V1])
 
