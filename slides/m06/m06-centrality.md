@@ -815,7 +815,7 @@ Both bullets, then step the build. D carries 9: every letter between the left tr
 <div>
 
 * $b_i = \sum_{s<t} \dfrac{\sigma_{st}(i)}{\sigma_{st}}$
-* $\sigma_{st}$: shortest paths from $s$ to $t$; $\sigma_{st}(i)$: those through $i$.
+* $\sigma_{st}$: shortest paths from $s$ to $t$; $\sigma_{st}(i)$: those through $i$
 * Two shortest paths: each carries half.
 
 </div>
@@ -1081,7 +1081,7 @@ It is circular: a score defined by scores. The constant lambda keeps the scores 
 
 Blue: positive, orange: negative. Which is the centrality?
 
-<div class="fig">
+<div class="fig tall">
 
 ![w:1080](figures/eig-all-q.png)
 
@@ -1101,7 +1101,7 @@ Blue: positive, orange: negative. Which is the centrality?
 
 **Perron–Frobenius**: only the one for $\lambda_{\max}$ is all positive.
 
-<div class="fig">
+<div class="fig tall">
 
 ![w:1080](figures/eig-all.png)
 
@@ -1483,7 +1483,7 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 <div>
 
 * $(I-\alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$
-* $A^k$ counts walks of length $k$.
+* $A^k$ counts the walks of length $k$
 * Katz counts walks, discounted by length.
 
 </div>
