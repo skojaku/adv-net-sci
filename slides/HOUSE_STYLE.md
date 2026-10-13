@@ -107,6 +107,23 @@ information rather than delivering it at once.
     as "closeness = 10".
   - Show the sums as a step, then convert to (N−1)/sum. The answer is the highest value.
   - Say "Highest closeness wins: the smallest sum of distances."
+- **A number a reader can add must be an amount.**
+  - m06 mistake: PageRank's links were labelled with the share of the sender's score (1/3, 1).
+    The lecturer added the shares: C = 1/3 + 1 + 1 = 7/3, not the 3/11 shown.
+  - Label what flows (score × share: 1/11 on each link). Show the balance (in = out at every
+    page) as a build.
+- **A concrete instance, not a claim about all.**
+  - "true at every node: λ = 2.88" did not land.
+  - A second worked case did: "C: 0.58 = 2.88 × 0.20, the same 2.88".
+- **Pick an example where the effect is visible.**
+  - Betweenness's 1/2 split needs two shortest routes that share no node (s–A–D–t,
+    s–B–C–t).
+  - A shared node gets 1 and hides the split.
+- **Index order follows the edge.** $A_{ij} = 1$ means a link from $i$ to $j$. Write every
+  formula in that order: $c_j = \sum_i A_{ij} c_i / d^{out}_i$ and $a_j = \sum_i A_{ij} h_i$.
+  Never write $A_{ji}$.
+- **Nothing that reads as vulgar on a slide.** m06: the fable title *The Ass and His
+  Purchaser* went to the notes.
 - **Questions:**
   - The question is the slide title.
   - The left column holds one line of instruction.
@@ -175,6 +192,24 @@ random-walk tree; word2vec query/key diagrams). Match them as follows.
     discs ≥ ~45 bp).
   - On maps: leader lines, white halos behind labels, a muted "NYC"-style anchor on every
     map.
+- **Matrix pictures** (m06 `figs_decomp.py`, the lecturer's notation):
+  - Notation: a circle for an eigenvalue, a tall bar for $u_k$, a wide bar for $u_k^\top$.
+  - Show at most three terms (1, 2, …, last), so each matrix is about 100 bp.
+  - Colour each eigenvector by its index: $u_1$ blue, $u_2$ gold, the rest pale. Bars of
+    one colour meeting give 1; bars of two colours give 0. Circles keep the sign colours.
+  - Draw a product such as $A^2$ as two bracketed sums side by side. An arc joins the facing
+    bars ($u_k^\top$ of the left term, $u_l$ of the right). Show one pair per step:
+    different colours, then the same colour, then the result.
+- **A parameter is a gauge on the left of the figure:**
+  - a track with a knob;
+  - the critical value as a tick;
+  - the part past it shaded hot.
+- **Plot the scalar function a formula applies to the eigenvalues.** For $1/(1-\alpha x)$,
+  mark the eigenvalues as dots on the curve and the wall at $1/\alpha$. The blow-up and the
+  sign flip are then visible, not just stated.
+- **Convergence is a line chart:**
+  - x = iteration, y = value;
+  - one line per node, labelled at its end.
 - **Containers:**
   - author at final size: col 537 bp, full 1080 bp;
   - height cap 380 bp (400 with `fig tall`);
@@ -245,6 +280,10 @@ adds:
 - [ ] Is there no fact the lecture does not use? Are bullets telegraphic, at most 4, at most
       2 lines each?
 - [ ] Does the quiz trick hold, with the drawn-central node or the hub losing (asserted)?
+- [ ] Is every number a reader might add an amount, not a share? Does $A_{ij}$ always read
+      "$i$ → $j$"?
+- [ ] Does each callout show a concrete case rather than a claim about "every" case?
+- [ ] Does the example make the effect visible (e.g. disjoint routes for a 1/2 split)?
 
 ## Files (`house/`)
 
