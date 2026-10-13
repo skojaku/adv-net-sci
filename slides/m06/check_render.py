@@ -6,7 +6,9 @@ from gatelib.check_render import run
 
 run(
     deck="m06-centrality.md",
-    node_fills=[(0x39, 0x59, 0xA6), (0xB1, 0x44, 0x34)],
+    # v3 discs are white or value-shaded with a pencil outline and grain, so a fill mask
+    # no longer finds them; figlib asserts every disc's size on the slide at build time.
+    node_fills=[],
     fig_h={"": 380, "tight": 320, "stack": 190, "tall": 400},
     # Photographs, and maps that draw hundreds of dots rather than discs a student
     # reads one by one (figlib.emit(..., nodes=False) for the same figures).
