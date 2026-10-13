@@ -100,9 +100,9 @@ CA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G",
             "G-H", "G-I", "G-J", "H-I", "I-J", "J-K"])
 # The hub E is drawn at the centre of the picture, with long spokes to its leaves, and the
 # winner F sits off-centre: picking "the middle of the drawing" must not give the answer.
-CA_XY = {"E": (2.6, 2.0), "A": (2.0, 3.6), "B": (0.0, 3.0), "C": (0.0, 1.0), "D": (2.0, 0.4),
-         "F": (3.8, 2.0), "G": (4.6, 2.0), "H": (5.3, 2.85), "I": (6.0, 2.0), "J": (5.3, 1.15),
-         "K": (6.0, 0.3)}
+CA_XY = {"E": (2.6, 2.0), "A": (1.9, 3.5), "B": (0.0, 3.0), "C": (0.0, 1.0), "D": (1.9, 0.5),
+         "F": (3.9, 2.0), "G": (5.0, 2.0), "H": (5.6, 2.9), "I": (6.2, 2.0), "J": (5.6, 1.1),
+         "K": (6.2, 0.2)}
 
 # Right: N carries a triangle (L, M) and a leaf O; P carries two long arms (Q-R-S, T-U).
 CB = graph(["N-L", "N-M", "L-M", "N-O", "N-P", "P-Q", "Q-R", "R-S", "P-T", "T-U"])
@@ -117,7 +117,7 @@ CA_CUT.remove_edge("E", "F")
 # --------------------------------------------------------------------------- harmonic quiz
 # Right: two pieces. A star (centre N, leaves L M O P) and a path of seven (Q ... W).
 HD = graph(["N-L", "N-M", "N-O", "N-P", "Q-R", "R-S", "S-T", "T-U", "U-V", "V-W"])
-HD_XY = {"N": (1.2, 2.9), "L": (1.2, 4.1), "M": (0.0, 2.9), "O": (2.4, 2.9), "P": (1.2, 1.7),
+HD_XY = {"N": (1.6, 3.0), "L": (1.6, 4.5), "M": (0.1, 3.0), "O": (3.1, 3.0), "P": (1.6, 1.5),
          **{c: (0.0 + 1.0 * i, 0.3) for i, c in enumerate("QRSTUVW")}}
 
 # --------------------------------------------------------------------------- eccentricity quiz
@@ -125,8 +125,8 @@ HD_XY = {"N": (1.2, 2.9), "L": (1.2, 4.1), "M": (0.0, 2.9), "O": (2.4, 2.9), "P"
 EA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G", "G-H"])
 # The hub E is drawn at the centre of the picture (long bristles); the eccentricity winner F
 # sits off-centre, so "the middle of the drawing" is not the answer.
-EA_XY = {"E": (1.3, 2.0), "A": (0.6, 3.6), "B": (-2.0, 3.0), "C": (-2.0, 1.0), "D": (0.6, 0.4),
-         "F": (2.3, 2.0), "G": (3.3, 2.0), "H": (4.3, 2.0)}
+EA_XY = {"E": (1.3, 2.0), "A": (0.7, 3.6), "B": (-1.2, 3.1), "C": (-1.2, 0.9), "D": (0.7, 0.4),
+         "F": (3.3, 2.0), "G": (4.1, 2.0), "H": (4.9, 2.0)}
 
 # Right: a pentagon K-L-M-O-P. K carries leaves I, J; M carries the leaf N.
 EB = graph(["K-I", "K-J", "K-L", "K-P", "L-M", "M-N", "M-O", "O-P"])
@@ -204,9 +204,9 @@ def power_trace(A, steps):
 # K has three, all in a clique.
 EQ_L = graph(["M-H1", "M-H2", "H1-H2", "H1-a", "H1-b", "H1-c", "H2-d", "H2-e", "H2-f",
               "M-X", "X-p", "X-q", "X-r"])
-EQ_L_XY = {"H1": (1.4, 3.0), "H2": (1.4, 1.0), "M": (2.6, 2.0), "X": (3.9, 2.0),
-           "a": (0.5, 3.8), "b": (0.2, 3.0), "c": (1.4, 4.1), "d": (0.5, 0.2), "e": (0.2, 1.0),
-           "f": (1.4, -0.1), "p": (4.6, 2.9), "q": (5.0, 2.0), "r": (4.6, 1.1)}
+EQ_L_XY = {"H1": (1.6, 2.8), "H2": (1.6, 1.2), "M": (3.0, 2.0), "X": (4.4, 2.0),
+           "a": (0.8, 3.5), "b": (0.1, 3.0), "c": (1.6, 3.7), "d": (0.8, 0.5), "e": (0.1, 1.0),
+           "f": (1.6, 0.3), "p": (5.1, 2.9), "q": (5.6, 2.0), "r": (5.1, 1.1)}
 EQ_R = graph(["H-a", "H-b", "H-c", "H-d", "H-e", "H-K1", "K1-K", "K1-K3", "K1-K4",
               "K-K3", "K-K4", "K3-K4"])
 EQ_R_XY = {"H": (1.6, 2.0), "a": (0.6, 3.1), "b": (0.2, 2.0), "c": (0.6, 0.9), "d": (1.6, 3.3),
