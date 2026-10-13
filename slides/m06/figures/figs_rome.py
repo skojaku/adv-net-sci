@@ -134,9 +134,11 @@ def fig_roma_degree():
     assert max(deg, key=deg.get) == "Roma" and deg["Roma"] == 5
     fills = {c: F.shade(deg[c] / 5) for c in R.CITIES}
     b = R.col_graph(fills=fills, hot=("Roma",))
-    x, y = R.PIN_XY["Roma"]
-    b += text(x - 4, y + 44, "5", color="hot", anchor="center")
-    b += F.brush([(x - 15, y + 27), (x + 7, y + 28.5)], color="hot", w=5.0, opacity=0.95, strands=5)
+    x, y = R.GRAPH_XY["Roma"]
+    # below and to the right of the disc, in the wedge between the roads to Carthago (steeply
+    # down-left) and Alexandria (down-right), clear of every edge
+    b += text(x + 17, y - 42, "5", color="hot", anchor="center")
+    b += F.brush([(x + 6, y - 57), (x + 29, y - 55.5)], color="hot", w=5.0, opacity=0.95, strands=5)
     emit("roma-degree", b, container="col", h=R.COL_H, hmod=R.COL_MOD, box=R.col_box())
 
 

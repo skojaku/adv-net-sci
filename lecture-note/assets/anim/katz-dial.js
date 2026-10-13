@@ -61,27 +61,27 @@
   const BIG = BLOCK[BLOCK.length - 1];    /* the clique of six */
 
   /* ------------------------------------------------------------ geometry ---
-     The same drawing as the K = 6 frame of the lecture-note GIF ring-local
-     (figs_eigen.ring_layout(sizes, 350, 112, radius), radius 52 for the three
-     4-cliques, 64 for the 6-clique): four cliques on an ellipse, the clique of
-     six at the right. Each 4-clique is a triangle with its fourth node in the
-     middle, so no edge crosses another. Coordinates are that function's output
-     with y flipped (SVG y runs down), origin at the ellipse's centre, pasted
-     rather than recomputed. */
+     The same drawing as the K = 6 frame of the deck's ring-local build
+     (slides/m06/figures/figs_eigen.py, 2026-10-13): every 4-clique a square with both
+     diagonals, the clique of six a hexagon on a circle of radius 76 around a fixed
+     centre, its two ports (the nodes that carry the ring edges) on the circle's left.
+     Coordinates are that figure's TikZ coordinates (bp) with y flipped (SVG y runs
+     down) and the origin at the drawing's centre, pasted rather than recomputed, so
+     the room recognises the localization slide. Node order and edges as above: each
+     clique's first two nodes are its ports. */
   const POS = [
-    [45.0, -86.0], [-45.0, -86.0], [0.0, -164.0], [0.0, -112.0],
-    [-324.0, -45.0], [-324.0, 45.0], [-402.0, 0.0], [-350.0, 0.0],
-    [-45.0, 86.0], [45.0, 86.0], [0.0, 164.0], [0.0, 112.0],
-    [294.6, 32.0], [294.6, -32.0], [350.0, -64.0], [405.4, -32.0],
-    [405.4, 32.0], [350.0, 64.0]
+    [46.7, -50.3], [-60.7, -50.3], [-60.7, -157.7], [46.7, -157.7],
+    [-125.3, -53.7], [-125.3, 53.7], [-232.7, 53.7], [-232.7, -53.7],
+    [-60.7, 50.3], [46.7, 50.3], [46.7, 157.7], [-60.7, 157.7],
+    [111.3, 53.7], [111.3, -53.7], [176.9, -75.1], [232.7, -34.5],
+    [232.7, 34.5], [176.9, 75.1]
   ];
-  const CENTER_BIG = [350, 0];
-  const RADIUS_BIG = 64;
-  const VIEW = "-437 -199 878 398";
-  /* 21 viewBox units lands at about 29 px on the slide: the render gate wants
-     discs of 26-52 px. Hence the wider cliques (radius 52 and 64, not 42 and 53),
-     so a node in a clique's middle stays clear of its three neighbours. */
-  const NODE_R = 21;
+  const CENTER_BIG = [165.1, 0];
+  const RADIUS_BIG = 76;
+  const VIEW = "-256 -181 512 362";
+  /* 15 viewBox units in a 490 px wide stage drawing lands at about 29 px on the slide:
+     the render gate wants discs of 26-52 px, and the figure draws them at 28. */
+  const NODE_R = 15;
 
   /* ----------------------------------------------------------------- math --- */
   function solve(alpha) {

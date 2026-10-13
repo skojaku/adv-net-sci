@@ -360,16 +360,24 @@ assert _Image.open(_PALE).size == (IMG_W, IMG_H)
 
 
 def _make_col_basemap():
-    """The pale OSM map, simplified for a 430 bp wide figure: land goes to near-paper (the
-    raster grain leaves it clean), the sea stays a soft blue-grey, and the street labels,
-    which are unreadable at this size and only add speckle, are blurred away."""
+    """The pale OSM map as a flat picture: the sea one solid muted blue-grey, the land paper,
+    and a muted coastline stroke, so Italy is recognisable at slide size. The OSM tile's
+    stippled sea is only used to find where the sea is."""
     import numpy as np
     from PIL import ImageFilter
     a = np.asarray(_Image.open(_PALE).convert("RGB").filter(ImageFilter.GaussianBlur(2.2))).astype(float)
-    sea = np.clip((a[..., 2] - a[..., 0] - 6) / 14.0, 0, 1)[..., None]       # blue-ish -> 1
-    sea_col = np.array([196, 209, 222], float)
-    land = 255 - 0.08 * (255 - a)                                           # faint relief only
-    out = sea * sea_col + (1 - sea) * land
+    wet = (a[..., 2] - a[..., 0]) > 5                                       # blue-ish -> sea
+    m = _Image.fromarray((wet * 255).astype(np.uint8), "L").filter(ImageFilter.GaussianBlur(6.0))
+    m = _Image.fromarray(((np.asarray(m) > 127) * 255).astype(np.uint8), "L")
+    inner = np.asarray(m.filter(ImageFilter.MinFilter(5))) > 127
+    outer = np.asarray(m.filter(ImageFilter.MaxFilter(5))) > 127
+    coast = (outer & ~inner)[..., None]
+    sea = (np.asarray(m) > 127)[..., None]
+    paper = np.array([253, 252, 249], float)
+    sea_col = np.array([203, 216, 228], float)
+    coast_col = np.array([140, 132, 127], float)                            # MUTED
+    out = np.where(sea, sea_col, paper)
+    out = np.where(coast, coast_col, out)
     return _Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGB")
 
 
@@ -387,12 +395,25 @@ PIN_XY = {c: (MAP_X0 + v["px"] * SX, MAP_Y0 + (IMG_H - v["py"]) * SY)
 PIN_D = 18               # bp, a pin on the map
 DISC_D = 34              # bp, a node of the graph (about 34 px on the slide)
 
-# Straight roads between the pins must be a clean planar drawing, and no two discs may touch.
+# The graph's discs stand where the pins stand, except Athenae: its pin is 10 bp higher on the
+# map, and the disc is moved down so it clears Thessalonica (their road would be 8 px long).
+GRAPH_XY = dict(PIN_XY)
+GRAPH_XY["Athenae"] = (PIN_XY["Athenae"][0], PIN_XY["Athenae"][1] - 10.0)
+
+# Roads are drawn west to east (Britain and Gaul, Italy, the east), so Roma's five are never
+# drawn as a group: ordered by the western end of each road, then by the eastern end.
+ROAD_ORDER = sorted(EDGES, key=lambda e: (min(PIN_XY[e[0]][0], PIN_XY[e[1]][0]),
+                                          max(PIN_XY[e[0]][0], PIN_XY[e[1]][0])))
+assert sorted(ROAD_ORDER) == sorted(EDGES)
+
+# Straight roads between the discs must be a clean planar drawing, and no two discs may touch.
 F.assert_planar_drawing(EDGES, PIN_XY, "roma pins")
+F.assert_planar_drawing(EDGES, GRAPH_XY, "roma graph")
 for _a in CITIES:
     for _b in CITIES:
         if _a < _b:
             assert _math.dist(PIN_XY[_a], PIN_XY[_b]) > DISC_D + 6, f"discs {_a} and {_b} nearly touch"
+            assert _math.dist(GRAPH_XY[_a], GRAPH_XY[_b]) > DISC_D + (16 if "Athenae" in (_a, _b) else 6), f"discs {_a} and {_b} nearly touch"
 
 # "Roma" sits north-east of its pin: the wedge between its roads to Mediolanum (north-west)
 # and Thessalonica (east) is the only open one.
@@ -412,13 +433,14 @@ def col_map(opacity=1.0):
     return o
 
 
-def col_pins(size=PIN_D, fill="cool"):
-    return "".join(F.disc(*PIN_XY[c], "", fill=fill, size=size) for c in CITIES)
+def col_pins(size=PIN_D, fill="cool", xy=None):
+    xy = xy or PIN_XY
+    return "".join(F.disc(*xy[c], "", fill=fill, size=size) for c in CITIES)
 
 
 def col_roads(a=0, b=None):
-    """Roads a..b of EDGES as straight soft-ink lines between the pins."""
-    return "".join(F.seg(PIN_XY[u], PIN_XY[v]) for u, v in EDGES[a:b])
+    """Roads a..b of ROAD_ORDER (west to east) as straight soft-ink lines between the discs."""
+    return "".join(F.seg(GRAPH_XY[u], GRAPH_XY[v]) for u, v in ROAD_ORDER[a:b])
 
 
 def col_label():
@@ -437,12 +459,13 @@ def col_graph(fills=None, hot=()):
     fills = fills or {}
     o = col_roads()
     for c in CITIES:
-        o += F.disc(*PIN_XY[c], "", fill="hot" if c in hot else fills.get(c, "white"), size=DISC_D)
+        o += F.disc(*GRAPH_XY[c], "", fill="hot" if c in hot else fills.get(c, "white"), size=DISC_D)
     return o + col_label()
 
 
 def col_box():
     """(top, bottom) in bp from the canvas top: the map, every pin and disc, and the padding."""
-    top = max(MAP_Y0 + MAP_HBP + 2.5, max(p[1] for p in PIN_XY.values()) + DISC_D / 2 + 2)
-    bot = min(MAP_Y0 - 2.5, min(p[1] for p in PIN_XY.values()) - DISC_D / 2 - 2)
-    return (COL_H - top - F.PAD, COL_H - bot + F.PAD)
+    pad = 4.0                     # the map's own frame is the edge; no blank band beyond it
+    top = max(MAP_Y0 + MAP_HBP + 2.5, max(p[1] for p in GRAPH_XY.values()) + DISC_D / 2 + 2)
+    bot = min(MAP_Y0 - 2.5, min(p[1] for p in GRAPH_XY.values()) - DISC_D / 2 - 2)
+    return (COL_H - top - pad, COL_H - bot + pad)

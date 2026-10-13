@@ -213,14 +213,27 @@ class Labels:
             ex, ey = to[0] - (to[0] - sx) / L * r, to[1] - (to[1] - sy) / L * r
             self.lines.append((s, (sx, sy), (ex, ey)))
             self.leaders += F.seg((sx, sy), (ex, ey), color="muted", w=2.2)
-        if halo:
-            for hx in (-2, 0, 2):
-                for hy in (-2, 0, 2):
-                    if (hx, hy) != (0, 0):
-                        self.out += text(x + hx, y + hy, s, color="white", anchor=anchor)
+        if halo:                                  # a white plate and two rings of white copies: no road shows through
+            self.out += ("\\fill[white,rounded corners=3bp] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
+                         % (b[0] + 1, b[1] + 3, b[2] - 1, b[3] - 3))
+            for r_ in (2.4, 4.8):
+                for k in range(8):
+                    a_ = k * math.pi / 4
+                    self.out += text(x + r_ * math.cos(a_), y + r_ * math.sin(a_), s, color="white",
+                                     anchor=anchor)
         self.out += text(x, y, s, color=color, anchor=anchor)
         if underline:
             self.ul += ul(b[0] + 5, b[2] - 5, y - 20)
+
+    def nyc(self, spots=((262, 74, "east"), (322, 17.5, "center"))):
+        """A muted "NYC" on every map, in the first of `spots` (absolute canvas bp) that is free."""
+        for x, y, anc in spots:
+            b = self.box("NYC", x, y, anc)
+            if b[1] < 2 or any(F.boxes_overlap(b, o) for _, o in self.boxes):
+                continue
+            self.add("NYC", x, y, anchor=anc, color="muted", rel=False)
+            return
+        raise AssertionError(f"{self.name}: no free place for the NYC label")
 
     def body(self):
         for s, p, q in self.lines:
@@ -234,7 +247,7 @@ class Labels:
 ZOOM = 3.0
 INS_W = 156.0                                   # frame, bp
 INS_X0, INS_Y0 = 377.0, 150.0                   # lower-left of the inset frame
-REG_C = (322.0, 54.0)                           # centre of the NYC area on the map (map bp)
+REG_C = (322.0, 64.0)                           # centre of the NYC area on the map (map bp)
 REG_H = INS_W / ZOOM / 2                        # half the side of the region the inset shows
 INS_C = (INS_X0 + INS_W / 2, INS_Y0 + INS_W / 2)
 
@@ -264,6 +277,7 @@ def inset(shade=None, winners=()):
         o += F.disc(x, y, "", fill="hot", size=d)
     o += "\\end{scope}\n"
     o += ("\\draw[line width=2bp,draw=muted] (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1))
+    o += F.seg((REG_C[0] + REG_H, REG_C[1] + REG_H), (fx0, fy0), color="muted", w=1.4)   # box -> inset
     return o
 
 
@@ -289,11 +303,11 @@ def b_overview():
         b += F.disc(*_city(c), "", fill="cool", size=20)
     dots = [_city(c) for c in CITY_ID]
     spec = {                                  # name: (anchor, x, y, leader?)  y is map-relative
-        "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 44 - DY, True),
+        "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 52 - DY, True),
         "Buffalo": ("west", 8, 140, True),
-        "Rochester": ("center", 110, 250, True),
-        "Syracuse": ("center", 232, 157, True),
-        "Utica": ("west", 262, 214, False),
+        "Rochester": ("center", 110, 262, True),
+        "Syracuse": ("center", 198, 230, True),
+        "Utica": ("west", 290, 214, True),
         "Albany": ("west", 346, 166, False),
         "Binghamton": ("center", 130, 70, True),
         "NYC": ("center", 398, 100, True),
@@ -312,6 +326,7 @@ def b_degree():
         y = 290 - k * 42
         b += ("\\filldraw[fill=%s,draw=ink!60,line width=0.9bp] (380,%d) circle (8bp);\n" % (F.shade(t), y))
         L.add(s, 400, y, anchor="west", halo=False, rel=False)
+    L.nyc()
     return b + L.body()
 
 
@@ -323,23 +338,42 @@ def _single(name, measure, labels):
     return b + L.body()
 
 
+def _share60():
+    """Share of the interchanges inside the 60 km circle around Manhattan."""
+    inside = sum(1 for x, y in XY
+                 if ((x - MANHATTAN[0]) / R60[1]) ** 2 + ((y - MANHATTAN[1]) / R60[0]) ** 2 <= 1)
+    return inside / N
+
+
+SHARE60 = _share60()
+assert round(100 * SHARE60) == 31, SHARE60            # the slide says 31%
+
+
 def b_closeness():
-    def lab(L, i):
-        L.add("Middletown", 112, 46, color="hot", to=XY[i], r=13, underline=True)
-    return _single("ny-closeness", "closeness", lab)
+    L = Labels("ny-closeness")
+    i = WIN["closeness"]
+    b = base() + circle60() + shaded_dots(SHADE["closeness"]) + winner(i)
+    L.add("Middletown", 100, 78, color="hot", to=XY[i], r=13, underline=True)
+    ang = math.radians(225)
+    L.add("31\\%", MANHATTAN[0] + R60[1] * math.cos(ang) - 14, MANHATTAN[1] + R60[0] * math.sin(ang) + 3,
+          anchor="east", color="muted", rel=False)
+    L.nyc()
+    return b + L.body()
 
 
 def b_eccentricity():
     def lab(L, i):
-        L.add("Binghamton", 115, 80, color="muted", to=_city("Binghamton"), r=3)
-        L.add("473 km", 215, 32, color="hot", to=XY[i], r=13, underline=True)
+        L.add("Binghamton", 105, 80, color="muted", to=_city("Binghamton"), r=3)
+        L.add("473 km", 160, 8, color="hot", to=XY[i], r=13, underline=True)
+        L.nyc(spots=((322, 17.5, "center"),))        # the leader of "473 km" passes the usual spot
     return _single("ny-eccentricity", "eccentricity", lab)
 
 
 def b_betweenness():
     def lab(L, i):
-        L.add("Binghamton", 115, 80, color="muted", to=_city("Binghamton"), r=3)
-        L.add("Monticello", 190, 32, color="hot", to=XY[i], r=13, underline=True)
+        L.add("Binghamton", 105, 80, color="cool", to=_city("Binghamton"), r=3)
+        L.add("Monticello", 150, 8, color="hot", to=XY[i], r=13, underline=True)
+        L.nyc(spots=((322, 17.5, "center"),))
     return _single("ny-betweenness", "betweenness", lab)
 
 
@@ -352,6 +386,7 @@ def b_eigenvector():
     ang = math.radians(225)
     L.add("60 km", MANHATTAN[0] + R60[1] * math.cos(ang) - 14, MANHATTAN[1] + R60[0] * math.sin(ang) + 3,
           anchor="east", color="muted", rel=False)
+    L.nyc()
     zx, zy = Z(XY[i])
     L.add("Hempstead", 533, INS_Y0 - 28, anchor="east", color="hot", to=(zx, zy), r=13, rel=False,
           underline=True)
@@ -362,7 +397,7 @@ def b_five():
     L = Labels("ny-five")
     b = base() + plain_dots(0.12)
     for m in ("eccentricity", "betweenness", "closeness", "eigenvector", "harmonic"):
-        b += winner(WIN[m], d=14.0)
+        b += winner(WIN[m], d=12.0)
     b += inset(None, [(WIN["harmonic"], 14.0), (WIN["eigenvector"], 14.0)])
     spec = {                                   # measure: (x, y), map-relative
         "eccentricity": ("west", 10, 84),
@@ -373,7 +408,9 @@ def b_five():
         L.add(m, x, y, anchor=anc, color="hot", to=XY[WIN[m]], r=9)
     zh, ze = Z(XY[WIN["harmonic"]]), Z(XY[WIN["eigenvector"]])
     L.add("harmonic", 533, INS_Y0 + INS_W + 28, anchor="east", color="hot", to=zh, r=10, rel=False)
-    L.add("eigenvector", 533, INS_Y0 - 28, anchor="east", color="hot", to=ze, r=10, rel=False)
+    # in the white strip under Long Island, away from the Hudson-valley roads
+    L.add("eigenvector", 533, 19, anchor="east", color="hot", to=ze, r=10, rel=False)
+    L.nyc(spots=((410, 115, "center"),))     # on the box-to-inset leader's side
     return b + L.body()
 
 

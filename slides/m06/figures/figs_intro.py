@@ -31,12 +31,14 @@ def fig_to_graph():
     n = len(R.EDGES)
     assert n == 18
     frames = [_basemap_body()]                                   # 0: the map (= roma-basemap)
-    for op in (0.62, 0.30, 0.0):                                 # 1-3: the map fades
-        frames.append(R.col_map(op) + R.col_pins() + R.col_label())
-    for a, b in ((0, 5), (5, 11), (11, n)):                      # 4-6: the roads
-        frames.append(R.col_roads(0, b) + R.col_pins() + R.col_label())
-    frames.append(R.col_roads() + R.col_pins(size=26, fill="cool!45!white") + R.col_label())  # 7
-    frames.append(R.col_graph())                                 # 8: the graph
+    frames.append(R.col_map(0.62) + R.col_pins() + R.col_label())                      # 1-2: fade
+    frames.append(R.col_map(0.30) + R.col_pins() + R.col_label())
+    frames.append(R.col_pins(xy=R.GRAPH_XY) + R.col_label())                           # 3: no map
+    for a, b in ((0, 4), (4, 8), (8, 12), (12, 15), (15, n)):                          # 4-8: roads,
+        frames.append(R.col_roads(0, b) + R.col_pins(xy=R.GRAPH_XY) + R.col_label())   # west to east
+    frames.append(R.col_roads() + R.col_pins(size=26, fill="cool!45!white", xy=R.GRAPH_XY)
+                  + R.col_label())                                                     # 9
+    frames.append(R.col_graph())                                 # 10: the graph
     F.emit_frames("roma-to-graph", frames, container="col", h=R.COL_H, hmod=R.COL_MOD,
                   box=R.col_box())
 
