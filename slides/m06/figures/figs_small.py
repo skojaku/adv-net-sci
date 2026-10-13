@@ -428,21 +428,23 @@ def fig_sigma_answer():
     words = {n: ("1/2" if share[n] == 0.5 else "1") for n in share}
     assert words == {"A": "1/2", "B": "1/2", "T": "1"}
 
-    # col width: S at the left, D at the right, the two routes drawn as two brushes (hot through
-    # A, cool through B) that run side by side on the shared leg T-D; T carries the whole pair.
+    # col width: s at the left, t at the right (lower case, as in sigma_st); the through-node
+    # is C.  The two routes up to C are two non-hot brushes (gold through A, cool through B);
+    # the shared leg C-t is one gold brush.  C carries the whole pair.
+    ren = {"S": "s", "A": "A", "B": "B", "T": "C", "D": "t"}
     xy = {n: (58 + 100 * x, 80 + 76 * y) for n, (x, y) in SIGMA_POS.items()}
     F.assert_planar_drawing(SIG_E, xy, "sigma answer")
-    off = 8
-    hot = [xy["S"], xy["A"], (xy["T"][0], xy["T"][1] + off), (xy["D"][0], xy["D"][1] + off)]
-    cool = [xy["S"], xy["B"], (xy["T"][0], xy["T"][1] - off), (xy["D"][0], xy["D"][1] - off)]
     b = "".join(F.seg(xy[u], xy[v]) for u, v in SIG_E)
-    b += F.brush(hot, color="hot", w=10) + F.brush(cool, color="cool", w=10)
-    b += "".join(F.disc(x, y, n, fill="hot" if n == "T" else "white") for n, (x, y) in xy.items())
-    # A's share above A, B's below B; T's value below T, in hot, with the underline
+    b += F.brush([xy["S"], xy["A"], xy["T"]], color="gold", w=12)
+    b += F.brush([xy["S"], xy["B"], xy["T"]], color="cool", w=12)
+    b += F.brush([xy["T"], xy["D"]], color="gold", w=12)
+    b += "".join(F.disc(x, y, ren[n], fill="hot" if n == "T" else "white") for n, (x, y) in xy.items())
+    # A's share above A, B's below B, in ink; C's value below C, in hot, with the underline
     b += F.text(xy["A"][0], xy["A"][1] + 36, words["A"])
     b += F.text(xy["B"][0], xy["B"][1] - 36, words["B"])
     b += F.text(xy["T"][0], xy["T"][1] - 36, words["T"], color="hot")
     b += F.underline(xy["T"][0] - 16, xy["T"][0] + 16, xy["T"][1] - 54, color="hot")
+    b += F.text(xy["D"][0], xy["D"][1] + 70, "pair s, t", color="muted", anchor="east")
     _DRAWN.extend(words.values())
     F.emit("sigma-answer", b, container="col", h=300)
 

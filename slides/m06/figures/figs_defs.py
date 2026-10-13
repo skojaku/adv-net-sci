@@ -9,7 +9,7 @@ small step, in the lecturer's style (figlib: pencil discs, brush strokes, Meslo 
     closeness-def, bowtie-closeness slides 12, 25  the sum of distances, node by node; D smallest
     ecc-def                        slide 26       the sums give way to eccentricities
                                                   (frame 0 = bowtie-closeness)
-    btw-def                        slide 33       a letter for every pair, a counter per carrier
+    btw-def                        slide 33       one frame per source node (its paths, counters), zeros, D = 9
                                                   (frame 0 = the bare bowtie)
     grid-empty/-row1/-row2/-final  slides 10, 40, 71, 81   one table in four states (full)
 
@@ -101,7 +101,8 @@ def _w5_scene(brushes="", label="", count=""):
     o = edges_tex(S.W5.edges, W5_POS) + brushes + discs_tex(W5_POS, W5_LAB)
     if label:
         o += F.text(380, W5_CAP_Y, label, color="muted", anchor="east")
-        o += F.text(394, W5_CAP_Y, count, color="hot", anchor="west")
+        if count:
+            o += F.text(394, W5_CAP_Y, count, color="hot", anchor="west")
     return o
 
 
@@ -119,7 +120,7 @@ def w5_walks():
     n2, n3, n4 = len(walks[2]), len(walks[3]), len(walks[4])
     frames = [
         _w5_scene(),                                                                       # = w5-blank
-        _w5_scene(route(W5_POS, a, "hot"), "shortest path:", str(d)),
+        _w5_scene(route(W5_POS, a, "hot"), "shortest path:", f"{d} steps"),
         _w5_scene(route(W5_POS, a) + route(W5_POS, b), "walks of length 2:", str(n2)),
         _w5_scene(route(W5_POS, c), "walks of length 3:", str(n3)),
         _w5_scene("", "walks of length 4:", str(n4)),
@@ -226,11 +227,17 @@ def btw_def():
     assert len(pairs) == 13 and count["D"] == 9
     frames = [bt_scene()]                                       # the bare bowtie
     run = {n: 0 for n in G}
-    for s, t, p in pairs:
-        for i in p[1:-1]:
-            run[i] += 1
-        frames.append(bt_scene({n: str(c) for n, c in run.items() if c}, brushes=route(BT_POS, p)))
+    for src in BT_NODES:                                        # one frame per source: all its letters at once
+        mine = [(t, p) for s_, t, p in pairs if s_ == src]
+        if not mine:
+            continue
+        for t, p in mine:
+            for i in p[1:-1]:
+                run[i] += 1
+        brushes = "".join(route(BT_POS, p) for t, p in mine)
+        frames.append(bt_scene({n: str(c) for n, c in run.items() if c}, brushes=brushes))
     assert run == count
+    assert len(frames) == 5
     allc = {n: str(c) for n, c in count.items()}
     frames.append(bt_scene(allc))                               # the ends carry nothing: 0
     frames.append(bt_scene(allc, colors={"D": "hot"}, hot=["D"], under="D"))
@@ -265,14 +272,24 @@ ROW1 = [("closeness", ["sum of", "lengths"]),
 ROW2 = [("degree", ["walks of", "length 1"]),
         ("Katz", ["all", "lengths,", "discounted"]),
         ("eigenvector", ["the longest", "walks"]),
-        ("PageRank", ["walks that", "split the", "vote"]),
-        ("HITS", ["walks that", "alternate", "direction"])]
+        ("HITS", ["walks that", "alternate", "direction"]),
+        ("PageRank", ["walks that", "split the", "vote"])]
+CELL_GAP = 6                      # between two boxes
+PADX = 14                         # at least this much white between the longest line and the border
 
 
 def _cells(row, y0, y1):
-    pitch = (GX1 - GX0) / (5 if row is ROW2 else 4)
-    return [dict(name=name, desc=desc, x0=GX0 + i * pitch + 3, x1=GX0 + (i + 1) * pitch - 3,
-                 y0=y0, y1=y1) for i, (name, desc) in enumerate(row)]
+    """Cell widths follow the longest line (Meslo: 0.6 em per character), so a long word such as
+    "eigenvector" never touches its border; the spare width is shared equally."""
+    need = [max(len(t) for t in [name] + desc) * 0.6 * F.FONT + 2 * PADX for name, desc in row]
+    spare = (GX1 - GX0) - sum(need) - CELL_GAP * (len(row) - 1)
+    assert spare >= 0, "the grid row does not fit"
+    out, x = [], GX0
+    for (name, desc), w in zip(row, need):
+        w += spare / len(row)
+        out.append(dict(name=name, desc=desc, x0=x, x1=x + w, y0=y0, y1=y1))
+        x += w + CELL_GAP
+    return out
 
 
 CELLS1 = _cells(ROW1, ROW1_Y0, ROW1_Y1)
@@ -281,13 +298,11 @@ CELLS2 = _cells(ROW2, ROW2_Y0, ROW2_Y1)
 for _row in (CELLS1, CELLS2):
     for _a, _b in zip(_row, _row[1:]):
         assert _a["x1"] < _b["x0"]
-    assert _row[0]["x0"] >= GX0 and _row[-1]["x1"] <= GX1
-    assert len({round(c["x1"] - c["x0"], 6) for c in _row}) == 1
-assert CELLS1[0]["x1"] - CELLS1[0]["x0"] > 200 and CELLS2[0]["x1"] - CELLS2[0]["x0"] > 170
+    assert _row[0]["x0"] >= GX0 and _row[-1]["x1"] <= GX1 + 1e-6
 # every line of text fits inside its cell (Meslo is 0.6 em per character), with 2 bp to spare
 for _c in CELLS1 + CELLS2:
     for _t in [_c["name"]] + _c["desc"]:
-        assert 0.6 * F.FONT * len(_t) + 4 <= _c["x1"] - _c["x0"], f"{_t!r} overflows its cell"
+        assert 0.6 * F.FONT * len(_t) + 2 * PADX <= _c["x1"] - _c["x0"] + 1e-6, f"{_t!r} overflows its cell"
 assert GRID_BOX[1] - GRID_BOX[0] <= F.FIG_H["tall"]
 
 
@@ -315,10 +330,10 @@ def _grid(row1, row2, new=()):
     """row1, row2: how many cells of each row to draw (a prefix). `new`: names of the cells
     that are new on this slide (name and box in hot, every old cell in ink). The slots not
     drawn yet are faint dashed boxes."""
-    o = F.text(GM, HEAD_Y, HEAD_ROUTES, color="muted", anchor="west")
-    o += F.text(GX1, HEAD_Y, HEAD_NUMBER, color="muted", anchor="east")
-    o += F.text(GX0, CAP1_Y, "shortest paths", color="muted", anchor="west")
-    o += F.text(GX0, CAP2_Y, "walks", color="muted", anchor="west")
+    o = F.text(GM, HEAD_Y, "\\textit{%s}" % HEAD_ROUTES, color="muted", anchor="west")
+    o += F.text(GX1, HEAD_Y, "\\textit{%s}" % HEAD_NUMBER, color="muted", anchor="east")
+    o += F.text(GX0, CAP1_Y, "shortest paths", anchor="west")
+    o += F.text(GX0, CAP2_Y, "walks", anchor="west")
     for c in CELLS1[row1:] + CELLS2[row2:]:
         o += _ghost(c)
     for c in CELLS1[:row1] + CELLS2[:row2]:
@@ -344,7 +359,7 @@ def grid_row2():
 
 
 def grid_final():
-    _grid_fig("grid-final", 4, 5, new=["PageRank", "HITS"])
+    _grid_fig("grid-final", 4, 5, new=["HITS", "PageRank"])
 
 
 def _grid_same_picture():
