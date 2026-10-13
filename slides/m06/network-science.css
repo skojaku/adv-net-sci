@@ -183,6 +183,11 @@ strong {
   background: url('figures/brush-hot.png') left bottom / 100% 0.28em no-repeat;
   padding-bottom: 0.1em;
 }
+/* the second emphasis, where a figure colours the same thing sky blue (HITS: authority) */
+strong.cool {
+  color: #1E96DC;
+  background-image: url('figures/brush-cool.png');
+}
 em { font-style: italic; }
 a { color: #1E96DC; text-decoration: none; }
 a:hover { color: #22336b; }
@@ -716,7 +721,7 @@ section #power-step .anim-step .anim-num { display: none; }
 section #power-step .anim-note { font-size: 30px; min-height: 1.3em; }
 section #power-step .anim-caption { font-size: 24px; margin-top: 0; }
 section #power-step .anim-panel { padding: 12px 18px 14px; }
-section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2; transition: fill 0.5s ease; }
+section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.5s ease; filter: url(#m06-pencil); }
 section #power-step .ps-name {
   font-family: var(--_hand); font-size: 28px; font-weight: 700; fill: var(--_ink);
   pointer-events: none; transition: fill 0.5s ease;
@@ -739,7 +744,7 @@ section #katz-dial .anim-grid-2 { grid-template-columns: 700px minmax(0, 1fr); g
 section #katz-dial .anim-step { font-size: 34px; }
 section #katz-dial .anim-note { font-size: 28px; min-height: 1.3em; }
 section #katz-dial .anim-panel { padding: 12px 20px 14px; }
-section #katz-dial .kd-node { stroke: var(--_ink); stroke-width: 2.6; transition: fill 0.2s ease; }
+section #katz-dial .kd-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.2s ease; filter: url(#m06-pencil); }
 section #katz-dial .kd-edge { stroke-width: 3; opacity: 0.55; }
 section #katz-dial .kd-hull { fill: none; stroke: var(--_ink-faint); stroke-width: 2.6; stroke-dasharray: 8 7; }
 section #katz-dial .kd-alpha { font-family: var(--_hand); font-size: 30px; font-weight: 700; line-height: 1.2; }

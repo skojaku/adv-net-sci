@@ -126,7 +126,7 @@
   function tint(v) {
     const base = v >= 0 ? [30, 150, 220] : [217, 99, 30];
     const lo = [239, 235, 232];
-    const a = Math.min(1, Math.abs(v));
+    const a = 0.72 * Math.min(1, Math.abs(v));          /* tops out below full saturation */
     const m = function (k) { return Math.round(lo[k] + (base[k] - lo[k]) * a); };
     return "rgb(" + m(0) + "," + m(1) + "," + m(2) + ")";
   }

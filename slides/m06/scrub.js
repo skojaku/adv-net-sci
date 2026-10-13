@@ -148,7 +148,33 @@
     }, 0);
   }
 
+  // The live stages (power-step, katz-dial) draw their discs in SVG. A light displacement
+  // filter gives their outlines the pencil wobble of the figures (network-science.css applies
+  // it as `filter: url(#m06-pencil)`). Defined here because Marp strips an inline <svg>.
+  function pencilFilter() {
+    if (document.getElementById("m06-pencil")) return;
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("width", "0"); svg.setAttribute("height", "0");
+    svg.setAttribute("style", "position:absolute;width:0;height:0;overflow:hidden");
+    svg.setAttribute("aria-hidden", "true");
+    var f = document.createElementNS(NS, "filter");
+    f.setAttribute("id", "m06-pencil");
+    f.setAttribute("x", "-10%"); f.setAttribute("y", "-10%");
+    f.setAttribute("width", "120%"); f.setAttribute("height", "120%");
+    var t = document.createElementNS(NS, "feTurbulence");
+    t.setAttribute("type", "fractalNoise"); t.setAttribute("baseFrequency", "0.8");
+    t.setAttribute("numOctaves", "2"); t.setAttribute("seed", "7"); t.setAttribute("result", "n");
+    var d = document.createElementNS(NS, "feDisplacementMap");
+    d.setAttribute("in", "SourceGraphic"); d.setAttribute("in2", "n");
+    d.setAttribute("scale", "1.8");
+    d.setAttribute("xChannelSelector", "R"); d.setAttribute("yChannelSelector", "G");
+    f.appendChild(t); f.appendChild(d); svg.appendChild(f);
+    document.body.appendChild(svg);
+  }
+
   function init() {
+    pencilFilter();
     if (!presenting()) return;                     // the PDF/PNG export keeps the last frame
     var els = document.querySelectorAll(".scrub");
     for (var k = 0; k < els.length; k++) build(els[k]);

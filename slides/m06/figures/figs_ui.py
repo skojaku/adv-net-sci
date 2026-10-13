@@ -3,6 +3,7 @@
 
     brush-hot.png    the brush underline under a key term (`strong` in network-science.css)
                      and under the title slide's rule; transparent, stretched by CSS
+    brush-cool.png   the same in sky blue, for `strong.cool`
 
 Drawn with figlib's own brush, so the theme's underlines are the same stroke as the
 figures' underlines.
@@ -27,17 +28,25 @@ def _transparent(im, hexcol):
     return out.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 
 
-def brush_hot():
+def _brush(name, color, hexcol):
     W, H = 600, 40
-    body = F.underline(10, W - 10, H / 2, color="hot", w=12, bow=2.0)
+    body = F.underline(10, W - 10, H / 2, color=color, w=12, bow=2.0)
     im = F.render(body, W, H)
-    out = _transparent(im, F.HOT).resize((1200, 40), Image.LANCZOS)
-    out.save(F.OUT / "brush-hot.png")
-    F._built.append("brush-hot")
-    print(f"  brush-hot.png  {out.size[0]}x{out.size[1]}px (transparent)")
+    out = _transparent(im, hexcol).resize((1200, 40), Image.LANCZOS)
+    out.save(F.OUT / f"{name}.png")
+    F._built.append(name)
+    print(f"  {name}.png  {out.size[0]}x{out.size[1]}px (transparent)")
 
 
-FIGURES = [("brush-hot", brush_hot)]
+def brush_hot():
+    _brush("brush-hot", "hot", F.HOT)
+
+
+def brush_cool():
+    _brush("brush-cool", "cool", F.COOL)
+
+
+FIGURES = [("brush-hot", brush_hot), ("brush-cool", brush_cool)]
 
 if __name__ == "__main__":
     F.run(FIGURES)

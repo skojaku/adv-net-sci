@@ -147,13 +147,13 @@ The sheet's first question. Name it and move on. The same network as before; the
 <div>
 
 * 289 interchanges, 433 road segments.
-* Which of these eight cities do the most cross-state trips pass through?
+* Which city do the most cross-state trips pass through?
 
 </div>
 <div class="fig">
 
 ![w:537](figures/ny-overview.png)
-<figcaption>highway data © OpenStreetMap contributors</figcaption>
+<figcaption>© OpenStreetMap</figcaption>
 
 </div>
 </div>
@@ -180,7 +180,7 @@ Take a vote: Buffalo, Rochester, Syracuse, Utica, Albany, NYC, Binghamton, Water
 <div>
 
 - Degree 3: 201 interchanges. Degree 4: 57.
-- Degree cannot tell them apart.
+- Degree cannot tell the interchanges apart.
 
 </div>
 <div class="fig">
@@ -233,7 +233,7 @@ Ask: in how many ways can you get there in 3 steps? In 4?
 <div>
 
 * **Shortest path**: the fewest steps. One number: 2.
-* **Walk**: any route, revisits allowed. A count per length: 2, 1, 11, …
+* **Walk**: any route, revisits allowed. A count per length.
 
 </div>
 <div class="fig scrub" data-at="1">
@@ -284,7 +284,7 @@ near every other node, on average, at worst
 <div class="cols">
 <div>
 
-* Add up the distances $\ell_{ij}$ to every other node.
+* **Closeness**: add up the distances $\ell_{ij}$ to every other node.
 * Small sum: close to everything.
 * $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
 * $N-1$: a star's centre scores exactly 1.
@@ -584,8 +584,8 @@ The star's centre scores 4; the middle of the path, 11/3. The bigger piece is no
 <div>
 
 * Distance: km of highway.
-* Winner: NY 17 near Middletown.
-* 31% of the interchanges lie within 60 km of Manhattan.
+* Winner: NY 17.
+* 31% of the interchanges lie inside the circle.
 
 </div>
 <div class="fig">
@@ -733,7 +733,7 @@ E wins closeness (sum 10) but its worst case is 3, the end of the tail. F has wo
 <div>
 
 - The best fire station: the smallest worst case.
-- L beats K, the best on average.
+- L: worst case 2. K, the best on average, has 3.
 
 </div>
 <div class="fig">
@@ -790,7 +790,7 @@ who the traffic cannot avoid
 <div class="cols">
 <div>
 
-* Send a letter between every pair, along a shortest path.
+* One letter per pair, along a shortest path.
 * Count the letters each node carries.
 
 </div>
@@ -814,9 +814,10 @@ Both bullets, then step the build. D carries 9: every letter between the left tr
 <div class="cols">
 <div>
 
-* $b_i = \sum_{s<t} \dfrac{\sigma_{st}(i)}{\sigma_{st}}$
-* $\sigma_{st}$: shortest paths from $s$ to $t$; $\sigma_{st}(i)$: those through $i$
-* Two shortest paths: each carries half.
+* $b_i = \displaystyle\sum_{s<t} \frac{\sigma_{st}(i)}{\sigma_{st}}$
+* $\sigma_{st}$: the number of shortest $s$–$t$ paths.
+* $\sigma_{st}(i)$: those that pass through $i$.
+* From s to t: two shortest paths, so A and B carry half each.
 
 </div>
 <div class="fig">
@@ -938,7 +939,7 @@ O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: through 
 <div>
 
 * Top interchange: NY 17 at Monticello.
-* Of the eight cities, Binghamton is first: 3.5 times Syracuse.
+* Of the eight cities: Binghamton, 3.5 × Syracuse.
 * Four of the top five interchanges are on NY 17.
 
 </div>
@@ -950,7 +951,7 @@ O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: through 
 </div>
 
 <!--
-The answer to this morning's question. Four of the top five interchanges in the whole state are on NY 17 between Binghamton and Middletown: the corridor between the NYC cluster and upstate. Binghamton is where that corridor meets I-81 and I-88.
+The answer to this morning's question. Four of the top five interchanges in the whole state are on NY 17 between Binghamton and Middletown: the corridor between the NYC cluster and upstate. Binghamton is where that corridor meets I-81 and I-88. Monticello beats the NY 17 / NY 8 / NY 10 interchange near Binghamton by only 0.2% (0.3632 against 0.3626).
 -->
 
 ---
@@ -1037,8 +1038,8 @@ A man buys a donkey on trial. It walks straight to the laziest donkey in the yar
 <div class="cols">
 <div>
 
-* A node's score: the sum of its neighbours' scores.
-* $c_i = \dfrac{1}{\lambda} \sum_j A_{ij}\, c_j$
+* A node's score ∝ the sum of its neighbours' scores.
+* $c_i = \dfrac{1}{\lambda} \displaystyle\sum_j A_{ij}\, c_j$
 
 </div>
 <div class="fig scrub" data-at="1">
@@ -1099,7 +1100,7 @@ Blue: positive, orange: negative. Which is the centrality?
 
 <hr>
 
-**Perron–Frobenius**: only the one for $\lambda_{\max}$ is all positive.
+Perron–Frobenius: only the one for λmax is all positive.
 
 <div class="fig tall">
 
@@ -1131,7 +1132,7 @@ The Perron–Frobenius theorem, for a nonnegative, irreducible matrix (irreducib
 </div>
 
 <!--
-The same seven nodes and the same numbers as two slides ago.
+The same seven nodes and the same numbers as on "Importance you inherit".
 -->
 
 ---
@@ -1243,7 +1244,7 @@ $A$ is a sum of rank-1 pieces, one per eigenvalue.
 <div class="fig scrub">
 
 ![w:1080](figures/decomp-sum.png)
-<figcaption>circle: an eigenvalue; tall bar: its eigenvector; wide bar: the same, transposed</figcaption>
+<figcaption>circle: eigenvalue · tall bar: eigenvector · wide bar: its transpose</figcaption>
 
 </div>
 
@@ -1347,7 +1348,7 @@ Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F
 <div class="cols">
 <div>
 
-- Four cliques of four, in a ring.
+- Four 4-cliques in a ring.
 - Add one node to one clique. Where does the score go?
 
 </div>
@@ -1364,6 +1365,10 @@ Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F
 
 </div>
 
+<!--
+Ask: one clique of 5, three of 4. Who gets the score? Most will say "a bit more for the big one".
+-->
+
 ---
 
 ## Localization
@@ -1373,7 +1378,7 @@ Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F
 <div class="cols">
 <div>
 
-* Add one node at a time to one clique.
+* Grow one clique to K nodes, one node at a time.
 * The densest part takes almost all the score.
 
 </div>
@@ -1409,7 +1414,7 @@ First bullet, then step the build: one extra node, and 68% of the total score mo
 </div>
 
 <!--
-The real network localizes: the densest cluster, Long Island and the city, takes 96% of the score. Upstate interchanges all score close to zero.
+The real network localizes: the densest cluster, Long Island and the city, takes 96% of the score. The top node is I-495 at Hempstead, Long Island. Upstate interchanges all score close to zero.
 -->
 
 ---
@@ -1424,14 +1429,14 @@ Katz centrality
 
 ---
 
-## Give everybody a baseline
+## Katz centrality
 
 <hr>
 
 <div class="cols">
 <div>
 
-* **Katz centrality**: $\beta$ for free, plus $\alpha$ times each neighbour's score.
+* Everyone gets $\beta$ for free, plus $\alpha$ × the neighbours' scores.
 * $c_i = \beta + \alpha \sum_j A_{ij}\, c_j$
 * $\mathbf{c} = \beta\, (I - \alpha A)^{-1} \mathbf{1}$
 
@@ -1456,6 +1461,7 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 <div class="cols">
 <div>
 
+- $\mathbf{c} = \beta\, (I - \alpha A)^{-1} \mathbf{1}$
 - $(I - \alpha A)^{-1} = \;?$
 - Hint: $\dfrac{1}{1-x} = 1 + x + x^2 + \cdots$ for $|x| < 1$.
 
@@ -1482,9 +1488,9 @@ Every node gets beta for free, so no node can be driven to zero. Move the sum to
 <div class="cols">
 <div>
 
-* $(I-\alpha A)^{-1} = I + \alpha A + \alpha^2 A^2 + \cdots$
+* $(I-\alpha A)^{-1} = \displaystyle\sum_{k \ge 0} \alpha^k A^k$
 * $A^k$ counts the walks of length $k$
-* Katz counts walks, discounted by length.
+* Katz counts walks, discounted by length
 
 </div>
 <div class="fig scrub" data-at="2">
@@ -1546,12 +1552,11 @@ $$(I - \alpha A)^{-1} = \sum_k \frac{1}{1 - \alpha \lambda_k}\, \mathbf{u}_k \ma
 <div class="fig scrub">
 
 ![w:1080](figures/katz-why.png)
-<figcaption>circle: the weight of term k, 1 / (1 − α λₖ)</figcaption>
 
 </div>
 
 <!--
-Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
+The 7-node network of the eigenvector slides (lambda_max = 2.884). Circle: the weight of term k, 1/(1 - alpha lambda_k). Each eigenvalue of A becomes 1/(1 - alpha lambda_k). As alpha approaches 1/lambda_1, the first term grows without bound and swamps the rest: Katz becomes eigenvector centrality. Past it, the first coefficient is negative and the scores mean nothing.
 -->
 
 ---
@@ -1563,8 +1568,8 @@ Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes
 <div class="cols">
 <div>
 
-- Katz centrality, $\alpha = 0.5/\lambda_{\max}$.
-- The same network.
+- Katz, $\alpha = 0.5/\lambda_{\max}$.
+- The network from the eigenvector quiz.
 
 </div>
 <div class="fig">
@@ -1589,7 +1594,8 @@ Here lambda_1 = lambda_max, the largest eigenvalue. Each eigenvalue of A becomes
 <div class="cols">
 <div>
 
-- Katz centrality, $\alpha = 0.5/\lambda_{\max}$.
+- Katz, $\alpha = 0.5/\lambda_{\max}$.
+- The network from the eigenvector quiz.
 - M again, as the eigenvector said.
 
 </div>
@@ -1613,8 +1619,8 @@ M 0.87, X 0.81 (largest = 1).
 <div class="cols">
 <div>
 
-- Katz centrality, $\alpha = 0.5/\lambda_{\max}$.
-- The same network.
+- Katz, $\alpha = 0.5/\lambda_{\max}$.
+- The network from the eigenvector quiz.
 
 </div>
 <div class="fig">
@@ -1639,7 +1645,8 @@ M 0.87, X 0.81 (largest = 1).
 <div class="cols">
 <div>
 
-- Katz centrality, $\alpha = 0.5/\lambda_{\max}$.
+- Katz, $\alpha = 0.5/\lambda_{\max}$.
+- The network from the eigenvector quiz.
 - H now: short walks still weigh a lot.
 
 </div>
@@ -1689,7 +1696,7 @@ A road runs both ways. A link does not.
 <div class="cols">
 <div>
 
-* **Authority** $a_i = \sum_j A_{ji}\, h_j$: pointed to by good hubs.
+* <strong class="cool">Authority</strong> $a_i = \sum_j A_{ji}\, h_j$: pointed to by good hubs.
 * **Hub** $h_i = \sum_j A_{ij}\, a_j$: points to good authorities.
 * On a road map, HITS is eigenvector centrality.
 
@@ -1697,7 +1704,7 @@ A road runs both ways. A link does not.
 <div class="fig">
 
 ![w:537](figures/hits-graph.png)
-<figcaption>an arrow from i to j: page i links to page j</figcaption>
+<figcaption>A_ij = 1: page i links to page j</figcaption>
 
 </div>
 </div>
@@ -1713,11 +1720,17 @@ On a road map A is symmetric, so A^T A = A^2, whose leading eigenvector is that 
 
 <hr>
 
+A node's score is built from its neighbours' scores.
+
 <div class="fig">
 
 ![w:1080](figures/genealogy.png)
 
 </div>
+
+<!--
+Landau (1895) ranked chess players by the scores of the players they beat. Seeley (1949) ranked children by who chose them. Katz (1953): status with a baseline. Hubbell (1965): influence in a group. Bonacich (1972): eigenvector centrality. Brin and Page (1998): PageRank, which comes next.
+-->
 
 ---
 
@@ -1730,7 +1743,7 @@ On a road map A is symmetric, so A^T A = A^2, whose leading eigenvector is that 
 
 * A page splits its score among its links out.
 * $c_i = \sum_j A_{ji}\, \dfrac{c_j}{d^{\text{out}}_j}$
-* C has three links in, and E has one. Which ranks higher?
+* C: three links in. E: one. Which ranks higher?
 
 </div>
 <div class="fig">
@@ -1808,7 +1821,7 @@ First bullet, then step the build: the total goes 1, 0.8, 0.6, ... 0. Then the s
 <div>
 
 * With probability $r = 0.15$, jump to a random page.
-* A dead end always jumps.
+* A dead end links to every page.
 * $c_i = (1-r) \sum_j A_{ji}\, \dfrac{c_j}{d^{\text{out}}_j} + \dfrac{r}{N}$
 * This is **PageRank**.
 
@@ -1899,3 +1912,7 @@ Draw a network in which degree, closeness, eccentricity and betweenness each ran
 *Bring it to the next class.*
 
 </div>
+
+<!--
+Deliberately the day-1 measures: the shortest-path row. A student who finishes can add eigenvector centrality as a fifth.
+-->

@@ -72,14 +72,14 @@
   /* Where each printed value sits relative to its disc (28 px type), picked so that
      no label lies on an edge or outside the frame. */
   const OFF = {
-    A: [-60, 9], B: [-62, 9], C: [0, 56], D: [-48, 46],
+    A: [-60, 9], B: [-62, 9], C: [0, 56], D: [36, 44],
     E: [58, 9], F: [58, 9], G: [0, -36]
   };
 
   /* near-paper warm grey -> saturated sky blue by the node's value (the m06 palette:
      saturation carries importance). The ink outline keeps a low score a disc. */
   function blue(v) {
-    const a = Math.max(0, Math.min(1, v));
+    const a = 0.72 * Math.max(0, Math.min(1, v));      /* tops out below full saturation */
     const m = (lo, hi) => Math.round(lo + (hi - lo) * a);
     return "rgb(" + m(239, 30) + "," + m(235, 150) + "," + m(232, 220) + ")";
   }
@@ -158,7 +158,7 @@
         S.rank = ctx.el("div", "ps-rank", "");
         panel.appendChild(S.rank);
         panel.appendChild(ctx.el("div", "anim-caption",
-          "x &larr; A x, then divide by the largest entry"));
+          "x &larr; A x, &divide; largest"));
         sideBox.appendChild(panel);
       }
 
@@ -166,7 +166,7 @@
         NAMES.forEach(function (n, i) {
           S.node[n].style.fill = blue(x[i]);
           /* white lettering once the disc is dark enough to need it */
-          S.name[n].style.fill = x[i] > 0.72 ? "#fff" : "#30323D";
+          S.name[n].style.fill = "#30323D";
           S.val[n].textContent = x[i].toFixed(2);
           S.ring[n].style.opacity = ring.indexOf(n) >= 0 ? "1" : "0";
         });
