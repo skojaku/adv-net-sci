@@ -142,6 +142,24 @@ BT = graph(["A-B", "B-C", "A-C", "C-D", "D-E", "E-F", "F-G", "E-G"])
 BT_XY = {"A": (0.0, 2.6), "B": (0.0, 0.6), "C": (1.3, 1.6), "D": (2.6, 1.6), "E": (3.9, 1.6),
          "F": (5.2, 2.6), "G": (5.2, 0.6)}
 
+# The sigma example (slide "Betweenness centrality"): two shortest s-t routes that share no
+# node, so each node on them carries half of the pair s, t. D sits above C.
+SIG = graph(["s-A", "A-D", "D-t", "s-B", "B-C", "C-t"])
+SIG_XY = {"s": (0.0, 1.0), "A": (1.4, 2.0), "D": (2.8, 2.0), "B": (1.4, 0.0), "C": (2.8, 0.0),
+          "t": (4.2, 1.0)}
+SIG_ROUTES = [["s", "A", "D", "t"], ["s", "B", "C", "t"]]
+
+
+def pair_share(G, s, t):
+    """sigma_st(i) / sigma_st for every node i strictly inside a shortest s-t path."""
+    paths = list(nx.all_shortest_paths(G, s, t))
+    out = {}
+    for p in paths:
+        for i in p[1:-1]:
+            out[i] = out.get(i, 0) + Fr(1, len(paths))
+    return out
+
+
 # Quiz left: a dumbbell. E with leaves A-D, the bridge F, G with leaves H-K.
 DB = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G", "G-H", "G-I", "G-J", "G-K"])
 DB_XY = {"E": (1.5, 2.0), "A": (1.5, 3.2), "B": (0.35, 2.6), "C": (0.35, 1.4), "D": (1.5, 0.8),
@@ -335,6 +353,7 @@ def compute():
     N["BT_btw"] = betweenness(BT)
     N["DB_btw"] = betweenness(DB)
     N["SQ_btw"] = betweenness(SQ)
+    N["SIG_share"] = pair_share(SIG, "s", "t")
     N["W5_dist"] = dist(W5, "u")["v"]
     N["W5_walks"] = walk_counts(W5, W5_ORDER, "u", "v")
     A, w, V = spectrum(EIG, EIG_ORDER)
@@ -384,6 +403,8 @@ def check(N):
     assert argbest(N["BT_btw"]) == (["D"], 9) and N["BT_btw"]["C"] == N["BT_btw"]["E"] == 8
     assert argbest(N["DB_btw"]) == (["E", "G"], 30) and N["DB_btw"]["F"] == 25
     assert argbest(N["SQ_btw"]) == (["O"], Fr(19, 2)) and N["SQ_btw"]["M"] == 9
+    assert N["SIG_share"] == {n: Fr(1, 2) for n in "ABCD"}, N["SIG_share"]
+    assert sorted(nx.all_shortest_paths(SIG, "s", "t")) == sorted(SIG_ROUTES)
     assert dict(SQ.degree)["O"] == dict(SQ.degree)["M"] == 3
     # --- two ways to count
     assert N["W5_dist"] == 2 and N["W5_walks"][:4] == [0, 2, 1, 11]

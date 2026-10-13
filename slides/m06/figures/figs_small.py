@@ -413,47 +413,45 @@ def fig_sigma_blank():
     F.emit("sigma-blank", b, container="full", h=390)
 
 
-SIG_ROUTES = [["S", "A", "T", "D"], ["S", "B", "T", "D"]]
-
-
 def fig_sigma_answer():
+    """One pair s, t with two shortest routes that share no node (smallgraphs.SIG: s-A-D-t over
+    s-B-C-t, D above C). Every node inside a route carries half of the pair; C, the node the
+    slide computes, is the hot one."""
     start_log()
-    for p in SIG_ROUTES:
-        assert p in list(nx.all_shortest_paths(SIGMA, "S", "D"))
-    assert len(list(nx.all_shortest_paths(SIGMA, "S", "D"))) == SIG_SD == 2
-    # the share of the S-D pair each node carries, computed, never typed
-    share = {n: SIG_SD_THROUGH[n] / SIG_SD for n in ("A", "B", "T")}
-    assert share == {"A": 0.5, "B": 0.5, "T": 1.0}, share
-    assert SIGMA_BT["A"] == SIGMA_BT["B"] and SIGMA_BT["T"] == max(SIGMA_BT.values())
-    words = {n: ("1/2" if share[n] == 0.5 else "1") for n in share}
-    assert words == {"A": "1/2", "B": "1/2", "T": "1"}
+    import smallgraphs as SG
+    share = SG.pair_share(SG.SIG, "s", "t")
+    assert sorted(nx.all_shortest_paths(SG.SIG, "s", "t")) == sorted(SG.SIG_ROUTES)
+    assert share == {n: 0.5 for n in "ABCD"}, share
+    words = {n: "1/2" for n in share}
 
-    # col width: s at the left, t at the right (lower case, as in sigma_st); the through-node
-    # is C.  The two routes up to C are two non-hot brushes (gold through A, cool through B);
-    # the shared leg C-t is one gold brush.  C carries the whole pair.
-    ren = {"S": "s", "A": "A", "B": "B", "T": "C", "D": "t"}
-    xy = {n: (58 + 100 * x, 80 + 76 * y) for n, (x, y) in SIGMA_POS.items()}
-    F.assert_planar_drawing(SIG_E, xy, "sigma answer")
-    b = "".join(F.seg(xy[u], xy[v]) for u, v in SIG_E)
-    b += F.brush([xy["S"], xy["A"], xy["T"]], color="gold", w=12)
-    b += F.brush([xy["S"], xy["B"], xy["T"]], color="cool", w=12)
-    b += F.brush([xy["T"], xy["D"]], color="gold", w=12)
-    b += "".join(F.disc(x, y, ren[n], fill="hot" if n == "T" else "white") for n, (x, y) in xy.items())
-    # A's share above A, B's below B, in ink; C's value below C, in hot, with the underline
-    b += F.text(xy["A"][0], xy["A"][1] + 36, words["A"])
-    b += F.text(xy["B"][0], xy["B"][1] - 36, words["B"])
-    b += F.text(xy["T"][0], xy["T"][1] - 36, words["T"], color="hot")
-    b += F.underline(xy["T"][0] - 16, xy["T"][0] + 16, xy["T"][1] - 54, color="hot")
-    b += F.text(xy["D"][0], xy["D"][1] + 70, "pair s, t", color="muted", anchor="east")
-    # callouts naming the two routes, each pointing at its own brush (outside the diamond)
+    xy = {n: (58 + 100 * x, 80 + 76 * y) for n, (x, y) in SG.SIG_XY.items()}
+    E = [tuple(e) for e in SG.SIG.edges]
+    F.assert_planar_drawing(E, xy, "sigma answer")
+    upper, lower = SG.SIG_ROUTES
+    b = "".join(F.seg(xy[u], xy[v]) for u, v in E)
+    b += F.brush([xy[n] for n in upper], color="gold", w=12)
+    b += F.brush([xy[n] for n in lower], color="cool", w=12)
+    b += "".join(F.disc(x, y, n, fill="hot" if n == "C" else "white") for n, (x, y) in xy.items())
+    # the upper route's shares above its nodes, the lower route's below; C's in hot, underlined
+    above = {n: (xy[n][0], xy[n][1] + 36) for n in upper[1:-1]}
+    below = {n: (xy[n][0], xy[n][1] - 36) for n in lower[1:-1]}
+    for n, (x, y) in {**above, **below}.items():
+        b += F.text(x, y, words[n], color="hot" if n == "C" else "ink")
+    b += F.underline(xy["C"][0] - 16, xy["C"][0] + 16, xy["C"][1] - 54, color="hot")
+    # the pair, named in the middle of the ring
+    cx = (xy["s"][0] + xy["t"][0]) / 2
+    b += F.text(cx, xy["s"][1], "pair s, t", color="muted")
+    pairbox = F.label_box(cx, xy["s"][1], "pair s, t", "center", pad=2)
+    assert not any(F.box_hits_disc(pairbox, x, y, F.NODE / 2 + 3) for x, y in xy.values())
+    assert not any(F.box_hits_segment(pairbox, xy[u], xy[v], pad=3) for u, v in E)
+    # callouts naming the two routes, each pointing at its own brush (left of the ring)
     mid = lambda p, q: ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
-    valbox = [F.label_box(xy["A"][0], xy["A"][1] + 36, words["A"], "center", pad=2),
-              F.label_box(xy["B"][0], xy["B"][1] - 36, words["B"], "center", pad=2),
-              F.label_box(xy["T"][0], xy["T"][1] - 36, words["T"], "center", pad=2)]
-    for text, at, tgt in (("s\u2013A\u2013C\u2013t", (14, 262), mid(xy["S"], xy["A"])),
-                          ("s\u2013B\u2013C\u2013t", (14, 50), mid(xy["S"], xy["B"]))):
-        tikz, box = F.callout(text, at, (tgt[0] - 4, tgt[1] + (7 if text[2] == "A" else -7)), anchor="west", gap=6)
-        assert not any(F.boxes_overlap(box, v) for v in valbox)
+    valbox = [F.label_box(x, y, "1/2", "center", pad=2) for x, y in {**above, **below}.values()]
+    for route, at, dy in ((upper, (14, 262), 7), (lower, (14, 50), -7)):
+        text = "\u2013".join(route)
+        tgt = mid(xy[route[0]], xy[route[1]])
+        tikz, box = F.callout(text, at, (tgt[0] - 4, tgt[1] + dy), anchor="west", gap=6)
+        assert not any(F.boxes_overlap(box, v) for v in valbox + [pairbox])
         assert not any(F.box_hits_disc(box, x, y, F.NODE / 2 + 3) for x, y in xy.values())
         b += tikz
     _DRAWN.extend(words.values())

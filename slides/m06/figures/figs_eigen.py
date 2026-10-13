@@ -247,18 +247,21 @@ def inherit_geometry():
     return pos, strings, at
 
 
-def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False, a_hot=True):
-    """One frame of eigen-inherit without its callout."""
-    nbrs = sorted(S.EIG["A"])
-    terms = [strings[m] for m in nbrs]
+def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False, a_hot=True,
+                 into="A"):
+    """One frame of eigen-inherit without its callout. `into`: the node whose neighbours'
+    scores are summed (the brushes end there and the sum lines are its own); the sum lines
+    keep A's left edge, so only the numbers change when `into` changes."""
+    terms = [strings[m] for m in sorted(S.EIG[into])]
     lam = f"{LAM1:.2f}"
-    x0 = (W_COL - est_w(" + ".join(terms))) / 2
+    x0 = (W_COL - est_w(" + ".join(strings[m] for m in sorted(S.EIG["A"])))) / 2
     body = edges_body(EDGES, pos)
     for m in brushes:
-        body += flow(pos[m], pos["A"], color="gold")
+        body += flow(pos[m], pos[into], color="gold")
     for n in NAMES:
         if clean:
-            body += F.disc(*pos[n], n, fill=F.shade(V1[n]))
+            body += F.disc(*pos[n], n, fill=F.shade(V1[n]),
+                           outline="hot" if brushes and n == into else "ink")
         elif n == "A":
             body += F.disc(*pos[n], n, fill="white", outline="hot" if a_hot else "ink")
         elif n in shown:
@@ -270,7 +273,7 @@ def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False
             body += F.text(*at[n], strings[n], color="ink")
     if sums:
         body += F.text(x0, INH_SUM1_Y, " + ".join(terms), anchor="west")
-        body += F.text(x0, INH_SUM2_Y, f"= {lam} × {strings['A']}", anchor="west")
+        body += F.text(x0, INH_SUM2_Y, f"= {lam} × {strings[into]}", anchor="west")
     return body, x0
 
 
@@ -293,7 +296,7 @@ def inherit_callouts(pos, strings, at, x0):
                            nbr_values, discs, edges, what="eigen-inherit 01")
     # the sum line's "2.88" (characters 2-5 of "= 2.88 x 1.00")
     two88 = (x0 + est_w("= ") + est_w("2.88") / 2, INH_SUM2_Y - 14)
-    for k, t in ((2, "their sum = 2.88 × A's score"), (3, "true at every node: λ = 2.88")):
+    for k, t in ((2, "their sum = 2.88 × A's score"), (3, "same 2.88 at C: this is λ")):
         out[k] = clean_callout(t, (cx, INH_CALL_Y), "center", two88, values + sumbox, discs, edges,
                                gap=3, what=f"eigen-inherit 0{k}", arrow_blockers=values)
     return out
@@ -303,7 +306,8 @@ def fig_eigen_inherit():
     """The score of A is the sum of its neighbours' scores, divided by lambda; four slides.
 
     00 the graph with A outlined hot, 01 B, D, F, G with their scores and a gold brush into A,
-    02 the sum line, 03 every score (= eig-pf plus its note).  Every frame after 00 carries a
+    02 the sum line, 03 every score, and the same sum at C (one neighbour, D: 0.58 = 2.88 x 0.20)
+    with a gold brush from D into C.  Every frame after 00 carries a
     note under the drawing (a band reserved on the canvas) with an arrow to what changed.
     """
     pos, strings, at = inherit_geometry()
@@ -318,7 +322,10 @@ def fig_eigen_inherit():
     f0, x0 = inherit_body(pos, strings, at)
     f1, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs)
     f2, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs, sums=True)
-    f3, _ = inherit_body(pos, strings, at, clean=True, sums=True)
+    # the second example: the leaf C, whose one neighbour D holds 2.88 times C's score
+    assert sorted(S.EIG["C"]) == ["D"] and (strings["D"], strings["C"]) == ("0.58", "0.20")
+    assert abs(LAM1 * V1["C"] - V1["D"]) < 1e-9
+    f3, _ = inherit_body(pos, strings, at, clean=True, sums=True, brushes=["D"], into="C")
     call = inherit_callouts(pos, strings, at, x0)
     frames = [f0, f1 + call[1][0], f2 + call[2][0], f3 + call[3][0]]
     F.emit_frames("eigen-inherit", frames, container="col", h=INH_H, box=INH_BOX)
@@ -328,7 +335,7 @@ def fig_eigen_inherit():
 def fig_eig_pf():
     """The Perron-Frobenius eigenvector, largest entry set to 1: eigenvector centrality.
 
-    The body is frame 03 of eigen-inherit without its note (same canvas, same box).
+    The body is frame 03 of eigen-inherit with A's sum and no brush (same canvas, same box).
     """
     assert all(v > 0 for v in V1.values()) and abs(max(V1.values()) - 1) < 1e-12
     assert max(V1, key=V1.get) == "A" and V1["B"] > V1["D"] and DEG["B"] < DEG["D"]

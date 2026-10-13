@@ -337,7 +337,9 @@ GRID_BOX = (GH - (HEAD_Y + 22), GH - (ROW2_Y0 - 8))      # one crop for all four
 
 # (metric, description lines); the description of every cell is the spec's text, only broken
 # into lines. Nothing is shortened.
-ROW1 = [("closeness", ["sum of", "lengths"]),
+# Degree is in both rows: a shortest path of length 1 and a walk of length 1 are one edge.
+ROW1 = [("degree", ["paths of", "length 1"]),
+        ("closeness", ["sum of", "lengths"]),
         ("harmonic", ["sum of", "1/length"]),
         ("eccentricity", ["longest", "distance"]),
         ("betweenness", ["paths passing", "through"])]
@@ -350,15 +352,24 @@ CELL_GAP = 6                      # between two boxes
 PADX = 14                         # at least this much white between the longest line and the border
 
 
+def _need(cell):
+    name, desc = cell
+    return max(len(t) for t in [name] + desc) * 0.6 * F.FONT + 2 * PADX
+
+
+DEG_W = max(_need(ROW1[0]), _need(ROW2[0]))   # the two degree cells: one width, one column
+
+
 def _cells(row, y0, y1):
     """Cell widths follow the longest line (Meslo: 0.6 em per character), so a long word such as
-    "eigenvector" never touches its border; the spare width is shared equally."""
-    need = [max(len(t) for t in [name] + desc) * 0.6 * F.FONT + 2 * PADX for name, desc in row]
+    "eigenvector" never touches its border; the spare width is shared equally among all cells
+    but the first (degree), which has the same width in both rows so the two line up."""
+    need = [DEG_W] + [_need(c) for c in row[1:]]
     spare = (GX1 - GX0) - sum(need) - CELL_GAP * (len(row) - 1)
     assert spare >= 0, "the grid row does not fit"
     out, x = [], GX0
-    for (name, desc), w in zip(row, need):
-        w += spare / len(row)
+    for i, ((name, desc), w) in enumerate(zip(row, need)):
+        w += spare / (len(row) - 1) if i else 0
         out.append(dict(name=name, desc=desc, x0=x, x1=x + w, y0=y0, y1=y1))
         x += w + CELL_GAP
     return out
@@ -366,7 +377,9 @@ def _cells(row, y0, y1):
 
 CELLS1 = _cells(ROW1, ROW1_Y0, ROW1_Y1)
 CELLS2 = _cells(ROW2, ROW2_Y0, ROW2_Y1)
-# geometry asserts: cells inside the canvas, no overlap, same width within a row
+assert CELLS1[0]["name"] == CELLS2[0]["name"] == "degree"
+assert (CELLS1[0]["x0"], CELLS1[0]["x1"]) == (CELLS2[0]["x0"], CELLS2[0]["x1"]), "degree: one column"
+# geometry asserts: cells inside the canvas, no overlap
 for _row in (CELLS1, CELLS2):
     for _a, _b in zip(_row, _row[1:]):
         assert _a["x1"] < _b["x0"]
@@ -419,29 +432,29 @@ def _grid_fig(name, row1, row2, new=()):
 
 def grid_empty():
     _grid_same_picture()
-    _grid_fig("grid-empty", 0, 1)
+    _grid_fig("grid-empty", 1, 1)
 
 
 def grid_row1():
-    _grid_fig("grid-row1", 4, 1, new=[c[0] for c in ROW1])
+    _grid_fig("grid-row1", 5, 1, new=[c[0] for c in ROW1[1:]])
 
 
 def grid_row2():
-    _grid_fig("grid-row2", 4, 3, new=["Katz", "eigenvector"])
+    _grid_fig("grid-row2", 5, 3, new=["Katz", "eigenvector"])
 
 
 def grid_final():
-    _grid_fig("grid-final", 4, 5, new=["HITS", "PageRank"])
+    _grid_fig("grid-final", 5, 5, new=["HITS", "PageRank"])
 
 
 def _grid_same_picture():
     """The four states are one picture: every cell that appears is drawn at the same place."""
     plain = lambda t: re.sub(r"\\textcolor\{hot\}\{(\w+)\}", r"\1", t).replace("draw=hot", "draw=ink")
-    big = set(plain(_grid(4, 5)).splitlines())
-    for part in (_grid(0, 1), _grid(4, 1, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"])):
+    big = set(plain(_grid(5, 5)).splitlines())
+    for part in (_grid(1, 1), _grid(5, 1, [c[0] for c in ROW1[1:]]), _grid(5, 3, ["Katz", "eigenvector"])):
         for line in plain(part).splitlines():
             assert "pale" in line or line in big, f"grid state differs from the final picture: {line[:60]}"
-    assert "pale" not in _grid(4, 5)                                   # the final table has no empty slot
+    assert "pale" not in _grid(5, 5)                                   # the final table has no empty slot
 
 
 FIGURES = [

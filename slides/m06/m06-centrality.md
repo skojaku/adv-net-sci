@@ -358,7 +358,7 @@ Step 4 of 4: length 4: 11 walks; this one revisits a node.
 
 <!--
 Which routes count, and how do they become one number? Every measure today is one choice on each axis. We fill this in as we go.
-Degree sits at the corner: a walk of length 1 is also a shortest path of length 1.
+Degree sits in both rows: a shortest path of length 1 and a walk of length 1 are the same thing, one edge.
 -->
 
 ---
@@ -1337,7 +1337,7 @@ Step 4 of 4: D carries the most, 9.
 * $b_i = \displaystyle\sum_{s<t} \frac{\sigma_{st}(i)}{\sigma_{st}}$
 * $\sigma_{st}$: the number of shortest $s$–$t$ paths.
 * $\sigma_{st}(i)$: those that pass through $i$.
-* From s to t: two shortest paths, so A and B carry half each.
+* From s to t: two shortest paths; C is on one, so C carries 1/2.
 
 </div>
 <div class="fig">
@@ -1348,7 +1348,7 @@ Step 4 of 4: D carries the most, 9.
 </div>
 
 <!--
-From S to D there are two shortest paths, so A and B each carry half of that pair, and T carries all of it.
+From s to t there are two shortest paths, s-A-D-t and s-B-C-t, and they share no node. C is on one of the two: sigma_st(C) = 1, sigma_st = 2, so C carries 1/2 of this pair. So do A, B and D. The pair counts once in total, shared out among its routes.
 -->
 
 ---
@@ -1487,22 +1487,8 @@ The answer to this morning's question. Four of the top five interchanges in the 
 </div>
 
 <!--
-Four ways to turn shortest paths into one number.
+Degree, and four more ways to turn shortest paths into one number.
 -->
-
----
-
-<!-- _class: mid -->
-
-## A question to sleep on
-
-<hr>
-
-<div class="formula">
-
-Is a city important because its neighbours are important?
-
-</div>
 
 ---
 
@@ -1532,8 +1518,6 @@ Day 2 starts here.
 “A man is known by the company he keeps.”
 
 </div>
-
-- *The Ass and His Purchaser*
 
 </div>
 <div class="fig">
@@ -1571,7 +1555,7 @@ A man buys a donkey on trial. It walks straight to the laziest donkey in the yar
 
 <!--
 Explain the bullets on this slide; the next 3 slides step the figure, one change each (the grey note says which).
-The steps: A's neighbours hand over their scores, and the sum is 2.88 times A's own.
+The steps: A's neighbours hand over their scores, and the sum is 2.88 times A's own. Then the leaf C: its one neighbour D holds 0.58 = 2.88 x 0.20, the same 2.88. Every node gives the same factor; that number is lambda.
 It is circular: a score defined by scores. The constant lambda keeps the scores from growing without bound.
 -->
 
@@ -1644,7 +1628,7 @@ Step 2 of 3: their sum = 2.88 x A's score.
 </div>
 
 <!--
-Step 3 of 3: true at every node: lambda = 2.88.
+Step 3 of 3: same 2.88 at C (0.58 = 2.88 x 0.20): this is lambda.
 -->
 
 ---
