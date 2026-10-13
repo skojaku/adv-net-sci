@@ -1,57 +1,53 @@
-# Module 03 — Marp deck
+# Module 06 — Marp deck: centrality
 
-Milgram's small-world experiment, path length and clustering, the σ index, and
-the Watts–Strogatz model. Story plan and lecturer decisions: `plan.md`.
+Centrality, organised by two choices: which routes count (shortest paths or walks) and how
+they become one number. Rome opens it, the New York State highways are the running real
+network, and every measure gets a one-graph question where the central-looking node loses.
+Lecturer decisions: `plan.md`. Slide list and figure groups: `review/DECK_SPEC.md`.
 
 ## Files
 
-    m03-robustness.md     the deck
-    network-science.css   the theme (from marp-samples)
-    figures/              PNG/JPG assets (prefer PNG over SVG in Marp)
-
-## Figures note
-
-Marp wraps each slide in an SVG `foreignObject`. Nested `<img src="*.svg">`
-often renders blank in preview/HTML. Use PNG/JPG for slide assets.
+    m06-centrality.md     the deck (82 slides: day 1 is 1-41, day 2 is 42-82)
+    network-science.css   the theme (this module's copy; MesloLGS NF body, brush underlines)
+    scrub.js              steps a build's frames in the presentation (see below)
+    figures/              generators; the PNGs and frames they write are not committed
+    figures/photos/       the photographs (committed; credits in CREDITS.md)
+    check_render.py       the render gate
 
 ## Build
 
-    npm i -g @marp-team/marp-cli
+Needs xelatex with `fontspec` and the font **MesloLGS NF** installed (the figures are set in
+it), pdftoppm, Python with numpy, Pillow, networkx, and marp-cli.
 
-    marp m03-robustness.md --theme network-science.css --allow-local-files -o m03-robustness.html
-    marp m03-robustness.md --theme network-science.css --allow-local-files --pdf
-    marp m03-robustness.md --theme network-science.css --allow-local-files --pptx
+    cd figures
+    uv run make_ny.py          # once: the NY highway network (OSM, ~500 MB download)
+    uv run make_basemap.py     # once: the Roman basemap (OSM tiles)
+    python3 make_figures.py    # every figure; `python3 make_figures.py q-close` for some
+    cd ..
+    marp m06-centrality.md --theme network-science.css --html --allow-local-files --no-stdin -o m06-centrality.html
+    marp m06-centrality.md --theme network-science.css --html --allow-local-files --no-stdin --images png -o review/slide.png
+    python3 check_render.py && python3 ../gatelib/check_deck.py m06-centrality.md
 
-Or in VS Code with the Marp extension, add to settings.json:
+`--html` on every invocation: the scrubber and the two live stages are scripts.
 
-    "markdown.marp.themes": ["./network-science.css"]
+## Builds you step through
 
-Math is KaTeX (`math: katex` in the front matter), so `$...$` and `$$...$$` work as written.
+A figure in `<div class="fig scrub">` is a build: `figures/frames/<name>/00.png, 01.png, ...`.
+In the presentation the figure starts at frame 0 and the right arrow (or a clicker) steps it;
+a slider and ◀ ▶ appear under it for doing the same with the mouse. `data-at="k"` lets the
+slide's first k bullets appear before the frames. The PDF/PNG export shows the last frame
+(`figures/<name>.png`). Coming back to the slide from a later one shows the last frame.
 
-## Design tokens
+## Design tokens (v3, the lecturer's own palette)
 
-    accent          #3959A6
-    accent 2        #B14434
-    accent 3        #DAB167
-    text            #000000
-    annotation      #6b6b6b
-    rule            #dddddd
+    ink             #30323D    text, outlines, edges (no pure black)
+    muted           #8C847F    what is not the point
+    pale / faint    #D9D3CF / #EFEBE8
+    hot             #D9631E    the point of the slide; key terms (with a brush underline)
+    cool            #1E96DC    second emphasis; high scores
+    gold            #C08A1F    a route
     formula panel   #f7f4f1
 
-    body            Libre Baskerville 400
-    figure labels   Caveat
-
-## Conventions
-
-    <!-- _class: lead -->     title slide (keep sub/credit on same slide)
-    <!-- _class: part -->      part divider
-    ## Title + <hr>           title and rule on the SAME slide as content
-                              (do not use --- after titles — that splits slides)
-    <div class="cols">         two-column body
-    <div class="formula">      tinted formula panel
-    <div class="note">         gray annotation copy
-    <!-- ... -->               speaker notes
-
-Regenerate diagrams:
-
-    python figures/make_figures.py   # needs networkx + matplotlib
+    headings        Libre Baskerville
+    body, labels    MesloLGS NF (fallback Menlo)
+    math            KaTeX on the slides, Latin Modern in the figures
