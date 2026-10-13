@@ -5,7 +5,8 @@
     q-close-CA  q-close-CA-ans          closeness, hub E against the bridge F          (CA group)
     q-harm-CA-ans                       harmonic on the same CA drawing                 (CA group)
     cut-blank   cut-closeness           CA with the road E-F closed                     (CA group)
-    harmonic-def (frames)               frame 0 = cut-blank, then G's reciprocals       (CA group)
+    harmonic-def (12 frames)            frame 0 = cut-blank; G's terms, their sum 9/2, the star piece's
+                                        scores, the other piece's scores, G hot        (CA group)
     q-harm-HD   q-harm-HD-ans           harmonic on a star and a path of seven
     q-ecc-EA/-ans  q-ecc-EB/-ans        eccentricity: the closeness winner is not the answer
     q-btw-DB/-ans  q-btw-SQ/-ans        betweenness
@@ -111,7 +112,8 @@ def question(pos, G, letters=None, dashed=(), extra=""):
 
 # --------------------------------------------------------------------------- label slots
 class Spec:
-    """One label.  kind: 'val' (a value, ink) or 'win' (a value in hot with an underline)."""
+    """One label.  kind: 'val' (a value, ink), 'win' (hot, underlined) or 'lift' (ink, at a winner's
+    height, so that the value does not move when it turns hot)."""
 
     def __init__(self, text, owner, kind="val"):
         self.text, self.owner, self.kind = text, owner, kind
@@ -125,7 +127,7 @@ LIFT = 14     # a winner's value above its disc is lifted this far, so that its 
 
 
 def lifted(sp, anc, dy):
-    return dy + LIFT if sp.kind == "win" and "south" in anc else dy
+    return dy + LIFT if sp.kind in ("win", "lift") and "south" in anc else dy
 
 
 def solve_slots(specs, pos, edges, blockers=(), bounds=BOUNDS, sides=None, segs=(), fixed=None):
@@ -229,12 +231,15 @@ def draw(spec, side, pos, text=None, color=None):
     return out
 
 
-def answer(q, pos, G, values, winners, letters=None, blockers=(), slots=None):
+def answer(q, pos, G, values, winners, letters=None, blockers=(), slots=None, level=False):
     """The question's TikZ plus the winner discs, the values and the underlines.
 
     values: node -> text.  winners: nodes drawn hot.
     """
-    specs = {n: Spec(v, n, "win" if n in winners else "val") for n, v in values.items()}
+    # level: the candidates that lose are drawn at a winner's height, so that two answers on one
+    # graph (eigenvector, Katz) place the same value in the same spot
+    lose = "lift" if level else "val"
+    specs = {n: Spec(v, n, "win" if n in winners else lose) for n, v in values.items()}
     chosen = slots if slots is not None else solve_slots(specs, pos, edge_list(G), blockers)
     body = q
     for n in sorted(winners):
@@ -270,7 +275,7 @@ def close_CB():
 
 
 # --------------------------------------------------------------------------- the CA group
-CA_POS = layout(S.CA_XY, S.CA, margin=(18, 62))   # room on the right for I's value
+CA_POS = layout(S.CA_XY, S.CA)
 CA_CUT_EDGE = ("E", "F")
 _mid = tuple((np.array(CA_POS["E"]) + np.array(CA_POS["F"])) / 2)
 CR = 12                                                     # half-size of the cross on the closed road
@@ -294,10 +299,11 @@ def union_box(bodies, h=CANVAS_H, container="col"):
     return (max(0, lo - pad) / F.PXBP, min(h * F.PXBP, hi + pad) / F.PXBP)
 
 
-# The three quiz candidates sit on one line, 1.3 and 1.1 units apart; each value is placed by hand so
-# that it reads as its own disc's: E's above-right (clear of the E-A spoke), F's straight below,
-# G's above-left (clear of the G-H edge).
-CA_SLOTS = {"E": ("south west", -4, 32), "F": ("north", 0, -28), "G": ("south east", 8, 32)}
+# Every value sits directly above or directly below its own disc (never beside it, never over an edge).
+# The three quiz candidates sit on one line: E's above E, F's below F, G's above G (the block H-I-J-K is
+# drawn low and to the right so that G's value has the room).
+CA_SLOTS = {"E": ("south", 0, 32), "F": ("north", 0, -28), "G": ("south", 0, 32)}
+VSIDES = [(a, 0, d) for r in (28, 32, 38, 46, 56, 64, 72, 80) for a, d in (("south", r), ("north", -r))]
 
 
 def ca_group():
@@ -328,7 +334,7 @@ def ca_group():
         uses[n] += [str(sumL[n]), frac(hL[n])]
     widest = {n: max(t, key=len) for n, t in uses.items()}
     specs = {n: Spec(widest[n], n, "win" if n in "EFG" else "val") for n in pos}
-    slots = solve_slots(specs, pos, edges, blockers=[CROSS_BLOCK], fixed=CA_SLOTS)
+    slots = solve_slots(specs, pos, edges, blockers=[CROSS_BLOCK], fixed=CA_SLOTS, sides=VSIDES)
 
     # q-close-CA-ans / q-harm-CA-ans use the same slots
     def ans(values, winners):
@@ -346,14 +352,15 @@ def ca_group():
     zeros = "".join(draw(Spec("0", n), slots[n], pos) for n in sorted(pos))
     cut_close = cut + zeros
 
-    def frame(vals, win=None, source=None):
+    def frame(vals, win=None, source=None, lift=()):
         body = cut
         if source:
             body += F.disc(*pos[source], source, fill="cool")
         if win:
             body += F.disc(*pos[win], win, fill="hot")
         for n in sorted(vals):
-            body += draw(Spec(vals[n], n, "win" if n == win else "val"), slots[n], pos)
+            kind = "win" if n == win else "lift" if n in lift else "val"
+            body += draw(Spec(vals[n], n, kind), slots[n], pos)
         return body
 
     frames = [cut, frame({}, source="G")]
@@ -364,9 +371,15 @@ def ca_group():
     v["K"] = "1/2"
     frames.append(frame(v, source="G"))
     v.update({n: "0" for n in other})
-    frames.append(frame(v, source="G"))
-    frames.append(frame({**v, "G": "9/2"}, win="G"))
-    frames.append(frame(final, win="G"))
+    frames.append(frame(v, source="G"))                                   # 07: G's terms
+    g = {"G": frac(hc["G"])}
+    frames.append(frame({**v, **g}, source="G", lift="G"))                # 08: their sum, in ink
+    frames.append(frame(g, source="G", lift="G"))                         # 09: the terms cleared
+    star = {n: frac(hc[n]) for n in other}
+    frames.append(frame({**g, **star}, source="G", lift="G"))             # 10: the star piece's scores
+    rest = {n: frac(hc[n]) for n in "FHIJK"}
+    frames.append(frame(final, win="G"))                                  # 11: the other piece, then G wins
+    assert len(frames) == 12 and final == {**g, **star, **rest}
     assert frames[0] == cut
 
     bodies = [q, close_ans, harm_ans, cut, cut_close] + frames[1:]
@@ -427,8 +440,12 @@ def eig():
         q = question(pos, G, letters=set(cand))
         ev_v = {n: f"{ev[key][n]:.2f}" for n in cand}
         kq_v = {n: f"{kq[key][n]:.2f}" for n in cand}
-        a = answer(q, pos, G, ev_v, {e_win}, letters=set(cand))
-        k = answer(q, pos, G, kq_v, {k_win}, letters=set(cand))
+        # one set of slots, solved as if every candidate won, so that a value is in the same place on
+        # the eigenvector answer and on the Katz answer (slide 70 shows the flip, nothing else moves)
+        both = {n: Spec(ev_v[n], n, "win") for n in cand}
+        slots = solve_slots(both, pos, edge_list(G))
+        a = answer(q, pos, G, ev_v, {e_win}, letters=set(cand), slots=slots, level=True)
+        k = answer(q, pos, G, kq_v, {k_win}, letters=set(cand), slots=slots, level=True)
         F.emit_group([(f"q-eig-{side}", q), (f"q-eig-{side}-ans", a), (f"q-katz-{side}-ans", k)],
                      container="col", h=CANVAS_H)
 

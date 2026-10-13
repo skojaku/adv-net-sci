@@ -100,9 +100,11 @@ CA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G",
             "G-H", "G-I", "G-J", "H-I", "I-J", "J-K"])
 # The hub E is drawn at the centre of the picture, with long spokes to its leaves, and the
 # winner F sits off-centre: picking "the middle of the drawing" must not give the answer.
-CA_XY = {"E": (2.6, 2.0), "A": (1.9, 3.5), "B": (0.0, 3.0), "C": (0.0, 1.0), "D": (1.9, 0.5),
-         "F": (3.9, 2.0), "G": (5.0, 2.0), "H": (5.6, 2.9), "I": (6.2, 2.0), "J": (5.6, 1.1),
-         "K": (6.2, 0.2)}
+# Every value is drawn directly above or below its own disc, so the block H-I-J-K is spread out to
+# the right and down (G's value needs the room above G; I's must clear H and J).
+CA_XY = {"E": (4.0, 2.0), "A": (1.8, 3.4), "B": (0.0, 2.7), "C": (0.0, 1.3), "D": (1.8, 0.6),
+         "F": (5.3, 2.0), "G": (6.4, 2.0), "H": (7.5, 2.3), "I": (8.7, 1.35), "J": (7.5, 0.45),
+         "K": (8.8, -0.15)}
 
 # Right: N carries a triangle (L, M) and a leaf O; P carries two long arms (Q-R-S, T-U).
 CB = graph(["N-L", "N-M", "L-M", "N-O", "N-P", "P-Q", "Q-R", "R-S", "P-T", "T-U"])
@@ -204,9 +206,11 @@ def power_trace(A, steps):
 # K has three, all in a clique.
 EQ_L = graph(["M-H1", "M-H2", "H1-H2", "H1-a", "H1-b", "H1-c", "H2-d", "H2-e", "H2-f",
               "M-X", "X-p", "X-q", "X-r"])
-EQ_L_XY = {"H1": (1.6, 2.8), "H2": (1.6, 1.2), "M": (3.0, 2.0), "X": (4.4, 2.0),
-           "a": (0.8, 3.5), "b": (0.1, 3.0), "c": (1.6, 3.7), "d": (0.8, 0.5), "e": (0.1, 1.0),
-           "f": (1.6, 0.3), "p": (5.1, 2.9), "q": (5.6, 2.0), "r": (5.1, 1.1)}
+# The loser X is drawn at the centre of the picture (the leaves of X reach as far right as the
+# leaves of the two hubs reach left); the winner M sits off-centre.
+EQ_L_XY = {"H1": (1.2, 2.9), "H2": (1.2, 1.1), "M": (2.3, 2.0), "X": (3.4, 2.0),
+           "a": (0.2, 3.7), "b": (0.0, 2.6), "c": (1.4, 3.9), "d": (0.2, 0.3), "e": (0.0, 1.4),
+           "f": (1.4, 0.1), "p": (5.2, 3.2), "q": (6.8, 2.0), "r": (5.2, 0.8)}
 EQ_R = graph(["H-a", "H-b", "H-c", "H-d", "H-e", "H-K1", "K1-K", "K1-K3", "K1-K4",
               "K-K3", "K-K4", "K3-K4"])
 EQ_R_XY = {"H": (1.6, 2.0), "a": (0.6, 3.1), "b": (0.2, 2.0), "c": (0.6, 0.9), "d": (1.6, 3.3),
@@ -411,7 +415,7 @@ def check(N):
     assert [round(kq[s][n], 2) for s, n in (("left", "M"), ("left", "X"), ("right", "H"), ("right", "K"))] \
         == [0.87, 0.81, 1.0, 0.81]
     # --- the quiz drawings: the drawn middle is never the answer
-    for xy, middle, winner in ((EA_XY, "E", "F"), (SQ_XY, "M", "O")):
+    for xy, middle, winner in ((EA_XY, "E", "F"), (SQ_XY, "M", "O"), (CA_XY, "E", "F"), (EQ_L_XY, "X", "M")):
         xs, ys = [p[0] for p in xy.values()], [p[1] for p in xy.values()]
         cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
         near = min(xy, key=lambda n: (xy[n][0] - cx) ** 2 + (xy[n][1] - cy) ** 2)
