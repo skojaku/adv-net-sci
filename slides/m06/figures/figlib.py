@@ -666,6 +666,40 @@ def pct(x, d=0):
     return f"{q}\\%"
 
 
+# --------------------------------------------------------------------------- callouts
+# The lecturer steps a build one slide at a time and wants every step to say what changed:
+# a short note in light grey, with a thin arrow to the thing that changed (2026-10-13).
+def callout(s, at, target, anchor="south", bend=0, color="muted", size=FONT, gap=7.0,
+            tip=None):
+    """A muted note at `at` (with `anchor`) and a thin arrow from the note to `target`.
+
+    Returns (tikz, box): add `box` to the blockers of any later label placement. The
+    arrow starts on the edge of the note's box nearest the target and stops `gap` bp short
+    of the target (a disc's centre: pass gap = NODE/2 + 4). `bend` (degrees) curves it.
+    `tip`, if given, overrides where the arrow starts (a point on the note's box).
+    """
+    b = label_box(at[0], at[1], s, anchor, size=size, pad=2)
+    cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+    tx, ty = target
+    if tip is None:
+        dx, dy = tx - cx, ty - cy
+        hw, hh = (b[2] - b[0]) / 2, (b[3] - b[1]) / 2
+        t = min(hw / abs(dx) if dx else 1e9, hh / abs(dy) if dy else 1e9)
+        sx, sy = cx + dx * t, cy + dy * t
+        L = math.hypot(dx, dy) or 1.0
+        sx, sy = sx + dx / L * 4, sy + dy / L * 4          # a little air off the text
+    else:
+        sx, sy = tip
+    L = math.hypot(tx - sx, ty - sy) or 1.0
+    ex, ey = tx - (tx - sx) / L * gap, ty - (ty - sy) / L * gap
+    path = (f"({sx:.1f},{sy:.1f}) to[bend left={bend}] ({ex:.1f},{ey:.1f})" if bend
+            else f"({sx:.1f},{sy:.1f}) -- ({ex:.1f},{ey:.1f})")
+    tikz = (text(at[0], at[1], s, color=color, anchor=anchor, size=size)
+            + f"\\draw[{color},line width=1.6bp,line cap=round,"
+              f"-{{Stealth[length=9bp,width=7bp]}}] {path};\n")
+    return tikz, b
+
+
 # --------------------------------------------------------------------------- geometry gates
 def clearance_bad(edges, pos, r=NODE / 2 + 3):
     """No straight edge may pass through a disc it does not end at."""

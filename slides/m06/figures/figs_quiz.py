@@ -269,9 +269,18 @@ def _close_facts():
     return sumL, sumR
 
 
+def close_str(G, n):
+    """Closeness (N - 1) / (sum of distances), two decimals: 9/16 -> 0.56, 10/19 -> 0.53."""
+    return f"{float(S.closeness(G)[n]):.2f}"
+
+
 def close_CB():
     _, sumR = _close_facts()
-    quiz("q-close-CB", S.CB, S.CB_XY, {n: str(sumR[n]) for n in "NP"}, {"P"})
+    assert S.CB.number_of_nodes() == 10 and sumR["P"] == 16 and sumR["N"] == 18
+    values = {n: close_str(S.CB, n) for n in "NP"}
+    assert values == {"P": "0.56", "N": "0.50"}
+    assert max(values, key=values.get) == "P"
+    quiz("q-close-CB", S.CB, S.CB_XY, values, {"P"})
 
 
 # --------------------------------------------------------------------------- the CA group
@@ -347,7 +356,10 @@ def ca_group():
             body += draw(sp[n], slots[n], pos)
         return body
 
-    close_ans = ans({n: str(sumL[n]) for n in "EFG"}, {"F"})
+    assert G.number_of_nodes() == 11
+    cvals = {n: close_str(G, n) for n in "EFG"}
+    assert cvals == {"F": "0.53", "E": "0.50", "G": "0.50"} and max(cvals, key=cvals.get) == "F"
+    close_ans = ans(cvals, {"F"})
     harm_ans = ans({n: frac(hL[n]) for n in "EFG"}, {"E"})
 
     zeros = "".join(draw(Spec("0", n), slots[n], pos) for n in sorted(pos))

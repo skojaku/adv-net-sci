@@ -6,7 +6,7 @@ small step, in the lecturer's style (figlib: pencil discs, brush strokes, Meslo 
 
     w5-blank, w5-walks             slides 8, 9    how far is u from v: shortest path, then walks
                                                   (col; frame 0 of w5-walks = w5-blank)
-    closeness-def, bowtie-closeness slides 12, 25  the sum of distances, node by node; D smallest
+    closeness-def, bowtie-closeness slides 12, 25  the sum of distances, node by node, then c = 6/sum; D 0.60
     ecc-def                        slide 26       the sums give way to eccentricities
                                                   (frame 0 = bowtie-closeness)
     btw-def                        slide 33       one frame per source node (its paths, counters), zeros, D = 9
@@ -139,14 +139,17 @@ BT_NODES = sorted(S.BT)
 # where each node's number sits: above (+1) or below (-1); one choice, so a number never hops
 BT_SIDE = {"A": 1, "B": -1, "C": 1, "D": -1, "E": 1, "F": 1, "G": -1}
 BT_GAP = 36
+# C and E sit where an edge climbs away on one side; their numbers lean to the free side so a
+# four-character value ("0.55") never lies across an edge
+BT_DX = {"C": 26, "E": -26}
 
 
 def bt_value(n, s, color="ink"):
     x, y = BT_POS[n]
-    return F.text(x, y + BT_SIDE[n] * BT_GAP, s, color=color)
+    return F.text(x + BT_DX.get(n, 0), y + BT_SIDE[n] * BT_GAP, s, color=color)
 
 
-def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None):
+def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None, under_w=22):
     """The bowtie with its edges, optional brushes under the discs, values beside the nodes.
     `hot`: nodes whose disc is the answer; `under`: the node whose value is underlined."""
     colors = colors or {}
@@ -157,7 +160,7 @@ def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None):
     if under:
         x, y = BT_POS[under]
         yy = y + BT_SIDE[under] * BT_GAP - 18
-        o += F.underline(x - 22, x + 22, yy, color="hot")
+        o += F.underline(x - under_w, x + under_w, yy, color="hot")
     return o
 
 
@@ -168,14 +171,21 @@ def closeness_frames():
     assert [sums[n] for n in BT_NODES] == [15, 15, 11, 10, 11, 15, 15]
     L = S.dist(G, "A")
     assert sum(L.values()) == 15 and sorted(L.values()) == [0, 1, 1, 2, 3, 4, 4]
+    N = len(G)
+    clo = {n: f"{(N - 1) / sums[n]:.2f}" for n in BT_NODES}               # c_i = (N-1) / sum: higher is better
+    assert clo == {"A": "0.40", "B": "0.40", "C": "0.55", "D": "0.60", "E": "0.55", "F": "0.40", "G": "0.40"}, clo
     frames = [bt_scene()]                                                # the bare bowtie
     frames.append(bt_scene({n: str(k) for n, k in L.items() if n != "A"}, fill={"A": "cool"}))
     shown = {}
     for n in BT_NODES:
         shown[n] = str(sums[n])
-        frames.append(bt_scene(dict(shown)))
-    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D"))
-    return frames, sums
+        frames.append(bt_scene(dict(shown)))                             # every sum in ink, nobody hot
+    shown["A"] = clo["A"]                                                # A's 15 turns into 0.40
+    frames.append(bt_scene(dict(shown)))
+    shown = dict(clo)                                                    # every other sum turns into its closeness
+    frames.append(bt_scene(dict(shown)))
+    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D", under_w=34))
+    return frames, clo
 
 
 def closeness_def():
@@ -189,11 +199,11 @@ def ecc_def():
     ecc = S.eccentricity(G)
     assert S.argbest(ecc, min) == (["D"], 2)
     assert [ecc[n] for n in BT_NODES] == [4, 4, 3, 2, 3, 4, 4]
-    closeness, sums = closeness_frames()
-    sumtxt = {n: str(sums[n]) for n in BT_NODES}
+    closeness, clo = closeness_frames()
+    sumtxt = dict(clo)                                                    # the closeness values, stepping back
     frames = [closeness[-1]]                                              # = bowtie-closeness
     muted = {n: "muted" for n in BT_NODES}
-    frames.append(bt_scene(sumtxt, colors=muted))                         # the sums step back
+    frames.append(bt_scene(sumtxt, colors=muted))                         # the closeness values step back
     shown = {}
     for u in BT_NODES:
         L = S.dist(G, u)

@@ -284,8 +284,7 @@ near every other node, on average, at worst
 <div class="cols">
 <div>
 
-* **Closeness**: add up the distances $\ell_{ij}$ to every other node.
-* Small sum: close to everything.
+* **Closeness**: add up the distances $\ell_{ij}$ to every other node, then invert.
 * $c_i = \dfrac{N-1}{\sum_{j \ne i} \ell_{ij}}$
 * $N-1$: a star's centre scores exactly 1.
 
@@ -298,8 +297,8 @@ near every other node, on average, at worst
 </div>
 
 <!--
-First bullet, then step the build: each node's sum of distances appears; D has the smallest, 10. Then the rest.
-Add up the distances to every other node, then invert: a small total gives a large score. N - 1 makes the best case, a star's centre, exactly 1.
+First bullet, then step the build: each node's sum of distances appears (A 15, C and E 11, D 10); then each sum turns into closeness, (N - 1)/sum with N = 7: A, B, F, G 6/15 = 0.40; C, E 6/11 = 0.55; D 6/10 = 0.60, the highest. Then the rest.
+The sum is not the score: closeness is its inverse, so higher is better. N - 1 makes the best case, a star's centre, exactly 1.
 -->
 
 ---
@@ -311,7 +310,7 @@ Add up the distances to every other node, then invert: a small total gives a lar
 <div class="cols">
 <div>
 
-- Smallest sum of distances wins.
+- Highest closeness wins: the smallest sum of distances.
 
 </div>
 <div class="fig">
@@ -336,7 +335,7 @@ Add up the distances to every other node, then invert: a small total gives a lar
 <div class="cols">
 <div>
 
-- Smallest sum of distances wins.
+- Highest closeness wins: the smallest sum of distances.
 - P's long arms beat N's triangle.
 
 </div>
@@ -348,7 +347,7 @@ Add up the distances to every other node, then invert: a small total gives a lar
 </div>
 
 <!--
-P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arms hold more nodes.
+P: sum 16, closeness 9/16 = 0.56. N: sum 18, closeness 9/18 = 0.50 (N = 10 nodes). N's triangle looks central, but P's long arms hold more nodes.
 -->
 
 ---
@@ -360,7 +359,7 @@ P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arms hold 
 <div class="cols">
 <div>
 
-- Smallest sum of distances wins.
+- Highest closeness wins: the smallest sum of distances.
 
 </div>
 <div class="fig">
@@ -385,7 +384,7 @@ P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arms hold 
 <div class="cols">
 <div>
 
-- Smallest sum of distances wins.
+- Highest closeness wins: the smallest sum of distances.
 - The hub E loses to F.
 
 </div>
@@ -397,7 +396,7 @@ P (sum 16) beats N (sum 18). N's triangle looks central, but P's long arms hold 
 </div>
 
 <!--
-F has degree 2 and a sum of 19. The hub E (degree 5) and G both have 20. Moving from E to F, five nodes get one step farther (A, B, C, D, E) and six get one step closer.
+F has degree 2 and a sum of 19: closeness 10/19 = 0.53. The hub E (degree 5) and G both have 20: 0.50 (N = 11 nodes). Moving from E to F, five nodes get one step farther (A, B, C, D, E) and six get one step closer.
 -->
 
 ---
@@ -608,7 +607,7 @@ Closeness is pulled toward where the nodes are. 91 of 289 interchanges are withi
 <div class="cols">
 <div>
 
-- Closeness picks D: the smallest sum.
+- Closeness picks D: 0.60, the highest.
 
 </div>
 <div class="fig">
@@ -695,7 +694,7 @@ Two bullets, then step the build: the sums give way to each node's farthest dist
 </div>
 
 <!--
-E wins closeness (sum 10) but its worst case is 3, the end of the tail. F has worst case 2.
+E wins closeness (sum 10, the smallest) but its worst case is 3, the end of the tail. F has worst case 2.
 -->
 
 ---
