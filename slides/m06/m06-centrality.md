@@ -2019,7 +2019,7 @@ Step 0: every node holds 1. Step 1: every node now holds its degree (A 4, D 3, F
 - Add one node to one clique. Where does the score go?
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/ring-4444.png)
 
@@ -2049,7 +2049,7 @@ Ask: one clique of 5, three of 4. Who gets the score? Most will say "a bit more 
 * The densest part takes almost all the score.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/ring-local/00.png)
 
@@ -2074,7 +2074,7 @@ One extra node, and 68% of the total score moves into that clique; with two, 85%
 - The densest part takes almost all the score.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/ring-local/01.png)
 
@@ -2098,7 +2098,7 @@ Step 1 of 4: K = 4: equal cliques, equal shares (25%).
 - The densest part takes almost all the score.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/ring-local/02.png)
 
@@ -2122,7 +2122,7 @@ Step 2 of 4: K = 5: one more node, 68%.
 - The densest part takes almost all the score.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/ring-local/03.png)
 
@@ -2146,7 +2146,7 @@ Step 3 of 4: K = 6: 85%.
 - The densest part takes almost all the score.
 
 </div>
-<div class="fig">
+<div class="fig tall">
 
 ![w:537](figures/frames/ring-local/04.png)
 

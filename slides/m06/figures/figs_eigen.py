@@ -162,18 +162,69 @@ def place_values(strings, pos, edges, bounds, disc=F.NODE, gap=7, fixed=None):
     return {n: ((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) for n, b in boxes.items()}
 
 
+# =========================================================================== callout helper
+def clean_callout(text, at, anchor, target, blockers, discs=(), edges=(), gap=F.NODE / 2 + 4,
+                  disc_r=F.NODE / 2, what="", arrow_blockers=None, starts=None):
+    """F.callout whose arrow also clears every disc but the target's: tries start points along
+    the note's box (nearest the target first) and keeps the first straight arrow that passes
+    no disc, then asserts the note's box touches no blocker (a box, a disc or an edge)."""
+    box = F.label_box(at[0], at[1], text, anchor, pad=2)
+    assert all(not F.boxes_overlap(box, bk) for bk in blockers), f"{what}: callout {text!r} overlaps a label"
+    assert not any(F.box_hits_disc(box, *p, r=disc_r + 3) for p in discs), f"{what}: callout {text!r} touches a disc"
+    assert not any(F.box_hits_segment(box, p, q, pad=3) for p, q in edges), f"{what}: callout {text!r} touches an edge"
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    tgt = np.array(target, float)
+    cands = []
+    for f in np.linspace(0.0, 1.0, 51):
+        for side in ("top", "bottom"):
+            cands.append((box[0] + f * (box[2] - box[0]), box[3] if side == "top" else box[1]))
+    cands += [(box[0], cy), (box[2], cy)]
+    if starts is not None:
+        cands = [tuple(p) for p in starts]
+    else:
+        def crosses(p):
+            d = tgt - np.array(p)
+            end = tuple(tgt - d / (np.linalg.norm(d) or 1.0) * gap)
+            return sum(1 for q, r in edges if F._seg_cross(p, end, q, r))
+        cands.sort(key=lambda p: (crosses(p), math.hypot(p[0] - tgt[0], p[1] - tgt[1])
+                                  + 0.3 * abs(p[0] - tgt[0])))
+    for sx, sy in cands:
+        d = tgt - np.array([sx, sy])
+        L = np.linalg.norm(d)
+        if L < gap + 14:
+            continue
+        end = tgt - d / L * gap
+        ok = True
+        for p in discs:
+            if np.linalg.norm(np.array(p) - tgt) < 1e-6:
+                continue
+            t = max(0.0, min(1.0, float((np.array(p) - [sx, sy]) @ (end - [sx, sy])) / float((end - [sx, sy]) @ (end - [sx, sy]))))
+            if np.linalg.norm(np.array([sx, sy]) + t * (end - [sx, sy]) - np.array(p)) < disc_r + 4:
+                ok = False
+                break
+        if ok and any(F.box_hits_segment(bk, (sx, sy), tuple(end), pad=1)
+                      for bk in (blockers if arrow_blockers is None else arrow_blockers)):
+            ok = False
+        if ok:
+            tikz, b2 = F.callout(text, at, target, anchor=anchor, gap=gap, tip=(sx, sy))
+            return tikz, box
+    raise AssertionError(f"{what}: no clean arrow for callout {text!r}")
+
+
 # =========================================================================== eigen-inherit / eig-pf
-INH_SX, INH_SY = 122, 58
-INH_CY = 232
+INH_SX, INH_SY = 122, 42
+INH_CY = 238
 INH_H = 400
-# the crop shared by eigen-inherit and eig-pf (bp from the canvas top)
-INH_BOX = (20, 396)
+INH_CALL_Y, INH_SUM2_Y, INH_SUM1_Y = 20, 82, 118           # callout row, "= 2.88 x 1.00", the sum
+INH_VAL_LO = INH_SUM1_Y + 22                                 # the scores stay above the sum line
+# the crop shared by eigen-inherit, eig-pf and katz-floor (bp from the canvas top)
+INH_BOX = (26, 398)
 
 
 def inherit_geometry():
     pos = eig_layout(INH_SX, W_COL / 2, INH_CY, sy=INH_SY)
     check_graph_planar(pos, EDGES, "eigen-inherit")
-    assert_discs_clear(pos, F.NODE, gap=10, what="eigen-inherit")
+    assert_discs_clear(pos, F.NODE, gap=8, what="eigen-inherit")
     strings = {n: f"{V1[n]:.2f}" for n in NAMES}
     # A's own value sits directly left of A, in the wedge between the B-A and A-D edges
     wA = est_w(strings["A"]) + 2
@@ -192,17 +243,68 @@ def inherit_geometry():
             break
     assert best is not None, "no place for A's value left of A"
     fixed = {"A": (best[1], best[2])}
-    at = place_values(strings, pos, EDGES, bounds=(6, 88, W_COL - 6, INH_H - 6), fixed=fixed)
+    at = place_values(strings, pos, EDGES, bounds=(6, INH_VAL_LO, W_COL - 6, INH_H - 6), fixed=fixed)
     return pos, strings, at
 
 
-def fig_eigen_inherit():
-    """The score of A is the sum of its neighbours' scores, divided by lambda.
+def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False, a_hot=True):
+    """One frame of eigen-inherit without its callout."""
+    nbrs = sorted(S.EIG["A"])
+    terms = [strings[m] for m in nbrs]
+    lam = f"{LAM1:.2f}"
+    x0 = (W_COL - est_w(" + ".join(terms))) / 2
+    body = edges_body(EDGES, pos)
+    for m in brushes:
+        body += flow(pos[m], pos["A"], color="gold")
+    for n in NAMES:
+        if clean:
+            body += F.disc(*pos[n], n, fill=F.shade(V1[n]))
+        elif n == "A":
+            body += F.disc(*pos[n], n, fill="white", outline="hot" if a_hot else "ink")
+        elif n in shown:
+            body += F.disc(*pos[n], n, fill=F.shade(V1[n]))
+        else:
+            body += F.disc(*pos[n], n, fill="white")
+    for n in NAMES:
+        if clean or n in shown:
+            body += F.text(*at[n], strings[n], color="ink")
+    if sums:
+        body += F.text(x0, INH_SUM1_Y, " + ".join(terms), anchor="west")
+        body += F.text(x0, INH_SUM2_Y, f"= {lam} × {strings['A']}", anchor="west")
+    return body, x0
 
-    Frame 0 is the bare graph with A in hot.  Then B, D, F, G arrive one at a time (shaded by
-    its score, the value beside it, a brush into A, a running sum underneath), then A's own
-    score closes the identity, then the two nodes that are not A's neighbours, then the clean
-    picture (= eig-pf).
+
+def inherit_callouts(pos, strings, at, x0):
+    """The three notes (frames 01-03): box blockers are every printed value and the sum lines."""
+    lam = f"{LAM1:.2f}"
+    vbox = lambda n: (at[n][0] - (est_w(strings[n]) + 2) / 2, at[n][1] - 15,
+                      at[n][0] + (est_w(strings[n]) + 2) / 2, at[n][1] + 15)
+    values = [vbox(n) for n in NAMES]
+    nbr_values = [vbox(n) for n in sorted(S.EIG["A"])]
+    terms = [strings[m] for m in sorted(S.EIG["A"])]
+    w1 = est_w(" + ".join(terms))
+    sumbox = [(x0, INH_SUM1_Y - 17, x0 + w1, INH_SUM1_Y + 17),
+              (x0, INH_SUM2_Y - 17, x0 + est_w(f"= {lam} × 1.00"), INH_SUM2_Y + 17)]
+    discs = list(pos.values())
+    edges = [(pos[a], pos[b]) for a, b in EDGES]
+    out = {}
+    cx = W_COL / 2
+    out[1] = clean_callout("A's neighbours: B, D, F, G", (cx, INH_CALL_Y), "center", pos["A"],
+                           nbr_values, discs, edges, what="eigen-inherit 01")
+    # the sum line's "2.88" (characters 2-5 of "= 2.88 x 1.00")
+    two88 = (x0 + est_w("= ") + est_w("2.88") / 2, INH_SUM2_Y - 14)
+    for k, t in ((2, "their sum = 2.88 × A's score"), (3, "true at every node: λ = 2.88")):
+        out[k] = clean_callout(t, (cx, INH_CALL_Y), "center", two88, values + sumbox, discs, edges,
+                               gap=3, what=f"eigen-inherit 0{k}", arrow_blockers=values)
+    return out
+
+
+def fig_eigen_inherit():
+    """The score of A is the sum of its neighbours' scores, divided by lambda; four slides.
+
+    00 the graph with A outlined hot, 01 B, D, F, G with their scores and a gold brush into A,
+    02 the sum line, 03 every score (= eig-pf plus its note).  Every frame after 00 carries a
+    note under the drawing (a band reserved on the canvas) with an arrow to what changed.
     """
     pos, strings, at = inherit_geometry()
     nbrs = sorted(S.EIG["A"])
@@ -213,63 +315,25 @@ def fig_eigen_inherit():
     lam = f"{LAM1:.2f}"
     assert f"{total:.2f}" == lam == "2.88" and strings["A"] == "1.00", (total, lam)
     assert abs(float(lam) * float(strings["A"]) - total) < 1e-9
-    x0 = (W_COL - est_w(" + ".join(terms))) / 2
-
-    def frame(shown=(), a_done=False, flows=(), nsum=0, clean=False):
-        # the clean frame keeps the identity "0.64 + ... = 2.88 x 1.00" in ink (A not hot)
-        body = edges_body(EDGES, pos)
-        for m in flows:
-            body += flow(pos[m], pos["A"])
-        for n in NAMES:
-            if clean:
-                fill = F.shade(V1[n])
-            elif n == "A":
-                fill = "hot"
-            elif n in shown:
-                fill = F.shade(V1[n])
-            else:
-                fill = "white"
-            body += F.disc(*pos[n], n, fill=fill)
-        for n in NAMES:
-            visible = clean or n in shown or (n == "A" and a_done)
-            if visible:
-                body += F.text(*at[n], strings[n], color="ink")
-        if nsum:
-            body += F.text(x0, 68, " + ".join(terms[:nsum]), anchor="west")
-        if a_done:
-            body += F.text(x0, 30, f"= {lam} × {strings['A']}", anchor="west")
-        return body
-
-    frames = [frame()]
-    for k in range(1, 5):
-        frames.append(frame(shown=nbrs[:k], flows=nbrs[:k], nsum=k))
-    full = dict(shown=nbrs, flows=nbrs, nsum=4)
-    frames.append(frame(a_done=True, **full))                       # the identity closes
-    frames.append(frame(shown=nbrs + ["E"], flows=nbrs, nsum=4, a_done=True))
-    frames.append(frame(shown=nbrs + ["E", "C"], flows=nbrs, nsum=4, a_done=True))
-    frames.append(frame(clean=True, nsum=4, a_done=True))            # = eig-pf
+    f0, x0 = inherit_body(pos, strings, at)
+    f1, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs)
+    f2, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs, sums=True)
+    f3, _ = inherit_body(pos, strings, at, clean=True, sums=True)
+    call = inherit_callouts(pos, strings, at, x0)
+    frames = [f0, f1 + call[1][0], f2 + call[2][0], f3 + call[3][0]]
     F.emit_frames("eigen-inherit", frames, container="col", h=INH_H, box=INH_BOX)
-    return frames[-1]
+    return f3
 
 
 def fig_eig_pf():
     """The Perron-Frobenius eigenvector, largest entry set to 1: eigenvector centrality.
 
-    The body is exactly the last frame of eigen-inherit (same canvas, same box).
+    The body is frame 03 of eigen-inherit without its note (same canvas, same box).
     """
     assert all(v > 0 for v in V1.values()) and abs(max(V1.values()) - 1) < 1e-12
     assert max(V1, key=V1.get) == "A" and V1["B"] > V1["D"] and DEG["B"] < DEG["D"]
     pos, strings, at = inherit_geometry()
-    terms = [strings[m] for m in sorted(S.EIG["A"])]
-    lam = f"{LAM1:.2f}"
-    x0 = (W_COL - est_w(" + ".join(terms))) / 2
-    body = edges_body(EDGES, pos)
-    for n in NAMES:
-        body += F.disc(*pos[n], n, fill=F.shade(V1[n]))
-    for n in NAMES:
-        body += F.text(*at[n], strings[n], color="ink")
-    body += F.text(x0, 68, " + ".join(terms), anchor="west")
-    body += F.text(x0, 30, f"= {lam} × {strings['A']}", anchor="west")
+    body, _ = inherit_body(pos, strings, at, clean=True, sums=True)
     F.emit("eig-pf", body, container="col", h=INH_H, box=INH_BOX)
 
 
@@ -438,8 +502,8 @@ RING_DISC = 28
 RING_R = 76                                                # every clique sits on a circle of this radius
 RING_RX, RING_RY = 172, 84
 RING_OX, RING_OY = 252, 208
-RING_H = 400
-RING_BOX = (28, 388)                                       # bp from the canvas top, one crop
+RING_H = 440
+RING_BOX = (28, 428)                                       # bp from the canvas top, one crop
 
 
 def ring_layout(sizes, Rx, Ry, radius):
@@ -517,32 +581,51 @@ def fig_ring_4444():
     body, pos, v = ring_body(sizes, shaded=False)           # the question must not show the score
     for k in range(4):                                       # the four cliques carry equal score
         assert abs(sum(v[4 * k:4 * k + 4]) / sum(v) - 0.25) < 1e-9
-    F.emit("ring-4444", body, container="col", h=RING_H, box=RING_BOX)
+    F.emit("ring-4444", body, container="col", h=RING_H, hmod="tall", box=RING_BOX)
 
 
 def fig_ring_local():
-    """Frame 0 = ring-4444.  Then the last clique grows one node at a time (a square, pentagon,
-    hexagon, heptagon, octagon around a fixed centre, the two ports fixed), discs shaded by the
-    leading eigenvector, with the share of the score that sits in the last clique in one line
-    UNDER the ring (the band is empty in ring-4444).  The share is in ink at K = 4 (the baseline)
-    and hot from K = 5."""
+    """Five slides.  00 = ring-4444.  01 the K = 4 shading and its share, 02 K = 5, 03 K = 6, 04 K = 8:
+    the last clique grows around a fixed centre with its two ports fixed, discs shaded by the
+    leading eigenvector, the share of the score in the last clique in one line UNDER the ring.
+    Every frame after 00 has a note ABOVE the ring (a band reserved on the canvas, empty in
+    ring-4444) with an arrow to what changed."""
     shares = {}
     frames = [ring_body((4, 4, 4, 4), shaded=False)[0]]
-    cx, cy = RING_OX + 11, RING_OY - 176                       # one line under the whole ring
-    for K in (4, 5, 6, 7, 8):
+    cx, cy = RING_OX + 11, RING_OY - 172                       # one line under the whole ring
+    top_y = RING_OY + 176                                        # the note row above the ring
+    notes = {4: "equal cliques, equal shares", 5: "one more node", 6: "+1", 8: "+2: 94\\%"}
+    for K in (4, 5, 6, 8):
         sizes = S.RING_SIZES[K]
         share, lam = S.eig_share(sizes)
         shares[K] = F.pct(share)
         body, pos, v = ring_body(sizes, shaded=True)
         w1 = est_w(f"K = {K}: {shares[K]} of the score".replace("\\", "")) + 6
-        box = (cx - w1 / 2, cy - 17, cx + w1 / 2, cy + 17)
-        assert box[3] < min(p[1] for p in pos.values()) - RING_DISC / 2 - 4, \
+        box = (cx - w1 / 2, cy - 13, cx + w1 / 2, cy + 13)
+        assert box[3] < min(p[1] for p in pos.values()) - RING_DISC / 2 - 2, \
             f"ring-local K={K}: the label touches the ring"
         pc = shares[K] if K == 4 else f"\\textcolor{{hot}}{{{shares[K]}}}"
         body += F.text(cx, cy, f"K = {K}: {pc}\\ \\textcolor{{muted}}{{of the score}}")
-        frames.append(body)
-    assert [shares[K] for K in (4, 5, 6, 7, 8)] == ["25\\%", "68\\%", "85\\%", "91\\%", "94\\%"], shares
-    F.emit_frames("ring-local", frames, container="col", h=RING_H, box=RING_BOX)
+        # the note: K = 4 points at the top clique, the others at the last clique's far node
+        discs = list(pos.values())
+        edges = [(pos[a], pos[b]) for a, b in S.clique_ring(sizes).edges()]
+        text = notes[K].replace("\\%", "%") if False else notes[K]
+        nw = F.label_box(0, 0, text, "center", pad=2)
+        wd = nw[2] - nw[0]
+        if K == 4:
+            tgt = ((pos[2][0] + pos[3][0]) / 2, pos[2][1] + 10)
+            at = (cx, top_y)
+        else:
+            last = range(sum(sizes[:-1]), sum(sizes))
+            far = max(last, key=lambda n: (pos[n][0] - 0.01 * abs(pos[n][1] - RING_OY), pos[n][1]))
+            tgt = pos[far]
+            at = (min(tgt[0], W_COL - 9 - wd / 2), top_y)
+        tikz, _ = clean_callout(text, at, "center", tgt, [box], discs, edges,
+                                gap=(4 if K == 4 else F.NODE / 2 + 2 - 4 + 4), disc_r=RING_DISC / 2,
+                                what=f"ring-local K={K}")
+        frames.append(body + tikz)
+    assert [shares[K] for K in (4, 5, 6, 8)] == ["25\\%", "68\\%", "85\\%", "94\\%"], shares
+    F.emit_frames("ring-local", frames, container="col", h=RING_H, hmod="tall", box=RING_BOX)
 
 
 # =========================================================================== katz-floor
@@ -561,23 +644,40 @@ def fig_katz_floor():
     for n in NAMES:
         body += F.disc(*pos[n], "β", fill="hot" if n == focus else "white")
     # an alpha beside each arrow, on the side that has nothing else
+    alpha_boxes = []
     for m in nb:
         a, b = np.array(pos[m]), np.array(pos[focus])
         mid, d = (a + b) / 2, (b - a) / np.linalg.norm(b - a)
         nrm = np.array([-d[1], d[0]])
         best = None
-        for sgn in (1, -1):
-            p = mid + sgn * 26 * nrm
-            box = (p[0] - 13, p[1] - 17, p[0] + 13, p[1] + 17)
-            if any(F.box_hits_disc(box, *q, r=F.NODE / 2) for q in pos.values()):
-                continue
-            if any(F.box_hits_segment(box, pos[x], pos[y], pad=2) for x, y in EDGES):
-                continue
-            best = p
-            break
+        for off in (26, 30, 36, 44):
+            for t in (0.5, 0.4, 0.6, 0.3, 0.7):
+                for sgn in (1, -1):
+                    p = a + (b - a) * t + sgn * off * nrm
+                    box = (p[0] - 13, p[1] - 17, p[0] + 13, p[1] + 17)
+                    if any(F.box_hits_disc(box, *q, r=F.NODE / 2) for q in pos.values()):
+                        continue
+                    if any(F.box_hits_segment(box, pos[x], pos[y], pad=2) for x, y in EDGES):
+                        continue
+                    if any(F.boxes_overlap(box, o) for o in alpha_boxes):
+                        continue
+                    best = p
+                    break
+                if best is not None:
+                    break
+            if best is not None:
+                break
         assert best is not None, f"katz-floor: no clear place for the alpha on {m}->{focus}"
         body += F.text(best[0], best[1], "α", color="hot")
-    F.emit("katz-floor", body, container="col", h=INH_H)
+        alpha_boxes.append((best[0] - 13, best[1] - 17, best[0] + 13, best[1] + 17))
+    # the note: it names the hot brushes, with an arrow to the one from G (reached from above)
+    top = max(p[1] for p in pos.values()) + F.NODE / 2
+    g, a_ = np.array(pos["G"]), np.array(pos[focus])
+    tgt = tuple(a_ + (g - a_) * 0.55)
+    tikz, _ = clean_callout("α × each neighbour's score", (W_COL / 2, top + 44), "center", tgt,
+                            alpha_boxes, list(pos.values()), [(pos[x], pos[y]) for x, y in EDGES],
+                            gap=3, what="katz-floor")
+    F.emit("katz-floor", body + tikz, container="col", h=INH_H)
 
 
 # =========================================================================== walks-discount
@@ -653,7 +753,7 @@ def fig_walks_discount():
             o += head(a, b, color=WD_COLS[k], tip_at=(b[0] + 5, ly), L=12, half=6.5)
         return o + F.text(lx + k * seg_len + 4, ly, f"= \u03b1{sup[k]}", color="muted", anchor="west")
 
-    def frame(n_drawn, total=False):
+    def frame(n_drawn, total=False, note=""):
         body = edges_body(list(G.edges()), P)
         for k, w in drawn[:n_drawn]:
             body += hop_routes(k, w)
@@ -663,13 +763,29 @@ def fig_walks_discount():
             if any(kk == k for kk, _ in drawn[:n_drawn]):
                 body += legend(k)
         if total:
-            body += F.text(P["v"][0], 28, sum_line)
-        return body
+            body += F.text(P["v"][0], top_sum, sum_line)
+        return body + note
 
     assert est_w(sum_line) < W_COL - 20
-    frames = [frame(0), frame(1), frame(2), frame(3), frame(3, True)]
+    # the callout band sits above the drawing (W5_BOX reserves it); the sum line takes its top row
+    top_sum = D.W5_POS["u"][1] + 88
+    discs = list(P.values())
+    edges = [(P[a], P[b]) for a, b in G.edges()]
+    sumbox = (P["v"][0] - est_w(sum_line) / 2, top_sum - 14, P["v"][0] + est_w(sum_line) / 2, top_sum + 14)
+    top_y = D.W5_POS["u"][1] + 48
+    mid = lambda p, q, t=0.5: (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+    notes = [
+        clean_callout("2 walks of length 2, α² each", (W_COL / 2, top_y), "center", (P["u"][0] + 4, mid(P["u"], P["n3"])[1]), [],
+                      discs, edges, gap=6, what="walks-discount 01")[0],
+        clean_callout("1 walk of length 3: α³", (14, top_y), "west", (P["n0"][0] - 4, mid(P["n0"], P["n2"])[1]), [],
+                      discs, edges, gap=6, what="walks-discount 02")[0],
+        clean_callout("every length", (W_COL / 2, top_sum - 60), "center", (200, top_sum - 14), [sumbox],
+                      discs, edges, gap=3, what="walks-discount 03", arrow_blockers=[],
+                      starts=[(200, top_sum - 60 + 19)])[0],
+    ]
+    frames = [frame(0), frame(2, note=notes[0]), frame(3, note=notes[1]), frame(3, total=True, note=notes[2])]
     assert frames[0] == D._w5_scene()                              # frame 0 = w5-blank's body
-    F.emit_frames("walks-discount", frames, container="col", h=D.W5_H, box=D.W5_BOX)
+    F.emit_frames("walks-discount", frames, container="col", h=D.W5_H, hmod=D.W5_HMOD, box=D.W5_BOX)
 
 
 FIGURES = [
