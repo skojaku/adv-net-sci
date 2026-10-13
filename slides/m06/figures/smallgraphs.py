@@ -100,11 +100,11 @@ CA = graph(["E-A", "E-B", "E-C", "E-D", "E-F", "F-G",
             "G-H", "G-I", "G-J", "H-I", "I-J", "J-K"])
 # The hub E is drawn at the centre of the picture, with long spokes to its leaves, and the
 # winner F sits off-centre: picking "the middle of the drawing" must not give the answer.
-# Every value is drawn directly above or below its own disc, so the block H-I-J-K is spread out to
-# the right and down (G's value needs the room above G; I's must clear H and J).
-CA_XY = {"E": (4.0, 2.0), "A": (1.8, 3.4), "B": (0.0, 2.7), "C": (0.0, 1.3), "D": (1.8, 0.6),
-         "F": (5.3, 2.0), "G": (6.4, 2.0), "H": (7.5, 2.3), "I": (8.7, 1.35), "J": (7.5, 0.45),
-         "K": (8.8, -0.15)}
+# Every value is drawn directly above or below its own disc, so the block H-I-J-K hangs below and to
+# the right of G (the room above G is for G's value) and the drawing stays about 6 units wide.
+CA_XY = {"E": (2.7, 2.0), "A": (1.2, 3.6), "B": (0.0, 2.6), "C": (0.0, 1.4), "D": (1.2, 0.4),
+         "F": (3.92, 2.0), "G": (5.14, 2.0), "H": (6.1, 2.4), "I": (5.6, 0.7), "J": (4.4, 0.2),
+         "K": (3.4, 0.3)}
 
 # Right: N carries a triangle (L, M) and a leaf O; P carries two long arms (Q-R-S, T-U).
 CB = graph(["N-L", "N-M", "L-M", "N-O", "N-P", "P-Q", "Q-R", "R-S", "P-T", "T-U"])

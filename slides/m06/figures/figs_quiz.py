@@ -275,7 +275,7 @@ def close_CB():
 
 
 # --------------------------------------------------------------------------- the CA group
-CA_POS = layout(S.CA_XY, S.CA)
+CA_POS = layout(S.CA_XY, S.CA, margin=(26, 32))
 CA_CUT_EDGE = ("E", "F")
 _mid = tuple((np.array(CA_POS["E"]) + np.array(CA_POS["F"])) / 2)
 CR = 12                                                     # half-size of the cross on the closed road
@@ -301,8 +301,9 @@ def union_box(bodies, h=CANVAS_H, container="col"):
 
 # Every value sits directly above or directly below its own disc (never beside it, never over an edge).
 # The three quiz candidates sit on one line: E's above E, F's below F, G's above G (the block H-I-J-K is
-# drawn low and to the right so that G's value has the room).
-CA_SLOTS = {"E": ("south", 0, 32), "F": ("north", 0, -28), "G": ("south", 0, 32)}
+# drawn below and to the right of G so that G's value has the room; E's and G's are lifted clear of the
+# spokes and of H).
+CA_SLOTS = {"E": ("south", 0, 46), "F": ("north", 0, -28), "G": ("south", 0, 46)}
 VSIDES = [(a, 0, d) for r in (28, 32, 38, 46, 56, 64, 72, 80) for a, d in (("south", r), ("north", -r))]
 
 
