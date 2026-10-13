@@ -70,15 +70,15 @@
      the room recognises the localization slide. Node order and edges as above: each
      clique's first two nodes are its ports. */
   const POS = [
-    [46.7, -50.3], [-60.7, -50.3], [-60.7, -157.7], [46.7, -157.7],
+    [46.7, -30.3], [-60.7, -30.3], [-60.7, -137.7], [46.7, -137.7],
     [-125.3, -53.7], [-125.3, 53.7], [-232.7, 53.7], [-232.7, -53.7],
-    [-60.7, 50.3], [46.7, 50.3], [46.7, 157.7], [-60.7, 157.7],
+    [-60.7, 30.3], [46.7, 30.3], [46.7, 137.7], [-60.7, 137.7],
     [111.3, 53.7], [111.3, -53.7], [176.9, -75.1], [232.7, -34.5],
     [232.7, 34.5], [176.9, 75.1]
   ];
   const CENTER_BIG = [165.1, 0];
   const RADIUS_BIG = 76;
-  const VIEW = "-256 -181 512 362";
+  const VIEW = "-256 -161 512 322";
   /* 15 viewBox units in a 490 px wide stage drawing lands at about 29 px on the slide:
      the render gate wants discs of 26-52 px, and the figure draws them at 28. */
   const NODE_R = 15;
