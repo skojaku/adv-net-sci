@@ -1,5 +1,10 @@
 # m06 deck spec, v3 (2026-10-13)
 
+> **Round 4 (2026-10-13):** every build below is now a run of slides (bullets first, then one
+> slide per step with a grey callout saying what changed; see `FIXES_R4.md`). The Roman
+> map-to-network and the eigendecomposition sum are static. The deck has 122 slides: day 1 is
+> 1–62, day 2 is 63–122. The slide numbers in the table are the v3 numbers (before the split).
+
 v2 (72 slides) was reviewed by the lecturer. v3 answers that review:
 
 1. **Small differences between consecutive slides.** The cost of new information grows like
