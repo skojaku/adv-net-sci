@@ -643,16 +643,17 @@ def fig_genealogy():
     # touch; the leader line keeps each label tied to its own year.
     place = {1895: (1, 0.0), 1949: (-1, -30.0), 1953: (1, 0.0),
              1965: (-1, -8.0), 1972: (1, 0.0), 1998: (-1, -45.0)}
-    body = F.seg((x0, ax), (x1, ax), color="black", w=2.6)
+    body = F.seg((x0, ax), (x1, ax), color="muted", w=2.6)
     boxes = {}
     for year, who in GENEALOGY:
         side, dx = place[year]
         mx, lx = X(year), X(year) + dx
         ly = ax + side * 24
-        body += F.dot(mx, ax, color=A2, d=18)
-        body += F.seg((mx, ax + side * 9), (lx, ly - side * 2), color=GY, w=1.8)
+        body += F.seg((mx, ax + side * 12), (lx, ly - side * 2), color="muted", w=1.8)
+        body += F.disc(mx, ax, "", fill="cool", size=22)
         s = f"{year}\\\\{who}"
-        body += F.text(lx, ly, s, color="black",
+        shown = f"{{\\color{{muted}}{year}}}\\\\{who}"
+        body += F.text(lx, ly, shown, color="ink",
                        anchor="south" if side > 0 else "north")
         boxes[year] = F.label_box(lx, ly, s, "south" if side > 0 else "north")
     ys = sorted(boxes)
@@ -667,7 +668,11 @@ def fig_genealogy():
     for b in boxes.values():
         assert not F.boxes_overlap(bb, b), "the banner collides with a label"
     assert 6 <= bb[0] and bb[2] <= 1074 and bb[3] <= INK_H
-    body += F.text(540, 312, banner, color=A2)
+    body += F.text(540, 312, banner, color="ink")
+    bw = F.CHAR_W * F.FONT * len(banner)
+    ux = [(540 - bw / 2) + bw * t for t in (0, 0.33, 0.66, 1)]
+    body += F.brush([(x, 291 + 1.5 * i / 3) for i, x in enumerate(ux)], color="hot", w=6.0, opacity=0.95,
+                    strands=5, seed=1)
     F.emit("genealogy", body, container="full", h=CANVAS_H)
 
 
