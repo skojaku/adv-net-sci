@@ -27,7 +27,7 @@ HALF = BOX / 2
 GAP = 1.5                                    # arrowheads stop this far from the disc outline
 CHIP_PAD = 2.0
 CANVAS_H = 372
-PR_BOX = (2, 362)                            # the one crop of the PageRank group, bp from the canvas top
+PR_BOX = (2, 362)                            # the one crop of the PageRank group (canvas y 10..370); the band y >= 336 is for callouts
 CHAR = 0.61 * F.FONT                         # width of a Meslo character at FONT, bp
 
 N = S.compute()
@@ -68,13 +68,14 @@ def dec(x, d=3):
 # --------------------------------------------------------------------------- geometry
 # The five PageRank pages.  A sends to B, C, D; B and D send to C; C sends to E; E
 # sends back to A by a loop under the whole drawing.  Planar, no arrow crosses another.
-PR_XY = {"A": (72.0, 205.0), "B": (212.0, 292.0), "D": (212.0, 118.0),
+PR_XY = {"A": (72.0, 205.0), "B": (212.0, 262.0), "D": (212.0, 148.0),
          "C": (352.0, 205.0), "E": (480.0, 205.0)}
 PR_LOOP_Y = 26.0                                   # the E -> A return runs along this line
 PR_LOOP_X = 28.0                                   # ... and up this one, into A's west side
 LOOP_DY = 9.0                                      # the return enters A this far below centre
 LOOP_END_X = lambda ax: ax - (HALF + GAP) * 0.9    # a point on A's west border, LOOP_DY below centre
-CROSS_AT = 340.0
+CROSS_AT = (480.0, 110.0)                          # the hot cross sits on E's only link out, just under E
+BAND_Y = 349.0                                     # the callout band above the drawing (B's score ends at y 330)
 
 # The six HITS pages: the square A, D, B, E with A -> C -> F -> E hung on its left side.
 HITS_XY = {"A": (225.0, 292.0), "D": (485.0, 292.0), "B": (485.0, 110.0), "E": (225.0, 110.0),
@@ -311,6 +312,28 @@ def fig_pr_split(answer=False):
 
 
 # --------------------------------------------------------------------------- teleport / ppr
+def callout(text, at, target, anchor="center", gap=8.0, tip=None, blockers=(), edges=(), xy=None):
+    """A callout, asserted clear of every page, line and label; returns (tikz, box)."""
+    xy = xy or PR_XY
+    o, b = F.callout(text, at, target, anchor=anchor, gap=gap, tip=tip)
+    assert 4 <= b[0] and b[2] <= F.COL_W - 4, f"callout {text!r} runs off the canvas {b}"
+    assert b[3] <= 370 and b[1] >= 10, f"callout {text!r} leaves the canvas {b}"
+    for m in xy:
+        assert not F.boxes_overlap(b, box_of(xy, m, 2)), f"callout {text!r} sits on page {m}"
+    for p, q in edges:
+        assert not hits_seg(b, p, q), f"callout {text!r} sits on a line {p}-{q}"
+    for ob in blockers:
+        assert not F.boxes_overlap(b, ob), f"callout {text!r} overlaps a label"
+    return o, b
+
+
+def straight_segments(edges):
+    segs = []
+    for a, b in edges:
+        segs += return_segments() if (a, b) == ("E", "A") else [(PR_XY[a], PR_XY[b])]
+    return segs
+
+
 JUMP = "line cap=round,dash pattern=on 0.1bp off 5.5bp"     # a teleport jump: dotted cool, its own style
 JUMP_W = 3.2
 
@@ -331,6 +354,15 @@ def jump_return():
 
 # E jumps to every other page: its dead end links to every page.
 TELE_BEND = {"C": "left=40", "D": "left=32"}
+EB_C1, EB_C2 = (418, 226), (380, 372)               # control points of the E -> B jump
+
+
+def eb_point(t):
+    """A point on the E -> B curve (the callout points at it)."""
+    p0, p3 = (466.0, 216.0), (236.0, 266.0)
+    p1, p2 = EB_C1, EB_C2
+    return tuple((1 - t) ** 3 * p0[i] + 3 * (1 - t) ** 2 * t * p1[i] + 3 * (1 - t) * t ** 2 * p2[i]
+                 + t ** 3 * p3[i] for i in (0, 1))
 
 
 def fig_pr_teleport():
@@ -350,7 +382,7 @@ def fig_pr_teleport():
         body += jump("E", dst, bend=TELE_BEND[dst])
     # E -> B climbs between the scores of C and E (a Bezier curve), then comes down onto B
     body += (f"\\draw[line width={JUMP_W}bp,draw=cool,{ARROW},{JUMP}] "
-             f"(E) .. controls (418,216) and (400,385) .. (B);\n")
+             f"(E) .. controls {EB_C1} and {EB_C2} .. (B);\n")
     body += jump_return()
     body += pages(xy, fills=values_fill(sc, winners=["E"]))
     sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["E"])
@@ -369,12 +401,19 @@ def fig_pr_teleport():
         for n_, bb_ in lb.items():
             assert not F.boxes_overlap(tb, bb_), f"{name}: {s_!r} overlaps the score of {n_}"
         body += F.text(tx, y_, s_, color="muted", anchor="east")
-    F.emit(name, body + sl, container="col", h=CANVAS_H, box=PR_BOX)
+    # the callout names the jumps: E goes to every other page
+    jumped = {"A", "B", "C", "D"}
+    assert jumped == set(xy) - {"E"} and not [e for e in edges if e[0] == "E"]
+    px, py = eb_point(0.5)
+    co, cb = callout("E jumps to every page", (500, BAND_Y), (px, py), anchor="east", gap=4,
+                     edges=straight_segments(edges))
+    assert cb[1] > py + 10, "the callout stays above the E -> B curve"
+    F.emit(name, body + sl + co, container="col", h=CANVAS_H, box=PR_BOX)
 
 
 # Every jump goes to A.  Each one is the twin of a solid link, so each is bent away
 # from it, into the free space beside it.
-PPR_BEND = {"B": "right=34", "C": "right=26", "D": "right=18"}
+PPR_BEND = {"B": "right=34", "C": "right=14", "D": "right=14"}
 
 
 def fig_ppr():
@@ -397,14 +436,18 @@ def fig_ppr():
     body += tele + pages(xy, fills=values_fill(sc, winners=["A"]))
     sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["A"])
     body += sl
-    F.emit(name, body, container="col", h=CANVAS_H, box=PR_BOX)
+    # every jump (from B, C, D and the dead end E) lands on A
+    ax, ay = xy["A"]
+    co, cb = callout("every jump lands on A", (14, BAND_Y), (ax - 14, ay), anchor="west", gap=30,
+                     tip=(40, BAND_Y - 20), edges=straight_segments(edges))
+    F.emit(name, body + co, container="col", h=CANVAS_H, box=PR_BOX)
 
 
 # --------------------------------------------------------------------------- pr-leak
 def removed_link():
     """The link E -> A that was cut: muted, dashed, with a hot cross on it."""
     out = return_path(color="muted", dash=F.DASH)
-    cx, cy, d = CROSS_AT, PR_LOOP_Y, 8.0
+    (cx, cy), d = CROSS_AT, 8.0
     for sgn in (1, -1):
         out += (f"\\draw[line width=3.4bp,draw=hot,line cap=round] "
                 f"({cx - d:.1f},{cy - sgn * d:.1f}) -- ({cx + d:.1f},{cy + sgn * d:.1f});\n")
@@ -412,8 +455,8 @@ def removed_link():
 
 
 def fig_pr_leak():
-    """Frame 00 is pr-split-answer exactly; 01 clears the weights and shares; 02 cuts E's link
-    (dashed muted, hot cross, "dead end"); 03 on drain the score, "total 1.00" first appearing at 03."""
+    """Four frames.  00 is pr-split-answer exactly.  01: weights and shares cleared, E's link
+    dashed with the hot cross, "dead end".  02: the score has leaked to 0.60.  03: nothing left."""
     xy = PR_XY
     assert_same_positions("pr-leak", xy)
     edges = S.PR_DEAD
@@ -422,26 +465,45 @@ def fig_pr_leak():
     tr = N["PR_leak_trace"][:5]
     top = max(float(c.max()) for c in tr)
     order = S.PR_ORDER
-    tot_xy = (xy["D"][0] + 40, 66)
-    dead_xy = (F.COL_W - 14, xy["E"][1] + 54)
+    tot_xy = (xy["D"][0] + 40, 48)
+    dead_xy = (470.0, 160.0)
     tie = [n for n in xy if FRAC[n] == Fraction(3, 11)]
     answer_fills = tie_fill(tie)
-    frames = [split_body(True)]
-    frames.append(anchors(xy) + pr_links(S.PR_EDGES) + pages(xy, fills=answer_fills))
-    frames.append(anchors(xy) + pr_links(edges) + removed_link() + pages(xy, fills=answer_fills)
-                  + F.text(*dead_xy, "dead end", color="muted", anchor="east"))
-    for k, c in enumerate(tr):
+    segs = straight_segments(edges)
+    dead = F.text(*dead_xy, "dead end", color="muted", anchor="east")
+    dead_box = tbox(*dead_xy, "dead end", anchor="east")
+    base = anchors(xy) + pr_links(edges) + removed_link()
+
+    def drain(k):
+        c = tr[k]
         vals = {n: float(c[i]) for i, n in enumerate(order)}
-        fills = {n: F.shade(v / top) for n, v in vals.items()}
         total = sum(vals.values())
         assert abs(total - LEAK_TOTALS[k]) < 1e-9
-        body = anchors(xy) + pr_links(edges) + removed_link() + pages(xy, fills=fills)
-        body += F.text(*dead_xy, "dead end", color="muted", anchor="east")
+        fills = {n: F.shade(v / top) for n, v in vals.items()}
+        body = base + pages(xy, fills=fills) + dead
         body += F.text(*tot_xy, f"total {total:.2f}", color="hot")
-        frames.append(body)
-    tb = tbox(*dead_xy, "dead end", anchor="east")
-    cb = tbox(*tot_xy, "total 0.00")
-    for lb, nm in ((tb, "dead end"), (cb, "total")):
+        return body, total
+
+    frames = [split_body(True)]
+    # 01 the cut
+    body = base + pages(xy, fills=answer_fills) + dead
+    co, cb1 = callout("E's only link\\\\out is gone", (452, 78), CROSS_AT, anchor="east", gap=9,
+                      blockers=[dead_box], edges=segs)
+    frames.append(body + co)
+    # 02 the score leaks (0.60 left)
+    body, t2 = drain(2)
+    assert round(t2, 2) == 0.60
+    tot_box = tbox(*tot_xy, "total 0.00")
+    co, cb2 = callout("score leaks out at E", (500, BAND_Y), xy["E"], anchor="east", gap=28,
+                      blockers=[dead_box, tot_box], edges=segs)
+    frames.append(body + co)
+    # 03 nothing left
+    body, t3 = drain(4)
+    assert round(t3, 2) == 0.00
+    co, cb3 = callout("nothing left", (300, 106), (300, tot_xy[1] + 6), anchor="center", gap=6,
+                      blockers=[dead_box, tot_box], edges=segs)
+    frames.append(body + co)
+    for lb, nm in ((dead_box, "dead end"), (tot_box, "total")):
         for m in xy:
             assert not F.boxes_overlap(lb, box_of(xy, m, 2)), f"pr-leak: {nm!r} sits on page {m}"
         for a, b in edges:

@@ -184,6 +184,24 @@ def row_lhs(pos, s):
     return tx(pos["lhs"] + ROW_LHS_W, ROW_YTOP - ROW_SIDE / 2, s, anchor="east")
 
 
+BAND_Y = 236                                   # the callout band, above the row (the "t = ..." band of round 3)
+
+
+def co(text, at, target, anchor="west", gap=8.0, bend=0, tip=None):
+    """A muted callout in the band above the row; the box is asserted inside the band and canvas."""
+    size = F.FONT
+    assert "$" not in text, "callouts are plain Meslo text"
+    o, b = F.callout(text, at, target, anchor=anchor, bend=bend, gap=gap, size=size, tip=tip)
+    assert 6 <= b[0] and b[2] <= F.FULL_W - 6, f"callout {text!r} runs off the canvas {b}"
+    assert b[1] >= ROW_YTOP + 44 and b[3] <= 300 - ROW_BOX[0] - 2, f"callout {text!r} leaves its band {b}"
+    return o
+
+
+def circle_xy(key, k):
+    """Centre of the circle of term k in the shared row."""
+    return ROW_POS[key] + ROW_SLOT[k] / 2, ROW_YTOP - ROW_SIDE / 2
+
+
 # --------------------------------------------------------------------------- decomp-sum
 D0 = D1 / LAM[0]                               # bp of diameter per unit of |lambda|: lambda_1 is 72 bp
 
@@ -212,8 +230,10 @@ def sum_frame(n_shown, show_top=True):
 
 
 def f_sum():
-    frames = [sum_frame(n) for n in (0, 1, 2, 3, 4)]
-    F.emit_frames("decomp-sum", frames, container="full", h=ROW_H, nodes=False, box=ROW_BOX)
+    """Static: the finished sum (the builds are gone; frames/decomp-sum is removed)."""
+    import shutil
+    shutil.rmtree(F.FRAMES / "decomp-sum", ignore_errors=True)
+    F.emit("decomp-sum", sum_frame(4), container="full", h=ROW_H, nodes=False, box=ROW_BOX)
 
 
 # --------------------------------------------------------------------------- decomp-orth
@@ -262,24 +282,27 @@ def pair(x, ytop, k, l, fade=1.0, tint=False):
     return scope(o, fade) if fade < 1 else o
 
 
-def square_pairs_frame(stage):
-    """stage 0: the expanded product; 1: the middle contacts light up; 2: cross terms fade."""
-    ytop = 175 - 38 + PS / 2          # same centre line as the final frame
+def square_pairs_frame():
+    """The product A . A as four pairs of terms; the cross term u_1^T u_2 is outlined in hot."""
+    ytop = ROW_YTOP - ROW_SIDE / 2 + PS / 2          # the pairs sit on the same centre line as the row
     items = [("lhs", 84)] + sum(([(f"g{i}", GW), (f"p{i}", 36)] for i in range(4)), []) + \
             [("dots", 40)]
     pos = centred(items, gap=6)
     ymid = ytop - PS / 2
     o = tx(pos["lhs"] + 42, ymid, "$A^2=$")
     combos = [(0, 0), (0, 1), (1, 0), (1, 1)]
+    marked = (0, 1)
     for i, (k, l) in enumerate(combos):
-        same = k == l
-        fade = 0.18 if (stage >= 2 and not same) else 1.0
-        o += pair(pos[f"g{i}"], ytop, k, l, fade, tint=stage >= 1)
-        if stage >= 1:
-            o += tx(pos[f"g{i}"] + GW / 2, ytop - PS - 30, "$=1$" if same else "$=0$",
-                        color=RED)
+        o += pair(pos[f"g{i}"], ytop, k, l, tint=(k, l) == marked)
         o += tx(pos[f"p{i}"] + 18, ymid, "$+$")
     o += tx(pos["dots"] + 20, ymid, "$\\cdots$")
+    # the callout points at the facing bars of the marked pair
+    i = combos.index(marked)
+    m1 = pos[f"g{i}"] + PSLOT + 6
+    m2 = m1 + PS + 8 + PSLOT + 6
+    gx = (m1 + PBAR * 1.55 + PS + m2) / 2
+    o += co("u\u2081\u1d40u\u2082 = 0: cross terms vanish", (gx, BAND_Y),
+            (gx, ytop), anchor="center", gap=6)
     return o
 
 
@@ -294,6 +317,9 @@ def square_final_frame():
                   c2 * LAM[k] ** 2, BLUE, uu(KLAB[k]), top, side=side)
     o += tx(pos["p1"] + ROW_PLUS / 2, ymid, "$+$") + tx(pos["p2"] + ROW_PLUS / 2, ymid, "$+$")
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
+    cx, cy = circle_xy("t0", 0)
+    o += co("each eigenvalue squared", (20, BAND_Y), (cx, cy), gap=D1 / 2 + 8,
+            tip=(110, BAND_Y - 18))
     return o
 
 
@@ -301,13 +327,45 @@ def f_square():
     # facts: cross terms vanish, the diagonal ones are lambda_k^2 > 0
     assert abs(U[:, 0] @ U[:, 1]) < 1e-9 and abs(U[:, 0] @ U[:, 0] - 1) < 1e-9
     assert all(LAM[k] ** 2 > 0 for k in range(N))
-    frames = [square_pairs_frame(0), square_pairs_frame(1), square_pairs_frame(2),
-              square_final_frame()]
+    frames = [square_pairs_frame(), square_final_frame()]
     F.emit_frames("decomp-square", frames, container="full", h=ROW_H, nodes=False, box=ROW_BOX)
 
 
 # --------------------------------------------------------------------------- decomp-power
-TS = [1, 2, 3, 4, 8, 16]      # t = 3 shows the last term flip back to hot
+TS = [1, 2, 4, 16]            # t = 2: the last term turns positive
+
+
+def _r(k, t):
+    return (LAM[k] / LAM[0]) ** t
+
+
+def _note1(pos):
+    assert all(abs(_r(k, 1)) > 0.05 for k in range(N)), "t = 1: every term still shows"
+    return co("t = 1: every term", (pos["dots"] - 10, BAND_Y), (pos["dots"] + 63, ROW_YTOP - ROW_SIDE / 2),
+              gap=24)
+
+
+def _note2(pos):
+    assert _r(N - 1, 1) < 0 < _r(N - 1, 2), "the negative term turns positive at t = 2"
+    cx, cy = circle_xy("t6", N - 1)
+    return co("t = 2: the negative term turns positive", (cx + 120, BAND_Y), (cx, cy),
+              anchor="east", gap=D1 * abs(_r(N - 1, 2)) / 2 + 6)
+
+
+def _note4(pos):
+    assert abs(_r(1, 4)) < 0.05 and abs(_r(2, 4)) < 0.01, "t = 4: terms 2 and 3 have faded"
+    cx, cy = circle_xy("t1", 1)
+    return co("t = 4: the small terms fade", (20, BAND_Y), (cx, cy), gap=10, tip=(cx - 24, BAND_Y - 18))
+
+
+def _note16(pos):
+    assert all(abs(_r(k, 16)) < 0.021 for k in range(1, N)), "t = 16: only the first is left"
+    cx, cy = circle_xy("t0", 0)
+    return co("t = 16: only the first is left", (20, BAND_Y), (cx, cy), gap=D1 / 2 + 8,
+              tip=(130, BAND_Y - 18))
+
+
+POWER_NOTE = {1: _note1, 2: _note2, 4: _note4, 16: _note16}
 
 
 def power_frame(t):
@@ -322,7 +380,7 @@ def power_frame(t):
                   sgn_color(r), uu(KLAB[k]), side=side)
     o += tx(pos["p1"] + ROW_PLUS / 2, ymid, "$+$") + tx(pos["p2"] + ROW_PLUS / 2, ymid, "$+$")
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
-    o += tx(20, ytop + 60, "$t=%d$" % t, anchor="west")
+    o += POWER_NOTE[t](pos)
     return o
 
 
@@ -350,7 +408,10 @@ def coef(frac, k):
 KSIDE = 72                                    # matrix side: the 130 bp circle and "+ ... +" must fit
 
 
-def katz_frame(frac, alabel):
+KBAND_Y = 222                                  # katz-why: the callout band, between the formula and the circles
+
+
+def katz_frame(frac, alabel, note):
     ytop = 190
     items = [("lhs", 30), ("t0", KSLOT[0] + TG + KSIDE), ("p1", 36), ("t1", KSLOT[1] + TG + KSIDE),
              ("p2", 36), ("t2", KSLOT[2] + TG + KSIDE), ("dots", 126), ("t6", KSLOT[N - 1] + TG + KSIDE)]
@@ -361,8 +422,6 @@ def katz_frame(frac, alabel):
         c = coef(frac, k)
         d = KC * np.sqrt(abs(c))                # area ~ |coefficient|: 1, 2, 5, 20, 100 read as growing
         top = None
-        if c < 0:
-            top = lambda cx, y: tx(cx, y, "negative", color=RED)
         # labels sit below the largest possible circle (130 bp), at one height in every frame
         o += term(pos[f"t{k if k < 3 else 6}"], ytop, KSLOT[k], val(c), d, sgn_color(c),
                   uu(KLAB[k]), top, dy_label=56, side=KSIDE)
@@ -370,7 +429,14 @@ def katz_frame(frac, alabel):
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     o += tx(20, ytop + 84, "$(I-\\alpha A)^{-1}$", anchor="west")
     o += tx(F.FULL_W - 20, ytop + 84, alabel, color=RED, anchor="east")
-    return o
+    text_, kk, anchor_, x_ = note
+    cx, cy = pos["t%d" % (kk if kk < 3 else 6)] + KSLOT[kk] / 2, ymid
+    d = KC * np.sqrt(abs(coef(frac, kk)))
+    size = F.FONT
+    co_, b = F.callout(text_, (x_, KBAND_Y), (cx, cy), anchor=anchor_, gap=d / 2 + 6, size=size,
+                       tip=(60, KBAND_Y - 18))
+    assert 6 <= b[0] and b[2] <= F.FULL_W - 6, f"callout {text_!r} off the canvas {b}"
+    return o + co_
 
 
 def f_katz():
@@ -379,7 +445,17 @@ def f_katz():
     assert np.allclose(got, [1, 2, 5, 20, 100, -10]), got
     assert all(coef(f, 0) > 0 for f, _ in KSTEPS[:-1]) and coef(1.1, 0) < 0
     assert all(coef(f, k) > 0 for f, _ in KSTEPS for k in range(1, N)), "only term 1 flips"
-    frames = [katz_frame(f, lab) for f, lab in KSTEPS]
+    # three frames: alpha = 0.5, 0.95 and 1.1 over lambda_max, each with a callout
+    lab = dict(KSTEPS)
+    c5 = [coef(0.5, k) for k in range(N)]
+    assert max(c5) / min(c5) < 3, "alpha = 0.5: the weights are comparable"
+    c95 = [coef(0.95, k) for k in range(N)]
+    assert c95[0] > 5 * max(c95[1:]), "alpha = 0.95: the first term dominates"
+    assert coef(1.1, 0) < 0, "alpha = 1.1: the first weight is negative"
+    notes = {0.5: ("small \u03b1: weights comparable", 0, "west", 20),
+             0.95: ("\u03b1 near 1/\u03bbmax: first term dominates", 0, "west", 20),
+             1.1: ("past 1/\u03bbmax: first weight is negative", 0, "west", 20)}
+    frames = [katz_frame(f, lab[f], notes[f]) for f in (0.5, 0.95, 1.1)]
     F.emit_frames("katz-why", frames, container="full", h=330, nodes=False)
 
 
