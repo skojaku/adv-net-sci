@@ -436,10 +436,10 @@ def fig_eig_all():
 # =========================================================================== the ring of cliques
 RING_DISC = 28
 RING_R = 76                                                # every clique sits on a circle of this radius
-RING_RX, RING_RY = 172, 104
-RING_OX, RING_OY = 252, 200
+RING_RX, RING_RY = 172, 84
+RING_OX, RING_OY = 252, 208
 RING_H = 400
-RING_BOX = (22, 378)                                       # bp from the canvas top, one crop
+RING_BOX = (28, 388)                                       # bp from the canvas top, one crop
 
 
 def ring_layout(sizes, Rx, Ry, radius):
@@ -523,27 +523,23 @@ def fig_ring_4444():
 def fig_ring_local():
     """Frame 0 = ring-4444.  Then the last clique grows one node at a time (a square, pentagon,
     hexagon, heptagon, octagon around a fixed centre, the two ports fixed), discs shaded by the
-    leading eigenvector, with the share of the score that sits in the last clique.  The share is
-    in ink at K = 4 (the baseline) and hot from K = 5."""
+    leading eigenvector, with the share of the score that sits in the last clique in one line
+    UNDER the ring (the band is empty in ring-4444).  The share is in ink at K = 4 (the baseline)
+    and hot from K = 5."""
     shares = {}
     frames = [ring_body((4, 4, 4, 4), shaded=False)[0]]
-    cx, cy = RING_OX, RING_OY
+    cx, cy = RING_OX + 11, RING_OY - 176                       # one line under the whole ring
     for K in (4, 5, 6, 7, 8):
         sizes = S.RING_SIZES[K]
         share, lam = S.eig_share(sizes)
         shares[K] = F.pct(share)
         body, pos, v = ring_body(sizes, shaded=True)
-        l1 = f"K = {K}: {shares[K]}"
-        w1 = est_w(l1.replace("\\", "")) + 6
-        w2 = est_w("of the score") + 6
-        for box in ((cx - w1 / 2, cy + 1, cx + w1 / 2, cy + 31), (cx - w2 / 2, cy - 29, cx + w2 / 2, cy - 3)):
-            assert not any(F.box_hits_disc(box, *p, r=RING_DISC / 2 + 4) for p in pos.values()), \
-                f"ring-local K={K}: the share label touches a disc"
-            assert not any(F.box_hits_segment(box, pos[a], pos[b], pad=2)
-                           for a, b in S.clique_ring(sizes).edges()), f"ring-local K={K}: label on an edge"
+        w1 = est_w(f"K = {K}: {shares[K]} of the score".replace("\\", "")) + 6
+        box = (cx - w1 / 2, cy - 17, cx + w1 / 2, cy + 17)
+        assert box[3] < min(p[1] for p in pos.values()) - RING_DISC / 2 - 4, \
+            f"ring-local K={K}: the label touches the ring"
         pc = shares[K] if K == 4 else f"\\textcolor{{hot}}{{{shares[K]}}}"
-        body += F.text(cx, cy + 16, f"K = {K}: {pc}")
-        body += F.text(cx, cy - 16, "of the score", color="muted")
+        body += F.text(cx, cy, f"K = {K}: {pc}\\ \\textcolor{{muted}}{{of the score}}")
         frames.append(body)
     assert [shares[K] for K in (4, 5, 6, 7, 8)] == ["25\\%", "68\\%", "85\\%", "91\\%", "94\\%"], shares
     F.emit_frames("ring-local", frames, container="col", h=RING_H, box=RING_BOX)
