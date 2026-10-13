@@ -650,7 +650,7 @@ def fig_genealogy():
         mx, lx = X(year), X(year) + dx
         ly = ax + side * 24
         body += F.seg((mx, ax + side * 12), (lx, ly - side * 2), color="muted", w=1.8)
-        body += F.disc(mx, ax, "", fill="cool", size=22)
+        body += F.disc(mx, ax, "", fill="pale", size=22)
         s = f"{year}\\\\{who}"
         shown = f"{{\\color{{muted}}{year}}}\\\\{who}"
         body += F.text(lx, ly, shown, color="ink",
@@ -663,16 +663,6 @@ def fig_genealogy():
                 f"the {a} and {b} labels overlap -- stagger them further"
     for b in boxes.values():
         assert 6 <= b[0] and b[2] <= 1074, f"a timeline label runs off the canvas: {b}"
-    banner = "a node's score is built from its neighbours' scores"
-    bb = F.label_box(540, 312, banner, "center")
-    for b in boxes.values():
-        assert not F.boxes_overlap(bb, b), "the banner collides with a label"
-    assert 6 <= bb[0] and bb[2] <= 1074 and bb[3] <= INK_H
-    body += F.text(540, 312, banner, color="ink")
-    bw = F.CHAR_W * F.FONT * len(banner)
-    ux = [(540 - bw / 2) + bw * t for t in (0, 0.33, 0.66, 1)]
-    body += F.brush([(x, 291 + 1.5 * i / 3) for i, x in enumerate(ux)], color="hot", w=6.0, opacity=0.95,
-                    strands=5, seed=1)
     F.emit("genealogy", body, container="full", h=CANVAS_H)
 
 

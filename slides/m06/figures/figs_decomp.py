@@ -10,8 +10,8 @@
 Notation, from lecture-note/figs/spectral-decomposition.jpg: an eigenvalue is a filled
 circle (diameter proportional to |value|), an eigenvector u_k is a TALL rectangle, its
 transpose a WIDE rectangle, and the pair together stands for the square matrix u_k u_k^T.
-Palette: a circle is cool if the value is positive and hot if it is negative; the bars have
-a pencil ink outline and a cool fill; words and numbers are Meslo, math is Latin Modern at
+Palette: a circle is cool if the value is positive and hot if it is negative; the bars are
+neutral (a pale fill, pencil ink outline: only the circles carry sign); words and numbers are Meslo, math is Latin Modern at
 FONT_MATH.  Every number is computed from the spectrum of the 7-node graph EIG; none is typed.
 
 The builds are frames (F.emit_frames), one small step each.  Frames of the sum start with
@@ -45,8 +45,8 @@ assert (LAM[2] > 0) and (LAM[-1] < 0)
 # --------------------------------------------------------------------------- style
 BLUE = "cool!70"                      # positive eigenvalue / coefficient
 GOLD = "hot!85"                       # negative
-UFILL = "cool!70"                     # eigenvector bars: cool fill, pencil ink outline
-UFILL2 = "cool!70"                    # a second eigenvector: told apart by its label, not a paler fill
+UFILL = "pale"                        # eigenvector bars: neutral fill, pencil ink outline
+UFILL2 = "pale"                       # a second eigenvector: told apart by its label
 OUTLINE = "muted"                     # the (implied) square matrix
 RED = "hot"
 
@@ -91,20 +91,23 @@ def pencil_rect(x0, y0, x1, y1, fill=None, color="ink", w=1.5):
     return o
 
 
-def bar(x0, y0, x1, y1, fill):
-    """A rectangle with a pencil ink outline and a cool fill."""
-    return pencil_rect(x0, y0, x1, y1, fill=fill, color="ink", w=1.6)
+def bar(x0, y0, x1, y1, fill, color="ink", w=1.6):
+    """A rectangle with a pencil ink outline and a neutral fill."""
+    return pencil_rect(x0, y0, x1, y1, fill=fill, color=color, w=w)
 
 
-def matrix(mx, ytop, side=S, colfill=UFILL, rowfill=UFILL, bar_t=BAR, outline=True, only_outline=False):
+def matrix(mx, ytop, side=S, colfill=UFILL, rowfill=UFILL, bar_t=BAR, outline=True, only_outline=False,
+           colcolor="ink", rowcolor="ink"):
     """u u^T as the lecturer draws it: a tall rectangle at the left edge, a wide one along the top."""
     o = ""
     if outline:
         o += pencil_rect(mx, ytop - side, mx + side, ytop, color=OUTLINE, w=1.6)
     if only_outline:
         return o
-    o += bar(mx, ytop - side, mx + bar_t, ytop, colfill)
-    o += bar(mx + bar_t + 0.55 * bar_t, ytop - bar_t, mx + side, ytop, rowfill)
+    cw = 2.8 if colcolor != "ink" else 1.6
+    rw = 2.8 if rowcolor != "ink" else 1.6
+    o += bar(mx, ytop - side, mx + bar_t, ytop, colfill, colcolor, cw)
+    o += bar(mx + bar_t + 0.55 * bar_t, ytop - bar_t, mx + side, ytop, rowfill, rowcolor, rw)
     return o
 
 
@@ -131,6 +134,7 @@ def centred(items, gap=10):
 
 
 TG = 10                                         # gap between a term's circle slot and its matrix
+COEF_END = -14                                  # a coefficient ends this far left of its matrix, right-aligned against its u label
 
 
 def term(x, ytop, slot, lam_str, d, color, mlabel, top_label=None, side=S, fade=1.0,
@@ -141,8 +145,8 @@ def term(x, ytop, slot, lam_str, d, color, mlabel, top_label=None, side=S, fade=
     ylab = ytop - side - dy_label
     o = circle(cx, cy, d, color)
     o += matrix(mx, ytop, side)
-    if lam_str:
-        o += tx(cx, ylab, lam_str)
+    if lam_str:                     # right-aligned, ending just before its u u^T label
+        o += tx(mx + COEF_END, ylab, lam_str, anchor="east")
     if mlabel:
         o += tx(mx + side / 2, ylab, mlabel)
     if top_label:
@@ -156,32 +160,52 @@ def uu(k):
 
 KLAB = {0: "1", 1: "2", 2: "3", N - 1: "7"}
 
+# ONE layout for decomp-sum, decomp-square (last frame) and decomp-power: the left-hand
+# side is right-aligned at a fixed x, so the four terms sit in the same columns, with the
+# same first circle, on the three consecutive slides.  The "t = ..." band above the row is
+# reserved in all three (only decomp-power writes in it).
+ROW_SIDE = 72                                  # side of a drawn matrix
+ROW_YTOP = 170
+ROW_LHS_W = 118
+ROW_SLOT = {0: 76, 1: 76, 2: 76, N - 1: 96}
+ROW_PLUS = 26
+ROW_BOX = (38, 270)                            # the one crop of the row, bp from the canvas top
+ROW_H = 300
+ROW_ITEMS = [("lhs", ROW_LHS_W), ("t0", ROW_SLOT[0] + TG + ROW_SIDE), ("p1", ROW_PLUS),
+             ("t1", ROW_SLOT[1] + TG + ROW_SIDE), ("p2", ROW_PLUS),
+             ("t2", ROW_SLOT[2] + TG + ROW_SIDE), ("dots", 126),
+             ("t6", ROW_SLOT[N - 1] + TG + ROW_SIDE)]
+ROW_POS = centred(ROW_ITEMS)
+D1 = 72.0                                      # diameter of the first circle in all three, bp
+
+
+def row_lhs(pos, s):
+    """The left-hand side, right-aligned at the fixed x just before the first circle."""
+    return tx(pos["lhs"] + ROW_LHS_W, ROW_YTOP - ROW_SIDE / 2, s, anchor="east")
+
 
 # --------------------------------------------------------------------------- decomp-sum
-D0 = 25.0                                      # bp of diameter per unit of |lambda|
-SLOT = {0: 76, 1: 76, 2: 76, N - 1: 96}
+D0 = D1 / LAM[0]                               # bp of diameter per unit of |lambda|: lambda_1 is 72 bp
 
 
-def sum_frame(n_shown, lhs="$\\mathbf{A}=$", lhs_w=60, show_top=True):
+def sum_frame(n_shown, show_top=True):
     """n_shown = 0: 'A =' and four empty outlines; 1..3: terms 1..3; 4: '+ ... +' and the last term."""
-    ytop = 170
-    items = [("lhs", lhs_w), ("t0", SLOT[0] + TG + S), ("p1", 36), ("t1", SLOT[1] + TG + S),
-             ("p2", 36), ("t2", SLOT[2] + TG + S), ("dots", 126), ("t6", SLOT[N - 1] + TG + S)]
-    pos = centred(items)
-    ymid = ytop - S / 2
-    o = tx(pos["lhs"] + lhs_w / 2, ymid, lhs)
+    pos, ytop, side = ROW_POS, ROW_YTOP, ROW_SIDE
+    ymid = ytop - side / 2
+    o = row_lhs(pos, "$A=$")
     for j, k in enumerate(SHOW):
+        key = f"t{k if k < 3 else 6}"
         if j >= n_shown:
             # not filled in yet: only the muted outline of the term's square matrix
-            o += matrix(pos[f"t{k if k < 3 else 6}"] + SLOT[k] + TG, ytop, S, only_outline=True)
+            o += matrix(pos[key] + ROW_SLOT[k] + TG, ytop, side, only_outline=True)
             continue
         top = (lambda cx, y, k=k: tx(cx, y, "$\\lambda_%s$" % KLAB[k])) if show_top else None
-        o += term(pos[f"t{k if k < 3 else 6}"], ytop, SLOT[k], val(LAM[k]), D0 * abs(LAM[k]),
-                  sgn_color(LAM[k]), uu(KLAB[k]), top)
+        o += term(pos[key], ytop, ROW_SLOT[k], val(LAM[k]), D0 * abs(LAM[k]),
+                  sgn_color(LAM[k]), uu(KLAB[k]), top, side=side)
         if k == 0 and n_shown > 1:
-            o += tx(pos["p1"] + 18, ymid, "$+$")
+            o += tx(pos["p1"] + ROW_PLUS / 2, ymid, "$+$")
         if k == 1 and n_shown > 2:
-            o += tx(pos["p2"] + 18, ymid, "$+$")
+            o += tx(pos["p2"] + ROW_PLUS / 2, ymid, "$+$")
         if k == 2 and n_shown > 3:
             o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     return o
@@ -189,7 +213,7 @@ def sum_frame(n_shown, lhs="$\\mathbf{A}=$", lhs_w=60, show_top=True):
 
 def f_sum():
     frames = [sum_frame(n) for n in (0, 1, 2, 3, 4)]
-    F.emit_frames("decomp-sum", frames, container="full", h=300, nodes=False)
+    F.emit_frames("decomp-sum", frames, container="full", h=ROW_H, nodes=False, box=ROW_BOX)
 
 
 # --------------------------------------------------------------------------- decomp-orth
@@ -231,8 +255,10 @@ def pair(x, ytop, k, l, fade=1.0, tint=False):
     m2 = c2 + PSLOT + 6
     o = circle(x + PSLOT / 2, cy, C2 * abs(LAM[k]), sgn_color(LAM[k]))
     o += circle(c2 + PSLOT / 2, cy, C2 * abs(LAM[l]), sgn_color(LAM[l]))
-    o += matrix(m1, ytop, PS, bar_t=PBAR, rowfill="hot!75" if tint else UFILL)
-    o += matrix(m2, ytop, PS, bar_t=PBAR, colfill="hot!75" if tint else UFILL)
+    # the pair that gets multiplied: u_k^T (wide bar of the left matrix) against u_l (tall bar of the
+    # right one) -- marked by a hot outline, never a hot fill (hot would read as "negative")
+    o += matrix(m1, ytop, PS, bar_t=PBAR, rowcolor="hot" if tint else "ink")
+    o += matrix(m2, ytop, PS, bar_t=PBAR, colcolor="hot" if tint else "ink")
     return scope(o, fade) if fade < 1 else o
 
 
@@ -243,7 +269,7 @@ def square_pairs_frame(stage):
             [("dots", 40)]
     pos = centred(items, gap=6)
     ymid = ytop - PS / 2
-    o = tx(pos["lhs"] + 42, ymid, "$\\mathbf{A}^2=$")
+    o = tx(pos["lhs"] + 42, ymid, "$A^2=$")
     combos = [(0, 0), (0, 1), (1, 0), (1, 1)]
     for i, (k, l) in enumerate(combos):
         same = k == l
@@ -258,19 +284,15 @@ def square_pairs_frame(stage):
 
 
 def square_final_frame():
-    ytop, side = 175, 76
-    slot = {0: 80, 1: 72, 2: 72, N - 1: 72}
-    items = [("lhs", 84), ("t0", slot[0] + TG + side), ("p1", 36), ("t1", slot[1] + TG + side),
-             ("p2", 36), ("t2", slot[2] + TG + side), ("dots", 126),
-             ("t6", slot[N - 1] + TG + side)]
-    pos = centred(items)
+    pos, ytop, side = ROW_POS, ROW_YTOP, ROW_SIDE
     ymid = ytop - side / 2
-    o = tx(pos["lhs"] + 42, ymid, "$\\mathbf{A}^2=$")
+    c2 = D1 / LAM[0] ** 2                      # lambda_1^2 gets the same 72 bp circle as in the other two
+    o = row_lhs(pos, "$A^2=$")
     for k in SHOW:
         top = lambda cx, y, k=k: tx(cx, y, "$\\lambda_%s^2$" % KLAB[k])
-        o += term(pos[f"t{k if k < 3 else 6}"], ytop, slot[k], val(LAM[k] ** 2),
-                  C2 * LAM[k] ** 2, BLUE, uu(KLAB[k]), top, side=side)
-    o += tx(pos["p1"] + 18, ymid, "$+$") + tx(pos["p2"] + 18, ymid, "$+$")
+        o += term(pos[f"t{k if k < 3 else 6}"], ytop, ROW_SLOT[k], val(LAM[k] ** 2),
+                  c2 * LAM[k] ** 2, BLUE, uu(KLAB[k]), top, side=side)
+    o += tx(pos["p1"] + ROW_PLUS / 2, ymid, "$+$") + tx(pos["p2"] + ROW_PLUS / 2, ymid, "$+$")
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
     return o
 
@@ -281,33 +303,26 @@ def f_square():
     assert all(LAM[k] ** 2 > 0 for k in range(N))
     frames = [square_pairs_frame(0), square_pairs_frame(1), square_pairs_frame(2),
               square_final_frame()]
-    F.emit_frames("decomp-square", frames, container="full", h=300, nodes=False)
+    F.emit_frames("decomp-square", frames, container="full", h=ROW_H, nodes=False, box=ROW_BOX)
 
 
 # --------------------------------------------------------------------------- decomp-power
-D1 = 72.0                                      # diameter of the first circle, bp
-TS = [1, 2, 3, 4, 8, 16]      # t = 3 shows the last term flip back to gold
-
-
-PSIDE = 72                                    # matrix side here: the "+ ... +" needs 126 bp
+TS = [1, 2, 3, 4, 8, 16]      # t = 3 shows the last term flip back to hot
 
 
 def power_frame(t):
-    ytop = 170
+    pos, ytop, side = ROW_POS, ROW_YTOP, ROW_SIDE
+    ymid = ytop - side / 2
     # The circles are divided by lambda_1^t, so the left side says so: "A^t =" with
     # normalised circles would be a false equation.
-    items = [("lhs", 118), ("t0", SLOT[0] + TG + PSIDE), ("p1", 26), ("t1", SLOT[1] + TG + PSIDE),
-             ("p2", 26), ("t2", SLOT[2] + TG + PSIDE), ("dots", 126), ("t6", SLOT[N - 1] + TG + PSIDE)]
-    pos = centred(items)
-    ymid = ytop - PSIDE / 2
-    o = tx(pos["lhs"] + 59, ymid, "$\\mathbf{A}^t/\\lambda_1^t=$")
+    o = row_lhs(pos, "$A^t/\\lambda_1^t=$")
     for k in SHOW:
         r = (LAM[k] / LAM[0]) ** t
-        o += term(pos[f"t{k if k < 3 else 6}"], ytop, SLOT[k], val(r), D1 * abs(r),
-                  sgn_color(r), uu(KLAB[k]), side=PSIDE)
-    o += tx(pos["p1"] + 13, ymid, "$+$") + tx(pos["p2"] + 13, ymid, "$+$")
+        o += term(pos[f"t{k if k < 3 else 6}"], ytop, ROW_SLOT[k], val(r), D1 * abs(r),
+                  sgn_color(r), uu(KLAB[k]), side=side)
+    o += tx(pos["p1"] + ROW_PLUS / 2, ymid, "$+$") + tx(pos["p2"] + ROW_PLUS / 2, ymid, "$+$")
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
-    o += tx(20, ytop + 60, "$t=%d$" % t, color=RED, anchor="west")
+    o += tx(20, ytop + 60, "$t=%d$" % t, anchor="west")
     return o
 
 
@@ -316,15 +331,16 @@ def f_power():
     assert all(abs(LAM[k] / LAM[0]) ** 16 < 0.021 for k in range(1, N))
     assert LAM[-1] / LAM[0] < 0 and (LAM[-1] / LAM[0]) ** 1 < 0
     frames = [power_frame(t) for t in TS]
-    F.emit_frames("decomp-power", frames, container="full", h=300, nodes=False)
+    F.emit_frames("decomp-power", frames, container="full", h=ROW_H, nodes=False, box=ROW_BOX)
 
 
 # --------------------------------------------------------------------------- katz-why
 KC = 13.0                                      # bp of diameter per sqrt(|coefficient|)
 KSLOT = {0: 136, 1: 76, 2: 76, N - 1: 96}
-KSTEPS = [(0.0, "$\\alpha=0$"), (0.5, "$\\alpha=0.5/\\lambda_1$"), (0.8, "$\\alpha=0.8/\\lambda_1$"),
-          (0.95, "$\\alpha=0.95/\\lambda_1$"), (0.99, "$\\alpha=0.99/\\lambda_1$"),
-          (1.1, "$\\alpha=1.1/\\lambda_1$")]
+LMAX = "\\lambda_{\\max}"
+KSTEPS = [(0.0, "$\\alpha=0$"), (0.5, "$\\alpha=0.5/%s$" % LMAX), (0.8, "$\\alpha=0.8/%s$" % LMAX),
+          (0.95, "$\\alpha=0.95/%s$" % LMAX), (0.99, "$\\alpha=0.99/%s$" % LMAX),
+          (1.1, "$\\alpha=1.1/%s$" % LMAX)]
 
 
 def coef(frac, k):
@@ -352,7 +368,7 @@ def katz_frame(frac, alabel):
                   uu(KLAB[k]), top, dy_label=56, side=KSIDE)
     o += tx(pos["p1"] + 18, ymid, "$+$") + tx(pos["p2"] + 18, ymid, "$+$")
     o += tx(pos["dots"] + 63, ymid, "$+\\;\\cdots\\;+$")
-    o += tx(20, ytop + 84, "$(\\mathbf{I}-\\alpha\\mathbf{A})^{-1}$", anchor="west")
+    o += tx(20, ytop + 84, "$(I-\\alpha A)^{-1}$", anchor="west")
     o += tx(F.FULL_W - 20, ytop + 84, alabel, color=RED, anchor="east")
     return o
 

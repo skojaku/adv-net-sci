@@ -3,7 +3,8 @@
 
 hits-graph (col): six pages, the best hub hot, the best authority cool.
 
-The PageRank group (col): pr-split, pr-split-answer, pr-leak (frames), pr-teleport, ppr.
+The PageRank group (col): pr-split, pr-split-answer, pr-leak (frames; frame 00 is pr-split-answer),
+pr-teleport, ppr (a teleport jump is a dotted cool arrow; the removed link is dashed muted).
 All five share ONE canvas (537 x 372 bp), ONE crop box (PR_BOX) and the same five node
 positions (PR_XY), so the web does not move between those five slides: only arrows,
 shares, fills and values change.  Pages are discs with a pencil outline and a Meslo
@@ -205,6 +206,14 @@ def assert_planar(xy, edges, what):
     assert PR_LOOP_Y + F.EDGE_W < min(y for _, y in xy.values()) - HALF - 2, f"{what}: return line hits a page"
 
 
+SPLIT_AT = dict(SCORE_AT, A=(-28, 44))     # pr-split-answer: A's share above-left of A, clear of every weight
+
+
+def tie_fill(winners):
+    """pr-split-answer: the tied pages hot; B and D, which score lowest, plain white."""
+    return {n: ("hot" if n in winners else "white") for n in PR_XY}
+
+
 def values_fill(vals, winners=()):
     """Winners hot; every other page shaded cool by its share of the largest value."""
     top = max(float(v) for v in vals.values())
@@ -265,7 +274,8 @@ def share_chips(xy, edges, t_default=0.5, t_over=None):
     return out, boxes
 
 
-def fig_pr_split(answer=False):
+def split_body(answer=False):
+    """pr-split (links and weights) or pr-split-answer (plus the shares); returns the TikZ body."""
     name = "pr-split-answer" if answer else "pr-split"
     xy = PR_XY
     assert_same_positions(name, xy)
@@ -283,8 +293,8 @@ def fig_pr_split(answer=False):
     if answer:
         tie = [n for n in xy if FRAC[n] == Fraction(3, 11)]
         assert sorted(tie) == ["A", "C", "E"]
-        body += pages(xy, fills=values_fill(N["PR_plain"], winners=tie))
-        sl, lb = score_labels(xy, FRAC, lambda n, v: frac(v), winners=tie)
+        body += pages(xy, fills=tie_fill(tie))
+        sl, lb = score_labels(xy, FRAC, lambda n, v: frac(v), winners=tie, at=SPLIT_AT)
         check_clear(xy, edges, lb, name)
         body += sl
         for n, b in lb.items():
@@ -292,10 +302,37 @@ def fig_pr_split(answer=False):
                 assert not F.boxes_overlap(b, cb), f"{name}: score {n} overlaps a share chip"
     else:
         body += pages(xy)
-    F.emit(name, body, container="col", h=CANVAS_H, box=PR_BOX)
+    return body
+
+
+def fig_pr_split(answer=False):
+    name = "pr-split-answer" if answer else "pr-split"
+    F.emit(name, split_body(answer), container="col", h=CANVAS_H, box=PR_BOX)
 
 
 # --------------------------------------------------------------------------- teleport / ppr
+JUMP = "line cap=round,dash pattern=on 0.1bp off 5.5bp"     # a teleport jump: dotted cool, its own style
+JUMP_W = 3.2
+
+
+def jump(a, b, bend=None):
+    """A teleport jump a -> b: a dotted cool arrow (never the dashed muted style of the removed link)."""
+    return edge(a, b, color="cool", w=JUMP_W, dash=JUMP, bend=bend)
+
+
+def jump_return():
+    """E's jump to A, along the free line under the drawing: dotted cool."""
+    ex, ey = PR_XY["E"]
+    ax, ay = PR_XY["A"]
+    o = [f"line width={JUMP_W}bp", "draw=cool", ARROW, "rounded corners=16bp", JUMP]
+    return (f"\\draw[{','.join(o)}] (E.south) -- ({ex:.1f},{PR_LOOP_Y}) -- ({PR_LOOP_X},{PR_LOOP_Y}) -- "
+            f"({PR_LOOP_X},{ay - LOOP_DY:.1f}) -- ({LOOP_END_X(ax):.1f},{ay - LOOP_DY:.1f});\n")
+
+
+# E jumps to every other page: its dead end links to every page.
+TELE_BEND = {"C": "left=40", "D": "left=32"}
+
+
 def fig_pr_teleport():
     name = "pr-teleport"
     xy = PR_XY
@@ -308,14 +345,21 @@ def fig_pr_teleport():
     assert abs(sum(sc.values()) - 1) < 1e-9
     assert _top(sc) == "E"
     assert [dec(sc[k]) for k in "ECBDA"] == ["0.359", "0.316", "0.117", "0.117", "0.091"]
-    body = anchors(xy) + pr_links(edges) + pages(xy, fills=values_fill(sc, winners=["E"]))
+    body = anchors(xy) + pr_links(edges)
+    for dst in "CD":
+        body += jump("E", dst, bend=TELE_BEND[dst])
+    # E -> B climbs between the scores of C and E (a Bezier curve), then comes down onto B
+    body += (f"\\draw[line width={JUMP_W}bp,draw=cool,{ARROW},{JUMP}] "
+             f"(E) .. controls (418,216) and (400,385) .. (B);\n")
+    body += jump_return()
+    body += pages(xy, fills=values_fill(sc, winners=["E"]))
     sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["E"])
     check_clear(xy, edges, lb, name)
     tot_r = f"r = {float(S.PR_R):.2f}"
     tot_t = f"total {sum(float(v) for v in sc.values()):.2f}"
     assert tot_t == "total 1.00"
-    tx, ty = F.COL_W - 14, 84
-    for s_, y_ in ((tot_r, ty + 18), (tot_t, ty - 18)):
+    tx, ty = 468, 64
+    for s_, y_ in ((tot_r, ty + 16), (tot_t, ty - 16)):
         tb = tbox(tx, y_, s_, anchor="east")
         assert tb[0] >= 4, f"{name}: {s_!r} runs off the canvas"
         for m in xy:
@@ -328,8 +372,8 @@ def fig_pr_teleport():
     F.emit(name, body + sl, container="col", h=CANVAS_H, box=PR_BOX)
 
 
-# Dashed teleport arrows back to A.  Each one is the twin of a solid link, so each is
-# bent away from it, into the free space beside it.
+# Every jump goes to A.  Each one is the twin of a solid link, so each is bent away
+# from it, into the free space beside it.
 PPR_BEND = {"B": "right=34", "C": "right=26", "D": "right=18"}
 
 
@@ -347,9 +391,9 @@ def fig_ppr():
     body = anchors(xy) + pr_links(edges)
     tele = ""
     for src in "BCD":
-        tele += edge(src, "A", color="muted", dash=F.DASH, bend=PPR_BEND[src])
-    # E -> A jump: E has no link out, so the jump takes the free return along the bottom
-    tele += return_path(color="muted", dash=F.DASH)
+        tele += jump(src, "A", bend=PPR_BEND[src])
+    # E has no link out, so its jump to A takes the free line along the bottom
+    tele += jump_return()
     body += tele + pages(xy, fills=values_fill(sc, winners=["A"]))
     sl, lb = score_labels(xy, sc, lambda n, v: dec(v), winners=["A"])
     body += sl
@@ -368,6 +412,8 @@ def removed_link():
 
 
 def fig_pr_leak():
+    """Frame 00 is pr-split-answer exactly; 01 clears the weights and shares; 02 cuts E's link
+    (dashed muted, hot cross, "dead end"); 03 on drain the score, "total 1.00" first appearing at 03."""
     xy = PR_XY
     assert_same_positions("pr-leak", xy)
     edges = S.PR_DEAD
@@ -377,17 +423,23 @@ def fig_pr_leak():
     top = max(float(c.max()) for c in tr)
     order = S.PR_ORDER
     tot_xy = (xy["D"][0] + 40, 66)
-    frames = []
+    dead_xy = (F.COL_W - 14, xy["E"][1] + 54)
+    tie = [n for n in xy if FRAC[n] == Fraction(3, 11)]
+    answer_fills = tie_fill(tie)
+    frames = [split_body(True)]
+    frames.append(anchors(xy) + pr_links(S.PR_EDGES) + pages(xy, fills=answer_fills))
+    frames.append(anchors(xy) + pr_links(edges) + removed_link() + pages(xy, fills=answer_fills)
+                  + F.text(*dead_xy, "dead end", color="muted", anchor="east"))
     for k, c in enumerate(tr):
         vals = {n: float(c[i]) for i, n in enumerate(order)}
         fills = {n: F.shade(v / top) for n, v in vals.items()}
         total = sum(vals.values())
         assert abs(total - LEAK_TOTALS[k]) < 1e-9
         body = anchors(xy) + pr_links(edges) + removed_link() + pages(xy, fills=fills)
-        body += F.text(F.COL_W - 14, xy["E"][1] + 54, "dead end", color="muted", anchor="east")
+        body += F.text(*dead_xy, "dead end", color="muted", anchor="east")
         body += F.text(*tot_xy, f"total {total:.2f}", color="hot")
         frames.append(body)
-    tb = tbox(F.COL_W - 14, xy["E"][1] + 54, "dead end", anchor="east")
+    tb = tbox(*dead_xy, "dead end", anchor="east")
     cb = tbox(*tot_xy, "total 0.00")
     for lb, nm in ((tb, "dead end"), (cb, "total")):
         for m in xy:
