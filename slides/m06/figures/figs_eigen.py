@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""Module 06, eigenvectors, power iteration, localization and Katz: the figures of `figs_eigen`.
+"""Module 06, eigenvectors, localization and Katz: the figures of `figs_eigen` (v3 style).
 
-    cd slides/m06/figures && python3 -c "import figlib, figs_eigen as m; figlib.run(m.FIGURES)"
+    cd slides/m06/figures && python3 -c "import figlib as F, figs_eigen as M; F.run(M.FIGURES)"
 
 Every number printed here is computed from `smallgraphs` (the 7-node graph `EIG`, the clique
-ring, `W5`); nothing is typed.  Colour language (DECK_SPEC "Visual language"):
+ring, `W5`); nothing is typed.  Style: figlib's palette.  A score is `F.shade(v)` (near-paper to
+saturated cool, v = score / largest score), a sign is cool (positive) or hot (negative), hot also
+marks the one node the slide is about, routes and flows are brush strokes, labels are MesloLGS NF
+(its Greek letters and x included, so no math mode is needed).
 
-* a score is a sequential ramp `accent!10` -> `accent` (value / largest value),
-* a sign is blue (positive) or gold (negative) and its strength is the shade,
-* accent-2 red marks the one thing the slide is about.
+Figures (all `col` unless noted):
 
-Discs that carry a score get a thin black outline: a near-white disc would otherwise read
-as a hole in the drawing.
+* EIG group, one box: `eigen-inherit` frames (the scores of A's neighbours arrive one at a
+  time as a running sum, then A's score, then the rest) and `eig-pf` (= its last frame).
+* `eigen-equation`: A c = lambda c as hand-drawn boxes.
+* Panels, `full`, one crop: `eig-all-q` and `eig-all` (= eig-all-q + the highlight).
+* Ring group, one box: `ring-4444` and the `ring-local` frames (frame 0 = ring-4444).
+* `katz-floor`, `walks-discount` frames.
+
+`eig-centrality` is no longer built (the deck uses `eig-pf`).
 """
 
 import itertools
@@ -34,7 +41,6 @@ A_MAT, EVALS, EVECS = S.spectrum(S.EIG, NAMES)           # eigh: ascending eigen
 LAM1 = float(EVALS[-1])
 U1 = EVECS[:, -1]                                         # unit length, all positive
 V1 = dict(zip(NAMES, U1 / U1.max()))                      # largest entry is 1.00 (smallgraphs.EIG_v)
-UNIT1 = dict(zip(NAMES, U1))                              # unit length (the u_1 of the decomposition)
 
 _xs = [p[0] for p in S.EIG_XY.values()]
 _ys = [p[1] for p in S.EIG_XY.values()]
@@ -49,58 +55,19 @@ def eig_layout(sx, cx, cy, sy=None):
 
 
 # --------------------------------------------------------------------------- drawing helpers
-def ramp(v):
-    """Percent of accent for a score fraction v in [0, 1]: accent!10 ... accent."""
-    return int(round(10 + 90 * max(0.0, min(1.0, float(v)))))
-
-
-def ink_on(p):
-    """Letter colour on accent!p: white only where it beats black (p >= 85)."""
-    return "white" if p >= 85 else "black"
-
-
-def nd(x, y, label="", fill="accent", size=F.NODE, name=None, outline=True, txt=None, ow=1.8):
-    """A disc.  `minimum size` is the diameter; the outline adds half its width outside."""
-    nm = f"({name})" if name else ""
-    opt = ["disc", f"fill={fill}", f"minimum size={size}bp"]
-    if outline:
-        opt += ["draw=black", f"line width={ow}bp"]
-    if txt:
-        opt.append(f"text={txt}")
-    return f"\\node[{','.join(opt)}] {nm} at ({x:.2f},{y:.2f}) {{{label}}};\n"
-
-
-def edges_body(edges, pos, w=F.EDGE_W, color="black"):
-    return "".join(F.seg(pos[a], pos[b], color=color, w=w) for a, b in edges)
-
-
-def arrow(a, b, color="accenttwo", w=5.0, head=(15, 18)):
-    """An arrow between two named nodes: it starts and stops at the disc borders."""
-    return (f"\\draw[line width={w:.1f}bp,draw={color},"
-            f"-{{Latex[length={head[0]}bp,width={head[1]}bp]}}] ({a}) -- ({b});\n")
-
-
-def score_graph(pos, vals, letters=True, size=F.NODE, ew=F.EDGE_W):
-    """The 7-node graph with every disc shaded by vals[node] (a fraction of the largest)."""
-    body = edges_body(EDGES, pos, w=ew)
-    for n in NAMES:
-        p = ramp(vals[n])
-        body += nd(*pos[n], label=n if letters else "", fill=f"accent!{p}", size=size,
-                   name=n, txt=ink_on(p))
-    return body
-
-
-def tex_num(x, d=2):
-    s = f"{abs(x):.{d}f}"
-    return f"$-{s}$" if x < -0.5 * 10 ** -d else s
+def edges_body(edges, pos, w=F.EDGE_W):
+    return "".join(F.seg(pos[a], pos[b], w=w) for a, b in edges)
 
 
 def est_w(s, size=FONT):
-    """A generous width in bp for a printed number (digits 0.5 em, point 0.28 em, minus 0.78 em)."""
-    em = 0.0
-    for ch in s.replace("$", ""):
-        em += {"-": 0.78, ".": 0.28}.get(ch, 0.5)
-    return em * size
+    """Width in bp of a string in MesloLGS NF (monospaced, 0.6 em per character)."""
+    return 0.6 * size * len(s)
+
+
+def num(x, d=2):
+    """A signed number with a real minus sign (Meslo has U+2212)."""
+    s = f"{abs(x):.{d}f}"
+    return f"−{s}" if x < -0.5 * 10 ** -d else s
 
 
 def assert_discs_clear(pos, size, gap=6, what=""):
@@ -116,211 +83,43 @@ def check_graph_planar(pos, edges, what, r=None):
     assert not bad, f"{what}: an edge passes through a disc it does not end at: {bad[:3]}"
 
 
-# =========================================================================== eigen-inherit
-INH_SX, INH_SY = 122, 52
-INH_H = 400
-INH_CY = 232
-KF_SX, KF_SY = 118, 100                    # katz-floor: no numbers, so it can be taller
+def head(p, q, color="hot", size=F.NODE, gap=3.0, L=16.0, half=8.5, tip_at=None):
+    """An arrowhead pointing from p toward q, its tip just outside q's disc (radius size/2)."""
+    p, q = np.array(p, float), np.array(q, float)
+    d = q - p
+    d = d / np.linalg.norm(d)
+    tip = q - d * (size / 2 + gap) if tip_at is None else np.array(tip_at, float)
+    base = tip - d * L
+    n = np.array([-d[1], d[0]])
+    a, b = base + n * half, base - n * half
+    return (f"\\fill[{color},opacity=0.92] ({tip[0]:.1f},{tip[1]:.1f}) -- "
+            f"({a[0]:.1f},{a[1]:.1f}) -- ({b[0]:.1f},{b[1]:.1f}) -- cycle;\n")
 
 
-def fig_eigen_inherit():
-    """Node A's score is the sum of its neighbours' scores (times 1/lambda), then the same for B.
-
-    Every disc keeps the eigenvector shading and prints its score (largest = 1).  When the four
-    arrows into A are lit the identity "sum of the four = lambda x score(A)" is written under the
-    graph, with the numbers the discs print.
-    """
-    pos = eig_layout(INH_SX, W_COL / 2, INH_CY, sy=INH_SY)
-    check_graph_planar(pos, EDGES, "eigen-inherit")
-    nbrs = {n: sorted(S.EIG[n]) for n in NAMES}
-    assert nbrs["A"] == ["B", "D", "F", "G"] and nbrs["B"] == ["A", "G"], nbrs
-
-    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
-    at = place_values(strings, pos, EDGES, bounds=(6, 88, W_COL - 6, 372))
-    # the identity, from the printed numbers
-    terms = [strings[m] for m in nbrs["A"]]
-    assert terms == ["0.64", "0.58", "0.81", "0.85"], terms
-    total = sum(float(t) for t in terms)
-    lam = f"{LAM1:.2f}"
-    assert f"{total:.2f}" == lam == "2.88", (total, lam)
-    assert abs(float(lam) * float(strings["A"]) - total) < 1e-9
-    eq1 = " $+$ ".join(terms)
-    eq2 = f"$=$ {lam} $\\times$ {strings['A']}"
-
-    def frame(focus=None, into=(), formula=False):
-        body = score_graph(pos, V1, size=F.NODE)
-        for n in NAMES:
-            body += F.text(at[n][0], at[n][1], strings[n])
-        if focus:
-            for m in into:
-                assert S.EIG.has_edge(m, focus)
-                body += arrow(m, focus)
-            body += F.mark(*pos[focus], size=F.NODE)
-        if formula:
-            body += F.text(W_COL / 2, 62, eq1)
-            body += F.text(W_COL / 2, 22, eq2)
-        return body
-
-    frames = [frame("A", nbrs["A"][:k], formula=(k == 4)) for k in range(1, 5)]
-    frames += [frame("B", nbrs["B"][:k]) for k in range(1, 3)]
-    frames += [frame(formula=True)]                        # last frame (= still, = first frame): A's sum line stays
-    # frame 0 (the complete picture) is added by emit_gif itself
-    F.emit_gif("eigen-inherit", frames, container="col", h=INH_H,
-               durations=[800, 800, 800, 2400, 800, 1200, 1400], hold=1)
+def flow(p, q, color="hot", w=11.0, size=F.NODE):
+    """A brush stroke from node p to node q with an arrowhead at q (draw before the discs)."""
+    return F.brush([p, q], color=color, w=w) + head(p, q, color=color, size=size)
 
 
-# =========================================================================== eigen-equation
-def fig_eigen_equation():
-    """A c = lambda c on the 7-node graph: A a 7 x 7 block, c a shaded column of seven cells."""
-    n = len(NAMES)
-    assert A_MAT.shape == (n, n) and n == 7
-    assert np.abs(A_MAT @ U1 - LAM1 * U1).max() < 1e-9, "the drawn vector must be the eigenvector"
-    lam = f"{LAM1:.2f}"
-    assert lam == "2.88", lam
-    vals = [V1[c] for c in NAMES]
-
-    CW = 70                                   # width of a column of seven cells
-    ox = 120                                  # 840 bp of composition, centred on the page
-    bx0, bx1, by0, by1 = ox, ox + 330, 70, 260
-    body = (f"\\fill[accent!14] ({bx0},{by0}) rectangle ({bx1},{by1});\n"
-            f"\\draw[line width=3bp,draw=black] ({bx0},{by0}) rectangle ({bx1},{by1});\n")
-
-    def column(x, w=float(CW)):
-        out, cell = "", (by1 - by0) / n
-        for i in range(n):
-            y = by0 + (n - 1 - i) * cell
-            out += (f"\\fill[accent!{ramp(vals[i])}] ({x},{y:.2f}) rectangle ({x + w},{y + cell:.2f});\n")
-        out += (f"\\draw[line width=2.4bp,draw=black] ({x},{by0}) rectangle "
-                f"({x + w},{by1});\n")
-        return out
-
-    mid = (by0 + by1) / 2
-    cx1, cx2 = bx1 + 80, bx1 + 80 + CW + 290
-    body += column(cx1) + column(cx2)
-    body += F.text((bx0 + bx1) / 2, mid + 24, "$A$", size=46)
-    body += F.text((bx0 + bx1) / 2, mid - 34, f"${n} \\times {n}$")
-    body += F.text((cx1 + CW + cx2) / 2 - 62, mid, "$=$", size=46)
-    body += F.text((cx1 + CW + cx2) / 2 + 40, mid, "$\\lambda$", color="accenttwo", size=46)
-    body += F.text(W_FULL / 2, 330, "$A\\,\\mathbf{c} = \\lambda\\,\\mathbf{c}$", size=46)
-    body += F.text(W_FULL / 2, 22,
-                   "$\\lambda\\,\\mathbf{c}$: every entry of $\\mathbf{c}$ times the same number $\\lambda$",
-                   color="accenttwo")
-    F.emit("eigen-equation", body, container="full", h=400, hmod="")
+def frame_path(x0, y0, x1, y1, over=16.0):
+    """A hand-drawn frame as one open path that starts mid-left, goes round and overshoots its
+    start (draw it with F.brush; TikZ's `pencil` decoration fails on some rectangles)."""
+    ym = (y0 + y1) / 2
+    return [(x0, ym), (x0, y1), (x1, y1), (x1, y0), (x0, y0), (x0, ym + over)]
 
 
-# =========================================================================== eig-all
-ALL_S = 31
-ALL_PITCH = (W_FULL - 16) / 7
-ALL_PW, ALL_PH = ALL_PITCH - 6, 138
-ALL_DISC = 30
-
-
-def _rows(labels, gap=10):
-    """Give every (x, width) label the first row where it overlaps nothing placed there."""
-    rows = []
-    out = []
-    for x, w in labels:
-        r = 0
-        while True:
-            if r == len(rows):
-                rows.append([])
-            if all(x + w / 2 + gap <= x0 - w0 / 2 or x - w / 2 - gap >= x0 + w0 / 2 for x0, w0 in rows[r]):
-                rows[r].append((x, w))
-                out.append(r)
-                break
-            r += 1
-    return out
-
-
-def fig_eig_all():
-    """Seven eigenvectors of the 7-node graph, nodes coloured by sign and strength."""
-    order = list(range(7))                                  # ascending eigenvalue
-    allpos = [k for k in order if np.all(EVECS[:, k] > 1e-9)]
-    assert allpos == [6], f"exactly one all-positive eigenvector, the largest: {allpos}"
-    for k in order[:-1]:
-        v = EVECS[:, k]
-        assert v.min() < -1e-9 < 1e-9 < v.max(), f"eigenvector {k} must have both signs"
-    assert np.min(np.diff(EVALS)) > 0.12
-
-    # vertical layout (y up): value labels, number line, arrows, copies, "all positive"
-    y_line = 135
-    y_pb = y_line + 88                                      # bottom of every copy's panel
-    y_gc = y_pb + ALL_PH / 2                                # graph centre
-    lam_lo, lam_hi = float(EVALS[0]), float(EVALS[-1])
-    x_lo, x_hi = 72, W_FULL - 76
-    X = lambda lam: x_lo + (lam - lam_lo) / (lam_hi - lam_lo) * (x_hi - x_lo)
-
-    body = F.seg((36, y_line), (W_FULL - 36, y_line), color="annot", w=2.4)
-    cx = [8 + ALL_PITCH * (i + 0.5) for i in order]
-    # dots and arrows
-    for i in order:
-        hot = i == 6
-        col = "accenttwo" if hot else "annot"
-        body += (f"\\draw[line width={3.4 if hot else 2.2}bp,draw={col},"
-                 f"-{{Latex[length=13bp,width=14bp]}}] ({X(EVALS[i]):.1f},{y_line + 9}) -- "
-                 f"({cx[i]:.1f},{y_pb - 5});\n")
-    # value labels: two rows where the dots are too close for one
-    items = [(X(EVALS[i]), est_w(tex_num(EVALS[i]))) for i in order]
-    zero = (X(0.0), est_w("0"))
-    rows = _rows(items + [zero])
-    row_y = {0: y_line - 38, 1: y_line - 38 - 46}
-    assert max(rows) <= 1, "three rows of eigenvalue labels do not fit"
-    for i in order:
-        hot = i == 6
-        body += F.dot(X(EVALS[i]), y_line, color="accenttwo" if hot else "black", d=14 if hot else 12)
-        body += F.text(X(EVALS[i]), row_y[rows[i]], tex_num(EVALS[i]),
-                       color="accenttwo" if hot else "black")
-        if rows[i] == 1:                                    # a short leader to the second row
-            body += F.seg((X(EVALS[i]), y_line - 9), (X(EVALS[i]), row_y[1] + 25), color="annot", w=1.6)
-    body += F.seg((X(0), y_line - 7), (X(0), y_line + 7), color="annot", w=2.4)
-    body += F.text(X(0), row_y[rows[-1]], "0", color="annot")
-    if rows[-1] == 1:
-        body += F.seg((X(0), y_line - 7), (X(0), row_y[1] + 25), color="annot", w=1.6)
-
-    # the seven copies
-    base = eig_layout(ALL_S, 0, 0)
-    pos0 = {k: (v[0], v[1]) for k, v in base.items()}
-    assert_discs_clear({k: (v[0], v[1]) for k, v in pos0.items()}, ALL_DISC + 4, what="eig-all")
-    bad = F.clearance_bad(EDGES, pos0, r=ALL_DISC / 2 + 4)
-    assert not bad, f"eig-all: edge through a disc {bad}"
-    assert not F.crossings(EDGES, pos0)
-    gw = GW * ALL_S + ALL_DISC + 2
-    assert gw <= ALL_PW - 8, f"graph is {gw:.0f}bp wide in a {ALL_PW:.0f}bp panel"
-    for i in order:
-        hot = i == 6
-        x0, x1 = cx[i] - ALL_PW / 2, cx[i] + ALL_PW / 2
-        if hot:
-            body += (f"\\draw[line width=4.5bp,draw=accenttwo,rounded corners=6bp] "
-                     f"({x0:.1f},{y_pb}) rectangle ({x1:.1f},{y_pb + ALL_PH});\n")
-        else:
-            body += (f"\\draw[line width=1.6bp,draw=annot!45,rounded corners=6bp] "
-                     f"({x0:.1f},{y_pb}) rectangle ({x1:.1f},{y_pb + ALL_PH});\n")
-        v = EVECS[:, i]
-        strength = np.abs(v) / np.abs(v).max()
-        pos = {k: (cx[i] + p[0], y_gc + p[1]) for k, p in pos0.items()}
-        body += edges_body(EDGES, pos, w=2.0)
-        for j, c in enumerate(NAMES):
-            p = ramp(strength[j])
-            col = "accent" if v[j] > 0 else "accentthree"
-            body += nd(*pos[c], fill=f"{col}!{p}", size=ALL_DISC, outline=True, ow=1.6)
-    body += F.text(W_FULL - 10, y_pb + ALL_PH + 26, "all positive", color="accenttwo", anchor="east")
-    F.emit("eig-all", body, container="full", h=480, hmod="tall")
-
-
-# =========================================================================== value graphs
 def place_values(strings, pos, edges, bounds, disc=F.NODE, gap=7):
     """Put each printed number next to its disc, nearest free spot first.
 
-    Boxes are sized from the glyphs (digits 0.5 em) rather than from `label_box`, which
-    models a four-character number as 91 bp and leaves no room on a seven-node graph.
-    Checked against every disc, every edge, every other number and the canvas.
+    Boxes are sized from the glyphs (Meslo, 0.6 em per character).  Checked against every
+    disc, every edge, every other number and the canvas bounds.
     """
     r = disc / 2
     boxes, out = {}, {}
     order = sorted(strings, key=lambda n: -est_w(strings[n]))
 
     def cand(n):
-        w, h = est_w(strings[n]) + 4, 30
+        w, h = est_w(strings[n]) + 2, 30
         x0, y0 = pos[n]
         res = []
         for ang in range(0, 360, 15):
@@ -329,7 +128,7 @@ def place_values(strings, pos, edges, bounds, disc=F.NODE, gap=7):
                 bx, by = x0 + c * d, y0 + s_ * d
                 b = (bx - w / 2, by - h / 2, bx + w / 2, by + h / 2)
                 if not F.box_hits_disc(b, x0, y0, r=r + gap):
-                    res.append((d, b))
+                    res.append((d + (0 if ang % 90 == 0 else 8), b))
                     break
         return sorted(res, key=lambda t: t[0])
 
@@ -359,40 +158,249 @@ def place_values(strings, pos, edges, bounds, disc=F.NODE, gap=7):
     return {n: ((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) for n, b in boxes.items()}
 
 
-def value_graph(name, vals, strings, sx, sy, letters=True, h=400):
-    """The 7-node graph, discs shaded by `vals` (fractions of the largest), `strings` printed."""
-    pos = eig_layout(sx, W_COL / 2, h / 2, sy=sy)
-    check_graph_planar(pos, EDGES, name)
-    at = place_values(strings, pos, EDGES, bounds=(6, 6, W_COL - 6, h - 6))
-    body = score_graph(pos, vals, letters=letters)
-    for n in NAMES:
-        body += F.text(at[n][0], at[n][1], strings[n])
-    return body, pos
+# =========================================================================== eigen-inherit / eig-pf
+INH_SX, INH_SY = 122, 58
+INH_CY = 232
+INH_H = 400
+# the crop shared by eigen-inherit and eig-pf (bp from the canvas top)
+INH_BOX = (20, 396)
+
+
+def inherit_geometry():
+    pos = eig_layout(INH_SX, W_COL / 2, INH_CY, sy=INH_SY)
+    check_graph_planar(pos, EDGES, "eigen-inherit")
+    assert_discs_clear(pos, F.NODE, gap=10, what="eigen-inherit")
+    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
+    at = place_values(strings, pos, EDGES, bounds=(6, 88, W_COL - 6, INH_H - 6))
+    return pos, strings, at
+
+
+def fig_eigen_inherit():
+    """The score of A is the sum of its neighbours' scores, divided by lambda.
+
+    Frame 0 is the bare graph with A in hot.  Then B, D, F, G arrive one at a time (shaded by
+    its score, the value beside it, a brush into A, a running sum underneath), then A's own
+    score closes the identity, then the two nodes that are not A's neighbours, then the clean
+    picture (= eig-pf).
+    """
+    pos, strings, at = inherit_geometry()
+    nbrs = sorted(S.EIG["A"])
+    assert nbrs == ["B", "D", "F", "G"], nbrs
+    terms = [strings[m] for m in nbrs]
+    assert terms == ["0.64", "0.58", "0.81", "0.85"], terms
+    total = sum(float(t) for t in terms)
+    lam = f"{LAM1:.2f}"
+    assert f"{total:.2f}" == lam == "2.88" and strings["A"] == "1.00", (total, lam)
+    assert abs(float(lam) * float(strings["A"]) - total) < 1e-9
+    x0 = (W_COL - est_w(" + ".join(terms))) / 2
+
+    def frame(shown=(), a_done=False, flows=(), nsum=0, clean=False):
+        body = edges_body(EDGES, pos)
+        for m in flows:
+            body += flow(pos[m], pos["A"])
+        for n in NAMES:
+            if clean:
+                fill = F.shade(V1[n])
+            elif n == "A":
+                fill = "hot"
+            elif n in shown:
+                fill = F.shade(V1[n])
+            else:
+                fill = "white"
+            body += F.disc(*pos[n], n, fill=fill)
+        for n in NAMES:
+            visible = clean or n in shown or (n == "A" and a_done)
+            if visible:
+                body += F.text(*at[n], strings[n], color="ink")
+        if nsum:
+            body += F.text(x0, 68, " + ".join(terms[:nsum]), anchor="west")
+        if a_done:
+            body += F.text(x0, 30, f"= {lam} × {strings['A']}", anchor="west")
+        return body
+
+    frames = [frame()]
+    for k in range(1, 5):
+        frames.append(frame(shown=nbrs[:k], flows=nbrs[:k], nsum=k))
+    full = dict(shown=nbrs, flows=nbrs, nsum=4)
+    frames.append(frame(a_done=True, **full))                       # the identity closes
+    frames.append(frame(shown=nbrs + ["E"], flows=nbrs, nsum=4, a_done=True))
+    frames.append(frame(shown=nbrs + ["E", "C"], flows=nbrs, nsum=4, a_done=True))
+    frames.append(frame(clean=True))                                 # = eig-pf
+    F.emit_frames("eigen-inherit", frames, container="col", h=INH_H, box=INH_BOX)
+    return frames[-1]
 
 
 def fig_eig_pf():
-    """The Perron-Frobenius eigenvector with its largest entry set to 1: eigenvector centrality.
+    """The Perron-Frobenius eigenvector, largest entry set to 1: eigenvector centrality.
 
-    Same numbers as `eig-centrality`; this file is the "Eigenvector centrality" slide's figure.
+    The body is exactly the last frame of eigen-inherit (same canvas, same box).
     """
     assert all(v > 0 for v in V1.values()) and abs(max(V1.values()) - 1) < 1e-12
-    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
-    body, _ = value_graph("eig-pf", V1, strings, 114, 78)
-    F.emit("eig-pf", body, container="col", h=400)
+    assert max(V1, key=V1.get) == "A" and V1["B"] > V1["D"] and DEG["B"] < DEG["D"]
+    pos, strings, at = inherit_geometry()
+    body = edges_body(EDGES, pos)
+    for n in NAMES:
+        body += F.disc(*pos[n], n, fill=F.shade(V1[n]))
+    for n in NAMES:
+        body += F.text(*at[n], strings[n], color="ink")
+    F.emit("eig-pf", body, container="col", h=INH_H, box=INH_BOX)
 
 
-def fig_eig_centrality():
-    """Eigenvector centrality of the 7-node graph: the largest entry is 1."""
-    assert max(V1, key=V1.get) == "A" and abs(V1["A"] - 1) < 1e-12
-    assert V1["B"] > V1["D"] and DEG["B"] < DEG["D"]
-    strings = {n: f"{V1[n]:.2f}" for n in NAMES}
-    body, _ = value_graph("eig-centrality", V1, strings, 114, 78)
-    F.emit("eig-centrality", body, container="col", h=400)
+# =========================================================================== eigen-equation
+def fig_eigen_equation():
+    """A c = lambda c: A a 7 x 7 box, c a column of seven cells shaded by its entry."""
+    n = len(NAMES)
+    assert A_MAT.shape == (n, n) and n == 7
+    assert np.abs(A_MAT @ U1 - LAM1 * U1).max() < 1e-9, "the drawn vector must be the eigenvector"
+    vals = [V1[c] for c in NAMES]
+
+    cell, cw = 28.0, 56.0
+    ay0, ay1 = 70.0, 70.0 + n * cell
+    ax0 = 49.0
+    ax1 = ax0 + n * cell
+    c1x = ax1 + 24
+    eqx = c1x + cw + 38
+    lamx = eqx + 56
+    c2x = lamx + 36
+
+    def box(x0, y0, x1, y1, fill=None, w=2.8, seed=0):
+        o = ""
+        if fill:
+            o += f"\\fill[{fill}] ({x0},{y0}) rectangle ({x1},{y1});\n"
+        o += F._seed(x0, y0, x1, y1, seed)
+        o += f"\\draw[ink,line width={w}bp,pencil,opacity=0.95] ({x0},{y0}) rectangle ({x1},{y1});\n"
+        return o
+
+    def column(x):
+        o = ""
+        for i in range(n):
+            y = ay1 - (i + 1) * cell
+            o += f"\\fill[{F.shade(vals[i])}] ({x},{y:.2f}) rectangle ({x + cw},{y + cell:.2f});\n"
+        for i in range(1, n):
+            y = ay1 - i * cell
+            o += f"\\draw[ink,line width=1.2bp,opacity=0.35] ({x},{y:.2f}) -- ({x + cw},{y:.2f});\n"
+        return o + box(x, ay0, x + cw, ay1, w=2.6, seed=3)
+
+    body = box(ax0, ay0, ax1, ay1, fill="faint", seed=1)
+    body += column(c1x) + column(c2x)
+    mid = (ay0 + ay1) / 2
+    body += F.text((ax0 + ax1) / 2, mid, "A", size=52)
+    body += F.text((ax0 + ax1) / 2, ay0 - 30, "7 × 7", color="muted")
+    for x in (c1x, c2x):
+        body += F.text(x + cw / 2, ay0 - 30, "c", color="muted")
+    body += F.text(eqx, mid, "=", size=52)
+    body += F.text(lamx, mid, "λ", color="hot", size=52)
+    F.emit("eigen-equation", body, container="col", h=300)
+
+
+# =========================================================================== eig-all
+ALL_S = 31
+ALL_PITCH = (W_FULL - 16) / 7
+ALL_PW, ALL_PH = ALL_PITCH - 6, 138
+ALL_DISC = 30
+
+
+def _rows(labels, gap=10):
+    """Give every (x, width) label the first row where it overlaps nothing placed there."""
+    rows = []
+    out = []
+    for x, w in labels:
+        r = 0
+        while True:
+            if r == len(rows):
+                rows.append([])
+            if all(x + w / 2 + gap <= x0 - w0 / 2 or x - w / 2 - gap >= x0 + w0 / 2 for x0, w0 in rows[r]):
+                rows[r].append((x, w))
+                out.append(r)
+                break
+            r += 1
+    return out
+
+
+def fig_eig_all():
+    """Seven eigenvectors of the 7-node graph: sign by hue (cool +, hot -), size by saturation.
+
+    eig-all-q is the question (every panel alike); eig-all adds a cool frame around the
+    lambda-max panel and "all positive".  One crop for both.
+    """
+    order = list(range(7))                                  # ascending eigenvalue
+    allpos = [k for k in order if np.all(EVECS[:, k] > 1e-9)]
+    assert allpos == [6], f"exactly one all-positive eigenvector, the largest: {allpos}"
+    for k in order[:-1]:
+        v = EVECS[:, k]
+        assert v.min() < -1e-9 < 1e-9 < v.max(), f"eigenvector {k} must have both signs"
+    assert np.min(np.diff(EVALS)) > 0.12
+
+    y_line = 135
+    y_pb = y_line + 88                                      # bottom of every panel
+    y_gc = y_pb + ALL_PH / 2                                # graph centre
+    lam_lo, lam_hi = float(EVALS[0]), float(EVALS[-1])
+    x_lo, x_hi = 72, W_FULL - 76
+    X = lambda lam: x_lo + (lam - lam_lo) / (lam_hi - lam_lo) * (x_hi - x_lo)
+    cx = [8 + ALL_PITCH * (i + 0.5) for i in order]
+    arrow_opt = "-{Latex[length=12bp,width=13bp]}"
+
+    body = F.seg((36, y_line), (W_FULL - 36, y_line), color="muted", w=2.4)
+    for i in order:
+        body += (f"\\draw[muted,line width=2.2bp,{arrow_opt}] ({X(EVALS[i]):.1f},{y_line + 10}) -- "
+                 f"({cx[i]:.1f},{y_pb - 5});\n")
+    # eigenvalue labels: two rows where the dots are too close for one
+    items = [(X(EVALS[i]), est_w(num(EVALS[i]))) for i in order]
+    zero = (X(0.0), est_w("0"))
+    rows = _rows(items + [zero])
+    row_y = {0: y_line - 38, 1: y_line - 38 - 44}
+    assert max(rows) <= 1, "three rows of eigenvalue labels do not fit"
+    for i in order:
+        body += F.dot(X(EVALS[i]), y_line, color="ink", d=13)
+        body += F.text(X(EVALS[i]), row_y[rows[i]], num(EVALS[i]))
+        if rows[i] == 1:
+            body += F.seg((X(EVALS[i]), y_line - 9), (X(EVALS[i]), row_y[1] + 25), color="muted", w=1.6)
+    body += F.seg((X(0), y_line - 7), (X(0), y_line + 7), color="muted", w=2.4)
+    body += F.text(X(0), row_y[rows[-1]], "0", color="muted")
+    if rows[-1] == 1:
+        body += F.seg((X(0), y_line - 7), (X(0), row_y[1] + 25), color="muted", w=1.6)
+
+    # the seven panels
+    base = eig_layout(ALL_S, 0, 0)
+    pos0 = {k: (v[0], v[1]) for k, v in base.items()}
+    assert_discs_clear(pos0, ALL_DISC + 4, what="eig-all")
+    bad = F.clearance_bad(EDGES, pos0, r=ALL_DISC / 2 + 4)
+    assert not bad, f"eig-all: edge through a disc {bad}"
+    assert not F.crossings(EDGES, pos0)
+    gw = GW * ALL_S + ALL_DISC + 2
+    assert gw <= ALL_PW - 8, f"graph is {gw:.0f}bp wide in a {ALL_PW:.0f}bp panel"
+    for i in order:
+        x0, x1 = cx[i] - ALL_PW / 2, cx[i] + ALL_PW / 2
+        body += F.brush(frame_path(x0, y_pb, x1, y_pb + ALL_PH), color="muted", w=3.0,
+                        opacity=0.8, strands=3, seed=i)
+        v = EVECS[:, i]
+        strength = np.abs(v) / np.abs(v).max()
+        pos = {k: (cx[i] + p[0], y_gc + p[1]) for k, p in pos0.items()}
+        body += edges_body(EDGES, pos, w=2.0)
+        for j, c in enumerate(NAMES):
+            body += F.disc(*pos[c], "", fill=F.shade(strength[j], hi="cool" if v[j] > 0 else "hot"),
+                           size=ALL_DISC)
+    body_q = body
+
+    # the answer: the lambda-max panel is framed, its arrow and dot are cool, and it says so
+    k = 6
+    x0, x1 = cx[k] - ALL_PW / 2 - 4, cx[k] + ALL_PW / 2 + 4
+    y0, y1 = y_pb - 4, y_pb + ALL_PH + 4
+    hl = F.brush(frame_path(x0, y0, x1, y1), color="cool", w=7.0, opacity=0.95, strands=5, seed=k)
+    hl += (f"\\draw[cool,line width=3.6bp,{arrow_opt}] ({X(EVALS[k]):.1f},{y_line + 10}) -- "
+           f"({cx[k]:.1f},{y_pb - 5});\n")
+    hl += F.dot(X(EVALS[k]), y_line, color="cool", d=17)
+    hl += F.text(W_FULL - 10, y1 + 26, "all positive", color="cool", anchor="east")
+    F.emit_group([("eig-all-q", body_q), ("eig-all", body_q + hl)], container="full", h=480, hmod="tall")
 
 
 # =========================================================================== the ring of cliques
 RING_DISC = 30
 RING_R = {4: 42, 5: 47, 6: 53, 7: 59, 8: 65}              # radius of the last clique by size
+RING_RX, RING_RY = 170, 105
+RING_OX, RING_OY = 257, 200
+RING_H = 400
+RING_BOX = (30, 372)                                       # bp from the canvas top, one crop
 
 
 def ring_layout(sizes, Rx, Ry, radius):
@@ -439,10 +447,11 @@ def ring_vec(sizes):
     return G, v / v.max()
 
 
-def ring_body(sizes, Rx, Ry, ox, oy, radius, plain=False):
+def ring_body(sizes, shaded):
+    """The ring: white discs (the question) or discs shaded by the eigenvector (the answer)."""
     G, v = ring_vec(sizes)
-    pl = ring_layout(sizes, Rx, Ry, radius)
-    pos = {n: (ox + p[0], oy + p[1]) for n, p in pl.items()}
+    pl = ring_layout(sizes, RING_RX, RING_RY, lambda i, K: RING_R[K] if i == 3 else RING_R[4])
+    pos = {n: (RING_OX + p[0], RING_OY + p[1]) for n, p in pl.items()}
     assert_discs_clear(pos, RING_DISC, gap=8, what=f"ring {sizes}")
     edges = list(G.edges())
     if all(s == 4 for s in sizes):
@@ -452,66 +461,64 @@ def ring_body(sizes, Rx, Ry, ox, oy, radius, plain=False):
         assert not bad, f"ring {sizes}: an edge passes through a disc {bad[:3]}"
     body = edges_body(edges, pos, w=2.2)
     for n in sorted(G):
-        fill = "accent" if plain else f"accent!{ramp(v[n])}"
-        body += nd(*pos[n], fill=fill, size=RING_DISC, outline=True, ow=1.8)
+        body += F.disc(*pos[n], "", fill=F.shade(v[n]) if shaded else "white", size=RING_DISC)
     return body, pos, v
 
 
 def fig_ring_4444():
     sizes = (4, 4, 4, 4)
-    # one plain fill: the question must not show where the score goes
-    body, pos, v = ring_body(sizes, 190, 105, W_COL / 2, 200, lambda i, K: RING_R[4], plain=True)
-    for k in range(4):                         # the four cliques carry equal score: 25% each
+    body, pos, v = ring_body(sizes, shaded=False)           # the question must not show the score
+    for k in range(4):                                       # the four cliques carry equal score
         assert abs(sum(v[4 * k:4 * k + 4]) / sum(v) - 0.25) < 1e-9
-    F.emit("ring-4444", body, container="col", h=400)
+    F.emit("ring-4444", body, container="col", h=RING_H, box=RING_BOX)
 
 
 def fig_ring_local():
-    shares = []
-    frames = []
+    """Frame 0 = ring-4444.  Then the last clique grows one node at a time, discs shaded by the
+    leading eigenvector, with the share of the score that sits in the last clique."""
+    shares = {}
+    frames = [ring_body((4, 4, 4, 4), shaded=False)[0]]
+    cx, cy = RING_OX - 28, RING_OY
     for K in (4, 5, 6, 7, 8):
         sizes = S.RING_SIZES[K]
         share, lam = S.eig_share(sizes)
-        shares.append(share)
-        body, pos, v = ring_body(sizes, 395, 105, W_FULL / 2, 200,
-                                 lambda i, KK, K=K: RING_R[KK] if i == 3 else RING_R[4])
-        txt = (f"$K={K}$: \\textcolor{{accenttwo}}{{{F.pct(share)}}} of the score in the last clique")
-        body += F.text(W_FULL / 2, 200, txt)
-        # the text box must clear every disc
-        w = est_w(f"K={K}: {F.pct(share)} of the score in the last clique", FONT) * 0.80
-        box = (W_FULL / 2 - w / 2, 200 - 24, W_FULL / 2 + w / 2, 200 + 24)
-        assert not any(F.box_hits_disc(box, *p, r=RING_DISC / 2) for p in pos.values()), \
-            f"ring-local K={K}: the share text touches a disc"
+        shares[K] = F.pct(share)
+        body, pos, v = ring_body(sizes, shaded=True)
+        lab = f"K = {K}: {shares[K]}"
+        w = est_w(lab.replace("\\", "")) + 6
+        box = (cx - w / 2, cy - 22, cx + w / 2, cy + 22)
+        assert not any(F.box_hits_disc(box, *p, r=RING_DISC / 2 + 4) for p in pos.values()), \
+            f"ring-local K={K}: the share label touches a disc"
+        body += F.text(cx, cy, f"K = {K}: \\textcolor{{hot}}{{{shares[K]}}}")
         frames.append(body)
-    got = [F.pct(s) for s in shares]
-    assert got == ["25\\%", "68\\%", "85\\%", "91\\%", "94\\%"], got
-    # first frame = the claim (K = 8), then the growth 4 -> 8; the last frame is K = 8, held
-    F.emit_gif("ring-local", [frames[-1]] + frames, container="full", h=400,
-               durations=[1800, 1800, 1800, 1800, 1800, 2400], hold=0)
+    assert [shares[K] for K in (4, 5, 6, 7, 8)] == ["25\\%", "68\\%", "85\\%", "91\\%", "94\\%"], shares
+    F.emit_frames("ring-local", frames, container="col", h=RING_H, box=RING_BOX)
 
 
 # =========================================================================== katz-floor
+KF_SX, KF_SY = 118, 100                    # katz-floor: no numbers, so it can be taller
+
+
 def fig_katz_floor():
-    """Every node gets a baseline beta; the focal node also gets alpha from each neighbour."""
+    """Every node gets a baseline beta; the focal node A also gets alpha from each neighbour."""
     pos = eig_layout(KF_SX, W_COL / 2, 205, sy=KF_SY)
     check_graph_planar(pos, EDGES, "katz-floor")
     focus = "A"
     nb = sorted(S.EIG[focus])
     body = edges_body(EDGES, pos)
-    for n in NAMES:
-        body += nd(*pos[n], label="$\\beta$", name=n, outline=False)
     for m in nb:
-        body += arrow(m, focus)
+        body += flow(pos[m], pos[focus], color="hot", w=10)
+    for n in NAMES:
+        body += F.disc(*pos[n], "β", fill="hot" if n == focus else "white")
     # an alpha beside each arrow, on the side that has nothing else
-    obst = [(p, F.NODE / 2 + 6) for p in pos.values()]
     for m in nb:
         a, b = np.array(pos[m]), np.array(pos[focus])
         mid, d = (a + b) / 2, (b - a) / np.linalg.norm(b - a)
         nrm = np.array([-d[1], d[0]])
         best = None
         for sgn in (1, -1):
-            p = mid + sgn * 24 * nrm
-            box = (p[0] - 13, p[1] - 13, p[0] + 13, p[1] + 13)
+            p = mid + sgn * 26 * nrm
+            box = (p[0] - 13, p[1] - 17, p[0] + 13, p[1] + 17)
             if any(F.box_hits_disc(box, *q, r=F.NODE / 2) for q in pos.values()):
                 continue
             if any(F.box_hits_segment(box, pos[x], pos[y], pad=2) for x, y in EDGES):
@@ -519,7 +526,7 @@ def fig_katz_floor():
             best = p
             break
         assert best is not None, f"katz-floor: no clear place for the alpha on {m}->{focus}"
-        body += F.text(best[0], best[1], "$\\alpha$", color="accenttwo")
+        body += F.text(best[0], best[1], "α", color="hot")
     F.emit("katz-floor", body, container="col", h=400)
 
 
@@ -533,19 +540,20 @@ def walks_from(G, u, k):
 
 
 WD_SX, WD_SY = 150, 118
-WD_COLS = {2: "accent", 3: "accent!50"}              # fainter = longer
+WD_COLS = {2: "cool", 3: "hot"}
 
 
-def arrow_to(a, b, color, w=6.0, bend=0):
-    """An arrow between two named discs, 3 bp short of each border so the head never merges
-    into a disc of the same hue.  `bend` (degrees, negative = to the right) bows the arrow."""
-    path = f"to[bend left={bend}]" if bend else "--"
-    return (f"\\draw[line width={w}bp,draw={color},shorten >=3bp,shorten <=3bp,"
-            f"-{{Latex[length=15bp,width=18bp]}}] ({a}) {path} ({b});\n")
+def _bow(p, q, off):
+    """A quadratic curve from p to q bowed sideways by `off` bp (negative: the other side)."""
+    p, q = np.array(p, float), np.array(q, float)
+    d = (q - p) / np.linalg.norm(q - p)
+    n = np.array([-d[1], d[0]])
+    c = (p + q) / 2 + n * 2 * off
+    return [tuple((1 - t) ** 2 * p + 2 * t * (1 - t) * c + t ** 2 * q) for t in np.linspace(0, 1, 14)], c
 
 
 def fig_walks_discount():
-    """Walks from u to v in W5 (the pair of slide 10): none of length 1, two of length 2, one of 3."""
+    """Walks from u to v in W5 (the pair of slide 8): none of length 1, two of length 2, one of 3."""
     G, u, v = S.W5, "u", "v"
     counts = S.walk_counts(G, S.W5_ORDER, u, v, kmax=4)           # [0, 2, 1, 11]
     ends = {k: [w for w in walks_from(G, u, k) if w[-1] == v] for k in (1, 2, 3, 4)}
@@ -557,54 +565,64 @@ def fig_walks_discount():
             assert w[0] == u and w[-1] == v and len(w) == k + 1
             assert all(G.has_edge(a, b) for a, b in zip(w, w[1:])), f"{w} is not a walk in W5"
     drawn = [(2, ends[2][0]), (2, ends[2][1]), (3, ends[3][0])]
-    P = {n: (45 + WD_SX * x, 100 + WD_SY * (y + 0.9)) for n, (x, y) in S.W5_XY.items()}
+    P = {n: (50 + WD_SX * x, 100 + WD_SY * (y + 0.9)) for n, (x, y) in S.W5_XY.items()}
     check_graph_planar(P, list(G.edges()), "walks-discount")
     # the one edge two drawn walks share (n2-v) is bowed for the longer walk
     shared = {frozenset(p) for w in ends[2] for p in zip(w, w[1:])} & \
              {frozenset(p) for p in zip(ends[3][0], ends[3][0][1:])}
     assert shared == {frozenset(("n2", "v"))}, shared
 
-    terms = [(str(c) if c > 1 else "") + "\\alpha" + (f"^{k + 1}" if k else "")
-             for k, c in enumerate(counts) if c]                # no walk of length 1: no alpha term
-    sum_line = "$" + " + ".join(terms) + " + \\cdots$"
-    assert sum_line == "$2\\alpha^2 + \\alpha^3 + 11\\alpha^4 + \\cdots$", sum_line
-    lx, seg_len = 300, 36
+    sup = {2: "²", 3: "³", 4: "⁴"}
+    sum_line = " + ".join((str(c) if c > 1 else "") + "α" + sup[k + 1]
+                          for k, c in enumerate(counts) if c) + " + ⋯"
+    assert sum_line == "2α² + α³ + 11α⁴ + ⋯", sum_line
+    assert est_w(sum_line) < W_COL - 20
+    lx, seg_len = 290, 40
+
+    def hop_routes(k, w):
+        """The brush points and arrowheads of one walk, hop by hop."""
+        out = ""
+        pts_all = []
+        for a, b in zip(w, w[1:]):
+            if k == 3 and (a, b) == ("n2", "v"):
+                pts, c = _bow(P[a], P[b], -20)
+                out += F.brush(pts, color=WD_COLS[k], w=11)
+                out += head(c, P[b], color=WD_COLS[k])
+            else:
+                out += F.brush([P[a], P[b]], color=WD_COLS[k], w=11)
+                out += head(P[a], P[b], color=WD_COLS[k])
+        return out
 
     def frame(n_drawn, total=False):
         body = edges_body(list(G.edges()), P)
-        for n in S.W5_ORDER:
-            body += nd(*P[n], label={"u": "u", "v": "v"}.get(n, ""), name=n, outline=False)
         for k, w in drawn[:n_drawn]:
-            for a, b in zip(w, w[1:]):
-                bend = -22 if (k == 3 and (a, b) == ("n2", "v")) else 0
-                body += arrow_to(a, b, WD_COLS[k], bend=bend)
+            body += hop_routes(k, w)
+        for n in S.W5_ORDER:
+            body += F.disc(*P[n], {"u": "u", "v": "v"}.get(n, ""), fill="white")
         rows = {2: 300, 3: 220}
         for k in (2, 3):
+            ly = rows[k]
+            body += F.text(lx + k * seg_len + 8, ly, f"= \u03b1{sup[k]}", color="muted", anchor="west")
             if any(kk == k for kk, _ in drawn[:n_drawn]):
-                ly = rows[k]
                 for j in range(k):
-                    body += (f"\\draw[line width=6bp,draw={WD_COLS[k]},-{{Latex[length=15bp,"
-                             f"width=18bp]}}] ({lx + j * seg_len},{ly}) -- ({lx + (j + 1) * seg_len - 3},{ly});\n")
-                body += F.text(lx + k * seg_len + 14, ly, f"$\\alpha^{k}$", anchor="west")
+                    a, b = (lx + j * seg_len, ly), (lx + (j + 1) * seg_len - 10, ly)
+                    body += F.brush([a, b], color=WD_COLS[k], w=11)
+                    body += head(a, b, color=WD_COLS[k], tip_at=(b[0] + 6, ly))
         if total:
             body += F.text(W_COL / 2, 28, sum_line)
         return body
 
-    frames = [frame(3, True), frame(0), frame(1), frame(2), frame(3, True)]
-    # the sum line must fit under the graph
-    assert est_w(sum_line.replace("$", "").replace("\\alpha", "a").replace("\\cdots", "...")) < W_COL - 20
-    F.emit_gif("walks-discount", frames, container="col", h=400,
-               durations=[1500, 700, 1200, 1200, 1800], hold=4)
+    frames = [frame(0), frame(1), frame(2), frame(3), frame(3, True)]
+    F.emit_frames("walks-discount", frames, container="col", h=400)
 
 
 FIGURES = [
     ("eigen-inherit", fig_eigen_inherit),
+    ("eig-pf", fig_eig_pf),
     ("eigen-equation", fig_eigen_equation),
     ("eig-all", fig_eig_all),
-    ("eig-pf", fig_eig_pf),
     ("ring-4444", fig_ring_4444),
     ("ring-local", fig_ring_local),
     ("katz-floor", fig_katz_floor),
     ("walks-discount", fig_walks_discount),
-    ("eig-centrality", fig_eig_centrality),
 ]

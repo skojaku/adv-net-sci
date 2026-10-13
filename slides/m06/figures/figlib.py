@@ -141,10 +141,12 @@ PREAMBLE = r"""
                  text=ink,font=\fontsize{%(FONT)d}{%(FONT)d}\selectfont},
     lab/.style={font=\fontsize{%(FONT)d}{%(LEAD)d}\selectfont,align=center},
     ed/.style={line width=%(EDGE)sbp,draw=ink},
-    pencil/.style={decorate,decoration={random steps,segment length=3.2bp,amplitude=0.55bp},
+    pencil/.style={decorate,decoration={random steps,segment length=6bp,amplitude=0.45bp},
+                   line join=round},
+    pencilround/.style={decorate,decoration={random steps,segment length=3.2bp,amplitude=0.55bp},
                    rounded corners=1.4bp},
-    rough/.style={decorate,decoration={random steps,segment length=5bp,amplitude=0.9bp},
-                  rounded corners=2.2bp},
+    rough/.style={decorate,decoration={random steps,segment length=6bp,amplitude=0.8bp},
+                  line join=round},
 ]
 \useasboundingbox (0,0) rectangle (%(W)d,%(H)d);
 """
@@ -460,8 +462,10 @@ def _seed(*xs):
 def sketch_circle(x, y, d, color="ink", w=2.0):
     """A pencil circle: two strokes, slightly different radii, jittered."""
     r = d / 2
-    return _seed(x, y, d) + (f"\\draw[{color},line width={w}bp,pencil,opacity=0.92] ({x:.2f},{y:.2f}) circle ({r:.2f}bp);\n"
-            f"\\draw[{color},line width={w * 0.55:.2f}bp,pencil,opacity=0.75] "
+    # pencilround (rounded corners) is safe on a circle; `pencil` is the robust one for
+    # rectangles and lines (random steps + rounded corners dies on some boxes).
+    return _seed(x, y, d) + (f"\\draw[{color},line width={w}bp,pencilround,opacity=0.92] ({x:.2f},{y:.2f}) circle ({r:.2f}bp);\n"
+            f"\\draw[{color},line width={w * 0.55:.2f}bp,pencilround,opacity=0.75] "
             f"({x + 0.5:.2f},{y - 0.4:.2f}) circle ({r + 0.7:.2f}bp);\n")
 
 

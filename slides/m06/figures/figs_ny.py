@@ -1,33 +1,33 @@
 #!/usr/bin/env python3
-"""The New York State highway maps of Module 06 (all `col`, 537 bp wide).
+"""The New York State highway maps of Module 06 (all `col`, 537 bp wide, ONE canvas and ONE
+crop box, so switching slides changes only the dots and the labels).
 
 Data: `data/ny_network.json` (289 interchanges, 433 road segments, built by `make_ny.py`).
-Projection: equirectangular, longitude scaled by cos(42.5 deg).  One scale for every map,
-so the seven figures overlay exactly.
+Projection: equirectangular, longitude scaled by cos(42.5 deg).  One scale for every map.
 
-Shading.  Every map shades the 289 dots white-ish to accent, and a darker dot is ALWAYS the
-more central one:
+Style (the lecturer's): muted road lines and state outline, every interchange a small dot
+from near-paper (low) to saturated cool (high) by `F.shade`, a darker dot is ALWAYS the more
+central one, the winner a hot disc, MesloLGS NF labels, and a hot brush underline under the
+one label that is the point of the slide.
 
-    degree        1 -> 5 (a small ramp, because there are only four values)
+    degree        shade 0 / 0.55 / 1 for degree 1 / 3 / 4+ (only four values exist)
     closeness     min-max of the value
     eccentricity  min-max of 1 / eccentricity  (the smaller the worst-case drive, the darker)
     betweenness   value / maximum
     eigenvector   value / maximum
 
 Eccentricity is the one measure where *smaller* is better. It is shaded by 1/e so that the
-slide's rule "darker = more central" holds on every map; the figcaption must say so.
-
-The winner of a measure is a larger accent-2 dot with a white rim. Names go in blank
-regions of the map (Lake Ontario, Pennsylvania, New England) with a leader line.
+slide's rule "darker = more central" holds on every map.
 """
 
 import json
 import math
 
-import figlib as F
-from figlib import emit, seg, text
+import numpy as np
 
-ACCENT, ACCENT2, GRAY = "accent", "accenttwo", "annot"
+import figlib as F
+from figlib import text
+
 
 NY = json.loads((F.OUT / "data" / "ny_network.json").read_text())
 NODES, EDGES, CITIES = NY["nodes"], NY["edges"], NY["cities"]
@@ -93,81 +93,107 @@ def _norm(vals, lo=None):
 
 
 SHADE = {
-    "degree": [min(n["degree"], 4) / 4 for n in NODES],
+    "degree": [{1: 0.0, 3: 0.55, 4: 1.0, 5: 1.0}[n["degree"]] for n in NODES],
     "closeness": _norm([n["closeness"] for n in NODES]),
     "eccentricity": _norm([1 / n["eccentricity"] for n in NODES]),
     "betweenness": _norm([n["betweenness"] for n in NODES], lo=0.0),
     "eigenvector": _norm([n["eigenvector"] for n in NODES], lo=0.0),
 }
-# degree: 1 -> 0.25 (lightest), 3 -> 0.75, 4 and 5 -> 1.0
-SHADE["degree"] = [{1: 0.0, 3: 0.55, 4: 1.0, 5: 1.0}[n["degree"]] for n in NODES]
+
+ROAD = "muted"
+ROAD_W = 1.6
+ROAD_OP = 0.8
+WIN_D = 22.0
 
 
-def mix(t):
-    """White -> accent. The lightest dot is still visible (it carries a rim)."""
-    t = 0.16 + 0.84 * max(0.0, min(1.0, t))
-    r, g, b = (int(round(255 + (c - 255) * t)) for c in (0x39, 0x59, 0xA6))
-    return "{rgb,255:red,%d;green,%d;blue,%d}" % (r, g, b)
+def _dot(x, y, t):
+    """One interchange: fill by value, a thin ink rim so the faintest still reads."""
+    d = 7.0 + 4.0 * t
+    return ("\\filldraw[fill=%s,draw=ink!60,line width=0.7bp] (%.1f,%.1f) circle (%sbp);\n"
+            % (F.shade(t), x, y, d / 2))
 
 
 # --------------------------------------------------------------------------- drawing
-def base(edge_color=f"{GRAY}!45", edge_w=1.7):
-    """State outline and the road segments, behind everything."""
+def outline(zoom=None):
     o = ""
     for ring in NY["outline"]:
         pts = [P(*p) for p in ring]
-        o += ("\\draw[line width=1.8bp,draw=%s,line join=round] %s -- cycle;\n"
-              % (GRAY, " -- ".join("(%.1f,%.1f)" % p for p in pts)))
-    for e in EDGES:
-        o += seg(XY[e["u"]], XY[e["v"]], color=edge_color, w=edge_w)
+        if zoom:
+            pts = [zoom(p) for p in pts]
+        o += ("\\draw[line width=1.8bp,draw=muted,line join=round] %s -- cycle;\n"
+              % " -- ".join("(%.1f,%.1f)" % p for p in pts))
     return o
+
+
+def roads(xy=None):
+    xy = xy or (lambda i: XY[i])
+    return "".join(F.seg(xy(e["u"]), xy(e["v"]), color=ROAD, w=ROAD_W, opacity=ROAD_OP) for e in EDGES)
+
+
+def base():
+    """State outline and the road segments, behind everything."""
+    return outline() + roads()
 
 
 def shaded_dots(shade):
     """All 289 interchanges, light ones first so the dark ones sit on top."""
-    o = ""
-    for i in sorted(range(N), key=lambda i: shade[i]):
-        t = shade[i]
-        d = 6.5 + 4.5 * t
-        o += ("\\draw[line width=0.8bp,draw=%s!60!black,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
-              % (ACCENT, mix(t), XY[i][0], XY[i][1], d / 2))
+    return "".join(_dot(*XY[i], shade[i]) for i in sorted(range(N), key=lambda i: shade[i]))
+
+
+def plain_dots(t=0.12):
+    return "".join(_dot(x, y, t) for x, y in XY)
+
+
+def winner(i, d=WIN_D, xy=None):
+    x, y = (xy or XY)[i] if xy is None else xy
+    return F.disc(x, y, "", fill="hot", size=d)
+
+
+def ul(x0, x1, y, color="hot"):
+    """A hand-drawn brush underline: a translucent body and five thin strands with their own
+    opacity, wobble and trimmed ends, drawn as plain polylines. (figlib.brush runs TikZ's
+    random-steps decoration, which fails with "Dimension too large" for some lengths.)"""
+    rng = np.random.default_rng(int(x0 * 7 + x1 * 3 + y) % (2 ** 32))
+    n = max(int((x1 - x0) // 6), 3)
+    xs = np.linspace(x0, x1, n + 1)
+    rise = lambda x: 1.5 * (x - x0) / (x1 - x0)
+
+    def line(off, t0, t1, w, op):
+        pts = " -- ".join("(%.1f,%.1f)" % (xs[i], y + rise(xs[i]) + off + rng.normal(0, 0.28))
+                          for i in range(t0, t1 + 1))
+        return ("\\draw[%s,line width=%.2fbp,line cap=round,line join=round,opacity=%.2f] %s;\n"
+                % (color, w, op, pts))
+    o = line(0.0, 1, n - 1, 3.6, 0.35)
+    for k in range(5):
+        off = (k - 2) * 1.0
+        o += line(off, int(rng.integers(0, 2)), n - int(rng.integers(0, 2)),
+                  float(rng.uniform(0.9, 1.7)), float(rng.uniform(0.5, 0.95)))
     return o
 
 
-def plain_dots(color=f"{GRAY}!55", d=6.0):
-    return "".join(F.dot(x, y, color=color, d=d) for x, y in XY)
-
-
-def winner(i, d=20.0):
-    x, y = XY[i]
-    return ("\\draw[line width=2.2bp,draw=white,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
-            % (ACCENT2, x, y, d / 2))
-
-
 class Labels:
-    """Names in blank regions with leader lines.
+    """Names in blank regions with leader lines, MesloLGS NF.
 
     Asserts that labels clear each other, the canvas and the city dots, and that no leader
-    crosses another label. Boxes use 0.47 em per character (measured: Latin Modern 36 pt
-    "Middletown" is 168 bp, figlib's conservative CHAR_W would say 210).
+    crosses another label. Meslo is monospaced: 0.61 em per character.
     """
-    CW = 0.47
+    CW = F.CHAR_W
 
     def __init__(self, name):
-        self.name, self.boxes, self.out, self.leaders, self.lines = name, [], "", "", []
+        self.name, self.boxes, self.out, self.leaders, self.lines, self.ul = name, [], "", "", [], ""
         self.dy = DY
 
     def box(self, s, x, y, anchor, cw=None):
-        w = (cw or self.CW) * F.FONT * len(s) + 8
+        w = (cw or self.CW) * F.FONT * len(s) + 6
         h = 0.95 * F.FONT + 2
         ax = {"center": 0.0, "west": 0.5, "east": -0.5}[anchor]
         return (x + ax * w - w / 2, y - h / 2, x + ax * w + w / 2, y + h / 2)
 
-    def add(self, s, x, y, anchor="center", color="black", to=None, r=0.0, lead=None,
-            halo=True, avoid=(), cw=None, rel=True):
+    def add(self, s, x, y, anchor="center", color="ink", to=None, r=0.0, halo=True, avoid=(),
+            rel=True, underline=False):
         if rel:
             y += self.dy
-        b = self.box(s, x, y, anchor, cw)
+        b = self.box(s, x, y, anchor)
         assert 2 <= b[0] and b[2] <= F.COL_W - 2 and 2 <= b[1] and b[3] <= CANVAS_H - 2, \
             f"{self.name}: label {s!r} runs off the canvas {tuple(round(v) for v in b)}"
         for k, o in self.boxes:
@@ -186,20 +212,22 @@ class Labels:
             L = math.hypot(to[0] - sx, to[1] - sy)
             ex, ey = to[0] - (to[0] - sx) / L * r, to[1] - (to[1] - sy) / L * r
             self.lines.append((s, (sx, sy), (ex, ey)))
-            self.leaders += seg((sx, sy), (ex, ey), color=lead or color, w=2.4)
+            self.leaders += F.seg((sx, sy), (ex, ey), color="muted", w=2.2)
         if halo:
             for hx in (-2, 0, 2):
                 for hy in (-2, 0, 2):
                     if (hx, hy) != (0, 0):
                         self.out += text(x + hx, y + hy, s, color="white", anchor=anchor)
         self.out += text(x, y, s, color=color, anchor=anchor)
+        if underline:
+            self.ul += ul(b[0] + 5, b[2] - 5, y - 20)
 
     def body(self):
         for s, p, q in self.lines:
             for k, o in self.boxes:
                 assert k == s or not F.box_hits_segment(o, p, q, pad=0), \
                     f"{self.name}: the leader of {s!r} crosses the label {k!r}"
-        return self.leaders + self.out
+        return self.leaders + self.out + self.ul
 
 
 # --------------------------------------------------------------------------- the 3x inset
@@ -216,48 +244,27 @@ def Z(p):
     return (INS_C[0] + ZOOM * (p[0] - REG_C[0]), INS_C[1] + ZOOM * (p[1] - REG_C[1]))
 
 
-def inset(dots, winners=()):
-    """A framed 3x view of the NYC area (lower right). `dots(order, zoomed_xy)` draws the
-    interchanges; `winners` is a list of (node, diameter) drawn on top."""
+def inset(shade=None, winners=()):
+    """A framed 3x view of the NYC area (lower right): the same dots, the same shading."""
     fx0, fy0, fx1, fy1 = INS_X0, INS_Y0, INS_X0 + INS_W, INS_Y0 + INS_W
-    # the region on the main map
-    o = ("\\draw[line width=1.8bp,draw=%s] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
-         % (GRAY, REG_C[0] - REG_H, REG_C[1] - REG_H, REG_C[0] + REG_H, REG_C[1] + REG_H))
+    o = ("\\draw[line width=1.8bp,draw=muted] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
+         % (REG_C[0] - REG_H, REG_C[1] - REG_H, REG_C[0] + REG_H, REG_C[1] + REG_H))
     o += "\\begin{scope}\n\\clip (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1)
     o += "\\fill[white] (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1)
-    for ring in NY["outline"]:
-        pts = [Z(P(*p)) for p in ring]
-        o += ("\\draw[line width=1.8bp,draw=%s,line join=round] %s -- cycle;\n"
-              % (GRAY, " -- ".join("(%.1f,%.1f)" % p for p in pts)))
-    for e in EDGES:
-        o += seg(Z(XY[e["u"]]), Z(XY[e["v"]]), color=f"{GRAY}!45", w=1.7)
+    o += outline(zoom=lambda p: Z(p))
+    zxy = lambda i: Z(XY[i])
+    o += roads(zxy)
     inside = [i for i in range(N)
               if fx0 - 8 <= Z(XY[i])[0] <= fx1 + 8 and fy0 - 8 <= Z(XY[i])[1] <= fy1 + 8]
-    o += dots(inside, {i: Z(XY[i]) for i in inside})
+    for i in sorted(inside, key=lambda i: shade[i] if shade else 0):
+        o += _dot(*Z(XY[i]), shade[i] if shade else 0.12)
     for i, d in winners:
         x, y = Z(XY[i])
         assert fx0 + d / 2 < x < fx1 - d / 2 and fy0 + d / 2 < y < fy1 - d / 2, f"winner {i} not in the inset"
-        o += ("\\draw[line width=2bp,draw=white,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
-              % (ACCENT2, x, y, d / 2))
+        o += F.disc(x, y, "", fill="hot", size=d)
     o += "\\end{scope}\n"
-    o += ("\\draw[line width=2bp,draw=%s] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
-          % (GRAY, fx0, fy0, fx1, fy1))
+    o += ("\\draw[line width=2bp,draw=muted] (%.1f,%.1f) rectangle (%.1f,%.1f);\n" % (fx0, fy0, fx1, fy1))
     return o
-
-
-def _inset_shaded(shade):
-    def dots(order, zxy):
-        o = ""
-        for i in sorted(order, key=lambda i: shade[i]):
-            t = shade[i]
-            o += ("\\draw[line width=0.8bp,draw=%s!60!black,fill=%s] (%.1f,%.1f) circle (%sbp);\n"
-                  % (ACCENT, mix(t), zxy[i][0], zxy[i][1], (6.5 + 4.5 * t) / 2))
-        return o
-    return dots
-
-
-def _inset_plain(order, zxy):
-    return "".join(F.dot(*zxy[i], color=f"{GRAY}!50", d=6.5) for i in order)
 
 
 # 60 km around Manhattan, drawn with the map's own projection (1 deg lat = 111.2 km)
@@ -266,29 +273,24 @@ R60 = (60 / 111.2 * SCALE, 60 / (111.2 * math.cos(math.radians(40.7831))) * KX) 
 
 
 def circle60():
-    return ("\\draw[line width=2bp,draw=%s,dash pattern=on 7bp off 5bp] (%.1f,%.1f) ellipse (%.2fbp and %.2fbp);\n"
-            % (GRAY, MANHATTAN[0], MANHATTAN[1], R60[1], R60[0]))
+    return ("\\draw[line width=2bp,draw=muted,%s] (%.1f,%.1f) ellipse (%.2fbp and %.2fbp);\n"
+            % (F.DASH, MANHATTAN[0], MANHATTAN[1], R60[1], R60[0]))
 
 
 def _city(c):
     return XY[CITY_ID[c]]
 
 
-def _finish(name, body):
-    emit(name, body, container="col", h=CANVAS_H, nodes=False)
-
-
 # --------------------------------------------------------------------------- the figures
-def fig_overview():
+def b_overview():
     L = Labels("ny-overview")
     b = base() + plain_dots()
     for c in CITY_ID:
-        x, y = _city(c)
-        b += ("\\draw[line width=2bp,draw=white,fill=%s] (%.1f,%.1f) circle (9bp);\n" % (ACCENT, x, y))
+        b += F.disc(*_city(c), "", fill="cool", size=20)
     dots = [_city(c) for c in CITY_ID]
-    spec = {                                  # name: (anchor, x, y); leader only if far
+    spec = {                                  # name: (anchor, x, y, leader?)  y is map-relative
         "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 44 - DY, True),
-        "Buffalo": ("center", 66, 146, True),
+        "Buffalo": ("west", 8, 140, True),
         "Rochester": ("center", 110, 250, True),
         "Syracuse": ("center", 232, 157, True),
         "Utica": ("west", 262, 214, False),
@@ -298,21 +300,19 @@ def fig_overview():
     }
     for c, (anc, x, y, lead) in spec.items():
         key = "New York City" if c == "NYC" else c
-        L.add(c, x, y, anchor=anc, to=_city(key) if lead else None, r=11, avoid=dots)
-    _finish("ny-overview", b + L.body())
+        L.add(c, x, y, anchor=anc, to=_city(key) if lead else None, r=12, avoid=dots)
+    return b + L.body()
 
 
-def fig_degree():
+def b_degree():
     b = base() + shaded_dots(SHADE["degree"])
     L = Labels("ny-degree")
-    # a legend instead of names: the degrees that matter, drawn with the figure's own dots
-    rows = [("degree 4+", 1.0), ("degree 3", 0.55), ("degree 1", 0.0)]
-    for k, (s, t) in enumerate(rows):
-        y = 300 - k * 50
-        b += ("\\draw[line width=0.8bp,draw=%s!60!black,fill=%s] (360,%d) circle (6.5bp);\n"
-              % (ACCENT, mix(t), y))
-        L.add(s, 374, y, anchor="west", halo=False, cw=0.43, rel=False)
-    _finish("ny-degree", b + L.body())
+    L.add("degree", 372, 330, anchor="west", halo=False, rel=False, color="muted")
+    for k, (s, t) in enumerate((("4+", 1.0), ("3", 0.55), ("1", 0.0))):
+        y = 290 - k * 42
+        b += ("\\filldraw[fill=%s,draw=ink!60,line width=0.9bp] (380,%d) circle (8bp);\n" % (F.shade(t), y))
+        L.add(s, 400, y, anchor="west", halo=False, rel=False)
+    return b + L.body()
 
 
 def _single(name, measure, labels):
@@ -320,65 +320,72 @@ def _single(name, measure, labels):
     i = WIN[measure]
     b = base() + shaded_dots(SHADE[measure]) + winner(i)
     labels(L, i)
-    _finish(name, b + L.body())
+    return b + L.body()
 
 
-def fig_closeness():
+def b_closeness():
     def lab(L, i):
-        L.add("Middletown", 112, 46, color=ACCENT2, to=XY[i], r=12)
-        L.add("NYC", 400, 100, to=_city("New York City"), r=3)
-    _single("ny-closeness", "closeness", lab)
+        L.add("Middletown", 112, 46, color="hot", to=XY[i], r=13, underline=True)
+    return _single("ny-closeness", "closeness", lab)
 
 
-def fig_eccentricity():
+def b_eccentricity():
     def lab(L, i):
-        L.add("Binghamton", 115, 80, to=_city("Binghamton"), r=3)
-        L.add("473 km", 215, 32, color=ACCENT2, to=XY[i], r=12)
-    _single("ny-eccentricity", "eccentricity", lab)
+        L.add("Binghamton", 115, 80, color="muted", to=_city("Binghamton"), r=3)
+        L.add("473 km", 215, 32, color="hot", to=XY[i], r=13, underline=True)
+    return _single("ny-eccentricity", "eccentricity", lab)
 
 
-def fig_betweenness():
+def b_betweenness():
     def lab(L, i):
-        L.add("Binghamton", 115, 80, to=_city("Binghamton"), r=3)
-        L.add("Monticello", 190, 32, color=ACCENT2, to=XY[i], r=12)
-    _single("ny-betweenness", "betweenness", lab)
+        L.add("Binghamton", 115, 80, color="muted", to=_city("Binghamton"), r=3)
+        L.add("Monticello", 190, 32, color="hot", to=XY[i], r=13, underline=True)
+    return _single("ny-betweenness", "betweenness", lab)
 
 
-def fig_eigenvector():
+def b_eigenvector():
     L = Labels("ny-eigenvector")
     i = WIN["eigenvector"]
-    b = base() + circle60() + shaded_dots(SHADE["eigenvector"]) + winner(i)
-    b += inset(_inset_shaded(SHADE["eigenvector"]), [(i, 20.0)])
-    # "60 km" at the circle's south-west, in the blank below Pennsylvania
+    sh = SHADE["eigenvector"]
+    b = base() + circle60() + shaded_dots(sh) + winner(i)
+    b += inset(sh, [(i, WIN_D)])
     ang = math.radians(225)
     L.add("60 km", MANHATTAN[0] + R60[1] * math.cos(ang) - 14, MANHATTAN[1] + R60[0] * math.sin(ang) + 3,
-          anchor="east", color=GRAY, rel=False)
+          anchor="east", color="muted", rel=False)
     zx, zy = Z(XY[i])
-    L.add("Hempstead", 533, INS_Y0 - 28, anchor="east", color=ACCENT2, to=(zx, zy), r=12, cw=0.42, rel=False)
-    _finish("ny-eigenvector", b + L.body())
+    L.add("Hempstead", 533, INS_Y0 - 28, anchor="east", color="hot", to=(zx, zy), r=13, rel=False,
+          underline=True)
+    return b + L.body()
 
 
-def fig_five():
+def b_five():
     L = Labels("ny-five")
-    b = base() + plain_dots(color=f"{GRAY}!50", d=6.5)
+    b = base() + plain_dots(0.12)
     for m in ("eccentricity", "betweenness", "closeness", "eigenvector", "harmonic"):
-        b += winner(WIN[m], d=13.0)
-    b += inset(_inset_plain, [(WIN["harmonic"], 11.0), (WIN["eigenvector"], 11.0)])
+        b += winner(WIN[m], d=14.0)
+    b += inset(None, [(WIN["harmonic"], 14.0), (WIN["eigenvector"], 14.0)])
     spec = {                                   # measure: (x, y), map-relative
-        "eccentricity": (113, 84),
-        "betweenness": (120, 38),
-        "closeness": (205, 0),
+        "eccentricity": ("west", 10, 84),
+        "betweenness": ("center", 120, 38),
+        "closeness": ("center", 205, 0),
     }
-    for m, (x, y) in spec.items():
-        L.add(m, x, y, anchor="center", color=ACCENT2, to=XY[WIN[m]], r=8)
-    # the two winners that sit in the NYC inset: harmonic above the frame, eigenvector below it
+    for m, (anc, x, y) in spec.items():
+        L.add(m, x, y, anchor=anc, color="hot", to=XY[WIN[m]], r=9)
     zh, ze = Z(XY[WIN["harmonic"]]), Z(XY[WIN["eigenvector"]])
-    L.add("harmonic", 533, INS_Y0 + INS_W + 28, anchor="east", color=ACCENT2, to=zh, r=10, cw=0.42, rel=False)
-    L.add("eigenvector", 533, INS_Y0 - 28, anchor="east", color=ACCENT2, to=ze, r=10, cw=0.42, rel=False)
-    _finish("ny-five", b + L.body())
+    L.add("harmonic", 533, INS_Y0 + INS_W + 28, anchor="east", color="hot", to=zh, r=10, rel=False)
+    L.add("eigenvector", 533, INS_Y0 - 28, anchor="east", color="hot", to=ze, r=10, rel=False)
+    return b + L.body()
 
 
-FIGURES = [("ny-overview", fig_overview), ("ny-degree", fig_degree),
-           ("ny-closeness", fig_closeness), ("ny-eccentricity", fig_eccentricity),
-           ("ny-betweenness", fig_betweenness), ("ny-eigenvector", fig_eigenvector),
-           ("ny-five", fig_five)]
+NAMES = [("ny-overview", b_overview), ("ny-degree", b_degree), ("ny-closeness", b_closeness),
+         ("ny-eccentricity", b_eccentricity), ("ny-betweenness", b_betweenness),
+         ("ny-eigenvector", b_eigenvector), ("ny-five", b_five)]
+
+
+def fig_ny():
+    """All seven maps on one canvas and one crop (a map is dots and labels on one base)."""
+    F.emit_group([(n, fn()) for n, fn in NAMES], container="col", h=CANVAS_H, nodes=False,
+                 prefix=False)
+
+
+FIGURES = [("ny-maps", fig_ny)]

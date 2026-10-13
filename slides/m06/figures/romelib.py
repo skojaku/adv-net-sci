@@ -336,3 +336,113 @@ def note(s, color=ACCENT2, size=F.FONT):
     raise AssertionError(
         f"in-drawing note {s!r} does not fit anywhere clear on the map -- shorten it "
         f"to the numbers, and put the sentence in the slide's figcaption")
+
+
+# ============================================================================ col layout
+# The opening trio of Module 06 (roma-basemap, roma-to-graph, roma-degree) lives in the right
+# half of the slide (a 537 bp `col`), so it cannot reuse the 1080 bp drawing above. These
+# figures put the twelve pins at their REAL map positions (the OpenStreetMap tile map of
+# data/roma-basemap.json) and turn the pins into the discs of the graph where they stand, so
+# a map and its graph are the same picture. One canvas, one crop, three figures.
+import json as _json
+import math as _math
+from PIL import Image as _Image
+
+COL_W = F.COL_W
+COL_H = 420
+COL_MOD = "tall"                 # 400 bp cap: the map is 365 bp tall plus the disc overshoot
+_DATA = F.OUT / "data"
+_PALE = _DATA / "roma-basemap-pale.png"
+BASEMAP = _DATA / "roma-basemap-col.png"
+_meta = _json.loads((_DATA / "roma-basemap.json").read_text())
+IMG_W, IMG_H = _meta["image"]["width"], _meta["image"]["height"]
+assert _Image.open(_PALE).size == (IMG_W, IMG_H)
+
+
+def _make_col_basemap():
+    """The pale OSM map, simplified for a 430 bp wide figure: land goes to near-paper (the
+    raster grain leaves it clean), the sea stays a soft blue-grey, and the street labels,
+    which are unreadable at this size and only add speckle, are blurred away."""
+    import numpy as np
+    from PIL import ImageFilter
+    a = np.asarray(_Image.open(_PALE).convert("RGB").filter(ImageFilter.GaussianBlur(2.2))).astype(float)
+    sea = np.clip((a[..., 2] - a[..., 0] - 6) / 14.0, 0, 1)[..., None]       # blue-ish -> 1
+    sea_col = np.array([196, 209, 222], float)
+    land = 255 - 0.08 * (255 - a)                                           # faint relief only
+    out = sea * sea_col + (1 - sea) * land
+    return _Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGB")
+
+
+if not BASEMAP.exists() or BASEMAP.stat().st_mtime < _PALE.stat().st_mtime:
+    _make_col_basemap().save(BASEMAP)
+assert set(_meta["cities"]) == set(CITIES), "basemap cities differ from the Roman graph"
+
+# The whole 2000 x 1826 image is shown, stretched by 10% sideways: the height cap (400 bp)
+# fixes the vertical scale, and the width has to reach 76% of the column for the ink gate.
+SX, SY = 0.22, 0.20
+MAP_WBP, MAP_HBP = IMG_W * SX, IMG_H * SY
+MAP_X0, MAP_Y0 = (COL_W - MAP_WBP) / 2, 26.0
+PIN_XY = {c: (MAP_X0 + v["px"] * SX, MAP_Y0 + (IMG_H - v["py"]) * SY)
+          for c, v in _meta["cities"].items()}
+PIN_D = 18               # bp, a pin on the map
+DISC_D = 34              # bp, a node of the graph (about 34 px on the slide)
+
+# Straight roads between the pins must be a clean planar drawing, and no two discs may touch.
+F.assert_planar_drawing(EDGES, PIN_XY, "roma pins")
+for _a in CITIES:
+    for _b in CITIES:
+        if _a < _b:
+            assert _math.dist(PIN_XY[_a], PIN_XY[_b]) > DISC_D + 6, f"discs {_a} and {_b} nearly touch"
+
+# "Roma" sits north-east of its pin: the wedge between its roads to Mediolanum (north-west)
+# and Thessalonica (east) is the only open one.
+ROMA_LABEL = (PIN_XY["Roma"][0] + 14, PIN_XY["Roma"][1] + 22)
+
+
+def col_map(opacity=1.0):
+    """The pale OSM map with its pencil frame, `opacity` in 0..1 (0 draws nothing)."""
+    if opacity <= 0:
+        return ""
+    op = f"opacity={opacity:.3f}," if opacity < 1 else ""
+    o = (f"\\node[{op}anchor=south west,inner sep=0pt] at ({MAP_X0:.2f},{MAP_Y0:.2f}) "
+         f"{{\\includegraphics[width={MAP_WBP:.2f}bp,height={MAP_HBP:.2f}bp]{{{BASEMAP}}}}};\n")
+    x0, y0, x1, y1 = MAP_X0, MAP_Y0, MAP_X0 + MAP_WBP, MAP_Y0 + MAP_HBP
+    for p, q in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
+        o += F.seg(p, q, color="muted", w=2.2, opacity=opacity if opacity < 1 else None)
+    return o
+
+
+def col_pins(size=PIN_D, fill="cool"):
+    return "".join(F.disc(*PIN_XY[c], "", fill=fill, size=size) for c in CITIES)
+
+
+def col_roads(a=0, b=None):
+    """Roads a..b of EDGES as straight soft-ink lines between the pins."""
+    return "".join(F.seg(PIN_XY[u], PIN_XY[v]) for u, v in EDGES[a:b])
+
+
+def col_label():
+    """"Roma", with a white halo so it reads on the map and is invisible on white paper."""
+    x, y = ROMA_LABEL
+    o = ""
+    for hx in (-2.5, 0, 2.5):
+        for hy in (-2.5, 0, 2.5):
+            if (hx, hy) != (0, 0):
+                o += F.text(x + hx, y + hy, "Roma", color="white", anchor="south west")
+    return o + F.text(x, y, "Roma", anchor="south west")
+
+
+def col_graph(fills=None, hot=()):
+    """The finished graph: roads, white discs (or `fills` city -> fill) and the name Roma."""
+    fills = fills or {}
+    o = col_roads()
+    for c in CITIES:
+        o += F.disc(*PIN_XY[c], "", fill="hot" if c in hot else fills.get(c, "white"), size=DISC_D)
+    return o + col_label()
+
+
+def col_box():
+    """(top, bottom) in bp from the canvas top: the map, every pin and disc, and the padding."""
+    top = max(MAP_Y0 + MAP_HBP + 2.5, max(p[1] for p in PIN_XY.values()) + DISC_D / 2 + 2)
+    bot = min(MAP_Y0 - 2.5, min(p[1] for p in PIN_XY.values()) - DISC_D / 2 - 2)
+    return (COL_H - top - F.PAD, COL_H - bot + F.PAD)

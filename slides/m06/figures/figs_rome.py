@@ -128,7 +128,16 @@ def fig_roma_graph():
 
 # --------------------------------------------------------------------------- Part 2
 def fig_roma_degree():
-    _map("roma-degree", scores=ROMA_C["degree"], crown_cities=ROMA_CROWNS["degree"])
+    """Slide 5 (col): the last frame of roma-to-graph, discs shaded by degree / 5, Roma hot
+    with its degree, 5, beside it. Same canvas and crop box as roma-to-graph."""
+    deg = ROMA_C["degree"]
+    assert max(deg, key=deg.get) == "Roma" and deg["Roma"] == 5
+    fills = {c: F.shade(deg[c] / 5) for c in R.CITIES}
+    b = R.col_graph(fills=fills, hot=("Roma",))
+    x, y = R.PIN_XY["Roma"]
+    b += text(x - 4, y + 44, "5", color="hot", anchor="center")
+    b += F.brush([(x - 15, y + 27), (x + 7, y + 28.5)], color="hot", w=5.0, opacity=0.95, strands=5)
+    emit("roma-degree", b, container="col", h=R.COL_H, hmod=R.COL_MOD, box=R.col_box())
 
 
 def fig_degree_local():
