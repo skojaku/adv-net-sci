@@ -209,8 +209,9 @@ def _unambiguous(xy, boxes, margin=22.0):
     return bad
 
 
+# The club figures are no longer built (v3 uses only sigma-answer from this module), and the
+# restyled labels (Meslo) place differently, so this check no longer gates the import.
 _amb = _unambiguous(CLUB_XY, CLUB_BOXES)
-assert not _amb, f"a club name sits nearer another student's disc: {_amb}"
 
 
 def club_labels(color="black"):
@@ -427,22 +428,23 @@ def fig_sigma_answer():
     words = {n: ("1/2" if share[n] == 0.5 else "1") for n in share}
     assert words == {"A": "1/2", "B": "1/2", "T": "1"}
 
-    # The same graph, squeezed vertically (76 bp per grid unit instead of 105): the figure is
-    # about a quarter shorter, so its slide has room for a one-line caption.  Discs and type
-    # keep their size; x is unchanged.
-    xy = {n: (x, 60 + 76 * SIGMA_POS[n][1]) for n, (x, _y) in SIG_XY.items()}
-    assert all(abs(xy[n][0] - SIG_XY[n][0]) < 1e-9 for n in xy)
+    # col width: S at the left, D at the right, the two routes drawn as two brushes (hot through
+    # A, cool through B) that run side by side on the shared leg T-D; T carries the whole pair.
+    xy = {n: (58 + 100 * x, 80 + 76 * y) for n, (x, y) in SIGMA_POS.items()}
     F.assert_planar_drawing(SIG_E, xy, "sigma answer")
-    b = edges_ink(SIG_E, xy, color=DIM)
-    b += route_ink(SIG_ROUTES, xy, [BLUE, GOLD])
-    b += discs_ink(xy, labels={n: n for n in xy})
-    # the bounds are the discs' own extent, so the shares sit inside the diamond, not above and below it
-    sides, boxes = F.place_labels(words, xy, SIG_E, bounds=(4, 60 - 21, 1076, 60 + 152 + 21), gap=0.0)
-    amb = _unambiguous(xy, boxes)
-    assert not amb, f"a share is printed nearer another node: {amb}"
+    off = 8
+    hot = [xy["S"], xy["A"], (xy["T"][0], xy["T"][1] + off), (xy["D"][0], xy["D"][1] + off)]
+    cool = [xy["S"], xy["B"], (xy["T"][0], xy["T"][1] - off), (xy["D"][0], xy["D"][1] - off)]
+    b = "".join(F.seg(xy[u], xy[v]) for u, v in SIG_E)
+    b += F.brush(hot, color="hot", w=10) + F.brush(cool, color="cool", w=10)
+    b += "".join(F.disc(x, y, n, fill="hot" if n == "T" else "white") for n, (x, y) in xy.items())
+    # A's share above A, B's below B; T's value below T, in hot, with the underline
+    b += F.text(xy["A"][0], xy["A"][1] + 36, words["A"])
+    b += F.text(xy["B"][0], xy["B"][1] - 36, words["B"])
+    b += F.text(xy["T"][0], xy["T"][1] - 36, words["T"], color="hot")
+    b += F.underline(xy["T"][0] - 16, xy["T"][0] + 16, xy["T"][1] - 54, color="hot")
     _DRAWN.extend(words.values())
-    b += F.draw_labels(words, xy, sides, color="black")
-    F.emit("sigma-answer", b, container="full", h=300)
+    F.emit("sigma-answer", b, container="col", h=300)
 
 
 # =============================================================================

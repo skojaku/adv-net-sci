@@ -254,7 +254,7 @@ The walk counts are the entries of A, A squared, A cubed, ... from Module 01. Wa
 
 <hr>
 
-<div class="fig">
+<div class="fig tall">
 
 ![w:1080](figures/grid-empty.png)
 
@@ -959,7 +959,7 @@ The answer to this morning's question. Four of the top five interchanges in the 
 
 <hr>
 
-<div class="fig">
+<div class="fig tall">
 
 ![w:1080](figures/grid-row1.png)
 
@@ -1660,7 +1660,7 @@ H 1.00, K 0.81. At alpha = 0.5/lambda_max short walks still weigh a lot, so H's 
 
 <hr>
 
-<div class="fig">
+<div class="fig tall">
 
 ![w:1080](figures/grid-row2.png)
 

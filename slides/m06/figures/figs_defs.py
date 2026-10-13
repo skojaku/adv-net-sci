@@ -1,169 +1,67 @@
 #!/usr/bin/env python3
-"""Definition figures of Module 06: the two ways to count, one GIF per definition, the grid.
+"""Definition figures of Module 06: the two ways to count, the bowtie, the grid.
 
-    w5-blank, w5-walks.gif        slides 9, 10   how far is u from v: shortest path or walks
-    closeness-def.gif             slide 13       distances ring by ring, the sum, every node's sum
-    harmonic-def.gif              slide 20       the same on the cut graph, 1/length, 1/inf = 0
-    ecc-def.gif                   slide 24       the farthest node from each node in turn
-    btw-def.gif                   slide 29       a letter for every pair, a counter on each carrier
-    grid-empty/-row1/-row2/-final slides 11, 34, 57, 68   one table in four states
+All of them are builds the lecturer steps through (frames/<name>/NN.png); every frame is one
+small step, in the lecturer's style (figlib: pencil discs, brush strokes, Meslo labels).
 
+    w5-blank, w5-walks             slides 8, 9    how far is u from v: shortest path, then walks
+                                                  (col; frame 0 of w5-walks = w5-blank)
+    closeness-def, bowtie-closeness slides 12, 25  the sum of distances, node by node; D smallest
+    ecc-def                        slide 26       the sums give way to eccentricities
+                                                  (frame 0 = bowtie-closeness)
+    btw-def                        slide 33       a letter for every pair, a counter per carrier
+                                                  (frame 0 = the bare bowtie)
+    grid-empty/-row1/-row2/-final  slides 10, 40, 71, 81   one table in four states (full)
+
+The bowtie figures share one canvas, one set of coordinates and one box, so the picture
+does not move from slide to slide.  harmonic-def lives in figs_quiz (the CA group).
 Every number is read from `smallgraphs`; the facts a figure draws are asserted at build time.
 """
 
-import math
+import itertools
+import re
 
 import networkx as nx
 
 import figlib as F
 import smallgraphs as S
 
-RED, BLUE, DIM = "accenttwo", "accent", "annot"
-GOLD = "accentthree"
-
-CAP_ARROW = "-{Stealth[length=13bp,width=13bp]}"
-
 
 # --------------------------------------------------------------------------- helpers
 def place(XY, s, ox, oy, sy=None):
-    """Grid units -> bp, y up, with grid (0, 0) of the lowest-left node at (ox, oy).
-    `sy`: a different vertical scale, when the drawing needs a flatter angle for its labels."""
+    """Grid units -> bp, y up, with grid (0, 0) of the lowest-left node at (ox, oy)."""
     sy = s if sy is None else sy
     x0 = min(p[0] for p in XY.values())
     y0 = min(p[1] for p in XY.values())
     return {n: (ox + (x - x0) * s, oy + (y - y0) * sy) for n, (x, y) in XY.items()}
 
 
-def pin(box, c="black!30"):
-    """Four specks at the corners of a box that the drawing must keep.
-
-    figlib crops each figure to its ink, so two figures of one picture would otherwise be
-    cropped differently and the picture would jump when the slide advances. The specks
-    (1.4 bp, 30 % gray) fix the crop box and are not visible at slide size.
-    """
-    x0, y0, x1, y1 = box
-    return "".join(f"\\fill[{c}] ({x},{y}) circle (0.7bp);\n" for x in (x0, x1) for y in (y0, y1))
-
-
-def nodes_tex(pos, labels=None, fill=None):
-    labels = labels if labels is not None else {n: n for n in pos}
-    return "".join(F.disc(x, y, labels.get(n, ""), name=n, fill=(fill or {}).get(n, "accent"))
-                   for n, (x, y) in pos.items())
-
-
-def edges_tex(edges, dashed=()):
-    out = ""
-    for a, b in edges:
-        if (a, b) in dashed or (b, a) in dashed:
-            out += (f"\\draw[line width={F.EDGE_W}bp,draw={DIM},{F.DASH}] ({a}) -- ({b});\n")
-        else:
-            out += f"\\draw[line width={F.EDGE_W}bp,draw=black] ({a}) -- ({b});\n"
-    return out
-
-
-def cross_out(p, q, r=13, w=5.0):
-    """A red x on the middle of the segment p--q: this road is closed."""
-    cx, cy = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
-    return (F.seg((cx - r, cy - r), (cx + r, cy + r), color=RED, w=w)
-            + F.seg((cx - r, cy + r), (cx + r, cy - r), color=RED, w=w))
-
-
-def route(names, color=RED, w=6.5, arrow=True, opacity=None):
-    """A walk through named nodes, centre to border: each hop stops at the discs."""
-    o = [f"line width={w}bp", f"draw={color}"]
-    if arrow:
-        o.append(CAP_ARROW)
-    if opacity is not None:
-        o.append(f"opacity={opacity}")
-    return f"\\draw[{','.join(o)}] " + " -- ".join(f"({n})" for n in names) + ";\n"
-
-
 def adjacent(G, names):
     assert all(G.has_edge(a, b) for a, b in zip(names, names[1:])), f"{names} is not a walk"
 
 
-def sides_for(names, pos, edges, bounds):
-    """One side per label, chosen once on the widest text a node ever carries, so a number
-    does not hop around between frames."""
-    chosen, _ = F.place_labels(names, pos, [tuple(e) for e in edges], bounds=bounds)
-    return chosen
+def edges_tex(edges, pos):
+    return "".join(F.seg(pos[a], pos[b]) for a, b in edges)
 
 
-SIDE = {"N": ("south", 0, 26), "S": ("north", 0, -26), "E": ("west", 26, 0), "W": ("east", -26, 0),
-        "SL": ("north", -12, -30),          # below, nudged left: clear of an edge leaving to the SE
-        "NE": ("south west", 20, 20), "NW": ("south east", -20, 20),
-        "SE": ("north west", 20, -20), "SW": ("north east", -20, -20)}
+def discs_tex(pos, labels, hot=(), fill=None):
+    fill = fill or {}
+    return "".join(F.disc(x, y, labels.get(n, ""), fill="hot" if n in hot else fill.get(n, "white"))
+                   for n, (x, y) in pos.items())
 
 
-def tight_box(x, y, s, anchor, size=F.FONT, pad=3):
-    """figlib.label_box with the width of the real glyphs (digits and the slash are 0.5 em in
-    Latin Modern) instead of the generous 0.55 em, for labels that are numbers only."""
-    old = F.CHAR_W
-    F.CHAR_W = 0.5
-    try:
-        return F.label_box(x, y, s, anchor, size=size, pad=pad)
-    finally:
-        F.CHAR_W = old
-
-
-def sides_pref(names, pos, edges, bounds, pref):
-    """Each label takes the first side of its preference list that collides with nothing
-    (other labels, any disc, any edge, the bounds); a node with no free side is an error."""
-    chosen, boxes = {}, {}
-    for n in names:
-        # the stated preferences first, then every other side, the one facing away from the
-        # node's neighbours first
-        nb = [pos[m] for m in {x for e in edges for x in e if n in e and x != n}]
-        cx = sum(p[0] for p in nb) / len(nb)
-        cy = sum(p[1] for p in nb) / len(nb)
-        away = lambda k: -((SIDE[k][1]) * (cx - pos[n][0]) + (SIDE[k][2]) * (cy - pos[n][1]))
-        rest = sorted((k for k in SIDE if k not in pref[n]), key=away, reverse=True)
-        for key in list(pref[n]) + rest:
-            anc, dx, dy = SIDE[key]
-            b = tight_box(pos[n][0] + dx, pos[n][1] + dy, names[n], anc)
-            inside = bounds[0] <= b[0] and b[2] <= bounds[2] and bounds[1] <= b[1] and b[3] <= bounds[3]
-            if (inside and not any(F.box_hits_disc(b, x, y) for x, y in pos.values())
-                    and not any(F.boxes_overlap(b, o) for o in boxes.values())
-                    and not any(F.box_hits_segment(b, pos[a], pos[c]) for a, c in edges)):
-                chosen[n], boxes[n] = SIDE[key], b
-                break
-        else:
-            raise AssertionError(f"no free side for the label of {n}; placed so far {[(k, [round(v) for v in b]) for k, b in boxes.items()]}")
-    return chosen
-
-
-def values_tex(vals, pos, chosen, colors=None):
-    """Print each value beside its node, on the side picked in `chosen`."""
-    o = ""
-    for n, s in vals.items():
-        anc, dx, dy = chosen[n]
-        o += F.text(pos[n][0] + dx, pos[n][1] + dy, s, color=(colors or {}).get(n, "black"),
-                    anchor=anc)
-    return o
-
-
-def widest(*dicts):
-    out = {}
-    for d in dicts:
-        for n, s in d.items():
-            if n not in out or len(s) > len(out[n]):
-                out[n] = s
-    return out
-
-
-def frac(x):
-    """A Fraction or int as text with a slash; 'inf' never appears (a cut graph is not asked)."""
-    return str(x.numerator) if x.denominator == 1 else f"{x.numerator}/{x.denominator}"
+def route(pos, names, color="gold", w=14):
+    return F.brush([pos[n] for n in names], color=color, w=w)
 
 
 # =========================================================================== W5
 # Module 01's five-node graph, stretched to fill the column (the picture is a diagram, only
 # the adjacency matters). u top right, v bottom centre.
-W5_W, W5_H = F.COL_W, 420
-W5_SX, W5_SY = 380, 118
-W5_POS = {n: (78 + (x - 0.0) * W5_SX, 60 + (y + 0.9) * W5_SY) for n, (x, y) in S.W5_XY.items()}
-W5_CAP_Y = 358
-W5_PIN = (14, 38, W5_W - 14, 390)
+W5_H = 420
+W5_SX, W5_SY, W5_OX, W5_OY = 400, 118, 68, 74
+W5_POS = {n: (W5_OX + x * W5_SX, W5_OY + (y + 0.9) * W5_SY) for n, (x, y) in S.W5_XY.items()}
+W5_CAP_Y = 24
+W5_BOX = (W5_H - 326, W5_H - 6)                       # bp from the canvas top, shared by every frame
 F.assert_planar_drawing(list(S.W5.edges), W5_POS, "W5 stretched")
 W5_LAB = {"u": "u", "v": "v"}
 
@@ -197,105 +95,117 @@ def _w5_facts():
     return d, sp, w
 
 
-def _w5_base(highlight="", caption="", extra=""):
-    return (pin(W5_PIN) + nodes_tex(W5_POS, W5_LAB) + edges_tex(S.W5.edges) + highlight + extra
-            + (F.text(W5_W / 2, W5_CAP_Y, caption) if caption else ""))
+def _w5_scene(brushes="", label="", count=""):
+    """The blank graph, plus brushes under the discs, plus one caption: a muted label and
+    its number in hot.  Everything but the brushes and the caption is the same in every frame."""
+    o = edges_tex(S.W5.edges, W5_POS) + brushes + discs_tex(W5_POS, W5_LAB)
+    if label:
+        o += F.text(380, W5_CAP_Y, label, color="muted", anchor="east")
+        o += F.text(394, W5_CAP_Y, count, color="hot", anchor="west")
+    return o
 
 
 def w5_blank():
-    F.emit("w5-blank", _w5_base(), container="col", h=W5_H)
+    F.emit("w5-blank", _w5_scene(), container="col", h=W5_H, box=W5_BOX)
 
 
 def w5_walks():
     d, sps, walks = _w5_facts()
-    assert ("u", "n2", "v") in sps and ("u", "n3", "v") in sps
     a, b = ("u", "n2", "v"), ("u", "n3", "v")
+    assert a in sps and b in sps
     assert a in walks[2] and b in walks[2] and len(walks[2]) == 2
     c, = walks[3]
     assert c == ("u", "n0", "n2", "v"), c
     n2, n3, n4 = len(walks[2]), len(walks[3]), len(walks[4])
-    red = lambda s: f"\\textcolor{{accenttwo}}{{{s}}}"
-    final = (f"walks of length 2, 3, 4: {red(f'{n2}, {n3}, {n4}')}")
     frames = [
-        _w5_base(route(a), f"shortest path: {d}"),
-        _w5_base(route(a), "length 2: first walk"),
-        _w5_base(route(b), "length 2: second walk"),
-        _w5_base(route(a) + route(b), f"length 2: {n2} walks"),
-        _w5_base(route(c), f"length 3: {n3} walk"),
-        _w5_base("", final),
+        _w5_scene(),                                                                       # = w5-blank
+        _w5_scene(route(W5_POS, a, "hot"), "shortest path:", str(d)),
+        _w5_scene(route(W5_POS, a) + route(W5_POS, b), "walks of length 2:", str(n2)),
+        _w5_scene(route(W5_POS, c), "walks of length 3:", str(n3)),
+        _w5_scene("", "walks of length 4:", str(n4)),
     ]
-    ms = [1500, 800, 800, 1300, 1400, 1500]
-    F.emit_gif("w5-walks", frames, container="col", h=W5_H, durations=ms, hold=3)
+    assert frames[0] == _w5_scene()
+    F.emit_frames("w5-walks", frames, container="col", h=W5_H, box=W5_BOX)
 
 
 # =========================================================================== BT (closeness, ecc, btw)
-BT_S = 76
-BT_POS = place(S.BT_XY, BT_S, 78, 118)
-BT_CAP_Y = 30
-BT_BOUNDS = (8, 66, F.COL_W - 8, 400)
-BT_H = 420
+BT_S = 80
+BT_POS = place(S.BT_XY, BT_S, 58, 118)
+BT_H = 400
+BT_BOX = (BT_H - 346, BT_H - 46)                     # one crop for the whole bowtie group
 F.assert_planar_drawing(list(S.BT.edges), BT_POS, "BT")
+BT_NODES = sorted(S.BT)
+# where each node's number sits: above (+1) or below (-1); one choice, so a number never hops
+BT_SIDE = {"A": 1, "B": -1, "C": 1, "D": -1, "E": 1, "F": 1, "G": -1}
+BT_GAP = 36
 
 
-def bt_scene(vals=None, colors=None, extra="", caption="", marks=(), chosen=None):
-    o = nodes_tex(BT_POS) + edges_tex(S.BT.edges) + extra
-    for n in marks:
-        o += F.mark(*BT_POS[n])
-    if vals:
-        o += values_tex(vals, BT_POS, chosen, colors)
-    if caption:
-        o += F.text(F.COL_W / 2, BT_CAP_Y, caption)
+def bt_value(n, s, color="ink"):
+    x, y = BT_POS[n]
+    return F.text(x, y + BT_SIDE[n] * BT_GAP, s, color=color)
+
+
+def bt_scene(vals=None, colors=None, brushes="", hot=(), under=None, fill=None):
+    """The bowtie with its edges, optional brushes under the discs, values beside the nodes.
+    `hot`: nodes whose disc is the answer; `under`: the node whose value is underlined."""
+    colors = colors or {}
+    o = edges_tex(S.BT.edges, BT_POS) + brushes
+    o += discs_tex(BT_POS, {n: n for n in BT_POS}, hot=hot, fill=fill)
+    for n, s in (vals or {}).items():
+        o += bt_value(n, s, colors.get(n, "ink"))
+    if under:
+        x, y = BT_POS[under]
+        yy = y + BT_SIDE[under] * BT_GAP - 18
+        o += F.underline(x - 22, x + 22, yy, color="hot")
     return o
 
 
-def closeness_def():
+def closeness_frames():
     G = S.BT
     sums = S.dsum(G)
     assert S.argbest(sums, min) == (["D"], 10) and sums["A"] == 15      # D smallest, A the example
+    assert [sums[n] for n in BT_NODES] == [15, 15, 11, 10, 11, 15, 15]
     L = S.dist(G, "A")
     assert sum(L.values()) == 15 and sorted(L.values()) == [0, 1, 1, 2, 3, 4, 4]
-    rings = {k: [n for n in sorted(L) if L[n] == k] for k in range(1, 5)}
-    assert rings == {1: ["B", "C"], 2: ["D"], 3: ["E"], 4: ["F", "G"]}
-    names = widest({n: str(x) for n, x in sums.items()}, {n: str(x) for n, x in L.items()})
-    ch = sides_for(names, BT_POS, S.BT.edges, BT_BOUNDS)
-    frames, shown = [], {}
-    frames.append(bt_scene(caption="distances from A", marks=["A"], chosen=ch))
-    for k in range(1, 5):
-        shown.update({n: str(k) for n in rings[k]})
-        frames.append(bt_scene(dict(shown), caption=("1 step" if k == 1 else f"{k} steps"),
-                               marks=["A"], chosen=ch))
-    terms = "+".join(str(L[n]) for n in sorted(L) if n != "A")
-    assert eval(terms) == 15
-    frames.append(bt_scene({**shown, "A": "15"}, colors={"A": RED}, marks=["A"], chosen=ch,
-                           caption=f"sum = {terms} = 15"))
-    allsum = {n: str(x) for n, x in sums.items()}
-    frames.append(bt_scene(allsum, colors={"D": RED}, marks=["D"], chosen=ch,
-                           caption=f"smallest sum: D, {sums['D']}"))
-    ms = [900, 800, 800, 800, 800, 1700, 1500]
-    F.emit_gif("closeness-def", frames, container="col", h=BT_H, durations=ms, hold=3)
+    frames = [bt_scene()]                                                # the bare bowtie
+    frames.append(bt_scene({n: str(k) for n, k in L.items() if n != "A"}, fill={"A": "cool"}))
+    shown = {}
+    for n in BT_NODES:
+        shown[n] = str(sums[n])
+        frames.append(bt_scene(dict(shown)))
+    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D"))
+    return frames, sums
+
+
+def closeness_def():
+    frames, _ = closeness_frames()
+    F.emit_frames("closeness-def", frames, container="col", h=BT_H, box=BT_BOX)
+    F.emit("bowtie-closeness", frames[-1], container="col", h=BT_H, box=BT_BOX)
 
 
 def ecc_def():
     G = S.BT
     ecc = S.eccentricity(G)
     assert S.argbest(ecc, min) == (["D"], 2)
-    names = {n: str(x) for n, x in ecc.items()}
-    ch = sides_for(names, BT_POS, S.BT.edges, BT_BOUNDS)
-    frames, shown = [], {}
-    for u in sorted(G):
+    assert [ecc[n] for n in BT_NODES] == [4, 4, 3, 2, 3, 4, 4]
+    closeness, sums = closeness_frames()
+    sumtxt = {n: str(sums[n]) for n in BT_NODES}
+    frames = [closeness[-1]]                                              # = bowtie-closeness
+    muted = {n: "muted" for n in BT_NODES}
+    frames.append(bt_scene(sumtxt, colors=muted))                         # the sums step back
+    shown = {}
+    for u in BT_NODES:
         L = S.dist(G, u)
-        far = min(n for n in sorted(L) if L[n] == ecc[u])         # the alphabetically first farthest
+        far = min(n for n in sorted(L) if L[n] == ecc[u])                 # the alphabetically first farthest
         path = tuple(nx.shortest_path(G, u, far))
         adjacent(G, path)
         assert len(path) - 1 == ecc[u] == L[far]
         shown[u] = str(ecc[u])
-        frames.append(bt_scene(dict(shown), colors={u: RED},
-                               extra=route(path, w=6.0),
-                               caption=f"{u}: farthest is {far}, {ecc[u]} steps", chosen=ch))
-    frames.append(bt_scene(names, colors={"D": RED}, marks=["D"], chosen=ch,
-                           caption=f"smallest eccentricity: D, {ecc['D']}"))
-    ms = [900] + [800] * 6 + [1700]
-    F.emit_gif("ecc-def", frames, container="col", h=BT_H, durations=ms, hold=3)
+        vals = {**{n: sumtxt[n] for n in BT_NODES if n not in shown}, **shown}
+        cols = {n: ("muted" if n not in shown else "ink") for n in BT_NODES}
+        frames.append(bt_scene(vals, colors=cols, brushes=route(BT_POS, path)))
+    frames.append(bt_scene(dict(shown), colors={"D": "hot"}, hot=["D"], under="D"))
+    F.emit_frames("ecc-def", frames, container="col", h=BT_H, box=BT_BOX)
 
 
 def btw_def():
@@ -303,8 +213,7 @@ def btw_def():
     btw = S.betweenness(G)
     assert S.argbest(btw) == (["D"], 9) and btw["C"] == btw["E"] == 8
     pairs = []
-    import itertools
-    for s, t in itertools.combinations(sorted(G), 2):
+    for s, t in itertools.combinations(BT_NODES, 2):
         ps = list(nx.all_shortest_paths(G, s, t))
         assert len(ps) == 1                                     # every shortest path is unique here
         if len(ps[0]) > 2:
@@ -314,112 +223,38 @@ def btw_def():
         for i in p[1:-1]:
             count[i] += 1
     assert {n: count[n] for n in G} == {n: int(btw[n]) for n in G}
-    assert len(pairs) == 13
-    names = {n: str(int(btw[n])) for n in G}
-    ch = sides_for(names, BT_POS, S.BT.edges, BT_BOUNDS)
-    frames, ms = [], []
-    frames.append(bt_scene(caption="a letter for every pair", chosen=ch))
-    ms.append(1100)
+    assert len(pairs) == 13 and count["D"] == 9
+    frames = [bt_scene()]                                       # the bare bowtie
     run = {n: 0 for n in G}
     for s, t, p in pairs:
-        inner = p[1:-1]
-        for i in inner:
+        for i in p[1:-1]:
             run[i] += 1
-        vals = {n: str(c) for n, c in run.items() if c}
-        frames.append(bt_scene(vals, colors={i: RED for i in inner},
-                               extra=route(p, w=6.0),
-                               caption=f"letter from {s} to {t}", chosen=ch))
-        ms.append(700)
+        frames.append(bt_scene({n: str(c) for n, c in run.items() if c}, brushes=route(BT_POS, p)))
     assert run == count
-    frames.append(bt_scene({n: str(c) for n, c in count.items()}, colors={"D": RED},
-                           marks=["D"], chosen=ch,
-                           caption=f"D carries the most: {count['D']}"))
-    ms.append(1700)
-    F.emit_gif("btw-def", frames, container="col", h=BT_H, durations=ms, hold=3)
-
-
-# =========================================================================== harmonic on CA_CUT
-CA_S, CA_SY = 66, 58          # horizontal, vertical bp per grid unit: flat enough that G's value
-CA_POS = place(S.CA_XY, CA_S, 34, 104, CA_SY)     # fits under G between the edges G-F and G-J
-CA_CAP_Y = 30
-CA_BOUNDS = (8, 56, F.COL_W - 8, 380)
-CA_H = 420
-F.assert_planar_drawing(list(S.CA.edges), CA_POS, "CA")
-
-
-def harmonic_def():
-    G = S.CA_CUT
-    h = S.harmonic(G)
-    assert S.argbest(h) == (["G"], S.Fr(9, 2)) and h["G"] == S.Fr(9, 2)
-    L = S.dist(G, "G")
-    one = [n for n in sorted(L) if L[n] == 1]
-    two = [n for n in sorted(L) if L[n] == 2]
-    other = [n for n in sorted(G) if n not in L]
-    assert one == ["F", "H", "I", "J"] and two == ["K"] and other == list("ABCDE")
-    assert 4 * S.Fr(1) + S.Fr(1, 2) == h["G"]
-    cut = ("E", "F")
-    assert not G.has_edge(*cut) and S.CA.has_edge(*cut)
-    edges = list(S.CA.edges)
-    final = {n: frac(x) for n, x in h.items()}
-    names = widest(final, {n: "1/1" for n in one})
-    # G's value goes directly below G (nudged left to clear the edge G-J), so it sits near G
-    # and not near F, which is 0.8 grid units away and carries its own value above it.
-    pref = {"A": ["N", "NE", "NW"], "B": ["NW", "W"], "C": ["SW", "W"], "D": ["S", "SE", "SW"],
-            "E": ["SE", "NE"], "F": ["NW", "N"], "G": ["SL", "S"], "H": ["E", "NE"], "I": ["E"],
-            "J": ["S", "SW"], "K": ["E", "S"]}
-    ch = sides_pref(names, CA_POS, [tuple(e) for e in edges], CA_BOUNDS, pref)
-
-    def centre(n):                       # where the value of n is drawn
-        anc, dx, dy = ch[n]
-        return CA_POS[n][0] + dx, CA_POS[n][1] + dy + (-14 if dy < 0 else 14 if dy > 0 else 0)
-    gx, gy = centre("G")
-    assert (math.hypot(gx - CA_POS["G"][0], gy - CA_POS["G"][1])
-            < 0.85 * math.hypot(gx - CA_POS["F"][0], gy - CA_POS["F"][1])), "G's value is not clearly nearer G than F"
-
-    def scene(vals=None, colors=None, caption="", marks=()):
-        o = nodes_tex(CA_POS) + edges_tex(edges, dashed=[cut]) + cross_out(CA_POS["E"], CA_POS["F"])
-        for n in marks:
-            o += F.mark(*CA_POS[n])
-        if vals:
-            o += values_tex(vals, CA_POS, ch, colors)
-        if caption:
-            o += F.text(F.COL_W / 2, CA_CAP_Y, caption)
-        return o
-
-    v1 = {n: "1/1" for n in one}
-    v2 = {**v1, "K": "1/2"}
-    v3 = {**v2, **{n: "0" for n in other}}
-    frames = [
-        scene(caption="the road E-F is closed", marks=["G"]),
-        scene(v1, caption="one step away: 1/1", marks=["G"]),
-        scene(v2, caption="two steps away: 1/2", marks=["G"]),
-        scene(v3, caption="no way there: 1/$\\infty$ = 0", marks=["G"]),
-        scene({**v3, "G": "9/2"}, colors={"G": RED}, marks=["G"],
-              caption="sum = 1+1+1+1+1/2 = 9/2"),
-        scene(final, colors={"G": RED}, marks=["G"], caption="highest: G, 9/2"),
-    ]
-    ms = [1100, 900, 900, 1100, 1700, 1700]
-    F.emit_gif("harmonic-def", frames, container="col", h=CA_H, durations=ms, hold=3)
+    allc = {n: str(c) for n, c in count.items()}
+    frames.append(bt_scene(allc))                               # the ends carry nothing: 0
+    frames.append(bt_scene(allc, colors={"D": "hot"}, hot=["D"], under="D"))
+    F.emit_frames("btw-def", frames, container="col", h=BT_H, box=BT_BOX)
 
 
 # =========================================================================== the grid
 GW, GH = F.FULL_W, 420
-GM = 14                           # outer margin
-LAB_W = 111                       # width of the widest row label ("shortest")
-GX0, GX1 = GM + LAB_W + 10, GW - GM
+GM = 6                            # outer margin
+GX0, GX1 = GM, GW - GM
 LINE = int(F.FONT * 1.15)
 PADY = 5
 ROW1_H = 3 * LINE + 2 * PADY      # name + two lines
-ROW2_H = 4 * LINE + 2 * PADY      # name + three lines
-ROW_GAP = 8
+ROW2_H = 4 * LINE + 2 * PADY      # name + up to three lines
 ROW2_Y0 = 22
 ROW2_Y1 = ROW2_Y0 + ROW2_H
-ROW1_Y0 = ROW2_Y1 + ROW_GAP
+CAP2_Y = ROW2_Y1 + 19             # the muted caption above each row ("walks", "shortest paths")
+ROW1_Y0 = CAP2_Y + 19
 ROW1_Y1 = ROW1_Y0 + ROW1_H
-HEAD_Y = ROW1_Y1 + 20                  # the two axis headers (grey, horizontal)
+CAP1_Y = ROW1_Y1 + 19
+HEAD_Y = CAP1_Y + 42                   # the two axis headers (muted), one line
 HEAD_ROUTES = "which routes count"
 HEAD_NUMBER = "how they become one number"
-GRID_PIN = (GM, ROW2_Y0 - 1, GW - GM, HEAD_Y + 14)
+GRID_BOX = (GH - (HEAD_Y + 22), GH - (ROW2_Y0 - 8))      # one crop for all four states
 
 # (metric, description lines); the description of every cell is the spec's text, only broken
 # into lines. Nothing is shortened.
@@ -428,20 +263,16 @@ ROW1 = [("closeness", ["sum of", "lengths"]),
         ("eccentricity", ["longest", "distance"]),
         ("betweenness", ["paths passing", "through"])]
 ROW2 = [("degree", ["walks of", "length 1"]),
-        ("Katz", ["all lengths,", "discounted"]),
+        ("Katz", ["all", "lengths,", "discounted"]),
         ("eigenvector", ["the longest", "walks"]),
         ("PageRank", ["walks that", "split the", "vote"]),
         ("HITS", ["walks that", "alternate", "direction"])]
 
 
 def _cells(row, y0, y1):
-    n = len(row)
-    pitch = (GX1 - GX0) / 5 if row is ROW2 else (GX1 - GX0) / 4
-    out = []
-    for i, (name, desc) in enumerate(row):
-        out.append(dict(name=name, desc=desc, x0=GX0 + i * pitch + 4, x1=GX0 + (i + 1) * pitch - 4,
-                        y0=y0, y1=y1))
-    return out
+    pitch = (GX1 - GX0) / (5 if row is ROW2 else 4)
+    return [dict(name=name, desc=desc, x0=GX0 + i * pitch + 3, x1=GX0 + (i + 1) * pitch - 3,
+                 y0=y0, y1=y1) for i, (name, desc) in enumerate(row)]
 
 
 CELLS1 = _cells(ROW1, ROW1_Y0, ROW1_Y1)
@@ -453,70 +284,78 @@ for _row in (CELLS1, CELLS2):
     assert _row[0]["x0"] >= GX0 and _row[-1]["x1"] <= GX1
     assert len({round(c["x1"] - c["x0"], 6) for c in _row}) == 1
 assert CELLS1[0]["x1"] - CELLS1[0]["x0"] > 200 and CELLS2[0]["x1"] - CELLS2[0]["x0"] > 170
-assert ROW1_Y1 + 12 <= F.FIG_H[""] - 12 + ROW2_Y0                     # whole picture fits a plain figure
+# every line of text fits inside its cell (Meslo is 0.6 em per character), with 2 bp to spare
+for _c in CELLS1 + CELLS2:
+    for _t in [_c["name"]] + _c["desc"]:
+        assert 0.6 * F.FONT * len(_t) + 4 <= _c["x1"] - _c["x0"], f"{_t!r} overflows its cell"
+assert GRID_BOX[1] - GRID_BOX[0] <= F.FIG_H["tall"]
+
+
+def _box(c, color):
+    """A hand-drawn cell."""
+    x0, y0, x1, y1 = c["x0"], c["y0"], c["x1"], c["y1"]
+    return (F._seed(x0, y0) + f"\\draw[line width=2.0bp,draw={color},pencil] "
+            f"({x0:.1f},{y0}) rectangle ({x1:.1f},{y1});\n")
+
+
+def _ghost(c):
+    """An empty slot of the table: a faint dashed box, so the empty table already shows its shape."""
+    return (F._seed(c["x0"], c["y0"], 7) + f"\\draw[line width=2.0bp,draw=pale,pencil] "
+            f"({c['x0']:.1f},{c['y0']}) rectangle ({c['x1']:.1f},{c['y1']});\n")
 
 
 def _cell_tex(c, new=False):
-    w = c["x1"] - c["x0"]
-    o = (f"\\draw[line width=1.6bp,draw={DIM},rounded corners=9bp] "
-         f"({c['x0']:.1f},{c['y0']}) rectangle ({c['x1']:.1f},{c['y1']});\n")
-    s = "\\textcolor{%s}{%s}\\\\ %s" % ("accenttwo" if new else "black", c["name"],
-                                          "\\\\ ".join(c["desc"]))
-    o += F.text((c["x0"] + c["x1"]) / 2, c["y1"] - PADY, s, anchor="north")
+    o = _box(c, "hot" if new else "ink")
+    name = ("\\textcolor{hot}{%s}" if new else "%s") % c["name"]
+    o += F.text((c["x0"] + c["x1"]) / 2, c["y1"] - PADY, "\\\\ ".join([name] + c["desc"]), anchor="north")
     return o
-
-
-def _rowlabel(text_lines, y0, y1):
-    return F.text(GM, (y0 + y1) / 2, "\\\\ ".join(text_lines), color=BLUE, anchor="west")
 
 
 def _grid(row1, row2, new=()):
     """row1, row2: how many cells of each row to draw (a prefix). `new`: names of the cells
-    that are new on this slide; their centrality name is accent-2, every other name black."""
-    o = pin(GRID_PIN)
-    o += F.text(GM, HEAD_Y, HEAD_ROUTES, color=DIM, anchor="west")
-    o += F.text((GX0 + GX1) / 2, HEAD_Y, HEAD_NUMBER, color=DIM)
-    o += _rowlabel(["shortest", "paths"], ROW1_Y0, ROW1_Y1)
-    o += _rowlabel(["walks"], ROW2_Y0, ROW2_Y1)
+    that are new on this slide (name and box in hot, every old cell in ink). The slots not
+    drawn yet are faint dashed boxes."""
+    o = F.text(GM, HEAD_Y, HEAD_ROUTES, color="muted", anchor="west")
+    o += F.text(GX1, HEAD_Y, HEAD_NUMBER, color="muted", anchor="east")
+    o += F.text(GX0, CAP1_Y, "shortest paths", color="muted", anchor="west")
+    o += F.text(GX0, CAP2_Y, "walks", color="muted", anchor="west")
+    for c in CELLS1[row1:] + CELLS2[row2:]:
+        o += _ghost(c)
     for c in CELLS1[:row1] + CELLS2[:row2]:
         o += _cell_tex(c, c["name"] in new)
     return o
 
 
-def _grid_fig(name, row1, row2, hmod, new=()):
-    F.emit(name, _grid(row1, row2, new), container="full", h=GH, hmod=hmod, nodes=False)
+def _grid_fig(name, row1, row2, new=()):
+    F.emit(name, _grid(row1, row2, new), container="full", h=GH, hmod="tall", nodes=False, box=GRID_BOX)
 
 
 def grid_empty():
-    _grid_fig("grid-empty", 0, 1, "")
+    _grid_same_picture()
+    _grid_fig("grid-empty", 0, 1)
 
 
 def grid_row1():
-    _grid_fig("grid-row1", 4, 1, "", new=[c[0] for c in ROW1])
+    _grid_fig("grid-row1", 4, 1, new=[c[0] for c in ROW1])
 
 
 def grid_row2():
-    _grid_fig("grid-row2", 4, 3, "", new=["Katz", "eigenvector"])
+    _grid_fig("grid-row2", 4, 3, new=["Katz", "eigenvector"])
 
 
 def grid_final():
-    # The 26 px disc floor leaves no room for an icon per cell: a 3-node icon adds >= 70 bp to a
-    # row, and the table is already 330 bp of the 400 bp a tall figure may have.
-    _grid_fig("grid-final", 4, 5, "tall")
+    _grid_fig("grid-final", 4, 5, new=["PageRank", "HITS"])
 
 
 def _grid_same_picture():
     """The four states are one picture: every cell that appears is drawn at the same place."""
-    plain = lambda t: t.replace("{accenttwo}", "{black}")          # colour aside, the same lines
-    big = plain(_grid(4, 5)).splitlines()
-    parts = (_grid(0, 1), _grid(4, 1, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"]))
-    for part in parts:
+    plain = lambda t: re.sub(r"\\textcolor\{hot\}\{(\w+)\}", r"\1", t).replace("draw=hot", "draw=ink")
+    big = set(plain(_grid(4, 5)).splitlines())
+    for part in (_grid(0, 1), _grid(4, 1, [c[0] for c in ROW1]), _grid(4, 3, ["Katz", "eigenvector"])):
         for line in plain(part).splitlines():
-            assert line in big, f"grid state differs from the final picture: {line[:60]}"
-    assert "accenttwo" not in _grid(4, 5)                              # the final table: all black
+            assert "pale" in line or line in big, f"grid state differs from the final picture: {line[:60]}"
+    assert "pale" not in _grid(4, 5)                                   # the final table has no empty slot
 
-
-_grid_same_picture()
 
 FIGURES = [
     ("w5-blank", w5_blank),
@@ -524,7 +363,6 @@ FIGURES = [
     ("closeness-def", closeness_def),
     ("ecc-def", ecc_def),
     ("btw-def", btw_def),
-    ("harmonic-def", harmonic_def),
     ("grid-empty", grid_empty),
     ("grid-row1", grid_row1),
     ("grid-row2", grid_row2),
