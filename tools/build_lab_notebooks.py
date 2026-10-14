@@ -296,10 +296,72 @@ M05 = [
     ),
 ]
 
+# ---------------------------------------------------------------------------
+# Module 6 -- the Big Cheese by machine, then Rome. Five blanks, all typed
+# from a block on the page: the club network read off the sheet's picture,
+# Question 4's count, Question 5's average distance, Question 6's pairs cut
+# off, and Question 7's game played forever. The worked copy fills them in
+# and says so in the title.
+# ---------------------------------------------------------------------------
+M06 = [
+    # The thirteen students, read off the picture on the sheet.
+    (
+        "    g_clubs = ...  # TASK",
+        """    g_clubs = igraph.Graph(
+        n=CLUB_N,
+        edges=[
+            (0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (3, 5), (3, 6), (4, 5),
+            (6, 7), (6, 8), (6, 9), (7, 8), (7, 9), (8, 9), (9, 10), (9, 11), (9, 12),
+        ],
+    )""",
+    ),
+    # Question 4, one line of igraph.
+    (
+        "    friends = ...  # TASK",
+        "    friends = g_clubs.degree()",
+    ),
+    # Question 5: the whole distance table, each row summed and shared out.
+    (
+        "    avg_distance = ...  # TASK",
+        """    distances = np.asarray(g_clubs.distances())
+    avg_distance = distances.sum(axis=1) / (g_clubs.vcount() - 1)""",
+    ),
+    # Question 6: delete a student, count the pairs that can no longer reach.
+    (
+        "    cut_off = ...  # TASK",
+        """    cut_off = []
+    for name in NAMES:
+        h = g_clubs.copy()
+        h.delete_vertices(NAMES.index(name))
+        sizes = [len(c) for c in h.components()]
+        cut_off.append(
+            sum(sizes[a] * sizes[b]
+                for a in range(len(sizes))
+                for b in range(a + 1, len(sizes)))
+        )""",
+    ),
+    # Question 7 forever: one round is one multiplication.
+    (
+        "    settled = ...  # TASK",
+        """    A = np.asarray(g_clubs.get_adjacency().data, dtype=float)
+    scores = np.ones(g_clubs.vcount())
+    for _ in range(100):
+        scores = A @ scores
+        scores = scores / scores.max()
+    settled = scores""",
+    ),
+    # Say on the page which copy this is.
+    (
+        "    # Lab · The Big Cheese, by machine\n",
+        "    # Lab · The Big Cheese, by machine — worked copy\n",
+    ),
+]
+
 MODULES = {
     "m01-euler_tour": M01,
     "m02-small-world": M02,
     "m05-clustering": M05,
+    "m06-centrality": M06,
 }
 
 

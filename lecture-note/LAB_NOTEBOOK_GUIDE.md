@@ -6,12 +6,14 @@ is `.claude/skills/pen-and-paper/SKILL.md`; this file is the notebook half of
 the same deliverable.
 
 A sheet's last part sends the student to a marimo notebook that runs, by
-machine, the thing they have just done in pencil. Three of them exist, under
+machine, the thing they have just done in pencil. Four of them exist, under
 `lecture-note/m01-euler_tour/pen-and-paper/`,
-`lecture-note/m02-small-world/pen-and-paper/` and
-`lecture-note/m05-clustering/pen-and-paper/` (the last is not tied to a sheet;
-see [the graph-tool lab](#a-lab-that-needs-graph-tool-m05)), and each directory
-holds:
+`lecture-note/m02-small-world/pen-and-paper/`,
+`lecture-note/m05-clustering/pen-and-paper/` and
+`lecture-note/m06-centrality/pen-and-paper/` (m05 is not tied to a sheet; see
+[the graph-tool lab](#a-lab-that-needs-graph-tool-m05); m06 runs the Big
+Cheese sheet's four questions on its club network and then asks the same four
+of the empire), and each directory holds:
 
 - `lab.py` — the student's copy
 - `lecture-hall.css` — the look, copied verbatim from the mini-project's
