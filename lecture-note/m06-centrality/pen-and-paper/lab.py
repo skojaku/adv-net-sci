@@ -76,15 +76,6 @@ with app.setup(hide_code=True):
     SANS = "system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
     WOBBLE = "7px 4px 8px 5px / 5px 8px 4px 7px"
 
-    # The pen: one wobbly filter, named so several drawings can share it.
-    _PEN = (
-        '<defs><filter id="lh-pen" x="-15%" y="-15%" width="130%" height="130%">'
-        '<feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" '
-        'seed="7" result="n"/>'
-        '<feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" '
-        'xChannelSelector="R" yChannelSelector="G"/></filter></defs>'
-    )
-
     # ---- words and boxes ------------------------------------------------------
 
     def note(text, tone=BLUE):
@@ -255,14 +246,19 @@ with app.setup(hide_code=True):
     }
 
     # ---- drawing --------------------------------------------------------------
+    # No SVG filters here. A hand-drawn wobble (feTurbulence + feDisplacementMap)
+    # drew fine locally, but on molab the filter definition is stripped from the
+    # output while `filter="url(#...)"` stays, and an SVG element that points at
+    # a missing filter is not drawn at all: the nodes' numbers showed and every
+    # circle and line vanished.
 
     def _svg(width, height, body):
         return (
             f'<svg viewBox="0 0 {width} {height}" width="100%" '
             f'style="max-width:{width}px;display:block" '
-            f'xmlns="http://www.w3.org/2000/svg">{_PEN}'
+            f'xmlns="http://www.w3.org/2000/svg">'
             f'<rect x="0" y="0" width="{width}" height="{height}" fill="{PAPER}"/>'
-            f'<g filter="url(#lh-pen)">{body}</g></svg>'
+            f'{body}</svg>'
         )
 
     def _edge_lines(edges, pos, width=2.0, opacity=0.4):
@@ -292,7 +288,6 @@ with app.setup(hide_code=True):
                 f'<circle cx="{x}" cy="{y}" r="{r[i]:.1f}" fill="{fill}" '
                 f'stroke="{INK}" stroke-width="2.2"/>'
             )
-        body.append("</g>")
         for i in range(NET_N):
             x, y = _NET_POS[i]
             label = PAPER if i in hot else INK
