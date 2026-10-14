@@ -341,6 +341,11 @@ Two things that make an animation teach rather than decorate:
   geometry between an animation and its still is how the two drift; compute both from the
   one source and check.
 
+A third kind, **magic move**, is not a build inside one slide but a change between two:
+the same object, given the same `view-transition-name` on both slides, slides, resizes or
+recolours. It only plays in Chrome HTML output, needs HTML boxes rather than SVG shapes, and
+is not for decks that export to PDF. Procedure and the pitfalls: `MAGIC_MOVE.md`.
+
 ## A figcaption says what nothing else on the slide says — and survives the figure changing
 
 Two failure modes, and the second one is the interesting one.
