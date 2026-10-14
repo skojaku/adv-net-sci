@@ -316,7 +316,7 @@ CA_SLOTS = {"E": ("south", 0, 46), "F": ("north", 0, -28), "G": ("south", 0, 46)
 VSIDES = [(a, 0, d) for r in (28, 32, 38, 46, 56, 64, 72, 80) for a, d in (("south", r), ("north", -r))]
 
 
-def _arrow(box, target, gap):
+def _callout_ends(box, target, gap):
     """Start and end of figlib.callout's arrow, so that a placement can be checked first."""
     cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
     dx, dy = target[0] - cx, target[1] - cy
@@ -374,7 +374,7 @@ def place_callouts(steps, bodies, pos, edges, slots, specs_of, box0, blockers=()
                         if any(F.boxes_overlap((b[0] - 4, b[1] - 4, b[2] + 4, b[3] + 4), o)
                                for o in list(boxes.values()) + list(blockers)):
                             continue
-                        p0, p1 = _arrow(b, target, gap)
+                        p0, p1 = _callout_ends(b, target, gap)
                         length = float(np.hypot(p1[0] - p0[0], p1[1] - p0[1]))
                         if length < 24 or length > max_arrow:
                             continue

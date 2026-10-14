@@ -1,118 +1,130 @@
-# m06 deck spec, v3 (2026-10-13)
+# m06 deck spec, v4 (2026-10-14)
 
-> **Round 4 (2026-10-13):** every build below is now a run of slides (bullets first, then one
-> slide per step with a grey callout saying what changed; see `FIXES_R4.md`). The Roman
-> map-to-network and the eigendecomposition sum are static. The deck has 122 slides: day 1 is
-> 1–62, day 2 is 63–122. The slide numbers in the table are the v3 numbers (before the split).
->
-> **Round 5 (2026-10-13):** 130 slides, day 1 is 1–61, day 2 is 62–130. "A question to sleep
-> on" is gone. Degree sits in both rows of the grid. The sigma example is a hexagon (two
-> disjoint routes, C carries 1/2). eigen-inherit ends on a second worked case at C. The
-> matrix figures have three terms with eigenvectors coloured by index, and A² is a product of
-> two bracketed sums (4 steps). Power iteration's stage plots one line per node, followed by
-> "Start anywhere" (power-starts, 2 steps). The PageRank answer is a 5-step flow build
-> (amounts, not shares), and every formula reads A_ij = i → j. katz-why has an α gauge and
-> the plot of 1/(1 − αx) (4 steps).
+v4 brings the v3 deck (R5, 130 slides) to the slide skill as updated on 2026-10-14
+(HOUSE_STYLE sections 8 to 10, read from the lecturer's CompleNet 2026 talk). The figures,
+the numbers, the questions and the speaker notes are v3's; what changed is how each slide is
+laid out and how much text it carries.
 
-v2 (72 slides) was reviewed by the lecturer. v3 answers that review:
+- **Theme:** `theme: house` (`theme.css` = the skill's `house/theme-house.css` + an m06
+  appendix). Titles in Meslo bold, centred; Libre Baskerville only for the Aesop quotation.
+- **Layouts:** every slide takes one (section 8). The v3 base layout (bullets left, figure
+  right) is kept only where two or three terms are defined beside one figure.
+- **Text:** the title is the message. One line under it (`.sub`: the formula, or a question's
+  rule) and one at the bottom (`.take`: the answer, the result); no bullets elsewhere. What
+  the bullets said and the slide no longer shows went into the speaker notes.
+- **Breadcrumbs** name the measure of each run (`header:`), and "New York State highways" on
+  each map.
+- **Part openers** are each part's question, with the measures it covers under it.
+- **The last slide** returns to the opening picture (Rome) as a question; the Module 6 lab
+  answers it, so the slide does not.
+- **The figure does not move** through a question and its answer, or a build: the appendix of
+  `theme.css` gives the figure a box of fixed height in L-a and L-b. Checked by measuring every
+  `<img>` box in headless Chrome: 0 changes between consecutive slides on one canvas.
 
-1. **Small differences between consecutive slides.** The cost of new information grows like
-   n² in its amount n, so information arrives in small steps. Consecutive slides keep the same
-   drawing at the same place and add one thing (a value, a mark, a bullet).
-2. **One layout, almost everywhere:** the figure fixed in the right half (`cols`, 537 px),
-   minimal bullets in the left half, revealed one by one (`*` fragments). Exceptions (full
-   width): the classification grid, the seven eigenvectors, the eigendecomposition row, the
-   two live stages, the genealogy.
-3. **A two-graph question becomes two one-graph questions:** Q1 → A1 → Q2 → A2. Q and A share
-   the title, the left text (A adds one line) and the crop (A = Q + marks and values).
-4. **Figures over text, and little text.** No fact that the lecture does not use (the Temple of
-   Saturn, the lost inscription, Caesar as curator).
-5. **No autoplay.** Every build is a set of frames the lecturer steps with a slider, ◀ ▶, or
-   the clicker (`scrub.js`). The PNG/PDF export shows the last frame.
-6. **The lecturer's figure style** (his reference figures): hand-drawn nodes with a dark pencil
-   outline, grain, brush strokes for routes and underlines, MesloLGS NF for every label, muted
-   colours with saturation only on what matters, no pure black. See `figures/figlib.py`.
+131 slides. Day 1 (10/20): 1-61, shortest paths. Day 2 (10/22): 62-131, walks. About a third
+are build steps.
 
-Day 1 (10/20): slides 1–41. Day 2 (10/22): slides 42–82.
+## The spine (the part openers and the questions that carry the story)
 
-Markup for the right half: `<div class="cols"><div>` bullets `</div><div class="fig">` image
-`</div></div>`. A build: `<div class="fig scrub">` with the still `figures/<name>.png`; the
-script finds `figures/frames/<name>/NN.png`.
+1. All Roads Lead to Rome … do they? (title)
+2. Which city is the most important? (on the Roman network)
+3. Two choices make a centrality. (the empty grid)
+4. Part One: Who is close to everyone?
+5. Part Two: Which node can the traffic not avoid?
+6. Part Three: Do your neighbours make you important?
+7. Part Four: What if every node gets a baseline?
+8. Part Five: What if a link runs one way?
+9. Two choices, every centrality. (the full grid)
+10. Do all roads lead to Rome? (the opening picture, back)
 
-## Slides
+## The arc of each part (lecture shape: HOUSE_STYLE section 1)
 
-| # | title | left | right | what changes |
+Each measure: the definition (a build on a small graph, formula in the `.sub`) → one or two
+one-graph questions (Q, then A = Q + the answer as `.take`) → the same measure on the New
+York map. Each day closes on its row of the grid.
+
+## Motifs (one picture per concept, back each time the concept is; rendered slide numbers)
+
+| concept | picture | where it returns |
+|---|---|---|
+| the module's question | the Roman network (`roma-*`) | 3-5, 131 |
+| the real network | the New York map (one canvas, `figs_ny`) | 6, 7, 38, 48, 60, 95, 128 |
+| the two choices | the grid (`grid-*`) | 14, 61, 112, 129 |
+| shortest paths | the bowtie (closeness, eccentricity, betweenness builds) | 16-21, 39-43, 50-54 |
+| a closed road | the CA graph with the hot × | 24-35 |
+| eigenvectors | circle = eigenvalue, bar = eigenvector, coloured by index | 76-85, 104-107 |
+| hot / cool | hot: the winner and the point; cool: high values, Authority | throughout |
+
+## Slides (logical slides, 83; a build is one row, so these numbers are not the rendered ones)
+
+| # | beat | layout | title | text |
 |---|---|---|---|---|
-| 1 | All Roads Lead to Rome | lead | | |
-| 2 | The Golden Milestone | * 20 BC: Augustus, Caesar's heir, set it up in Rome. * Every road of Italy ended at it. * Distances were counted in miles from Rome. | photos (Caesar, Augustus, milestone) | |
-| 3 | Twelve cities of the empire | - Roads and sea lanes joined them. | roma-basemap | new figure |
-| 4 | Keep the links, drop the map | * Node: a city. Edge: a road or a sea lane. * Which city is the most important? | scrub roma-to-graph (frame 0 = slide 3) | the map goes, the links come |
-| 5 | Degree centrality | * **Degree**: the number of roads at a city. * $d_i=\sum_j A_{ij}$ … * Roma: 5, the most. * It sees only the neighbours. | roma-degree | shading added |
-| 6 | New York State highways | * 289 interchanges, 433 road segments. * Which of the eight cities do the most cross-state trips pass through? | ny-overview | new figure |
-| 7 | New York: degree | - Degree 3: 201 interchanges. Degree 4: 57. - Degree cannot tell them apart. | ny-degree | same map, dots shaded |
-| 8 | How far is u from v? | - The network from Module 01. | w5-blank | new figure |
-| 9 | Two ways to count | * Shortest path … * Walk … | scrub w5-walks (frame 0 = slide 8) | path, then walks |
-| 10 | Two choices make a centrality | (none) | grid-empty (full) | |
-| 11 | Part One | | | |
-| 12 | Closeness centrality | 4 fragments, formula third, "$N-1$: a star's centre scores exactly 1." | scrub closeness-def (bowtie) | |
-| 13–16 | Which node is closest to everything? | Q: - Smallest sum of distances wins. / A adds one line | q-close-CB, -ans, q-close-CA, -ans | |
-| 17–18 | What if one road closes? | Q / A adds "every closeness is 0" | cut-blank, cut-closeness | CA group |
-| 19 | Take the reciprocal first | 3 fragments (harmonic, formula, 1/∞) | scrub harmonic-def (frame 0 = cut-blank) | CA group |
-| 20–23 | Which node has the highest harmonic centrality? | Q/A ×2 | q-close-CA (reused), q-harm-CA-ans, q-harm-HD, -ans | CA group, then HD |
-| 24 | New York: closeness | 3 fragments | ny-closeness | |
-| 25 | Would you site a fire station on the average? | - Closeness picks D: the smallest sum. | bowtie-closeness | bowtie group |
-| 26 | Eccentricity | 3 fragments | scrub ecc-def (frame 0 = slide 25) | bowtie group |
-| 27–30 | Which node has the smallest eccentricity? | Q/A ×2 | q-ecc-EA, -ans, q-ecc-EB, -ans | |
-| 31 | New York: eccentricity | 2 fragments | ny-eccentricity | |
-| 32 | Part Two | | | |
-| 33 | Trace a letter | 2 fragments | scrub btw-def (bowtie) | bowtie group |
-| 34 | Betweenness centrality | 3 fragments | sigma-answer (col) | |
-| 35–38 | Which node carries the most? | Q/A ×2 | q-btw-DB, -ans, q-btw-SQ, -ans | |
-| 39 | New York: betweenness | 3 fragments | ny-betweenness | |
-| 40 | The shortest-path row | | grid-row1 (full) | grid group |
-| 41 | A question to sleep on | mid | | |
-| 42 | Part Three | | | |
-| 43 | Aesop | quote | aesop.jpg | |
-| 44 | Importance you inherit | 2 fragments | scrub eigen-inherit | EIG group |
-| 45 | It is an eigenvector equation | 2 fragments | eigen-equation (col) | |
-| 46–47 | Seven eigenvectors. Which one? | one line above (same length on both) | eig-all-q, eig-all (full) | highlight added |
-| 48 | Eigenvector centrality | 1 fragment | eig-pf | EIG group |
-| 49–52 | Which lettered node scores higher? | Q/A ×2 | q-eig-L, -ans, q-eig-R, -ans | |
-| 53–56 | Eigendecomposition / orthogonal / Square it / Keep multiplying | one line above each | decomp-sum, decomp-orth, decomp-square, decomp-power (full; builds are scrubs) | |
-| 57 | Power iteration | stage | power-step | |
-| 58 | Where does eigenvector centrality break? | 2 lines + cue | ring-4444 | ring group |
-| 59 | Localization | 2 fragments | scrub ring-local (frame 0 = ring-4444) | ring group |
-| 60 | New York: eigenvector | 2 fragments | ny-eigenvector | |
-| 61 | Part Four | | | |
-| 62 | Give everybody a baseline | 3 fragments | katz-floor | |
-| 63 | What is that inverse? | 2 lines + cue | katz-floor (same) | text only |
-| 64 | The same series for matrices | 3 fragments | scrub walks-discount | |
-| 65 | Turn the dial | stage | katz-dial | |
-| 66 | Why 1/λmax? | formula above | scrub katz-why (full) | |
-| 67–70 | Which lettered node scores higher now? | Q/A ×2 | q-eig-L, q-katz-L-ans, q-eig-R, q-katz-R-ans | |
-| 71 | The walk row | | grid-row2 (full) | grid group |
-| 72 | Part Five | | | |
-| 73 | Hubs and authorities | 3 fragments (the last: on a road map, eigenvector centrality) | hits-graph | |
-| 74 | The same idea, six times | | genealogy (full) | |
-| 75–76 | Divide the vote | Q (3 fragments) / A (2 lines) | pr-split, pr-split-answer | PR group |
-| 77 | A dead end | 2 fragments | scrub pr-leak | PR group |
-| 78 | Teleportation | 4 fragments | pr-teleport | PR group |
-| 79 | Personalized PageRank | 2 fragments | ppr | PR group |
-| 80 | New York: five measures, five places | 2 lines | ny-five | |
-| 81 | Two choices, every centrality | | grid-final (full) | grid group |
-| 82 | Quiz | mid | | |
-
-Dropped from v2: "Why N − 1?" (now a bullet; star-closeness is no longer built), the "fire
-station" text-only slide (now on the bowtie), "On a road map, HITS is eigenvector centrality"
-(now a bullet; eig-centrality is no longer built).
+| 1 | title | lead | All Roads Lead to Rome | … do they? |
+| 2 | hook | E | The Golden Milestone | three sentences beside three photographs |
+| 3 | hook | A | Twelve cities of the empire | sub: roads and sea lanes |
+| 4 | question | A | Which city is the most important? | sub: node, edge; cue |
+| 5 | first answer | A | Degree: the roads at a city | sub $d_i$; take: only the neighbours |
+| 6 | question held | B | Which city do most trips pass through? | cue: hold it until the end of today |
+| 7 | evidence | B | Degree cannot tell interchanges apart | take: 201 / 57 |
+| 8 | question | left | How far is u from v? | cue |
+| 9 | two terms (build, 4) | left | Two ways to count | shortest path, walk |
+| 10 | thesis | B | Two choices make a centrality | |
+| 11 | part | part | Who is close to everyone? | |
+| 12 | definition (build, 5) | A | Closeness: invert the sum of distances | sub: formula |
+| 13-16 | Q A Q A | A | Which node is closest to everything? | sub: the rule; take: the winner |
+| 17-18 | Q A (mystery) | A | What if one road closes? | take: every closeness is 0 |
+| 19 | definition (build, 5) | A | Harmonic centrality adds 1/distance | sub: formula; take: $1/\infty = 0$ |
+| 20-23 | Q A Q A | A | Who has the highest harmonic centrality? | |
+| 24 | result | B | Closeness picks a spot near NYC | take: 31% within 60 km |
+| 25 | question (turn) | A | A fire station at the best average? | sub: D, 0.60 |
+| 26 | definition (build, 3) | A | Eccentricity: the farthest distance | sub: formula |
+| 27-30 | Q A Q A | A | Smallest eccentricity: which node? | |
+| 31 | result | B | Smallest worst case: near Binghamton | take: 473 km |
+| 32 | part | part | Which node can the traffic not avoid? | |
+| 33 | mechanism (build, 4) | A | Count the letters each node carries | sub: one letter per pair |
+| 34 | three symbols | left | Betweenness: a tie splits the pair | formula, sigma_st, sigma_st(i) |
+| 35-38 | Q A Q A | A | Which node carries the most? | |
+| 39 | answer to slide 6 | B | Which city do most trips pass through? | take: Binghamton |
+| 40 | close of day 1 | B | The shortest-path row | |
+| 41 | part | part | Do your neighbours make you important? | |
+| 42 | pivot | Q | (Aesop) | the company he keeps |
+| 43 | mechanism (build, 3) | A | Importance you inherit | sub: formula |
+| 44 | definition | A | It is an eigenvector equation | sub: $Ac = \lambda c$ |
+| 45-46 | Q A | A | Which eigenvector is the centrality? | take: all positive |
+| 47 | definition | A | This is eigenvector centrality | |
+| 48-51 | Q A Q A | A | Which lettered node scores higher? | |
+| 52-55 | derivation (two builds) | A | A is a sum of rank-1 pieces / orthogonal / Square it / Keep multiplying | sub: one line each |
+| 56 | demo | stage | Multiply by A, again and again | live stage |
+| 57 | test (build, 1) | B | Start anywhere: the same scores | take: flip the sign |
+| 58 | question (mystery) | A | Where does eigenvector centrality break? | |
+| 59 | answer (build, 4) | A | Localization: one clique takes it | |
+| 60 | result | B | 96% of the score lies near NYC | take: 31% of the nodes |
+| 61 | part | part | What if every node gets a baseline? | |
+| 62-63 | definition, question | A | Katz: a baseline plus the neighbours / What is that inverse? | |
+| 64 | answer (build, 3) | A | The same series for matrices | take: walks, discounted |
+| 65 | demo | stage | Turn the dial | live stage |
+| 66 | derivation (build, 3) | A | Why does α stop at 1/λmax? | sub: the spectral sum |
+| 67-70 | Q A Q A | A | Which lettered node scores higher now? | |
+| 71 | close of the walks | B | The walk row | |
+| 72 | part | part | What if a link runs one way? | |
+| 73 | two terms | left | Hubs and authorities | |
+| 74 | history | A | The same idea, six times | |
+| 75-76 | Q, A (build, 4) | A | Which ranks higher, C or E? | take: they tie at 3/11 |
+| 77 | mystery (build, 3) | A | A dead end: the total goes to 0 | |
+| 78 | answer | A | Teleportation gives PageRank | take: formula |
+| 79 | variant | A | Personalized PageRank | |
+| 80 | result | B | Five measures, five different winners | |
+| 81 | summary | B | Two choices, every centrality | |
+| 82 | homework | F | Draw a network where four measures disagree | |
+| 83 | the end | A | Do all roads lead to Rome? | take: rank the twelve cities |
 
 ## Figure groups (one drawing, one crop)
 
 A group's figures use the same canvas, the same node coordinates and the same crop
 (`figlib.emit_group`, or `box=` for figures built in different functions). A build's frame 0
-is pixel-identical to the slide before it.
+is pixel-identical to the slide before it, and consecutive slides of one group share a layout.
 
-- **Rome** (figs_intro, figs_rome, romelib): roma-basemap → roma-to-graph frames → roma-degree.
+- **Rome** (figs_intro, figs_rome, romelib): roma-basemap → roma-to-graph → roma-degree.
 - **NY** (figs_ny): every ny-* map, one canvas and one crop.
 - **W5** (figs_defs): w5-blank → w5-walks frames.
 - **Bowtie** (figs_defs): closeness-def frames, bowtie-closeness (= its last frame), ecc-def
@@ -125,4 +137,6 @@ is pixel-identical to the slide before it.
 - **Eigen panels** (figs_eigen): eig-all-q, eig-all.
 - **Ring** (figs_eigen): ring-4444, ring-local frames.
 - **Grid** (figs_defs): grid-empty, grid-row1, grid-row2, grid-final.
-- **PR** (figs_dir): pr-split, pr-split-answer, pr-leak frames, pr-teleport, ppr.
+- **PR** (figs_dir): pr-split, pr-split-answer frames, pr-leak frames, pr-teleport, ppr.
+
+The v3 slide table and its round notes are in git history (this file before 2026-10-14).

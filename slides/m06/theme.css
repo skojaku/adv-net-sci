@@ -1,8 +1,14 @@
-/* @theme network-science */
+/* @theme house */
 
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap');
 
-/* 1280x720 (16:9). All sizes are the 1920px design values / 1.5 */
+/* Excalifont is the handwriting of the lecturer's asides (CompleNet 2026). It is not on
+   Google Fonts: install it (excalidraw.com's font) or the asides fall back to Caveat. */
+@font-face { font-family: 'Excalifont'; src: local('Excalifont'), local('Excalifont-Regular'); }
+
+/* 1280x720 (16:9). All sizes are the 1920px design values / 1.5
+   2026-10-14: type set as in the lecturer's CompleNet 2026 deck: titles in Meslo bold,
+   centred and large; Libre Baskerville only for quotations; asides in Excalifont. */
 
 section {
   width: 1280px;
@@ -24,25 +30,139 @@ section {
 
 /* ---------- headings ---------- */
 
+/* The title is the message: Meslo bold, centred, 44px (one line holds about 40
+   characters). No rule, no box, no colour around it; one keyword inside it may be
+   coloured (.hot / .cool) or set in italics. `left` on the slide aligns it with a list. */
 section h2 {
   margin: 0;
-  font-size: 40px;
+  font-size: 44px;
   font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
   color: #30323D;
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  text-align: center;
+  text-wrap: balance;
   flex: none;
 }
+section.left h2 { text-align: left; }
 
-/* the rule under every content title — use <hr> on the same slide, not --- */
+/* older decks put <hr> under every title; it is now an invisible spacer, so the
+   titles still line up and old markup renders unchanged */
 section h2 + hr {
   border: 0;
-  height: 2px;
-  background: #dddddd;
-  margin: 18px 0 22px;
+  height: 0;
+  background: none;
+  margin: 0 0 22px;
   flex: none;
   width: 100%;
+}
+
+/* the line under the title: context, a question, or the method in one line */
+section .sub {
+  font-size: 32px;
+  line-height: 1.35;
+  text-align: center;
+  margin: 6px auto 18px;
+  max-width: 1080px;
+}
+section .sub.muted { color: #8C847F; font-style: italic; font-size: 28px; }
+
+/* the line under the figure: the conclusion, in bold, one keyword coloured */
+section .take {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  margin: auto auto 0;
+  padding-top: 14px;
+  max-width: 1080px;
+}
+/* the failure that ends a mystery, on a dark band across the bottom of the slide */
+section .take.dark {
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: none; margin: 0;
+  padding: 22px 80px 26px; background: #1F2028; color: #ffffff;
+  font-size: 30px; font-weight: 400;
+}
+
+/* colour a word without making it a defined term (no brush underline). No gold: on white it
+   has 2:1 contrast, so it is for routes and fills only (FIGURE_GUIDE, accent-3). */
+section .hot { color: #D9631E; }
+section .cool { color: #1E96DC; }
+section .muted { color: #8C847F; }
+section .teal { color: #3F8A88; }
+section .olive { color: #9B9922; }
+
+/* ---------- the breadcrumb: `<!-- header: Results -->` ----------
+   A short line from the left edge, a dot, and the topic or source the run of slides
+   is about (CompleNet: "Results", "DeepWalk (Perozzi et al. 2014)"). Marp repeats a
+   header on every following slide until `<!-- header: "" -->`. */
+section > header {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding-left: 208px;
+  font-size: 24px;
+  color: #8C847F;
+  white-space: nowrap;
+}
+section > header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 186px;
+  height: 2px;
+  background: #B9B2AD;
+}
+section > header::after {
+  content: "";
+  position: absolute;
+  left: 184px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #8C847F;
+}
+section:has(> header) { padding-top: 66px; }
+section.lead > header, section.L-d > header { display: none; }
+
+/* ---------- small fixed pieces ---------- */
+
+/* a reference to someone else's work: bottom left, small, muted */
+section .ref {
+  position: absolute; left: 40px; bottom: 16px; max-width: 980px;
+  font-size: 15px; line-height: 1.3; color: #8C847F;
+}
+/* one's own paper behind the slide: "Kojaku et al. / Nat. Comm. 2023" (+ the venue's logo) */
+section .paper {
+  position: absolute; left: 40px; bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 20px; line-height: 1.2; color: #30323D;
+}
+section .paper.top { top: 22px; bottom: auto; }
+section .paper img { height: 36px; width: auto; }
+/* a small picture of the subject, top right, when the talk returns to it */
+section .thumb {
+  position: absolute; top: 22px; right: 40px; height: 112px; width: auto;
+  box-shadow: 0 3px 10px rgba(48, 50, 61, 0.25);
+}
+section .thumb img { height: 112px; width: auto; }
+/* what the last step showed, kept in place but faded, so the new part reads first */
+section .past { opacity: 0.3; }
+/* a handwritten aside in the page (in a figure, use figlib.aside) */
+section .aside {
+  font-family: 'Excalifont', 'Virgil 3 YOFF', 'Caveat', cursive;
+  font-size: 32px; line-height: 1.2; color: #8C847F;
+}
+/* photographs and screenshots on white carry a soft shadow; drawings do not */
+section .fig.photo img, section .shot img, section img.shot {
+  box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28);
 }
 
 section h3 {
@@ -52,30 +172,27 @@ section h3 {
   color: #1E96DC;
 }
 
-/* ---------- title slide ---------- */
+/* ---------- title slide ----------
+   CompleNet 2026: the title in Meslo bold on the left, then venue, date and name in
+   regular weight, logos bottom left, a QR code to the slides bottom right. */
 
 section.lead {
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  text-align: center;
-  gap: 34px;
+  text-align: left;
+  gap: 22px;
 }
 section.lead h1 {
   margin: 0;
-  font-size: 90px;
-  font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.01em;
   color: #30323D;
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  max-width: 900px;
 }
-section.lead hr {
-  border: 0;
-  width: 290px;
-  height: 14px;
-  background: url('figures/brush-hot.png') center / 100% 100% no-repeat;
-  margin: 0;
-}
+section.lead hr { display: none; }
 section.lead .eyebrow {
   font-size: 21px;
   letter-spacing: 0.26em;
@@ -83,55 +200,64 @@ section.lead .eyebrow {
   color: #8C847F;
 }
 section.lead .sub {
-  font-size: 33px;
-  line-height: 1.4;
+  font-size: 30px;
+  line-height: 1.35;
   color: #30323D;
+  text-align: left;
+  margin: 0;
   max-width: 870px;
 }
 section.lead .credit {
   font-size: 23px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   color: #8C847F;
 }
+section.lead .logos { position: absolute; left: 80px; bottom: 44px; display: flex; gap: 24px; align-items: center; }
+section.lead .logos img { height: 70px; width: auto; }
+section.lead .qr { position: absolute; right: 80px; bottom: 44px; height: 130px; width: auto; }
 
-/* ---------- part dividers ---------- */
+/* ---------- part openers ----------
+   CompleNet 2026 opens each part with the paper it is about: the title in bold,
+   centred; the authors in one small line; their faces in a row. Without a
+   paper, the part's question as the title and one line under it. The band of older
+   decks is now a muted line at the top (same markup: <div class="band">). */
 
 section.part {
-  padding: 0;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 section.part .band {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: #30323D;
-  color: #ffffff;
-  padding: 36px 80px;
+  top: 26px;
+  left: 80px;
+  right: 80px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  color: #8C847F;
 }
-section.part .band .count { opacity: 0.72; letter-spacing: 0.1em; }
+section.part .band .count { letter-spacing: 0.1em; }
 section.part h2 {
-  margin: 0 80px;
-  font-size: 67px;
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  max-width: 1000px;
-  font-family: 'Libre Baskerville', Georgia, serif;
+  margin: 0 auto;
+  font-size: 48px;
+  line-height: 1.22;
+  max-width: 1040px;
 }
 section.part p {
-  margin: 32px 80px 0;
-  font-size: 31px;
+  margin: 22px auto 0;
+  font-size: 26px;
   line-height: 1.4;
   color: #30323D;
-  max-width: 900px;
+  max-width: 1000px;
 }
+section.part .faces { display: flex; justify-content: center; gap: 18px; margin-top: 28px; }
+section.part .faces figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+section.part .faces img { height: 120px; width: auto; }
+section.part .faces figcaption { font-size: 15px; color: #8C847F; }
 
 /* Shallow slides: centre the BODY in the space under the rule, and leave the
    title where it always is. Centring the whole section pushed the title down
@@ -171,13 +297,15 @@ section ul, section ol {
 }
 section ul:last-child, section ol:last-child { margin-bottom: 0; }
 section li { line-height: 1.42; }
-section li::marker { color: #8C847F; }
+section ul > li::marker { content: "> "; color: #1E96DC; font-weight: 700; }
+section ol > li::marker { color: #1E96DC; }
+section li:has(> ul) { font-weight: 700; }
+section li ul { margin: 8px 0 0; gap: 6px; font-size: 26px; font-weight: 400; }
 
-/* Key terms. The deck already bolds exactly the terms worth colouring, so
-   `strong` carries the highlight. Blue is structural (rules, part bands, list
-   markers), gold is auxiliary, so the accent that reads as emphasis is the red. */
-/* v3: a key term is orange with the lecturer's brush underline (figures/brush-hot.png,
-   built by figs_ui.py), as in his "query vector" figure. */
+/* Key terms: `strong` is a term where it is defined, hot (orange) with the lecturer's brush
+   underline (figures/brush-hot.png, built by figs_ui.py), as in his "query vector" figure.
+   Sky blue is structural (list chevrons) and the second emphasis; a coloured word that is not
+   a definition is a .hot / .cool span, without the underline. */
 strong {
   font-weight: 700; color: #D9631E;
   background: url('figures/brush-hot.png') left bottom / 100% 0.28em no-repeat;
@@ -230,11 +358,12 @@ section figcaption {
 /* ---------- formula panel ---------- */
 
 section .formula {
-  background: #f7f4f1;
-  padding: 22px 28px;
+  padding: 8px 0;
   margin: 0 0 22px;
-  font-size: 30px;
+  font-size: 40px;
+  text-align: center;
 }
+section .formula.panel { background: #f7f4f1; padding: 22px 28px; font-size: 32px; }
 section .formula:last-child { margin-bottom: 0; }
 section .katex { color: #30323D; }
 section .katex-display { margin: 0; }
@@ -349,7 +478,7 @@ section .steps-list .i { font-size: 25px; color: #1E96DC; flex: none; }
 
 /* pagination */
 section::after {
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
   font-size: 16px;
   color: #b3b3b3;
   right: 80px;
@@ -719,6 +848,8 @@ section #power-step .anim-grid-2 { grid-template-columns: 440px minmax(0, 1fr); 
 section #power-step .anim-step { font-size: 34px; }
 section #power-step .anim-step .anim-num { display: none; }
 section #power-step .anim-note { font-size: 30px; min-height: 1.3em; }
+section #power-step .anim-caption { font-size: 24px; margin-top: 0; }
+section #power-step .anim-panel { padding: 12px 18px 14px; }
 section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.5s ease; filter: url(#m06-pencil); }
 section #power-step .ps-name {
   font-family: var(--_hand); font-size: 28px; font-weight: 700; fill: var(--_ink);
@@ -729,20 +860,10 @@ section #power-step .ps-ring {
   fill: none; stroke: var(--_amber); stroke-width: 2.6; stroke-dasharray: 5 4;
   opacity: 0; transition: opacity 0.4s ease;
 }
-/* the line chart on the right: one line per node, x = iteration t, y = score */
-section #power-step .ps-chart { max-width: 100%; }
-section #power-step .ps-grid { stroke: var(--_ink-faint); stroke-width: 1.6; }
-section #power-step .ps-axis { stroke: var(--_ink-soft); stroke-width: 2; stroke-linecap: round; }
-section #power-step .ps-tick, section #power-step .ps-cap {
-  font-family: var(--_hand); font-size: 22px; fill: var(--_ink-soft);
+section #power-step .ps-rank {
+  font-family: var(--_hand); font-size: 30px; font-weight: 700; line-height: 1.2;
+  letter-spacing: 0; margin: 2px 0 8px; white-space: nowrap;
 }
-section #power-step .ps-line {
-  fill: none; stroke: var(--_ink); stroke-width: 3.2; opacity: 0.5;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-section #power-step .ps-gap { stroke-dasharray: 1 8; }
-section #power-step .ps-dot { fill: var(--_ink); opacity: 0.8; }
-section #power-step .ps-end { font-family: var(--_hand); font-size: 24px; font-weight: 700; fill: var(--_ink); }
 
 /* Turn the dial (m06): the scenes are lecture-note/assets/anim/katz-dial.js.
    The knob wrapper is a block in a block here, but its auto side margins are
@@ -780,3 +901,158 @@ section #katz-dial .kd-warn {
   font-family: var(--_hand); font-size: 28px; line-height: 1.2; font-weight: 700;
   color: var(--_amber); min-height: 2.4em;
 }
+
+/* =====================================================================
+   Slide layouts. A-F are the lecturer's sketch (2026-10-13); 2026-10-14 aligned them
+   with his CompleNet 2026 deck and added G and Q. HOUSE_STYLE section 8 says which
+   slide takes which.
+   B  title + big figure                     (class L-b)   the default
+   G  figure only, no title                  (class L-g)
+   A  title + sub + figure + takeaway        (class L-a)
+   F  statement, centred, large              (class L-f)
+   C  text | picture, either side            (class L-c; plain `cols` = bullets | figure)
+   E  paragraph | photo                      (class L-e)
+   Q  quotation | portrait                   (class L-q)
+   D  full image or colour field             (class L-d, L-d field)
+   ===================================================================== */
+
+/* B: the title says it; the figure does the rest */
+section.L-b .fig { flex: 1; justify-content: center; }
+section.L-b .fig img { max-height: 480px; max-width: 1080px; }
+section.L-b .take ~ .fig img, section.L-b .fig:has(+ .take) img { max-height: 420px; }
+
+/* G: the figure alone. A build's later steps whose drawing labels itself, a row of
+   objects or an illustration the speaker narrates. */
+section.L-g { justify-content: center; }
+section.L-g .fig { flex: 1; justify-content: center; }
+section.L-g .fig img { max-height: 600px; max-width: 1120px; }
+
+/* A: title, a line under it, the figure, the conclusion under the figure */
+section.L-a > p:not(.take):not(.sub):not(.ref) {
+  font-size: 32px;
+  line-height: 1.38;
+  text-align: center;
+  margin: -6px auto 14px;
+  max-width: 1080px;
+}
+section.L-a .fig { flex: 1; justify-content: center; }
+section.L-a .fig img { max-height: 380px; }
+section.L-a .fig.tight img { max-height: 320px; }   /* A with both a .sub and a .take */
+section.L-a .fig.pair p { display: flex; gap: 32px; justify-content: center; margin: 0; max-width: none; }
+section.L-a .fig.pair img { max-height: 340px; box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+section.L-a .cue { text-align: center; }
+
+/* F: one statement, large and centred; a question in italics; at most two sentences or
+   one small picture under it. `.num` puts a big muted "#1" beside a recurring claim. */
+section.L-f { justify-content: center; align-items: center; text-align: center; }
+section.L-f h2 { font-size: 62px; line-height: 1.22; margin: 0 0 30px; max-width: 1080px; }
+section.L-f > p { font-size: 34px; line-height: 1.45; max-width: 980px; margin: 0 auto 10px; }
+section.L-f .fig img { max-height: 240px; }
+section.L-f:has(.num) { align-items: flex-start; text-align: left; }
+section.L-f:has(.num) h2 { text-align: left; max-width: 760px; }
+section.L-f .num {
+  position: absolute; right: 110px; top: 50%; transform: translateY(-50%);
+  font-size: 120px; font-weight: 700; color: #8C847F;
+}
+
+/* C: a question, a term or at most three items, set large beside a picture. Put the
+   picture's div first to put it on the left. */
+section.L-c .cols { flex: 1; align-items: center; }
+section.L-c .cols > div:not(.fig) { font-size: 36px; line-height: 1.35; text-align: center; }
+section.L-c .cols > div:not(.fig) h3 { font-size: 40px; color: #30323D; margin: 0 0 18px; }
+section.L-c .cols > div:not(.fig) ul { text-align: left; font-size: 30px; }
+section.L-c .fig img { max-height: 470px; }
+
+/* E: a block of text, a big photograph */
+section.L-e .cols { align-items: center; }
+section.L-e .big { font-size: 30px; line-height: 1.45; }
+section.L-e .big p { font-size: 30px; line-height: 1.45; margin: 0 0 0.6em; max-width: none; }
+section.L-e .fig img { max-height: 400px; box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+
+/* Q: a quotation in Baskerville, the phrase that matters in hot; the source under it;
+   the speaker's portrait (black and white) on the right */
+section.L-q { justify-content: center; }
+section.L-q .cols { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); align-items: center; }
+section.L-q blockquote {
+  position: relative;
+  margin: 0; padding: 0;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 36px; line-height: 1.45; color: #30323D;
+}
+section.L-q blockquote::before {
+  content: "\201C\201D"; position: absolute; left: -6px; top: -64px;
+  font-size: 64px; color: #8C847F;
+}
+section.L-q blockquote p { margin: 0; max-width: none; }
+section.L-q .who {
+  margin: 28px 0 0; text-align: center;
+  font-family: 'Libre Baskerville', Georgia, serif; font-size: 22px; color: #8C847F;
+}
+section.L-q .fig img { max-height: 340px; filter: grayscale(1); box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+section.L-q.center .cols { display: block; text-align: center; }
+section.L-q.center blockquote { font-style: italic; font-size: 44px; }
+section.L-q.center blockquote::before { display: none; }
+
+/* D: the picture fills the slide; a white box carries the words */
+section.L-d { padding: 0; background: #1F2028; justify-content: center; align-items: center; }
+section.L-d .fig { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+section.L-d .fig p { margin: 0; max-width: none; display: contents; }
+section.L-d .fig img { max-width: 1280px; max-height: 720px; width: auto !important; height: auto; }
+section.L-d .overlay {
+  position: absolute; left: 44px; bottom: 44px; max-width: 880px;
+  background: rgba(255, 255, 255, 0.92); border-radius: 16px; padding: 16px 26px;
+  font-size: 31px; line-height: 1.38;
+}
+section.L-d .overlay p { margin: 0; max-width: none; }
+section.L-d .overlay .credit { display: block; margin-top: 8px; font-size: 18px; line-height: 1.3; color: #8C847F; }
+section.L-d::after { color: #ffffff; }
+section.L-d:not(.field) > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* D field: a colour field, the title in white, the figure on a white card
+   (CompleNet: Law / Science / Patents panels); the field colour is set per slide */
+section.L-d.field { padding: 40px 80px 60px; justify-content: flex-start; background: #30323D; }
+section.L-d.field h2 { color: #ffffff; }
+section.L-d.field .fig { position: static; flex: 1; }
+section.L-d.field .fig img { background: #ffffff; padding: 12px; max-height: 470px; max-width: 1080px; }
+section.L-d.field:has(.take.dark) .fig img { max-height: 390px; }   /* room for the band */
+
+/* a figure authored for the 537 px column and shown larger on a full-width layout (A, B, G): one child in a `cols` wrapper */
+section.L-a .cols, section.L-b .cols, section.L-g .cols, section.L-d.field .cols { display: flex; flex: 1; justify-content: center; align-items: center; gap: 0; }
+section.L-a .cols .fig, section.L-b .cols .fig, section.L-g .cols .fig, section.L-d.field .cols .fig { flex: 0 1 auto; }
+
+/* ---------- m06 only: the power-iteration line chart (power-step.js draws one line per node).
+   Not in the house kit, which was copied from this deck before the chart existed. ---------- */
+/* the line chart on the right: one line per node, x = iteration t, y = score */
+section #power-step .ps-chart { max-width: 100%; }
+section #power-step .ps-grid { stroke: var(--_ink-faint); stroke-width: 1.6; }
+section #power-step .ps-axis { stroke: var(--_ink-soft); stroke-width: 2; stroke-linecap: round; }
+section #power-step .ps-tick, section #power-step .ps-cap {
+  font-family: var(--_hand); font-size: 22px; fill: var(--_ink-soft);
+}
+section #power-step .ps-line {
+  fill: none; stroke: var(--_ink); stroke-width: 3.2; opacity: 0.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+section #power-step .ps-gap { stroke-dasharray: 1 8; }
+section #power-step .ps-dot { fill: var(--_ink); opacity: 0.8; }
+section #power-step .ps-end { font-family: var(--_hand); font-size: 24px; font-weight: 700; fill: var(--_ink); }
+
+/* ---------- m06 only: a fixed figure box in A and B ----------
+   Q and A, and the steps of a build, keep the drawing at one pixel position
+   (HOUSE_STYLE section 1), but the kit sizes the figure from what is left after the
+   text, so an answer's .take or a question's cue moved the figure. Here the box under
+   the title (and the .sub) has a fixed height and the figure is centred in it; the
+   .take sits at the bottom of the slide and the cue under the box. A figure authored for
+   the 537 px column grows at most 1.25 times, so its discs stay near their authored size. */
+section.L-a > .cols, section.L-a > .fig { flex: 0 0 400px; height: 400px; margin: 0; }
+section.L-b > .cols, section.L-b > .fig { flex: 0 0 440px; height: 440px; margin: 10px 0 0; }
+section.L-a > .fig, section.L-b > .fig { justify-content: center; }
+section.L-a .fig img, section.L-a .fig.tall img { max-height: 400px; max-width: 1080px; }
+section.L-b .fig img, section.L-b .fig.tall img { max-height: 440px; max-width: 1080px; }
+section.L-a .cols .fig img, section.L-b .cols .fig img { max-width: 671px; }
+section.L-a .cue, section.L-b .cue { text-align: center; margin-top: 10px; }
+/* a .sub or .take written as a div, so that markdown (and KaTeX) inside it is rendered */
+section div.sub > p, section div.take > p { margin: 0; max-width: none; }
+/* the .sub has a fixed height, so inline math in it does not push the figure down */
+section.L-a > .sub { height: 48px; margin: 6px auto 16px; display: flex; align-items: center; justify-content: center; }
+/* E: the paragraph and the photographs sit in the middle of the slide, not under the title */
+section.L-e .cols { flex: 1; }
