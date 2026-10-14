@@ -350,9 +350,11 @@ def _r(k, t):
 
 def _note1():
     assert all(abs(_r(k, 1)) > 0.05 for k in range(N)), "t = 1: every term still shows"
-    cx, cy = circle_xy(N - 1)
-    return co("t = 1: every term", (cx - 260, BAND_Y), (cx, cy), anchor="west",
-              gap=D1 * abs(_r(N - 1, 1)) / 2 + 8)
+    # what a circle is: its eigenvalue over the largest one (1.00 for the first, 0.46, ..., -0.78)
+    assert abs(_r(0, 1) - 1) < 1e-12
+    cx, cy = circle_xy(0)
+    return co("circles: \u03bbk / \u03bb1", (20, BAND_Y), (cx, cy), gap=D1 / 2 + 8,
+              tip=(130, BAND_Y - 18))
 
 
 def _note2():
@@ -460,7 +462,9 @@ def curve(frac):
     a = frac / LAM[0]
     wall = 1.0 / a
     xs = np.linspace(XLO, XHI, 900)
-    pieces = [xs[xs < wall - 1e-3], xs[xs > wall + 1e-3]]
+    # the branch past the wall is drawn only once alpha is past 1/lambda_max, where it carries lambda_1's
+    # negative weight; before that its only visible piece is a stray arc at the floor of the plot
+    pieces = [xs[xs < wall - 1e-3]] + ([xs[xs > wall + 1e-3]] if frac > 1 else [])
     o = f"\\begin{{scope}}\\clip ({PX0:.1f},{PY0:.1f}) rectangle ({PX1:.1f},{PY1:.1f});\n"
     for p in pieces:
         if len(p) < 2:
@@ -543,19 +547,19 @@ def _n08(frac, wall):
     assert XLO < wall < XHI and wall > LAM[0], "alpha = 0.8: the wall is in view, right of lambda_1"
     assert 4 < coef(frac, 0) < YHI, "alpha = 0.8: lambda_1's weight 5, still on the plot"
     cx = KPOS["t0"] + KSLOT[0] / 2
-    return "\u03bb\u2081 nears the wall 1/\u03b1: 5", (cx, KYMID), KC * np.sqrt(coef(frac, 0)) / 2 + 8, 0
+    return "\u03bb\u2081 near 1/\u03b1: weight 5", (cx, KYMID), KC * np.sqrt(coef(frac, 0)) / 2 + 8, 0
 
 
 def _n095(frac, wall):
     assert LAM[0] < wall < LAM[0] + 0.25 and coef(frac, 0) > YHI
     cx = KPOS["t0"] + KSLOT[0] / 2
-    return "1/\u03b1 nears \u03bb\u2081: it blows up", (cx, KYMID), KC * np.sqrt(coef(frac, 0)) / 2 + 8, 0
+    return "\u03bb\u2081 nearer 1/\u03b1: weight 20", (cx, KYMID), KC * np.sqrt(coef(frac, 0)) / 2 + 8, 0
 
 
 def _n11(frac, wall):
     assert wall < LAM[0] and coef(frac, 0) < YLO
     cx = KPOS["t0"] + KSLOT[0] / 2
-    return "past it: \u03bb\u2081 weight negative", (cx, KYMID), KC * np.sqrt(-coef(frac, 0)) / 2 + 8, 0
+    return "past 1/\u03b1: weight \u221210", (cx, KYMID), KC * np.sqrt(-coef(frac, 0)) / 2 + 8, 0
 
 
 KNOTES = {0.5: _n05, 0.8: _n08, 0.95: _n095, 1.1: _n11}

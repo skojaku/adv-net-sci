@@ -543,7 +543,10 @@ def fig_pr_leak():
     tot_xy = (xy["D"][0] + 40, 48)
     dead_xy = (470.0, 160.0)
     tie = [n for n in xy if FRAC[n] == Fraction(3, 11)]
-    answer_fills = tie_fill(tie)
+    # frame 00 is the answer (the tied pages hot); once the question is the leak, nothing is being
+    # answered, so A, C and E are drawn on the value scale like every other page of the later frames
+    assert sum(FRAC.values()) == 1, "frame 01 shows the scores of the answer, which sum to 1"
+    answer_fills = {n: F.shade(float(FRAC[n]) / top) for n in xy}
     segs = straight_segments(edges)
     dead = F.text(*dead_xy, "dead end", color="muted", anchor="east")
     dead_box = tbox(*dead_xy, "dead end", anchor="east")
@@ -556,7 +559,7 @@ def fig_pr_leak():
         assert abs(total - LEAK_TOTALS[k]) < 1e-9
         fills = {n: F.shade(v / top) for n, v in vals.items()}
         body = base + pages(xy, fills=fills) + dead
-        body += F.text(*tot_xy, f"total {total:.2f}", color="hot")
+        body += F.text(*tot_xy, f"sum of scores {total:.2f}", color="hot")
         return body, total
 
     frames = [split_body(True, amounts=AFTER_ANSWER)]     # the answer build's last frame, no note
@@ -568,7 +571,7 @@ def fig_pr_leak():
     # 02 the score leaks (0.60 left)
     body, t2 = drain(2)
     assert round(t2, 2) == 0.60
-    tot_box = tbox(*tot_xy, "total 0.00")
+    tot_box = tbox(*tot_xy, "sum of scores 0.00")
     co, cb2 = callout("score leaks out at E", (500, BAND_Y), xy["E"], anchor="east", gap=28,
                       blockers=[dead_box, tot_box], edges=segs)
     frames.append(body + co)
@@ -578,7 +581,7 @@ def fig_pr_leak():
     co, cb3 = callout("nothing left", (340, 106), (300, tot_xy[1] + 6), anchor="center", gap=6,
                       blockers=[dead_box, tot_box], edges=segs)
     frames.append(body + co)
-    for lb, nm in ((dead_box, "dead end"), (tot_box, "total")):
+    for lb, nm in ((dead_box, "dead end"), (tot_box, "sum of scores")):
         for m in xy:
             assert not F.boxes_overlap(lb, box_of(xy, m, 2)), f"pr-leak: {nm!r} sits on page {m}"
         for a, b in edges:

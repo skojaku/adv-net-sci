@@ -34,7 +34,7 @@ Layouts (HOUSE_STYLE section 8): the title is the message; a line under it (.sub
 <div class="cols">
 <div class="big">
 
-20 BC: Augustus, Caesar's heir, set it up in Rome.
+20 BC: Augustus, Caesar's heir, set up the milestone in Rome.
 
 Every road of Italy ended at it.
 
@@ -128,7 +128,7 @@ Take answers. The room will give at least two kinds of reason (many roads; close
 
 <div class="sub">
 
-$d_i = \sum_j A_{ij}$, where $A_{ij} = 1$ if a road joins $i$ and $j$.
+$d_i = \sum_j A_{ij}$, with $A_{ij} = 1$ for a road.
 
 </div>
 
@@ -195,11 +195,12 @@ Take a vote: Buffalo, Rochester, Syracuse, Utica, Albany, NYC, Binghamton, Water
 
 <div class="take">
 
-Degree 3: 201 interchanges. Degree 4: 57.
+Degree 3: <span class="hot">201</span> of 289 interchanges.
 
 </div>
 
 <!--
+Degree 3: 201 interchanges; degree 4: 57.
 On a road map almost every junction joins three or four roads. A measure that only looks one step out sees almost nothing.
 -->
 
@@ -213,7 +214,7 @@ On a road map almost every junction joins three or four roads. A measure that on
 <div class="cols">
 <div>
 
-- The network from Module 01.
+- Count the steps.
 
 </div>
 <div class="fig tall">
@@ -230,6 +231,7 @@ On a road map almost every junction joins three or four roads. A measure that on
 </div>
 
 <!--
+The network from Module 01.
 Ask: in how many ways can you get there in 3 steps? In 4?
 -->
 
@@ -585,7 +587,7 @@ Highest closeness wins: the smallest sum of distances.
 
 <div class="take">
 
-<span class="hot">P</span> wins: its long arms hold more nodes.
+<span class="hot">P</span> wins: 0.56 against N's 0.50.
 
 </div>
 
@@ -657,7 +659,7 @@ F has degree 2 and a sum of 19: closeness 10/19 = 0.53. The hub E (degree 5) and
 
 <div class="sub">
 
-Close the road between E and F.
+Close E–F. What is every node's closeness?
 
 </div>
 
@@ -683,7 +685,7 @@ Close the road between E and F.
 
 <div class="sub">
 
-Close the road between E and F.
+Close E–F. What is every node's closeness?
 
 </div>
 
@@ -728,7 +730,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -761,7 +763,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -791,7 +793,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -821,7 +823,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -851,7 +853,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -881,7 +883,7 @@ $h_i = \sum_{j \ne i} 1/\ell_{ij}$
 
 <div class="take">
 
-$1/\infty = 0$: an unreachable node adds nothing.
+<span class="hot">Unreachable</span> nodes add $1/\infty = 0$.
 
 </div>
 
@@ -937,12 +939,12 @@ The road E–F is open again. Closeness picked F.
 
 <div class="take">
 
-Harmonic picks the hub <span class="hot">E</span>.
+Harmonic picks the hub <span class="hot">E</span>: 27/4 = 6.75.
 
 </div>
 
 <!--
-E 27/4 beats G 19/3 and F 35/6. With 1/distance, the four leaves at distance 1 count fully for E; with the sum of distances, they barely helped.
+E 27/4 = 6.75 beats G 19/3 = 6.33 and F 35/6 = 5.83. With 1/distance, the four leaves at distance 1 count fully for E; with the sum of distances, they barely helped.
 -->
 
 ---
@@ -1066,7 +1068,7 @@ Ask: would you put the town's one fire station at D? What does a fire station ca
 
 <div class="sub">
 
-$e_i = \max_j \ell_{ij}$. The smallest wins; its centrality is $1/e_i$.
+$e_i = \max_j \ell_{ij}$: the smallest wins.
 
 </div>
 
@@ -1080,7 +1082,7 @@ $e_i = \max_j \ell_{ij}$. The smallest wins; its centrality is $1/e_i$.
 
 <!--
 Explain the formula on this slide; the next 3 slides step the figure, one change each (the grey note says which).
-A fire station must reach its farthest house.
+A fire station must reach its farthest house. As a centrality, 1/e_i: the highest centrality is the smallest eccentricity.
 The steps: the closeness values give way to each node's farthest distance. D is still best here, 2. The next question is built so that it is not.
 -->
 
@@ -1093,7 +1095,7 @@ The steps: the closeness values give way to each node's farthest distance. D is 
 
 <div class="sub">
 
-$e_i = \max_j \ell_{ij}$. The smallest wins; its centrality is $1/e_i$.
+$e_i = \max_j \ell_{ij}$: the smallest wins.
 
 </div>
 
@@ -1117,7 +1119,7 @@ Step 1 of 3: A's farthest: 4 steps.
 
 <div class="sub">
 
-$e_i = \max_j \ell_{ij}$. The smallest wins; its centrality is $1/e_i$.
+$e_i = \max_j \ell_{ij}$: the smallest wins.
 
 </div>
 
@@ -1141,7 +1143,7 @@ Step 2 of 3: every node's worst case.
 
 <div class="sub">
 
-$e_i = \max_j \ell_{ij}$. The smallest wins; its centrality is $1/e_i$.
+$e_i = \max_j \ell_{ij}$: the smallest wins.
 
 </div>
 
@@ -1205,7 +1207,7 @@ The best fire station: the smallest worst case.
 
 <div class="take">
 
-<span class="hot">F</span>: worst case 2. E, best on average, has 3.
+<span class="hot">F</span>: worst case 2. E, best on average, 3.
 
 </div>
 
@@ -1261,7 +1263,7 @@ The best fire station: the smallest worst case.
 
 <div class="take">
 
-<span class="hot">L</span>: worst case 2. K, best on average, has 3.
+<span class="hot">L</span>: worst case 2. K, best on average, 3.
 
 </div>
 
@@ -1503,7 +1505,7 @@ Count the shortest paths through each node.
 
 <div class="take">
 
-Each <span class="hot">hub</span> carries 30. The bridge F carries 25.
+Each <span class="hot">hub</span> carries 30; the bridge F, 25.
 
 </div>
 
@@ -1584,7 +1586,7 @@ O carries 9 pairs whole, and half of the pair P, Q (two shortest paths: through 
 
 <div class="take">
 
-<span class="hot">Binghamton</span>: 3.5 times Syracuse.
+<span class="hot">Binghamton</span>: first of the eight cities.
 
 </div>
 
@@ -1598,7 +1600,7 @@ The top interchange in the whole state is NY 17 at Monticello. Four of the top f
 <!-- header: "" -->
 <!-- _class: L-b -->
 
-## The shortest-path row
+## Shortest paths: five measures
 
 <div class="fig tall">
 
@@ -1641,7 +1643,7 @@ A man is known by <span class="hot">the company he keeps</span>.
 <div class="fig">
 
 ![](figures/photos/aesop.jpg)
-<figcaption>Velázquez, Aesop, c. 1638–41, Prado</figcaption>
+<figcaption>Velázquez, 1638–41, Prado</figcaption>
 
 </div>
 </div>
@@ -1980,7 +1982,7 @@ One piece per eigenvalue.
 <div class="fig">
 
 ![w:1080](figures/decomp-sum.png)
-<figcaption>circle: eigenvalue · tall bar: eigenvector · wide bar: its transpose · colour: which eigenvector</figcaption>
+<figcaption>circle: eigenvalue (blue +, orange −) · tall bar: eigenvector · wide bar: its transpose · bar colour: which eigenvector</figcaption>
 
 </div>
 
@@ -1996,7 +1998,7 @@ rank 1: every row of u_k u_kᵀ is a multiple of u_kᵀ. lambda_1 = lambda_max i
 
 <div class="sub">
 
-Two colours multiply to 0; one colour with itself, to 1.
+Two colours multiply to 0; the same colour, to 1.
 
 </div>
 
@@ -2227,7 +2229,7 @@ Step 0: every node holds 1, so all seven lines start at the same point. Step 1: 
 
 <!-- _class: L-b -->
 
-## Start anywhere: the same scores
+## Random starts: the same scores
 
 <div class="cols">
 <div class="fig tall">
@@ -2254,7 +2256,7 @@ Same lines as the stage, but the start is no longer all ones: x_0 is seven rando
 
 <!-- _class: L-b -->
 
-## Start anywhere: the same scores
+## Random starts: the same scores
 
 <div class="cols">
 <div class="fig tall">
@@ -2313,7 +2315,7 @@ Ask: one clique of 5, three of 4. Who gets the score? Most will say "a bit more 
 
 <div class="sub">
 
-Grow one clique to K nodes, one node at a time.
+Shade: score. Grow one clique to K nodes.
 
 </div>
 
@@ -2340,7 +2342,7 @@ One extra node, and 68% of the total score moves into that clique; with two, 85%
 
 <div class="sub">
 
-Grow one clique to K nodes, one node at a time.
+Shade: score. Grow one clique to K nodes.
 
 </div>
 
@@ -2364,7 +2366,7 @@ Step 1 of 4: K = 4: equal cliques, equal shares (25%).
 
 <div class="sub">
 
-Grow one clique to K nodes, one node at a time.
+Shade: score. Grow one clique to K nodes.
 
 </div>
 
@@ -2388,7 +2390,7 @@ Step 2 of 4: K = 5: one more node, 68%.
 
 <div class="sub">
 
-Grow one clique to K nodes, one node at a time.
+Shade: score. Grow one clique to K nodes.
 
 </div>
 
@@ -2412,7 +2414,7 @@ Step 3 of 4: K = 6: 85%.
 
 <div class="sub">
 
-Grow one clique to K nodes, one node at a time.
+Shade: score. Grow one clique to K nodes.
 
 </div>
 
@@ -2445,7 +2447,7 @@ Step 4 of 4: K = 8: 94%.
 
 <div class="take">
 
-31% of the interchanges lie there 🤔
+<span class="hot">31%</span> of the interchanges lie there 🤔
 
 </div>
 
@@ -2522,11 +2524,9 @@ Hint: $1/(1-x) = 1 + x + x^2 + \cdots$ for $|x| < 1$.
 
 </div>
 
-<div class="cue">
-
-*Take 30 seconds.*
-
-</div>
+<!--
+Take 30 seconds.
+-->
 
 ---
 
@@ -2550,13 +2550,13 @@ $(I-\alpha A)^{-1} = \sum_{k \ge 0} \alpha^k A^k$
 
 <div class="take">
 
-Katz counts <span class="hot">walks</span>, discounted by length.
+Entry $(u, v)$: <span class="hot">walks</span> from u to v, discounted.
 
 </div>
 
 <!--
 Explain the formula and the bottom line on this slide; the next 3 slides step the figure, one change each (the grey note says which).
-A^k counts the walks of length k (Module 01).
+A^k counts the walks of length k (Module 01); the figure follows the entry (u, v): 2 alpha^2 + alpha^3 + 11 alpha^4 + ... Katz centrality adds up a row: the discounted walks from a node to everyone.
 Multiply both sides by (I - alpha A) to check. The series converges only if alpha is small enough: the dial on the next slide.
 -->
 
@@ -2583,7 +2583,7 @@ $(I-\alpha A)^{-1} = \sum_{k \ge 0} \alpha^k A^k$
 
 <div class="take">
 
-Katz counts <span class="hot">walks</span>, discounted by length.
+Entry $(u, v)$: <span class="hot">walks</span> from u to v, discounted.
 
 </div>
 
@@ -2613,7 +2613,7 @@ $(I-\alpha A)^{-1} = \sum_{k \ge 0} \alpha^k A^k$
 
 <div class="take">
 
-Katz counts <span class="hot">walks</span>, discounted by length.
+Entry $(u, v)$: <span class="hot">walks</span> from u to v, discounted.
 
 </div>
 
@@ -2643,7 +2643,7 @@ $(I-\alpha A)^{-1} = \sum_{k \ge 0} \alpha^k A^k$
 
 <div class="take">
 
-Katz counts <span class="hot">walks</span>, discounted by length.
+Entry $(u, v)$: <span class="hot">walks</span> from u to v, discounted.
 
 </div>
 
@@ -2780,7 +2780,7 @@ Step 3 of 3: past it, lambda_1 sits on the far side of the wall: its weight is n
 
 <div class="sub">
 
-Katz, $\alpha = 0.5/\lambda_{\max}$.
+Katz, $\alpha = 0.5/\lambda_{\max}$. Top score = 1.
 
 </div>
 
@@ -2794,7 +2794,7 @@ Katz, $\alpha = 0.5/\lambda_{\max}$.
 
 <div class="cue">
 
-*The network from the eigenvector quiz. Take a minute.*
+*The eigenvector quiz network. Take a minute.*
 
 </div>
 
@@ -2806,7 +2806,7 @@ Katz, $\alpha = 0.5/\lambda_{\max}$.
 
 <div class="sub">
 
-Katz, $\alpha = 0.5/\lambda_{\max}$.
+Katz, $\alpha = 0.5/\lambda_{\max}$. Top score = 1.
 
 </div>
 
@@ -2836,7 +2836,7 @@ M 0.87, X 0.81 (largest = 1).
 
 <div class="sub">
 
-Katz, $\alpha = 0.5/\lambda_{\max}$.
+Katz, $\alpha = 0.5/\lambda_{\max}$. Top score = 1.
 
 </div>
 
@@ -2850,7 +2850,7 @@ Katz, $\alpha = 0.5/\lambda_{\max}$.
 
 <div class="cue">
 
-*The network from the eigenvector quiz. Take a minute.*
+*The eigenvector quiz network. Take a minute.*
 
 </div>
 
@@ -2862,7 +2862,7 @@ Katz, $\alpha = 0.5/\lambda_{\max}$.
 
 <div class="sub">
 
-Katz, $\alpha = 0.5/\lambda_{\max}$.
+Katz, $\alpha = 0.5/\lambda_{\max}$. Top score = 1.
 
 </div>
 
@@ -2889,7 +2889,7 @@ H 1.00, K 0.81. At alpha = 0.5/lambda_max short walks still weigh a lot, so H's 
 <!-- header: "" -->
 <!-- _class: L-b -->
 
-## The walk row
+## Walks: degree, Katz, eigenvector
 
 <div class="fig tall">
 
@@ -2933,7 +2933,7 @@ A road runs both ways. A link on the Web does not.
 <div class="fig">
 
 ![w:537](figures/hits-graph.png)
-<figcaption>A_ij = 1: page i links to page j</figcaption>
+<figcaption>Aᵢⱼ = 1: page i links to page j</figcaption>
 
 </div>
 </div>
@@ -3158,7 +3158,7 @@ Step 4 of 4: in = out at every page. C passes all 3/11 to E and E passes all 3/1
 
 <div class="sub">
 
-E loses its only link out.
+E loses its only link out. Shade: score.
 
 </div>
 
@@ -3184,7 +3184,7 @@ Its score has nowhere to go: the total drains to zero. The total goes 1, 0.8, 0.
 
 <div class="sub">
 
-E loses its only link out.
+E loses its only link out. Shade: score.
 
 </div>
 
@@ -3208,7 +3208,7 @@ Step 1 of 3: E's only link out is gone.
 
 <div class="sub">
 
-E loses its only link out.
+E loses its only link out. Shade: score.
 
 </div>
 
@@ -3232,7 +3232,7 @@ Step 2 of 3: score leaks out at E: total 0.60.
 
 <div class="sub">
 
-E loses its only link out.
+E loses its only link out. Shade: score.
 
 </div>
 
@@ -3301,7 +3301,7 @@ Jump back to A only.
 
 <div class="take">
 
-Visits by a walker who restarts at A.
+Visits by a walker who <span class="hot">restarts</span> at A.
 
 </div>
 
@@ -3346,7 +3346,7 @@ Closeness: NY 17 at Middletown. Harmonic: I-95 in the Bronx. Eccentricity: NY 17
 
 <!-- _class: L-f -->
 
-## Draw a network where four measures disagree
+## Draw a network with four winners
 
 Degree, closeness, eccentricity and betweenness each rank a different node first.
 

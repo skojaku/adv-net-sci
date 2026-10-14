@@ -190,7 +190,7 @@ class Labels:
         return (x + ax * w - w / 2, y - h / 2, x + ax * w + w / 2, y + h / 2)
 
     def add(self, s, x, y, anchor="center", color="ink", to=None, r=0.0, halo=True, avoid=(),
-            rel=True, underline=False):
+            rel=True, underline=False, grow=0.0):
         if rel:
             y += self.dy
         b = self.box(s, x, y, anchor)
@@ -215,7 +215,7 @@ class Labels:
             self.leaders += F.seg((sx, sy), (ex, ey), color="muted", w=2.2)
         if halo:                                  # a white plate and two rings of white copies: no road shows through
             self.out += ("\\fill[white,rounded corners=3bp] (%.1f,%.1f) rectangle (%.1f,%.1f);\n"
-                         % (b[0] + 1, b[1] + 3, b[2] - 1, b[3] - 3))
+                         % (b[0] + 1, b[1] + 3 - grow, b[2] - 1 + grow, b[3] - 3 + grow))
             for r_ in (2.4, 4.8):
                 for k in range(8):
                     a_ = k * math.pi / 4
@@ -241,6 +241,42 @@ class Labels:
                 assert k == s or not F.box_hits_segment(o, p, q, pad=0), \
                     f"{self.name}: the leader of {s!r} crosses the label {k!r}"
         return self.leaders + self.out + self.ul
+
+
+KEY_X, KEY_Y = 10.0, 342.0                    # top-left, between the map's top edge (y 358) and Lake Ontario's shore (y 270): bare on every map
+KEY_STEP = 32.0
+
+
+def shade_key(L, body, title, hi, lo):
+    """A muted title and the two ends of the shade scale, in the style of ny-degree's key (the same
+    swatches, ink labels on a muted name), in the free corner above Lake Erie.  Asserts that nothing
+    of the map (a road, a dot, a label) is under it, by rendering the map without it, and that the
+    two rows do not touch each other."""
+    x0 = KEY_X + 8
+
+    def ink(x, y, word):                          # the ink of a word set at (x, y), anchor west, + 1 bp
+        return (x - 1, y - 15, x + F.CHAR_W * F.FONT * len(word) + 1, y + 16)
+
+    o = F.text(KEY_X, KEY_Y, title, color="muted", anchor="west")
+    boxes = [ink(KEY_X, KEY_Y, title)]
+    assert KEY_Y + 15 <= 358, "the key must not rise above the map: the group crop would grow"
+    for k, (word, v) in enumerate(((hi, 1.0), (lo, 0.0))):
+        y = KEY_Y - 28 - k * KEY_STEP
+        o += ("\\filldraw[fill=%s,draw=ink!60,line width=0.9bp] (%d,%d) circle (8bp);\n" % (F.shade(v), x0, y))
+        o += F.text(x0 + 20, y, word, anchor="west")
+        boxes.append(ink(x0 + 20, y, word))
+        boxes.append((x0 - 9, y - 9, x0 + 9, y + 9))
+    # rows 32 bp apart (ink is 29 bp tall at most): the lines clear each other; the pixel test below keeps them off the shore
+    assert KEY_STEP >= 32
+    for bx in boxes:
+        assert 2 <= bx[0] and bx[2] <= F.COL_W - 2 and 2 <= bx[1] and bx[3] <= CANVAS_H - 2, (title, bx)
+    a = np.asarray(F.render(body, F.COL_W, CANVAS_H).convert("L"))
+    for bx in boxes:                                  # every part of the key on bare paper
+        r0, r1 = int(F.PXBP * (CANVAS_H - bx[3])), int(F.PXBP * (CANVAS_H - bx[1]))
+        c0, c1 = int(F.PXBP * bx[0]), int(F.PXBP * bx[2])
+        assert (a[r0:r1, c0:c1] > 245).all(), f"{title}: something is drawn under the key"
+        assert not any(F.boxes_overlap(bx, bl) for _, bl in L.boxes), f"{title}: a label is under the key"
+    return o
 
 
 # --------------------------------------------------------------------------- the 3x inset
@@ -305,7 +341,7 @@ def b_overview():
     spec = {                                  # name: (anchor, x, y, leader?)  y is map-relative
         "Watertown": ("east", _city("Watertown")[0] - 6, _city("Watertown")[1] + 52 - DY, True),
         "Buffalo": ("west", 8, 140, True),
-        "Rochester": ("center", 110, 262, True),
+        "Rochester": ("center", 90, 262, True),     # ends 20 bp short of the Watertown pin (was 14)
         "Syracuse": ("center", 198, 230, True),
         "Utica": ("west", 290, 214, True),
         "Albany": ("west", 346, 166, False),
@@ -314,7 +350,13 @@ def b_overview():
     }
     for c, (anc, x, y, lead) in spec.items():
         key = "New York City" if c == "NYC" else c
-        L.add(c, x, y, anchor=anc, to=_city(key) if lead else None, r=12, avoid=dots)
+        # Buffalo's plate is taller: the lake-shore roads and dots under its baseline show past a plain one
+        L.add(c, x, y, anchor=anc, to=_city(key) if lead else None, r=12, avoid=dots,
+              grow=6.0 if c == "Buffalo" else 0.0)
+    # Rochester's name keeps 18 bp of white between its last letter and the Watertown pin
+    rb = L.box("Rochester", 90, 262 + DY, "center")
+    wx, wy = _city("Watertown")
+    assert wx - 10 - rb[2] >= 18, (wx - 10 - rb[2])
     return b + L.body()
 
 
@@ -330,11 +372,13 @@ def b_degree():
     return b + L.body()
 
 
-def _single(name, measure, labels):
+def _single(name, measure, labels, key=None):
     L = Labels(name)
     i = WIN[measure]
     b = base() + shaded_dots(SHADE[measure]) + winner(i)
     labels(L, i)
+    if key:
+        return b + shade_key(L, b + L.body(), *key) + L.body()
     return b + L.body()
 
 
@@ -358,7 +402,7 @@ def b_closeness():
     L.add("31\\%", MANHATTAN[0] + R60[1] * math.cos(ang) - 14, MANHATTAN[1] + R60[0] * math.sin(ang) + 3,
           anchor="east", color="muted", rel=False)
     L.nyc()
-    return b + L.body()
+    return b + shade_key(L, b + L.body(), "closeness", "high", "low") + L.body()
 
 
 def b_eccentricity():
@@ -366,15 +410,22 @@ def b_eccentricity():
         L.add("Binghamton", 105, 80, color="muted", to=_city("Binghamton"), r=3)
         L.add("473 km", 160, 8, color="hot", to=XY[i], r=13, underline=True)
         L.nyc(spots=((322, 17.5, "center"),))        # the leader of "473 km" passes the usual spot
-    return _single("ny-eccentricity", "eccentricity", lab)
+    # dark = the smaller worst case (the shade is 1 / eccentricity)
+    return _single("ny-eccentricity", "eccentricity", lab, key=("worst case", "smaller", "larger"))
 
 
 def b_betweenness():
-    def lab(L, i):
-        L.add("Binghamton", 105, 80, color="cool", to=_city("Binghamton"), r=3)
-        L.add("Monticello", 150, 8, color="hot", to=XY[i], r=13, underline=True)
-        L.nyc(spots=((322, 17.5, "center"),))
-    return _single("ny-betweenness", "betweenness", lab)
+    """The slide asks which CITY most trips pass through: Binghamton (of the eight cities, the
+    most), hot with its brush underline.  Monticello, the busiest interchange of all, is named in
+    muted ink and keeps its dark shade; ny-five (slide 128) still points at it."""
+    L = Labels("ny-betweenness")
+    assert _btw8[0] == "Binghamton"
+    ib, im = CITY_ID["Binghamton"], WIN["betweenness"]
+    b = base() + shaded_dots(SHADE["betweenness"]) + winner(ib)
+    L.add("Binghamton", 105, 80, color="hot", to=_city("Binghamton"), r=15, underline=True)
+    L.add("Monticello", 150, 8, color="muted", to=XY[im], r=8)
+    L.nyc(spots=((322, 17.5, "center"),))
+    return b + shade_key(L, b + L.body(), "betweenness", "high", "low") + L.body()
 
 
 def b_eigenvector():
@@ -390,7 +441,7 @@ def b_eigenvector():
     zx, zy = Z(XY[i])
     L.add("Hempstead", 533, INS_Y0 - 28, anchor="east", color="hot", to=(zx, zy), r=13, rel=False,
           underline=True)
-    return b + L.body()
+    return b + shade_key(L, b + L.body(), "eigenvector", "high", "low") + L.body()
 
 
 def b_five():

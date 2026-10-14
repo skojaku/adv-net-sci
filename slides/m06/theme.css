@@ -1056,3 +1056,6 @@ section div.sub > p, section div.take > p { margin: 0; max-width: none; }
 section.L-a > .sub { height: 48px; margin: 6px auto 16px; display: flex; align-items: center; justify-content: center; }
 /* E: the paragraph and the photographs sit in the middle of the slide, not under the title */
 section.L-e .cols { flex: 1; }
+/* the page number in the bottom margin. Marp's ::after inherits the section's padding, which put
+   the number at the height of the .take (y = 620) and against the end of a long take or cue */
+section::after { padding: 0; right: 44px; bottom: 20px; }

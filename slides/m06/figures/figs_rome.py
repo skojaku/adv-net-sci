@@ -139,6 +139,23 @@ def fig_roma_degree():
     # down-left) and Alexandria (down-right), clear of every edge
     b += text(x + 17, y - 42, "5", color="hot", anchor="center")
     b += F.brush([(x + 6, y - 57), (x + 29, y - 55.5)], color="hot", w=5.0, opacity=0.95, strands=5)
+    # the key: a muted "degree" and the shades the discs use, in the empty upper right (clear of
+    # every disc, every road and the name Roma), in the style of ny-degree's legend
+    kx, ky0 = 372.0, 372.0
+    b += text(kx - 8, ky0, "degree", color="muted", anchor="west")
+    keys = []
+    for k, (s, v) in enumerate((("1", F.shade(1 / 5)), ("3", F.shade(3 / 5)), ("5", "hot"))):
+        y = ky0 - 40 - k * 38
+        b += (f"\\filldraw[fill={v},draw=ink!60,line width=0.9bp] ({kx:.0f},{y:.0f}) circle (8bp);\n")
+        b += text(kx + 20, y, s, color="muted", anchor="west")
+        keys.append((kx - 8, y - 12, kx + 20 + 24, y + 12))
+    keys.append(F.label_box(kx - 8, ky0, "degree", "west"))
+    for c, (px, py) in R.GRAPH_XY.items():
+        for bx in keys:
+            assert not F.box_hits_disc(bx, px, py, R.DISC_D / 2), f"degree key covers {c}"
+    for u, v in R.EDGES:
+        for bx in keys:
+            assert not F.box_hits_segment(bx, R.GRAPH_XY[u], R.GRAPH_XY[v]), f"degree key covers road {u}-{v}"
     emit("roma-degree", b, container="col", h=R.COL_H, hmod=R.COL_MOD, box=R.col_box())
 
 

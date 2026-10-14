@@ -141,6 +141,47 @@ def solve_slots(specs, pos, edges, blockers=(), bounds=BOUNDS, sides=None, segs=
     raise AssertionError("no collision-free, unambiguous placement of the values; move a node")
 
 
+def _slot_box(sp, pos, side):
+    anc, dx, dy = side
+    b = F.label_box(pos[sp.owner][0] + dx, pos[sp.owner][1] + lifted(sp, anc, dy), sp.sizing, anc)
+    return (b[0] - GAP, b[1] - GAP - (8 if sp.kind == "win" else 0), b[2] + GAP, b[3] + GAP)
+
+
+def near_slot(key, specs, pos, edges, slots, blockers=(), anchors=("south", "north"), max_dx=24, rs=range(28, 57, 2), pad=4):
+    """The slot for `key` nearest to straight above or below its disc (the shortest distance, with a
+    sideways shift counting half), with every other label kept where `slots` has it.  The solver prefers the roomiest
+    slot, which can be far from the disc; this asks for the closest one that is clear, and asserts it
+    is within the limits of an unambiguous label: its own disc is nearest by OWN bp, nothing is hit."""
+    sp = specs[key]
+    n = sp.owner
+    others = [_slot_box(specs[k], pos, sd) for k, sd in slots.items() if k != key]
+    best = None
+    for anc in anchors:
+        for r in rs:
+            for dx in range(-max_dx, max_dx + 1, 2):
+                dy = r if anc == "south" else -r
+                if sp.kind == "win" and anc == "south" and r < 34:
+                    continue
+                b = _slot_box(sp, pos, (anc, dx, dy))
+                if not (BOUNDS[0] <= b[0] and b[2] <= BOUNDS[2] and BOUNDS[1] <= b[1] and b[3] <= BOUNDS[3]):
+                    continue
+                if any(F.box_hits_disc(b, x, y, DISC_R) for x, y in pos.values()):
+                    continue
+                if any(F.box_hits_segment(b, pos[u], pos[v], pad=pad) for u, v in edges):
+                    continue
+                if any(F.boxes_overlap(b, o) for o in others + list(blockers)):
+                    continue
+                cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+                own = float(np.hypot(cx - pos[n][0], cy - pos[n][1]))
+                if min(np.hypot(cx - p[0], cy - p[1]) for m_, p in pos.items() if m_ != n) - own <= OWN:
+                    continue
+                cost = r + 0.5 * abs(cx - pos[n][0])               # close to the disc, and close to straight above/below
+                if best is None or cost < best[0]:
+                    best = (cost, (anc, dx, dy))
+    assert best, f"no slot near {n}"
+    return best[1]
+
+
 def _solve(specs, pos, edges, blockers, bounds, sides, segs=(), fixed=None):
     rank = {"win": 0, "val": 1}
     order = sorted((k for k in specs if k not in (fixed or {})),
@@ -225,8 +266,8 @@ def draw(spec, side, pos, text=None, color=None):
     out = F.text(x, y, t, color=col, anchor=anc)
     if spec.kind == "win":
         cx = _text_x(x, anc, t)
-        uy = y - 40 if "north" in anc else y - LIFT + 3 if "south" in anc else y - 26
-        hw = CH * len(t) / 2 + 4
+        uy = y - 36 if "north" in anc else y - LIFT + 3 if "south" in anc else y - 26
+        hw = CH * len(t) / 2 + 4 if len(t) > 1 else CH / 2 + 0.5   # one digit: the brush is the digit's width
         out += F.underline(cx - hw, cx + hw, uy, color="hot")
     return out
 
@@ -280,7 +321,20 @@ def close_CB():
     values = {n: close_str(S.CB, n) for n in "NP"}
     assert values == {"P": "0.56", "N": "0.50"}
     assert max(values, key=values.get) == "P"
-    quiz("q-close-CB", S.CB, S.CB_XY, values, {"P"})
+    pos = layout(S.CB_XY, S.CB)
+    q = question(pos, S.CB)
+    specs = {n: Spec(v, n, "win" if n == "P" else "val") for n, v in values.items()}
+    edges = edge_list(S.CB)
+    slots = solve_slots(specs, pos, edges)
+    # N sits between the roads to L and to O, so the solver put its value 56 bp up, beside the L-N
+    # road; the nearest clear slot is directly above N (shifted off the L-N road), checked below
+    slots["N"] = near_slot("N", specs, pos, edges, slots, anchors=("south", "north"))
+    anc, dx, dy = slots["N"]
+    assert anc in ("south", "north") and abs(dy) <= 36 and abs(dx) <= 24, slots["N"]
+    ink = F.label_box(pos["N"][0] + dx, pos["N"][1] + dy, values["N"], anc, pad=0)
+    assert ink[0] <= pos["N"][0] <= ink[2], "N's value is not above or below N"
+    a = answer(q, pos, S.CB, values, {"P"}, slots=slots)
+    F.emit_group([("q-close-CB", q), ("q-close-CB-ans", a)], container="col", h=CANVAS_H)
 
 
 # --------------------------------------------------------------------------- the CA group
@@ -313,6 +367,7 @@ def union_box(bodies, h=CANVAS_H, container="col"):
 # drawn below and to the right of G so that G's value has the room; E's and G's are lifted clear of the
 # spokes and of H).
 CA_SLOTS = {"E": ("south", 0, 46), "F": ("north", 0, -28), "G": ("south", 0, 46)}
+CA_H_SLOT = ("south east", 40, 28)       # H's value: above H, flush right (H is 52 bp from the canvas edge)
 VSIDES = [(a, 0, d) for r in (28, 32, 38, 46, 56, 64, 72, 80) for a, d in (("south", r), ("north", -r))]
 
 
@@ -432,6 +487,30 @@ def ca_group():
     widest = {n: max(t, key=len) for n, t in uses.items()}
     specs = {n: Spec(widest[n], n, "win" if n in "EFG" else "val") for n in pos}
     slots = solve_slots(specs, pos, edges, blockers=[CROSS_BLOCK], fixed=CA_SLOTS, sides=VSIDES)
+    # H sits at the right edge of the canvas, and the solver's padded boxes leave no room for "10/3"
+    # beside or centred above it, so it pushed H's value 90 bp up, level with the callouts. H's value
+    # goes directly above H, flush to the right so that it clears G's value, which is checked here
+    # on the ink itself.
+    slots["H"] = CA_H_SLOT
+    anc, dx, dy = slots["H"]
+    for t in {"1/1", final["H"]}:
+        x, y = pos["H"][0] + dx, pos["H"][1] + dy
+        ink = (x - CH * len(t), y, x, y + 0.75 * F.FONT)
+        assert pos["H"][0] - DISC_R < ink[2] and ink[0] < pos["H"][0] + DISC_R, f"H's value {t!r} is not above H"
+        assert ink[1] - pos["H"][1] < 36, f"H's value {t!r} is not close to H"
+        assert BOUNDS[0] <= ink[0] and ink[2] <= BOUNDS[2] - 2 and ink[3] <= BOUNDS[3], f"H's value {t!r} out of bounds"
+        assert not any(F.box_hits_disc(ink, px, py, DISC_R + 4) for px, py in pos.values()), f"H's value {t!r} hits a disc"
+        assert not any(F.box_hits_segment(ink, pos[u], pos[v], pad=4) for u, v in edges), f"H's value {t!r} hits a road"
+        for n, sd in slots.items():
+            if n == "H":
+                continue
+            for u in (final[n], "1/1"):          # H is drawn only in the build frames
+                a2, dx2, dy2 = sd
+                sp = Spec(u, n, "win" if n in "EFG" else "val")
+                ox, oy = pos[n][0] + dx2, pos[n][1] + lifted(sp, a2, dy2)
+                ob = F.label_box(ox, oy, u, a2, pad=0)
+                assert not F.boxes_overlap((ink[0] - 8, ink[1] - 4, ink[2] + 8, ink[3] + 4), ob), \
+                    f"H's value {t!r} is within 8 bp of the value {u!r} of {n}"
 
     # q-close-CA-ans / q-harm-CA-ans use the same slots
     def ans(values, winners):
@@ -554,6 +633,15 @@ def eig():
         # the eigenvector answer and on the Katz answer (slide 70 shows the flip, nothing else moves)
         both = {n: Spec(ev_v[n], n, "win") for n in cand}
         slots = solve_slots(both, pos, edge_list(G))
+        if side == "R":
+            # the hub H has a road straight down, so a value centred under H would sit on it; the
+            # nearest clear slot starts at the road and runs to its right, directly under H's disc
+            sp = {n: Spec(ev_v[n], n, "win") for n in cand}
+            edges = edge_list(G)
+            slots["H"] = near_slot("H", sp, pos, edges, slots, anchors=("north west",), rs=range(26, 41, 2), pad=9)
+            anc, dx, dy = slots["H"]
+            ink = F.label_box(pos["H"][0] + dx, pos["H"][1] + dy, ev_v["H"], anc, pad=0)
+            assert ink[0] - pos["H"][0] < 12 and ink[2] > pos["H"][0] + DISC_R, "H's value is not under H"
         a = answer(q, pos, G, ev_v, {e_win}, letters=set(cand), slots=slots, level=True)
         k = answer(q, pos, G, kq_v, {k_win}, letters=set(cand), slots=slots, level=True)
         F.emit_group([(f"q-eig-{side}", q), (f"q-eig-{side}-ans", a), (f"q-katz-{side}-ans", k)],

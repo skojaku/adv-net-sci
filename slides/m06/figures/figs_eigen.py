@@ -248,7 +248,7 @@ def inherit_geometry():
 
 
 def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False, a_hot=True,
-                 into="A"):
+                 into="A", a_value=False):
     """One frame of eigen-inherit without its callout. `into`: the node whose neighbours'
     scores are summed (the brushes end there and the sum lines are its own); the sum lines
     keep A's left edge, so only the numbers change when `into` changes."""
@@ -269,7 +269,7 @@ def inherit_body(pos, strings, at, shown=(), brushes=(), clean=False, sums=False
         else:
             body += F.disc(*pos[n], n, fill="white")
     for n in NAMES:
-        if clean or n in shown:
+        if clean or n in shown or (a_value and n == "A"):
             body += F.text(*at[n], strings[n], color="ink")
     if sums:
         body += F.text(x0, INH_SUM1_Y, " + ".join(terms), anchor="west")
@@ -321,7 +321,8 @@ def fig_eigen_inherit():
     assert abs(float(lam) * float(strings["A"]) - total) < 1e-9
     f0, x0 = inherit_body(pos, strings, at)
     f1, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs)
-    f2, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs, sums=True)
+    # frame 02 prints A's own score where frame 03 prints it: the sum line reads "= 2.88 x 1.00"
+    f2, _ = inherit_body(pos, strings, at, shown=nbrs, brushes=nbrs, sums=True, a_value=True)
     # the second example: the leaf C, whose one neighbour D holds 2.88 times C's score
     assert sorted(S.EIG["C"]) == ["D"] and (strings["D"], strings["C"]) == ("0.58", "0.20")
     assert abs(LAM1 * V1["C"] - V1["D"]) < 1e-9

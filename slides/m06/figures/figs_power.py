@@ -120,19 +120,44 @@ def axis_titles():
     return o
 
 
+def start_label(r, c, k, tr, upper=False):
+    """A muted "start k" inside panel (r, c), in the half of the panel the lines never reach (from t = 2):
+    below the lines for the runs that end positive, above them for the run that ends negative.
+    Asserts that no line of the run passes through the word."""
+    t0 = 2
+    s = f"start {k}"
+    x, v = X(c, t0), (0.55 if upper else -0.58)
+    y = Y(r, v)
+    w = F.CHAR_W * FONT * len(s)
+    box = (x - 1, y - 15, x + w + 1, y + 16)
+    for t in range(T_MAX):
+        for i in range(len(NAMES)):
+            p0, p1 = (X(c, t), Y(r, tr[t][i])), (X(c, t + 1), Y(r, tr[t + 1][i]))
+            assert not F.box_hits_segment(box, p0, p1, pad=2), f"{s}: a line of the run passes through it"
+    return F.text(x, y, s, color="muted", anchor="west"), box
+
+
 def f_starts():
     check()
     A_IDX, C_IDX = NAMES.index("A"), NAMES.index("C")
     base = axis_titles()
+    labs = [start_label(0, 0, 1, RUNS[0]), start_label(0, 1, 2, RUNS[1]),
+            start_label(1, 0, 3, RUNS[2]), start_label(1, 1, 4, RUNS[3], upper=True)]
+    base += "".join(t for t, _ in labs)
     pos = (panel(0, 0, RUNS[0], "ink", label_nodes=(A_IDX, C_IDX))
            + panel(0, 1, RUNS[1], "ink")
            + panel(1, 0, RUNS[2], "ink"))
     frame0 = base + pos + panel(1, 1, None, "ink")
     # the note sits in the gap between the rows, above panel 4, and points down into its lines
     tr = RUNS[3]
-    target = (X(1, 13), Y(1, tr[13][NAMES.index("E")]))
-    note, box = F.callout("all negative:\\\\flip the sign", (COL_X[1] + PLOT_W + 18, Y(0, -YLIM) - 12),
-                          target, anchor="north east", gap=10)
+    # the arrow comes down at the right end of the panel, clear of the label "start 4" (which ends at t = 17)
+    target = (X(1, 19), Y(1, tr[19][NAMES.index("E")]))
+    at = (COL_X[1] + PLOT_W + 18, Y(0, -YLIM) - 12)
+    bx = F.label_box(at[0], at[1], "all negative:\\\\flip the sign", "north east", pad=2)
+    note, box = F.callout("all negative:\\\\flip the sign", at, target, anchor="north east", gap=10,
+                          tip=(target[0], bx[1] - 4))
+    assert target[0] > labs[3][1][2] + 12, "the arrow of the note runs through the label of panel 4"
+    assert not F.boxes_overlap(box, labs[3][1]), "the note covers the label of panel 4"
     frame1 = base + pos + panel(1, 1, tr, "hot") + note
     F.emit_frames("power-starts", [frame0, frame1], container="col", h=420, hmod="tall", nodes=False)
     d = F.FRAMES / "power-starts"
