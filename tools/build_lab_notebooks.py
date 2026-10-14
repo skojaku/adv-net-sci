@@ -297,63 +297,49 @@ M05 = [
 ]
 
 # ---------------------------------------------------------------------------
-# Module 6 -- the Big Cheese by machine, then Rome. Five blanks, all typed
-# from a block on the page: the club network read off the sheet's picture,
-# Question 4's count, Question 5's average distance, Question 6's pairs cut
-# off, and Question 7's game played forever. The worked copy fills them in
-# and says so in the title.
+# Module 6 -- what "central" means, on one eleven-node network, then Rome as a
+# reward. Five blanks, all typed from a block on the page: the network read off
+# the picture, the degree, the average distance, the betweenness and the score
+# game played a hundred rounds. The worked copy fills them in and says so in
+# the title.
 # ---------------------------------------------------------------------------
 M06 = [
-    # The thirteen students, read off the picture on the sheet.
+    # The eleven nodes, read off the picture.
     (
-        "    g_clubs = ...  # TASK",
-        """    g_clubs = igraph.Graph(
-        n=CLUB_N,
+        "    g = ...  # TASK",
+        """    g = igraph.Graph(
+        n=NET_N,
         edges=[
-            (0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (3, 5), (3, 6), (4, 5),
-            (6, 7), (6, 8), (6, 9), (7, 8), (7, 9), (8, 9), (9, 10), (9, 11), (9, 12),
+            (0, 1), (1, 2), (1, 3), (1, 4), (2, 5), (3, 7), (4, 5), (4, 6),
+            (5, 6), (6, 8), (7, 8), (8, 9), (9, 10),
         ],
     )""",
     ),
-    # Question 4, one line of igraph.
     (
-        "    friends = ...  # TASK",
-        "    friends = g_clubs.degree()",
+        "    degree = ...  # TASK",
+        "    degree = g.degree()",
     ),
-    # Question 5: the whole distance table, each row summed and shared out.
     (
         "    avg_distance = ...  # TASK",
-        """    distances = np.asarray(g_clubs.distances())
-    avg_distance = distances.sum(axis=1) / (g_clubs.vcount() - 1)""",
+        """    distances = np.asarray(g.distances())
+    avg_distance = distances.sum(axis=1) / (g.vcount() - 1)""",
     ),
-    # Question 6: delete a student, count the pairs that can no longer reach.
     (
-        "    cut_off = ...  # TASK",
-        """    cut_off = []
-    for name in NAMES:
-        h = g_clubs.copy()
-        h.delete_vertices(NAMES.index(name))
-        sizes = [len(c) for c in h.components()]
-        cut_off.append(
-            sum(sizes[a] * sizes[b]
-                for a in range(len(sizes))
-                for b in range(a + 1, len(sizes)))
-        )""",
+        "    betweenness = ...  # TASK",
+        "    betweenness = g.betweenness()",
     ),
-    # Question 7 forever: one round is one multiplication.
     (
         "    settled = ...  # TASK",
-        """    A = np.asarray(g_clubs.get_adjacency().data, dtype=float)
-    scores = np.ones(g_clubs.vcount())
+        """    A = np.asarray(g.get_adjacency().data, dtype=float)
+    settled = np.ones(g.vcount())
     for _ in range(100):
-        scores = A @ scores
-        scores = scores / scores.max()
-    settled = scores""",
+        settled = A @ settled
+        settled = settled / settled.max()""",
     ),
     # Say on the page which copy this is.
     (
-        "    # Lab · The Big Cheese, by machine\n",
-        "    # Lab · The Big Cheese, by machine — worked copy\n",
+        "    # Lab · Who is central?\n",
+        "    # Lab · Who is central? — worked copy\n",
     ),
 ]
 

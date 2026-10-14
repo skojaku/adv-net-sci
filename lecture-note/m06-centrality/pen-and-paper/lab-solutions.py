@@ -14,39 +14,28 @@
 # which fills in every blank of lab.py and writes this. The student's copy is
 # lab.py; edit that one.
 #
-# The Module 6 lab, done alone at a laptop: the sheet by machine, then Rome.
+# The Module 6 lab, done alone at a laptop: what "central" means.
 #
-# The pen-and-paper sheet ("Who's the Big Cheese in the University Clubs?")
-# ranks thirteen students four different ways with a pencil: count the
-# friends, measure the distances, ask who is indispensable, pass scores
-# around. This notebook runs the same four questions by machine, checks the
-# pencil answers, and then asks the empire the same four questions — the
-# course's twelve-city Roman map, where the Golden Milestone's city takes
-# every crown but one.
+# One small network, eleven nodes, chosen so that four different questions
+# crown four different nodes: who has the most friends, who is nearest to
+# everyone, who lies on the most shortest routes, whose friends matter most.
+# The student types each answer in igraph, then the notebook unlocks a reward:
+# the same four questions asked of the Roman Empire.
 #
-# The notebook is in three layers, and only the top one is a student's:
-#
-#   * the kit     -- everything in the setup block: the SVG drawing, the two
-#                   networks, the answers the checks mark against. Hidden.
-#   * the cells   -- the warm-up, the figures, the Rome map, the cut
-#                   experiment. They run themselves.
-#   * the blanks  -- five cells that say `...`: build the club network, then
-#                   Question 4's count, Question 5's average distance,
-#                   Question 6's pairs cut off, and Question 7's game played
-#                   forever. All typed from a block on the page that cannot
-#                   be selected, so it cannot be pasted.
+#   * the kit     -- the setup block: the SVG drawing, the two networks, the
+#                   answers the checks mark against. Hidden.
+#   * the cells   -- they run themselves.
+#   * the blanks  -- five cells that say `...`: build the network, then the
+#                   degree, the average distance, the betweenness and the
+#                   settled score game. All typed from a block on the page that
+#                   cannot be selected, so it cannot be pasted.
 #
 # Rules this file obeys, learned on m01 and m02:
 #
-#   * The teaching figure is not the student's task. The warm-up and every
-#     worked figure run on the five-node network from the lecture notes (a
-#     triangle and a tail, numbered from 0), never on the club network —
-#     because a coloured-in club network is Question 4's answer sitting on
-#     the screen. The club network appears as a picture with the students
-#     numbered, and no cell anywhere prints its edge list.
-#   * The checks mark against answers held in the hidden kit, so unfolding a
-#     marking cell does not hand over the answer it marks against, and each
-#     check names the mistake rather than saying "wrong".
+#   * No cell prints the edge list. The network is a picture with the nodes
+#     numbered, and the student reads the pairs off it.
+#   * The checks mark against answers held in the hidden kit, and each check
+#     names the mistake rather than saying "wrong".
 #   * A waiting card, not an exception, for anything downstream of a blank.
 #   * The stylesheet travels inside the file. molab ignores css_file
 #     (marimo-team/marimo#8467), so lecture-hall.css is carried here as
@@ -55,12 +44,9 @@
 #   * Nothing is fetched at run time. Rome's twelve cities, their positions
 #     and their roads are typed in below: they follow the course's Module 6
 #     map (slides/m06/figures/verify_numbers.py), which records every edge
-#     as a documented Roman road or sea lane. A bigger Roman road network
-#     lives in the repository under data/roman-roads; this lab does not use
-#     it.
+#     as a documented Roman road or sea lane.
 #   * igraph is pinned to the version the coding notebooks already use
-#     (python-igraph==0.11.9), so the idiom a student meets here is the one
-#     they meet there.
+#     (python-igraph==0.11.9).
 
 import marimo
 
@@ -90,7 +76,6 @@ with app.setup(hide_code=True):
     BLUE = "#3959A6"
     RUST = "#B14434"
     PAPER = "#FFFDF7"
-    GREY = "#BDB8AA"
     MUTED = "#6A6D75"
     MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
     SANS = "system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
@@ -113,11 +98,14 @@ with app.setup(hide_code=True):
             f'margin:14px 0;font-family:{SANS};font-size:16px;color:{INK}">{text}</div>'
         )
 
-    WAITING = mo.Html(
-        f'<div style="font-family:{SANS};font-size:15px;color:{MUTED};'
-        f'border:1.5px dashed {RULE};border-radius:{WOBBLE};padding:10px 14px;'
-        'display:inline-block">Waiting on the cells above.</div>'
-    )
+    def card(text):
+        return mo.Html(
+            f'<div style="font-family:{SANS};font-size:15px;color:{MUTED};'
+            f'border:1.5px dashed {RULE};border-radius:{WOBBLE};padding:10px 14px;'
+            f'display:inline-block">{text}</div>'
+        )
+
+    WAITING = card("Waiting on the cells above.")
 
     def type_me(src):
         """A block of code to read and type. It cannot be selected, so it
@@ -130,13 +118,9 @@ with app.setup(hide_code=True):
             f"{html.escape(_inspect.cleandoc(src))}</pre>"
         )
 
-    def two_col(left, right, left_basis=320):
-        return mo.Html(
-            '<div style="display:flex;gap:26px;align-items:center;'
-            'justify-content:flex-start;flex-wrap:wrap">'
-            f'<div style="flex:0 0 {left_basis}px;max-width:100%">{left}</div>'
-            f'<div style="flex:0 1 auto;min-width:170px">{right}</div></div>'
-        )
+    def ask(text, code):
+        """A line of words above a block to type."""
+        return mo.vstack([mo.md(_inspect.cleandoc(text)), type_me(code)])
 
     def as_numbers(x, n):
         """x as a float array, or None if it is not n numbers."""
@@ -146,116 +130,106 @@ with app.setup(hide_code=True):
             return None
         return a if a.shape == (n,) else None
 
-    # ---- the worked network: the lecture notes' five nodes -------------------
-    # Nodes 1-5 of the running example in 01-concepts.qmd, renumbered from 0
-    # because that is how Python counts. A triangle and a tail, with the
-    # three-way degree tie (nodes 0, 1 and 3) that every measure breaks
-    # differently. It is the network of every worked figure in this file, and
-    # the club network never appears in one.
-    FIVE_N = 5
-    FIVE_EDGES = [(0, 1), (0, 2), (1, 2), (2, 3), (3, 4)]
-    _FIVE_POS = {0: (52, 74), 1: (52, 166), 2: (150, 120), 3: (248, 120), 4: (346, 120)}
+    # ---- the network: eleven nodes, four different crowns --------------------
+    # Found by search: of all the small connected networks, this is one where
+    # the most friends, the shortest distances, the most shortest routes and
+    # the settled score game each pick a different node (1, 6, 8 and 4), by a
+    # clear margin. The picture is drawn with no crossing lines.
+    NET_N = 11
+    _NET_EDGES = [
+        (0, 1), (1, 2), (1, 3), (1, 4), (2, 5), (3, 7), (4, 5), (4, 6),
+        (5, 6), (6, 8), (7, 8), (8, 9), (9, 10),
+    ]
+    NET_M = len(_NET_EDGES)
+    _NET_POS = {
+        0: (60, 150), 1: (140, 150), 2: (190, 70), 3: (200, 240), 4: (250, 150),
+        5: (280, 70), 6: (340, 110), 7: (350, 240), 8: (410, 150), 9: (470, 100),
+        10: (510, 50),
+    }
 
-    def five_adjacency():
-        A = np.zeros((FIVE_N, FIVE_N), dtype=float)
-        for i, j in FIVE_EDGES:
-            A[i, j] = A[j, i] = 1.0
-        return A
+    # The answers, held here so the marking cells never carry them.
+    _net = igraph.Graph(n=NET_N, edges=_NET_EDGES)
+    NET_TRUTH = {
+        "degree": np.array(_net.degree(), dtype=float),
+        "avg": np.asarray(_net.distances(), dtype=float).sum(axis=1) / (NET_N - 1),
+        "betweenness": np.array(_net.betweenness(), dtype=float),
+    }
+    _net_A = np.zeros((NET_N, NET_N), dtype=float)
+    for _i, _j in _NET_EDGES:
+        _net_A[_i, _j] = _net_A[_j, _i] = 1.0
 
-    def five_scores(k):
-        """The sheet's Question 7 game on the worked network, run raw: everyone
-        starts with one point; each round, every node takes the sum of its
-        friends' scores. No division, so the student watching the slider sees
-        the numbers run away — Question 12's question."""
-        c = np.ones(FIVE_N)
+    def net_rounds(k):
+        """The score game after k rounds, divided by the biggest each round."""
+        c = np.ones(NET_N)
         for _ in range(k):
-            c = five_adjacency() @ c
+            c = _net_A @ c
+            c = c / c.max()
         return c
 
-    # ---- the student's network: the sheet's thirteen students ----------------
-    # Sarah, Mike, Emma and the rest, in the order of the sheet's tables. The
-    # edge list is the kit's own copy: the checks mark against it, the picture
-    # is drawn from it, and no cell ever prints it.
-    NAMES = [
-        "Sarah", "Mike", "Emma", "Alex", "Olivia", "James", "Sophia",
-        "Ethan", "Ava", "Noah", "Lily", "Lucas", "Henry",
-    ]
-    CLUB_N = 13
-    _CLUB_EDGES = [
-        (0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (3, 5), (3, 6), (4, 5),
-        (6, 7), (6, 8), (6, 9), (7, 8), (7, 9), (8, 9), (9, 10), (9, 11), (9, 12),
-    ]
-    _EDGE_CLUB = {
-        (0, 1): "Drama Club", (0, 2): "Drama Club", (1, 2): "Drama Club",
-        (2, 3): "Art Club", (3, 4): "Volunteer Club", (3, 5): "Volunteer Club",
-        (4, 5): "Volunteer Club", (3, 6): "Sailing Club", (6, 7): "Chess Club",
-        (6, 8): "Chess Club", (6, 9): "Chess Club", (7, 8): "Chess Club",
-        (7, 9): "Chess Club", (8, 9): "Chess Club", (9, 10): "Debate Team",
-        (9, 11): "Math Club", (9, 12): "Tennis Club",
-    }
+    NET_SETTLED = net_rounds(100)
 
-    # The sheet's page-3 drawing, same places, scaled into a box.
-    _CLUB_POS = {
-        0: (30, 80), 1: (30, 182), 2: (86, 131), 3: (176, 131), 4: (239, 60),
-        5: (310, 60), 6: (264, 131), 7: (336, 80), 8: (336, 182), 9: (400, 131),
-        10: (473, 80), 11: (484, 131), 12: (473, 182),
-    }
+    def order_indices(values):
+        """Indices best first, ties broken by position so both sides of a
+        comparison agree."""
+        v = np.asarray(values, float)
+        return list(np.lexsort((np.arange(len(v)), -np.where(np.isfinite(v), v, -np.inf))))
 
-    # The pencil answers, held here so the marking cells never carry them.
-    # Every list is in NAMES order; Question 7's two rounds are the sheet's own
-    # Question 7 columns, and the settled game is the same loop run to a
-    # hundred rounds, normalised by the biggest each round.
-    CLUB_M = len(_CLUB_EDGES)
-    CLUB_TRUTH = {
-        "degree": [2, 2, 3, 4, 2, 2, 4, 3, 3, 6, 1, 1, 1],
-        "avg": [3.3333333333333335, 3.3333333333333335, 2.5, 1.9166666666666667,
-                2.75, 2.75, 1.8333333333333333, 2.3333333333333335, 2.3333333333333335,
-                2.0833333333333335, 3.0, 3.0, 3.0],
-        "cut": [0, 0, 20, 41, 0, 0, 36, 0, 0, 30, 0, 0, 0],
-    }
-    _club_A = np.zeros((CLUB_N, CLUB_N), dtype=float)
-    for _i, _j in _CLUB_EDGES:
-        _club_A[_i, _j] = _club_A[_j, _i] = 1.0
-    CLUB_ROUND2 = _club_A @ (_club_A @ np.ones(CLUB_N))  # the sheet's Question 7
-    _settled = np.ones(CLUB_N)
-    for _ in range(100):
-        _settled = _club_A @ _settled
-        _settled = _settled / _settled.max()
-    CLUB_SETTLED = _settled  # the game settled: eigenvector centrality, Noah = 1
-
-    def club_ready(g):
-        """True once the cell above built the sheet's network."""
+    def net_ready(g):
+        """True once the cell above built the network."""
         try:
-            if g.vcount() != CLUB_N or g.ecount() != CLUB_M:
+            if g.vcount() != NET_N or g.ecount() != NET_M:
                 return False
             mine = sorted(tuple(sorted(e)) for e in g.get_edgelist())
-            want = sorted(tuple(sorted(e)) for e in _CLUB_EDGES)
-            return mine == want
+            return mine == sorted(_NET_EDGES)
         except Exception:
             return False
 
-    def club_missing(g):
-        """The first pair a wrong build is missing or inventing, with its club.
-        Only called once the node count is right."""
+    def net_missing(g):
+        """The first pair a wrong build is missing or inventing."""
         mine = {tuple(sorted(e)) for e in g.get_edgelist()}
-        want = {tuple(sorted(e)) for e in _CLUB_EDGES}
-        missing = sorted(want - mine)
-        extra = sorted(mine - want)
+        want = {tuple(sorted(e)) for e in _NET_EDGES}
+        missing, extra = sorted(want - mine), sorted(mine - want)
         hint = ""
         if missing:
-            i, j = missing[0]
-            hint = f"the {_EDGE_CLUB[missing[0]]} pair {NAMES[i]}\u2013{NAMES[j]} is missing"
+            hint = f"the pair {missing[0][0]}–{missing[0][1]} is missing"
         if extra:
-            i, j = extra[0]
-            more = f"{NAMES[i]}\u2013{NAMES[j]} is not a pair on the sheet"
-            hint = f"{hint}, and {more}" if hint else f"{more}"
+            more = f"{extra[0][0]}–{extra[0][1]} is not in the picture"
+            hint = f"{hint}, and {more}" if hint else more
         return hint
+
+    def ok_degree(x):
+        v = as_numbers(x, NET_N)
+        return v is not None and np.allclose(v, NET_TRUTH["degree"], atol=1e-9)
+
+    def ok_avg(x):
+        v = as_numbers(x, NET_N)
+        return v is not None and np.allclose(v, NET_TRUTH["avg"], atol=1e-6)
+
+    def ok_betweenness(x):
+        v = as_numbers(x, NET_N)
+        return v is not None and np.allclose(v, NET_TRUTH["betweenness"], atol=1e-6)
+
+    def ok_settled(x):
+        v = as_numbers(x, NET_N)
+        return v is not None and (
+            np.allclose(v, NET_SETTLED, atol=1e-6)
+            or order_indices(v) == order_indices(NET_SETTLED)
+        )
+
+    def all_green(g, degree, avg_distance, betweenness, settled):
+        if any(x is ... for x in (g, degree, avg_distance, betweenness, settled)):
+            return False
+        return (
+            net_ready(g)
+            and ok_degree(degree)
+            and ok_avg(avg_distance)
+            and ok_betweenness(betweenness)
+            and ok_settled(settled)
+        )
 
     # ---- Rome: the course's twelve cities ------------------------------------
     # The Module 6 deck's map: every edge a documented Roman road or a
-    # documented sea lane, positions the real longitude and latitude. The
-    # Channel crossing is the deck's cut: the only edge whose loss strands a
-    # city.
+    # documented sea lane, positions the real longitude and latitude.
     ROMA_CITIES = [
         "Londinium", "Colonia", "Lugdunum", "Massilia", "Tarraco", "Mediolanum",
         "Roma", "Carthago", "Thessalonica", "Athenae", "Byzantium", "Alexandria",
@@ -275,26 +249,22 @@ with app.setup(hide_code=True):
         ("Thessalonica", "Athenae"), ("Athenae", "Byzantium"),
         ("Athenae", "Alexandria"), ("Byzantium", "Alexandria"),
     ]
-    CHANNEL = ("Colonia", "Londinium")  # the sea route the cut experiment removes
     _ROMA_N = len(ROMA_CITIES)
     ROMA_IDX = {c: i for i, c in enumerate(ROMA_CITIES)}
     _ROMA_LABEL = {  # which side of its disc each name sits on
-        "Londinium": "r", "Colonia": "r", "Lugdunum": "l", "Massilia": "d",
+        "Londinium": "d", "Colonia": "r", "Lugdunum": "l", "Massilia": "d",
         "Tarraco": "r", "Mediolanum": "r", "Roma": "d", "Carthago": "l",
         "Thessalonica": "u", "Athenae": "d", "Byzantium": "l", "Alexandria": "l",
     }
-
-    def roma_graph(cut=False):
-        g = igraph.Graph(
-            n=_ROMA_N,
-            edges=[
-                (ROMA_IDX[a], ROMA_IDX[b])
-                for a, b in ROMA_EDGES
-                if not (cut and {a, b} == set(CHANNEL))
-            ],
-        )
-        g.vs["name"] = ROMA_CITIES
-        return g
+    _ROMA_G = igraph.Graph(
+        n=_ROMA_N, edges=[(ROMA_IDX[a], ROMA_IDX[b]) for a, b in ROMA_EDGES]
+    )
+    ROMA_MEASURES = {
+        "degree": np.array(_ROMA_G.degree(), dtype=float),
+        "closeness": np.array(_ROMA_G.closeness(), dtype=float),
+        "betweenness": np.array(_ROMA_G.betweenness(), dtype=float),
+        "eigenvector": np.array(_ROMA_G.eigenvector_centrality(), dtype=float),
+    }
 
     # ---- drawing --------------------------------------------------------------
 
@@ -307,91 +277,51 @@ with app.setup(hide_code=True):
             f'<g filter="url(#lh-pen)">{body}</g></svg>'
         )
 
-    def _edge_lines(edges, pos, dashed=(), width=2.0, opacity=0.4):
-        out = []
-        for i, j in edges:
-            (x1, y1), (x2, y2) = pos[i], pos[j]
-            if tuple(sorted((i, j))) in dashed:
-                out.append(
-                    f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                    f'stroke="{RUST}" stroke-width="{width + 1}" stroke-dasharray="6 6" '
-                    f'stroke-linecap="round" opacity="0.9"/>'
-                )
-            else:
-                out.append(
-                    f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                    f'stroke="{INK}" stroke-width="{width}" opacity="{opacity}" '
-                    f'stroke-linecap="round"/>'
-                )
-        return "".join(out)
+    def _edge_lines(edges, pos, width=2.0, opacity=0.4):
+        return "".join(
+            f'<line x1="{pos[i][0]:.1f}" y1="{pos[i][1]:.1f}" '
+            f'x2="{pos[j][0]:.1f}" y2="{pos[j][1]:.1f}" stroke="{INK}" '
+            f'stroke-width="{width}" opacity="{opacity}" stroke-linecap="round"/>'
+            for i, j in edges
+        )
 
-    def five_svg(scores=None):
-        """The worked network, discs scaled by the scores of the round shown."""
-        scores = np.ones(FIVE_N) if scores is None else np.asarray(scores, float)
-        top = scores.max() if scores.max() else 1
-        r = 13 + 11 * scores / top
-        body = [_edge_lines(FIVE_EDGES, _FIVE_POS)]
-        for i in range(FIVE_N):
-            x, y = _FIVE_POS[i]
-            body.append(
-                f'<circle cx="{x}" cy="{y}" r="{r[i]:.1f}" fill="{PAPER}" '
-                f'stroke="{INK}" stroke-width="2.4"/>'
-            )
-        body.append("</g>")
-        for i in range(FIVE_N):
-            x, y = _FIVE_POS[i]
-            body.append(
-                f'<text x="{x}" y="{y + 4:.0f}" text-anchor="middle" font-size="12" '
-                f'font-family="{SANS}" font-weight="700" fill="{INK}">{i}</text>'
-                f'<text x="{x:.0f}" y="{y - r[i] - 7:.0f}" text-anchor="middle" '
-                f'font-family="{MONO}" font-size="12" fill="{RUST}">'
-                f"{scores[i]:g}</text>"
-            )
-        return _svg(400, 220, "".join(body))
+    def _radii(values, lo, span):
+        """Discs from lo to lo + span, the smallest value to the biggest."""
+        v = np.asarray(values, float)
+        v = np.where(np.isfinite(v), v, 0.0)
+        spread = v.max() - v.min()
+        return (lo + span * (v - v.min()) / (spread if spread else 1)).tolist()
 
-    def club_svg(values=None, hot=()):
-        """The sheet's network: students numbered 0 to 12, names beside, discs
-        scaled by `values` (one number per student; None for plain)."""
-        if values is None:
-            r = [15.0] * CLUB_N
-            shown = None
-        else:
-            v = np.asarray(values, float)
-            v = np.where(np.isfinite(v), v, 0.0)
-            top = np.abs(v).max() if np.abs(v).max() else 1
-            r = (11 + 12 * np.abs(v) / top).tolist()
-            shown = v
-        body = [_edge_lines(_CLUB_EDGES, _CLUB_POS)]
-        for i in range(CLUB_N):
-            x, y = _CLUB_POS[i]
+    def net_svg(values=None, hot=(), fmt="{:g}"):
+        """The network, nodes numbered. With `values`, discs are sized by them
+        and each number is written above its disc; `hot` nodes are filled."""
+        r = [15.0] * NET_N if values is None else _radii(values, 11, 11)
+        body = [_edge_lines(_NET_EDGES, _NET_POS)]
+        for i in range(NET_N):
+            x, y = _NET_POS[i]
             fill = RUST if i in hot else PAPER
             body.append(
                 f'<circle cx="{x}" cy="{y}" r="{r[i]:.1f}" fill="{fill}" '
                 f'stroke="{INK}" stroke-width="2.2"/>'
             )
         body.append("</g>")
-        for i in range(CLUB_N):
-            x, y = _CLUB_POS[i]
-            label_color = PAPER if i in hot else INK
+        for i in range(NET_N):
+            x, y = _NET_POS[i]
+            label = PAPER if i in hot else INK
             body.append(
-                f'<text x="{x}" y="{y + 4:.0f}" text-anchor="middle" font-size="11" '
-                f'font-family="{SANS}" font-weight="700" fill="{label_color}">{i}</text>'
-                f'<text x="{x:.0f}" y="{y - r[i] - 6:.0f}" text-anchor="middle" '
-                f'font-size="10.5" font-family="{SANS}" fill="{MUTED}">{NAMES[i]}</text>'
+                f'<text x="{x}" y="{y + 4:.0f}" text-anchor="middle" font-size="12" '
+                f'font-family="{SANS}" font-weight="700" fill="{label}">{i}</text>'
             )
-            if shown is not None:
-                side = "start" if x < 250 else "end"
-                dx = r[i] + 5 if x < 250 else -(r[i] + 5)
+            if values is not None:
                 body.append(
-                    f'<text x="{x + dx:.0f}" y="{y + 4:.0f}" text-anchor="{side}" '
-                    f'font-family="{MONO}" font-size="11.5" fill="{RUST}">'
-                    f"{shown[i]:g}</text>"
+                    f'<text x="{x}" y="{y - r[i] - 6:.0f}" text-anchor="middle" '
+                    f'font-family="{MONO}" font-size="12" fill="{RUST}">'
+                    f"{fmt.format(values[i])}</text>"
                 )
-        return _svg(514, 214, "".join(body))
+        return _svg(560, 280, "".join(body))
 
     def roma_xy(width=620, height=470, pad=16):
-        """Longitude and latitude into the box, north up: the exercise
-        notebook's flat map, no tiles to fetch."""
+        """Longitude and latitude into the box, north up: no tiles to fetch."""
         lons = [p[0] for p in ROMA_LONLAT.values()]
         lats = [p[1] for p in ROMA_LONLAT.values()]
         lo, hi = min(lons), max(lons)
@@ -404,20 +334,13 @@ with app.setup(hide_code=True):
             for c, (lon, lat) in ROMA_LONLAT.items()
         }
 
-    def roma_svg(values=None, cut=False, crown=(), w=620, h=470):
+    def roma_svg(values, crown, w=620, h=470):
         """The empire: roads and sea lanes, cities sized by `values`, the
-        winning cities' discs filled, the Channel crossing dashed when cut."""
+        winning city's disc filled."""
         pos = roma_xy(w, h)
         edges = [(ROMA_IDX[a], ROMA_IDX[b]) for a, b in ROMA_EDGES]
-        dashed = {tuple(sorted((ROMA_IDX[CHANNEL[0]], ROMA_IDX[CHANNEL[1]])))} if cut else set()
-        body = [_edge_lines(edges, pos, dashed=dashed, width=1.7, opacity=0.5)]
-        if values is None:
-            r = [9.0] * _ROMA_N
-        else:
-            v = np.asarray(values, float)
-            v = np.where(np.isfinite(v), v, 0.0)
-            top = np.abs(v).max() if np.abs(v).max() else 1
-            r = (7 + 10 * np.abs(v) / top).tolist()
+        body = [_edge_lines(edges, pos, width=1.7, opacity=0.5)]
+        r = _radii(values, 7, 10)
         for i in range(_ROMA_N):
             x, y = pos[i]
             fill = RUST if ROMA_CITIES[i] in crown else PAPER
@@ -444,41 +367,6 @@ with app.setup(hide_code=True):
             )
         return _svg(w, h, "".join(body))
 
-    def bars_html(values, labels, fmt="{:g}", width=250, top=None):
-        """One bar per entry, capped by `top` so wild rounds stay readable."""
-        v = np.asarray(values, float)
-        v = np.where(np.isfinite(v), v, 0.0)
-        hi = top if top else (np.abs(v).max() if np.abs(v).max() else 1)
-        rows = []
-        for i, x in enumerate(v):
-            frac = min(1.0, abs(x) / (hi if hi else 1))
-            rows.append(
-                f'<div style="display:flex;align-items:center;gap:8px;margin:2.5px 0">'
-                f'<span style="width:86px;text-align:right;font-size:11.5px;'
-                f'font-family:{SANS};color:{INK};overflow:hidden;'
-                f'white-space:nowrap">{labels[i]}</span>'
-                f'<span style="flex:0 0 {width}px;height:12px;'
-                f'background:{PAPER};border:1px solid {RULE};'
-                f'border-radius:4px 2px 3px 2px">'
-                f'<span style="display:block;height:100%;width:{100 * frac:.1f}%;'
-                f'background:{BLUE};border-radius:3px 1px 2px 1px"></span></span>'
-                f'<span style="font-family:{MONO};font-size:11.5px;color:{INK}">'
-                f"{fmt.format(x)}</span></div>"
-            )
-        return f'<div style="font-family:{SANS}">{''.join(rows)}</div>'
-
-    def winner_name(values, smallest=False):
-        """The names holding the best value, ties included."""
-        v = np.asarray(values, float)
-        best = np.nanmin(v) if smallest else np.nanmax(v)
-        return ", ".join(NAMES[i] for i in np.flatnonzero(v == best))
-
-    def order_indices(values):
-        """Indices best first, ties broken by position so both sides of a
-        comparison agree."""
-        v = np.asarray(values, float)
-        return list(np.lexsort((np.arange(len(v)), -np.where(np.isfinite(v), v, -np.inf))))
-
 
 @app.cell(hide_code=True)
 def _():
@@ -491,15 +379,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    # Lab · The Big Cheese, by machine — worked copy
+    # Lab · Who is central? — worked copy
 
-    **On your own**, with the sheet next to the laptop.
-
-    Every number this notebook asks for is one you have already written in
-    pencil. When the screen and the sheet disagree, one of them is wrong, and
-    finding out which is the exercise. At the end, the machine asks the Roman
-    Empire the same questions the sheet asked your university clubs.
-
+    Eleven nodes, four ways to ask which one matters most.
     Cells marked ✍️ are yours. Everything else runs itself.
     """)
     return
@@ -510,163 +392,407 @@ def _():
     mo.md(r"""
     ---
 
-    # 1 · Watch the scores go around
+    # 1 · ✍️ The network
 
-    Here is a different network first, nothing like yours: five nodes, a
-    triangle and a tail — the one from the lecture notes. Everyone starts
-    with one point. Each round, every node throws its own score away and
-    takes **the sum of its friends' scores** instead.
+    Which node looks the most central? Pick one before you compute anything.
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    anim = mo.ui.slider(0, 12, value=0, label="rounds", show_value=True)
-    anim
-    return (anim,)
-
-
-@app.cell(hide_code=True)
-def _(anim):
-    two_col(
-        five_svg(five_scores(anim.value)),
-        bars_html(
-            five_scores(anim.value),
-            [f"node {i}" for i in range(FIVE_N)],
-            top=max(2.0, float(five_scores(anim.value).max()) * 0.6),
-        ),
+    guess = mo.ui.dropdown(
+        options=[str(i) for i in range(NET_N)], label="my guess: node"
     )
-    return
-
-
-@app.cell(hide_code=True)
-def _(anim):
-    if anim.value == 0:
-        _text = (
-            "Everyone starts with one point. Drag the slider."
-        )
-    elif anim.value == 1:
-        _text = (
-            "Round 1 <b>is</b> the friends count — Question 4 on your sheet, which the "
-            "notes call <b>degree</b>. Drag on."
-        )
-    elif anim.value == 2:
-        _text = (
-            "Round 2 is the score-passing game — Question 7 on your sheet, and its "
-            "answer for this network. Keep dragging."
-        )
-    elif anim.value >= 12:
-        _text = (
-            "The <b>order</b> stopped changing several rounds ago — another round now "
-            "multiplies every score by the same number, so the ranking never moves "
-            "again. That settled ranking is the **eigenvector centrality** of the "
-            "lecture notes. And the numbers themselves have run away, which is "
-            "Question 12's question: the recipe needs one more line, <i>divide by "
-            "the biggest</i>, to run forever."
-        )
-    else:
-        _text = (
-            "Watch the numbers grow — and watch node 2 pull away. The order settles "
-            "long before round 12; drag there to see it stand still."
-        )
-    note(_text, RUST if anim.value in (1, 2) else BLUE)
-    return
+    mo.vstack([mo.Html(net_svg()), guess])
+    return (guess,)
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Node 2 wins every question on this little network — most friends, shortest
-    distances, most paths through it, best-connected friends. The notes use it
-    to check arithmetic and warn that it is a bad place to learn what
-    centrality *is*. Your thirteen students argue with each other far better.
-
-    ---
-
-    # 2 · ✍️ Your own network
-
-    The thirteen students and eight clubs off your sheet. Nothing below prints
-    the friendships: **you read them off the picture**, which is your sheet's
-    drawing with the students numbered `0` to `12` in the order of its tables.
-    One pair per friendship — wherever two students share a club they are
-    friends, and a pair who share two clubs are still friends just once.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.Html(club_svg())
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.vstack(
-        [
-            mo.md(r"""
-    A network is a list of pairs. igraph turns the list into a network:
-    """),
-            type_me("my_net = igraph.Graph(n=5, edges=[(0, 1), (0, 2)])"),
-        ]
+    ask(
+        """
+        Now build it: one pair per line in the picture. igraph turns a list of
+        pairs into a network:
+        """,
+        "my_net = igraph.Graph(n=5, edges=[(0, 1), (0, 2)])",
     )
     return
 
 
 @app.cell
 def _():
-    # ✍️ Build the club network. One pair per friendship, read off the picture.
-    g_clubs = igraph.Graph(
-        n=CLUB_N,
+    # ✍️ Build the network.
+    g = igraph.Graph(
+        n=NET_N,
         edges=[
-            (0, 1), (0, 2), (1, 2), (2, 3), (3, 4), (3, 5), (3, 6), (4, 5),
-            (6, 7), (6, 8), (6, 9), (7, 8), (7, 9), (8, 9), (9, 10), (9, 11), (9, 12),
+            (0, 1), (1, 2), (1, 3), (1, 4), (2, 5), (3, 7), (4, 5), (4, 6),
+            (5, 6), (6, 8), (7, 8), (8, 9), (9, 10),
         ],
     )
-    return (g_clubs,)
+    return (g,)
 
 
 @app.cell(hide_code=True)
-def _(g_clubs):
-    if g_clubs is ...:
+def _(g):
+    if g is ...:
         _out = WAITING
-    elif not club_ready(g_clubs):
-        try:
-            _n, _m = g_clubs.vcount(), g_clubs.ecount()
-        except Exception:
-            _out = note(
-                "Not yet — <code>g_clubs</code> should be an igraph network, "
-                "as in the block above.", RUST,
-            )
-            _n = _m = None
-        if _n is not None:
-            if _n != CLUB_N:
-                _out = note(
-                    f"Not yet — the sheet has <b>{CLUB_N} students</b>, and your "
-                    f"network has {_n}. The number after <code>n=</code> is how "
-                    "many nodes there are.", RUST,
-                )
-            elif _m != CLUB_M:
-                _out = note(
-                    f"Not yet — the sheet's eight clubs leave <b>{CLUB_M} "
-                    f"friendships</b>, and your list has {_m}. "
-                    f"{club_missing(g_clubs) or 'Read every club off the picture, one pair at a time.'}",
-                    RUST,
-                )
-            else:
-                _out = note(
-                    f"Not yet — {CLUB_N} students and {CLUB_M} pairs, but not "
-                    f"the sheet's {CLUB_M}: {club_missing(g_clubs)}.", RUST,
-                )
+    elif net_ready(g):
+        _out = mo.md(f"**{NET_N} nodes, {NET_M} lines.** That is the network.")
     else:
+        try:
+            _n, _m = g.vcount(), g.ecount()
+        except Exception:
+            _n = _m = None
+        if _n is None:
+            _out = note("Not yet — <code>g</code> should be an igraph network.", RUST)
+        elif _n != NET_N:
+            _out = note(
+                f"Not yet — the picture has <b>{NET_N} nodes</b>, your network "
+                f"has {_n}. The number after <code>n=</code> is the node count.",
+                RUST,
+            )
+        elif _m != NET_M:
+            _out = note(
+                f"Not yet — the picture has <b>{NET_M} lines</b>, your list has "
+                f"{_m}: {net_missing(g) or 'check every node'}.",
+                RUST,
+            )
+        else:
+            _out = note(
+                f"Not yet — right counts, wrong pairs: {net_missing(g)}.", RUST
+            )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ---
+
+    # 2 · ✍️ Four questions
+
+    Type each block, with `g` where it says `my_net`.
+
+    ## Degree · who has the most friends?
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    type_me("degree = my_net.degree()")
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Type the code above.
+    degree = g.degree()
+    return (degree,)
+
+
+@app.cell(hide_code=True)
+def _(degree, g):
+    if degree is ...:
+        _out = WAITING
+    elif g is ... or not net_ready(g):
+        _out = note("Build the network in section 1 first.", RUST)
+    else:
+        _v = as_numbers(degree, NET_N)
+        _t = NET_TRUTH["degree"]
+        if _v is None:
+            _out = note(
+                f"Not yet — <code>degree</code> should be {NET_N} numbers, one "
+                "per node.", RUST,
+            )
+        elif not ok_degree(degree):
+            _i = int(np.flatnonzero(~np.isclose(_v, _t))[0])
+            _out = note(
+                f"Not yet — you have node {_i} with {_v[_i]:g} friends, not "
+                f"{_t[_i]:g}. {net_missing(g) or 'Count the lines at it again.'}",
+                RUST,
+            )
+        else:
+            _top = int(np.argmax(_v))
+            _out = mo.vstack(
+                [
+                    mo.Html(net_svg(_v, hot={_top})),
+                    mo.md(
+                        f"**Node {_top}** has the most friends: {_v[_top]:g}. "
+                        "That count is **degree centrality**."
+                    ),
+                ]
+            )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    ask(
+        """
+        ## Closeness · who is near everyone?
+
+        Add up a node's distances to the other ten and divide by ten. Small
+        means close.
+        """,
+        """
+        distances = np.asarray(my_net.distances())
+        avg_distance = distances.sum(axis=1) / (my_net.vcount() - 1)
+        """,
+    )
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Type the code above.
+    distances = np.asarray(g.distances())
+    avg_distance = distances.sum(axis=1) / (g.vcount() - 1)
+    return (avg_distance,)
+
+
+@app.cell(hide_code=True)
+def _(avg_distance, g):
+    if avg_distance is ...:
+        _out = WAITING
+    elif g is ... or not net_ready(g):
+        _out = note("Build the network in section 1 first.", RUST)
+    else:
+        _v = as_numbers(avg_distance, NET_N)
+        _t = NET_TRUTH["avg"]
+        if _v is None:
+            _out = note(
+                f"Not yet — <code>avg_distance</code> should be {NET_N} "
+                "numbers, one per node.", RUST,
+            )
+        elif np.allclose(_v, _t * (NET_N - 1) / NET_N, atol=1e-9):
+            _out = note(
+                f"Not yet — divide by <b>{NET_N - 1}</b>, the other nodes, not "
+                f"by {NET_N}.", RUST,
+            )
+        elif not ok_avg(avg_distance):
+            _i = int(np.flatnonzero(~np.isclose(_v, _t, atol=1e-6))[0])
+            _out = note(
+                f"Not yet — node {_i} is {_v[_i]:.2f} steps from the others on "
+                f"average, not {_t[_i]:.2f}. Sum one row of the distance "
+                "table, then divide.",
+                RUST,
+            )
+        else:
+            _best = int(np.argmin(_v))
+            _out = mo.vstack(
+                [
+                    mo.Html(net_svg(_v, hot={_best}, fmt="{:.2f}")),
+                    mo.md(
+                        f"**Node {_best}** is closest to everyone: {_v[_best]:.1f} "
+                        "steps on average. Turned upside down, this is "
+                        "**closeness centrality**."
+                    ),
+                ]
+            )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    ask(
+        """
+        ## Betweenness · who is on the way?
+
+        Take every pair of other nodes and look at their shortest routes. A
+        node that sits on many of them is a bridge.
+        """,
+        "betweenness = my_net.betweenness()",
+    )
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Type the code above.
+    betweenness = g.betweenness()
+    return (betweenness,)
+
+
+@app.cell(hide_code=True)
+def _(betweenness, g):
+    if betweenness is ...:
+        _out = WAITING
+    elif g is ... or not net_ready(g):
+        _out = note("Build the network in section 1 first.", RUST)
+    else:
+        _v = as_numbers(betweenness, NET_N)
+        _t = NET_TRUTH["betweenness"]
+        if _v is None:
+            _out = note(
+                f"Not yet — <code>betweenness</code> should be {NET_N} "
+                "numbers, one per node.", RUST,
+            )
+        elif not ok_betweenness(betweenness):
+            _i = int(np.flatnonzero(~np.isclose(_v, _t, atol=1e-6))[0])
+            _out = note(
+                f"Not yet — you have node {_i} on {_v[_i]:g} routes, not "
+                f"{_t[_i]:g}. Check that you called <code>betweenness()</code> "
+                "on your network.",
+                RUST,
+            )
+        else:
+            _top = int(np.argmax(_v))
+            _out = mo.vstack(
+                [
+                    mo.Html(net_svg(_v, hot={_top}, fmt="{:.1f}")),
+                    mo.md(
+                        f"**Node {_top}** lies on the most shortest routes: "
+                        f"{_v[_top]:g}. That is **betweenness centrality**."
+                    ),
+                ]
+            )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    ask(
+        """
+        ## Eigenvector · whose friends matter?
+
+        Everyone starts with 1 point. Each round, a node takes the sum of its
+        friends' scores; then divide everyone by the biggest score. A hundred
+        rounds:
+        """,
+        """
+        A = np.asarray(my_net.get_adjacency().data, dtype=float)
+        settled = np.ones(my_net.vcount())
+        for _ in range(100):
+            settled = A @ settled
+            settled = settled / settled.max()
+        """,
+    )
+    return
+
+
+@app.cell
+def _():
+    # ✍️ Type the code above.
+    A = np.asarray(g.get_adjacency().data, dtype=float)
+    settled = np.ones(g.vcount())
+    for _ in range(100):
+        settled = A @ settled
+        settled = settled / settled.max()
+    return (settled,)
+
+
+@app.cell(hide_code=True)
+def _(g, settled):
+    if settled is ...:
+        _out = WAITING
+    elif g is ... or not net_ready(g):
+        _out = note("Build the network in section 1 first.", RUST)
+    else:
+        _v = as_numbers(settled, NET_N)
+        if _v is None:
+            _out = note(
+                f"Not yet — <code>settled</code> should be {NET_N} numbers, one "
+                "per node.", RUST,
+            )
+        elif not ok_settled(settled):
+            _out = note(
+                f"Not yet — your leader is node {int(np.argmax(_v))}. Play a "
+                "hundred rounds, and divide by the biggest each round.",
+                RUST,
+            )
+        else:
+            _top = int(np.argmax(_v))
+            _deg = NET_TRUTH["degree"]
+            _out = mo.vstack(
+                [
+                    mo.Html(net_svg(_v, hot={_top}, fmt="{:.2f}")),
+                    mo.md(
+                        f"**Node {_top}** settles on top with {_deg[_top]:g} "
+                        f"friends, while node {int(np.argmax(_deg))} has "
+                        f"{_deg.max():g}. A friend counts for more when that "
+                        "friend is important: **eigenvector centrality**."
+                    ),
+                ]
+            )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    rounds = mo.ui.slider(1, 12, value=1, label="rounds", show_value=True)
+    return (rounds,)
+
+
+@app.cell(hide_code=True)
+def _(g, rounds, settled):
+    if settled is ... or g is ... or not net_ready(g) or not ok_settled(settled):
+        _out = mo.md("")
+    else:
+        _s = net_rounds(rounds.value)
+        _lead = int(np.argmax(_s))
+        _say = (
+            "Round 1 is just the friend count."
+            if rounds.value == 1
+            else "Keep dragging."
+            if rounds.value < 12
+            else "The leader has stopped changing."
+        )
         _out = mo.vstack(
             [
-                mo.Html(club_svg()),
+                mo.md("Watch the leader change as the rounds go by:"),
+                rounds,
+                mo.Html(net_svg(_s, hot={_lead}, fmt="{:.2f}")),
+                mo.md(f"After {rounds.value} round{'s' if rounds.value != 1 else ''}, "
+                      f"the leader is **node {_lead}**. {_say}"),
+            ]
+        )
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def _(betweenness, avg_distance, degree, g, guess, settled):
+    if not all_green(g, degree, avg_distance, betweenness, settled):
+        _out = WAITING
+    else:
+        _w = {
+            "most friends · degree": int(np.argmax(NET_TRUTH["degree"])),
+            "nearest to everyone · closeness": int(np.argmin(NET_TRUTH["avg"])),
+            "on the most routes · betweenness": int(np.argmax(NET_TRUTH["betweenness"])),
+            "highest settled score · eigenvector": int(np.argmax(NET_SETTLED)),
+        }
+        _rows = "".join(
+            f"<tr><td style='padding:5px 22px 5px 0;color:{MUTED}'>{k}</td>"
+            f"<td><b>node {v}</b></td></tr>"
+            for k, v in _w.items()
+        )
+        _guess = (
+            ""
+            if guess.value is None
+            else f" Your guess, node {guess.value}, won "
+            f"{sum(int(guess.value) == v for v in _w.values())} of the four."
+        )
+        _out = mo.vstack(
+            [
+                mo.md("---\n\n# 3 · Four questions, four answers"),
+                mo.Html(
+                    f'<div style="font-family:{SANS};font-size:15.5px;color:{INK};'
+                    f"border:1.5px dashed {RULE};border-radius:{WOBBLE};"
+                    'padding:12px 18px;display:inline-block">'
+                    "<table style='border-collapse:collapse'>"
+                    + _rows
+                    + "</table></div>"
+                ),
                 mo.md(
-                    f"**{CLUB_N} students, {CLUB_M} friendships, one network.** "
-                    "The machine has it. Nothing about it changes for the rest "
-                    "of the lab — only the questions do."
+                    f"**{len(set(_w.values()))} different nodes.** Same network, "
+                    f"different question.{_guess}"
                 ),
             ]
         )
@@ -676,685 +802,52 @@ def _(g_clubs):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ---
-
-    # 3 · The sheet's four questions
-
-    ## Question 4 · Count the friends
-
-    One line of igraph, typed from the block. `my_net` is a stand-in; your
-    network is `g_clubs`.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.vstack(
-        [
-            mo.md(r"""
-    The count of each student's friends, one per student, in the order of the
-    tables:
-    """),
-            type_me("friends = my_net.degree()"),
-        ]
+    reward = mo.ui.radio(
+        options={
+            "friends (degree)": "degree",
+            "closeness": "closeness",
+            "betweenness": "betweenness",
+            "settled score (eigenvector)": "eigenvector",
+        },
+        value="friends (degree)",
+        inline=True,
     )
-    return
-
-
-@app.cell
-def _():
-    # ✍️ Type the code above.
-    friends = g_clubs.degree()
-    return (friends,)
+    return (reward,)
 
 
 @app.cell(hide_code=True)
-def _(friends, g_clubs):
-    if friends is ...:
-        _out = WAITING
-    elif not club_ready(g_clubs):
-        _out = note(
-            "Build the network in section 2 first — the check up there is still "
-            "asking for it.", RUST,
-        )
-    else:
-        _vals = as_numbers(friends, CLUB_N)
-        _truth = np.asarray(CLUB_TRUTH["degree"], dtype=float)
-        if _vals is None:
-            _out = note(
-                "Not yet. <code>friends</code> should hold one count per student — "
-                "thirteen of them, like Question 4's table.", RUST,
-            )
-        elif not np.allclose(_vals, _truth, atol=1e-9):
-            _bad = np.flatnonzero(~np.isclose(_vals, _truth, atol=1e-9))
-            _i = int(_bad[0])
-            _out = note(
-                f"Not yet — your {NAMES[_i]} has {_vals[_i]:g} friends, not "
-                f"{_truth[_i]:g}. {club_missing(g_clubs) or 'Count the club roster again.'}",
-                RUST,
-            )
-        else:
-            _top = int(np.argmax(_vals))
-            _second = np.unique(np.sort(_vals))[-2]
-            _tied = np.flatnonzero(_vals == _second)
-            _verb = "come" if len(_tied) > 1 else "comes"
-            _each = f" at {_second:g} each" if len(_tied) > 1 else ""
-            _out = mo.vstack(
-                [
-                    mo.Html(club_svg(values=friends, hot={_top})),
-                    mo.md(
-                        f"**{NAMES[_top]}** has the most friends: {_vals[_top]:g}. "
-                        + ", ".join(NAMES[i] for i in _tied)
-                        + f" {_verb} next{_each} — the candidates your sheet "
-                        "sent onward, exactly the ones it asks about."
-                    ),
-                ]
-            )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.vstack(
-        [
-            mo.md(r"""
-    ## Question 5 · How far is everyone
-
-    The sheet counted the steps from each candidate to the other twelve and
-    divided by twelve. The machine does all thirteen at once.
-    `distances()` hands back the whole table of shortest-path lengths; sum
-    each row and divide by the twelve others:
-    """),
-            type_me(
-                """
-                distances = np.asarray(my_net.distances())
-                avg_distance = distances.sum(axis=1) / (my_net.vcount() - 1)
-                """
-            ),
-        ]
-    )
-    return
-
-
-@app.cell
-def _():
-    # ✍️ Type the code above.
-    distances = np.asarray(g_clubs.distances())
-    avg_distance = distances.sum(axis=1) / (g_clubs.vcount() - 1)
-    return (avg_distance,)
-
-
-@app.cell(hide_code=True)
-def _(avg_distance, g_clubs):
-    if avg_distance is ...:
-        _out = WAITING
-    elif not club_ready(g_clubs):
-        _out = note("Build the network in section 2 first.", RUST)
-    else:
-        _vals = as_numbers(avg_distance, CLUB_N)
-        _truth = np.asarray(CLUB_TRUTH["avg"])
-        if _vals is None:
-            _out = note(
-                "Not yet. <code>avg_distance</code> should hold one number per "
-                "student — thirteen of them.", RUST,
-            )
-        elif np.allclose(_vals, _truth * 12 / 13, atol=1e-9):
-            _out = note(
-                "Not yet — divide by <b>twelve</b>, the other students, not by "
-                "thirteen. Question 5's table has twelve columns that count.",
-                RUST,
-            )
-        elif not np.allclose(_vals, _truth, atol=1e-6):
-            _bad = np.flatnonzero(~np.isclose(_vals, _truth, atol=1e-6))
-            _i = int(_bad[0])
-            _out = note(
-                f"Not yet — your {NAMES[_i]} is {_vals[_i]:.2f} steps on average, "
-                f"not {_truth[_i]:.2f}. The shortest path is the shortest one; "
-                "count the clubs along the way.",
-                RUST,
-            )
-        else:
-            _best = int(np.argmin(_vals))
-            _clo = np.asarray(g_clubs.closeness(), dtype=float)
-            _clo_best = int(np.argmax(_clo))
-            _out = mo.vstack(
-                [
-                    mo.Html(club_svg(values=-_vals, hot={_best})),
-                    mo.md(
-                        f"**{NAMES[_best]}** is closest to everybody: "
-                        f"{_vals[_best]:.2f} steps on average. Turn the number "
-                        f"upside down — {CLUB_N - 1} divided by the total — and "
-                        "you have **closeness centrality**: igraph's "
-                        f"<code>g_clubs.closeness()</code> crowns {NAMES[_clo_best]} "
-                        f"too, at {_clo[_best]:.2f}. Same question, asked right "
-                        "side up."
-                    ),
-                ]
-            )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.vstack(
-        [
-            mo.md(r"""
-    ## Question 6 · Who is indispensable
-
-    Cover a student and their friendships; some pairs of the rest can no
-    longer reach each other *at all*. Count those pairs. If the groups left
-    behind have sizes $2, 3, 4$, the pairs cut off number $2\times3 + 2\times4 +
-    3\times4 = 26$ — every cross-product, once. The sheet did it for three
-    candidates; the machine does it for all thirteen:
-    """),
-            type_me(
-                """
-                cut_off = []
-                for name in NAMES:
-                    h = my_net.copy()
-                    h.delete_vertices(NAMES.index(name))
-                    sizes = [len(c) for c in h.components()]
-                    cut_off.append(
-                        sum(sizes[a] * sizes[b]
-                            for a in range(len(sizes))
-                            for b in range(a + 1, len(sizes)))
-                    )
-                """
-            ),
-        ]
-    )
-    return
-
-
-@app.cell
-def _():
-    # ✍️ Type the code above.
-    cut_off = []
-    for name in NAMES:
-        h = g_clubs.copy()
-        h.delete_vertices(NAMES.index(name))
-        sizes = [len(c) for c in h.components()]
-        cut_off.append(
-            sum(sizes[a] * sizes[b]
-                for a in range(len(sizes))
-                for b in range(a + 1, len(sizes)))
-        )
-    return (cut_off,)
-
-
-@app.cell(hide_code=True)
-def _(cut_off, g_clubs):
-    if cut_off is ...:
-        _out = WAITING
-    elif not club_ready(g_clubs):
-        _out = note("Build the network in section 2 first.", RUST)
-    else:
-        _vals = as_numbers(cut_off, CLUB_N)
-        _truth = np.asarray(CLUB_TRUTH["cut"], dtype=float)
-        if _vals is None:
-            _out = note(
-                "Not yet. <code>cut_off</code> should hold one number per "
-                "student — thirteen of them.", RUST,
-            )
-        elif np.all(_vals == 0):
-            _out = note(
-                "Not yet — everybody zero. <code>sizes</code> is the middle column "
-                "of Question 6's table: the groups left behind. The pairs are "
-                "every cross-product of two different groups.",
-                RUST,
-            )
-        elif not np.allclose(_vals, _truth, atol=1e-9):
-            _bad = np.flatnonzero(~np.isclose(_vals, _truth, atol=1e-9))
-            _i = int(_bad[0])
-            _out = note(
-                f"Not yet — covering {NAMES[_i]} cuts off {_truth[_i]:g} pairs, "
-                f"not {_vals[_i]:g}. Delete the student, list the groups left "
-                "behind, then multiply across.",
-                RUST,
-            )
-        else:
-            _best = int(np.argmax(_vals))
-            _btw = np.asarray(g_clubs.betweenness(), dtype=float)
-            _agree = np.allclose(_btw, _truth, atol=1e-9)
-            _cands = sorted(
-                [(NAMES[i], CLUB_TRUTH["cut"][i]) for i in (9, 6, 3)],
-                key=lambda t: -t[1],
-            )
-            _tail = (
-                f"{NAMES[int(np.argmax(_btw))]} at {np.max(_btw):g} — and on this "
-                "network it agrees with the sheet's count exactly, number for "
-                "number. That agreement is this network's luck, not a law."
-                if _agree
-                else "the cousin of the sheet's count, not its twin."
-            )
-            _out = mo.vstack(
-                [
-                    mo.Html(club_svg(values=cut_off, hot={_best})),
-                    mo.md(
-                        f"Covering **{NAMES[_best]}** cuts off the most pairs: "
-                        f"{_vals[_best]:g}. The candidates finish "
-                        + ", ".join(f"{n} at {p:g}" for n, p in _cands)
-                        + " — Question 6's winner, by machine."
-                    ),
-                    note(
-                        "The lecture notes' name for the cousin of this count is "
-                        "<b>betweenness centrality</b> — credit for lying on "
-                        "shortest paths. igraph's <code>betweenness()</code> gives "
-                        + _tail
-                    ),
-                ]
-            )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.vstack(
-        [
-            mo.md(r"""
-    ## Question 7 · Pass the scores around — forever
-
-    Question 7 played the game for two rounds; Question 12 asked for the
-    recipe a computer could run forever. Here it is. One round is one
-    multiplication: the adjacency matrix times the score vector sums each
-    node's friends' scores. Divide by the biggest each round so the numbers
-    do not run away:
-    """),
-            type_me(
-                """
-                A = np.asarray(my_net.get_adjacency().data, dtype=float)
-                scores = np.ones(my_net.vcount())
-                for _ in range(100):
-                    scores = A @ scores
-                    scores = scores / scores.max()
-                """
-            ),
-        ]
-    )
-    return
-
-
-@app.cell
-def _():
-    # ✍️ Type the code above.
-    A = np.asarray(g_clubs.get_adjacency().data, dtype=float)
-    scores = np.ones(g_clubs.vcount())
-    for _ in range(100):
-        scores = A @ scores
-        scores = scores / scores.max()
-    settled = scores
-    return (settled,)
-
-
-@app.cell(hide_code=True)
-def _(g_clubs, settled):
-    if settled is ...:
-        _out = WAITING
-    elif not club_ready(g_clubs):
-        _out = note("Build the network in section 2 first.", RUST)
-    else:
-        _vals = as_numbers(settled, CLUB_N)
-        if _vals is None:
-            _out = note(
-                "Not yet. <code>settled</code> should hold one number per "
-                "student — thirteen of them.", RUST,
-            )
-        elif np.allclose(_vals, CLUB_SETTLED, atol=1e-6) or (
-            order_indices(_vals) == order_indices(CLUB_SETTLED)
-        ):
-            _best = int(np.argmax(_vals))
-            _r2 = CLUB_ROUND2
-            _r2_best = int(np.argmax(_r2))
-            _eig = np.asarray(g_clubs.eigenvector_centrality(), dtype=float)
-            _caveat = (
-                ""
-                if np.allclose(_vals, CLUB_SETTLED, atol=1e-6)
-                else " *(You normalised differently from the block — fine; the "
-                "ranking is what the game settles, and yours has settled right.)*"
-            )
-            _out = mo.vstack(
-                [
-                    two_col(
-                        bars_html(_r2, NAMES, top=_r2.max()),
-                        bars_html(_vals, NAMES, top=_vals.max(), fmt="{:.2f}"),
-                        left_basis=300,
-                    ),
-                    mo.md(
-                        f"After **two rounds** the sheet's winner is "
-                        f"**{NAMES[_r2_best]}** ({_r2[_r2_best]:g}). Played to a "
-                        f"hundred, the game settles and **{NAMES[_best]}** takes "
-                        "the lead. Both answers are right — they are answers to "
-                        "different questions, which is Question 12's point."
-                        + _caveat
-                    ),
-                    note(
-                        "igraph's name for the settled ranking is "
-                        "<b>eigenvector centrality</b>: "
-                        f"<code>g_clubs.eigenvector_centrality()</code> puts "
-                        f"{NAMES[int(np.argmax(_eig))]} first, the same order "
-                        "your loop found."
-                    ),
-                ]
-            )
-        else:
-            _mine = int(np.argmax(_vals))
-            _out = note(
-                f"Not yet — your settled winner is {NAMES[_mine]}, but the game "
-                "played forever does not stop at Question 7's two rounds. Play a "
-                "hundred, and divide by the biggest each round so the arithmetic "
-                "stays exact.",
-                RUST,
-            )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _(avg_distance, cut_off, friends, g_clubs, settled):
-    if (
-        friends is ...
-        or avg_distance is ...
-        or cut_off is ...
-        or settled is ...
-        or not club_ready(g_clubs)
-    ):
-        _out = WAITING
-    else:
-        _ok = (
-            np.allclose(np.asarray(friends, dtype=float), CLUB_TRUTH["degree"], atol=1e-9)
-            and np.allclose(
-                np.asarray(avg_distance, dtype=float), CLUB_TRUTH["avg"], atol=1e-6
-            )
-            and np.allclose(np.asarray(cut_off, dtype=float), CLUB_TRUTH["cut"], atol=1e-9)
-            and (
-                np.allclose(np.asarray(settled, dtype=float), CLUB_SETTLED, atol=1e-6)
-                or order_indices(settled) == order_indices(CLUB_SETTLED)
-            )
-        )
-        if not _ok:
-            _out = note(
-                "This box reads your four lists — fix the cells the checks are "
-                "still complaining about first.", RUST,
-            )
-        else:
-            _w4 = winner_name(friends)
-            _w5 = winner_name(avg_distance, smallest=True)
-            _w6 = winner_name(cut_off)
-            _w7 = winner_name(CLUB_ROUND2)
-            _names = {_w4, _w5, _w6, _w7}
-            _rows = [
-                ("most friends (Q4)", _w4),
-                ("shortest average distance (Q5)", _w5),
-                ("most pairs cut off (Q6)", _w6),
-                ("highest after two rounds (Q7)", _w7),
+def _(betweenness, avg_distance, degree, g, reward, settled):
+    if not all_green(g, degree, avg_distance, betweenness, settled):
+        _out = mo.vstack(
+            [
+                mo.md("---\n\n# 4 · 🏛️ Reward"),
+                card("Unlocks when the four cells above are green."),
             ]
-            _table = "".join(
-                f"<tr><td style='padding:5px 22px 5px 0;color:{MUTED}'>{k}</td>"
-                f"<td><b>{v}</b></td></tr>"
-                for k, v in _rows
-            )
-            _out = mo.vstack(
-                [
-                    mo.md(r"## Question 8 · The point of the whole sheet"),
-                    mo.Html(
-                        f'<div style="font-family:{SANS};font-size:16px;'
-                        f'color:{INK};border:1.5px dashed {RULE};'
-                        f'border-radius:{WOBBLE};padding:12px 18px;'
-                        'display:inline-block">'
-                        f"<table style='border-collapse:collapse;font-size:15.5px'>"
-                        + _table
-                        + "</table></div>"
-                    ),
-                    mo.md(
-                        f"**{len(_names)} different name"
-                        f"{'s' if len(_names) != 1 else ''} in four boxes.** "
-                        "Nothing about the network changed between them; only "
-                        "the question did. That is the whole module — and now "
-                        "the machine can ask the same questions where pencil "
-                        "cannot: on the empire."
-                    ),
-                ]
-            )
-    _out
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ---
-
-    # 4 · All roads lead to Rome
-
-    The *Milliarium Aureum* — the **Golden Milestone** — stood in the Forum
-    Romanum. Emperor Augustus set it up in 20 BC, and the distances on all
-    the empire's major roads were said to be counted from it: power had a
-    single center, and it was central in exactly the sense of your sheet's
-    Question 5 — close to everyone.
-
-    Here is the course's map of that empire: twelve cities, and the
-    documented roads and sea lanes between them. Every number below is
-    computed by the cell that shows it.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.Html(roma_svg())
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    _g = roma_graph()
-    _deg = np.asarray(_g.degree(), dtype=float)
-    _best = int(np.argmax(_deg))
-    _alex = ROMA_IDX["Alexandria"]
-    _lon = ROMA_IDX["Londinium"]
-    mo.vstack(
-        [
-            mo.md("## How many roads"),
-            two_col(
-                roma_svg(values=_deg, crown={ROMA_CITIES[_best]}),
-                bars_html(_deg, ROMA_CITIES, top=_deg.max()),
-                left_basis=430,
-            ),
-            mo.md(
-                f"**{ROMA_CITIES[_best]}** has the most roads: {_deg[_best]:g} of "
-                f"them. Alexandria has {_deg[_alex]:g}, and "
-                f"{ROMA_CITIES[_lon]} has {_deg[_lon]:g} — one sea lane, the "
-                "Channel crossing. Question 4, asked of an empire."
-            ),
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    _g = roma_graph()
-    _clo = np.asarray(_g.closeness(), dtype=float)
-    _best = int(np.argmax(_clo))
-    _ecc = np.asarray(_g.eccentricity(), dtype=float)
-    _best_ecc = np.flatnonzero(_ecc == _ecc.min())
-    mo.vstack(
-        [
-            mo.md("## How far is everyone — the Milestone's own question"),
-            two_col(
-                roma_svg(values=_clo, crown={ROMA_CITIES[_best]}),
-                bars_html(_clo, ROMA_CITIES, top=_clo.max(), fmt="{:.2f}"),
-                left_basis=430,
-            ),
-            mo.md(
-                f"**{ROMA_CITIES[_best]}** is closest to everybody: closeness "
-                f"{_clo[_best]:.2f}. The Golden Milestone stands in the right "
-                "place. On the worst case — the distance to your *farthest* "
-                "city, the notes' eccentricity — Roma can only share the crown: "
-                + ", ".join(ROMA_CITIES[i] for i in _best_ecc)
-                + f" all sit {_ecc.min():g} steps from their farthest. "
-                "Question 5, asked of an empire."
-            ),
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    _g = roma_graph()
-    _btw = np.asarray(_g.betweenness(), dtype=float)
-    _deg = np.asarray(_g.degree(), dtype=float)
-    _order = np.argsort(-_btw)
-    _best = int(_order[0])
-    _second = int(_order[1])
-    _alex = ROMA_IDX["Alexandria"]
-    _bridges = []
-    for e in _g.get_edgelist():
-        _h = _g.copy()
-        _h.delete_edges([e])
-        if not _h.is_connected():
-            _bridges.append(e)
-    _bridge_names = " and ".join(
-        f"{ROMA_CITIES[i]}\u2013{ROMA_CITIES[j]}" for i, j in _bridges
-    )
-    mo.vstack(
-        [
-            mo.md("## Who is indispensable"),
-            two_col(
-                roma_svg(values=_btw, crown={ROMA_CITIES[_best]}),
-                bars_html(_btw, ROMA_CITIES, top=_btw.max(), fmt="{:.1f}"),
-                left_basis=430,
-            ),
-            mo.md(
-                f"**{ROMA_CITIES[_best]}** lies on the most routes between the "
-                f"others. The runner-up is **{ROMA_CITIES[_second]}**, with "
-                f"{_deg[_second]:g} roads against Alexandria's {_deg[_alex]:g} — "
-                "a broker: few roads, but all the northern routes through it. "
-                "And the empire has one road whose loss strands a city: "
-                f"**{_bridge_names}** is the only bridge on the map. Question 6, "
-                "asked of an empire."
-            ),
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    _g = roma_graph()
-    _eig = np.asarray(_g.eigenvector_centrality(), dtype=float)
-    _best = int(np.argmax(_eig))
-    _alex = ROMA_IDX["Alexandria"]
-    _gap = 1 - _eig[_alex] / _eig[_best]
-    mo.vstack(
-        [
-            mo.md("## The scores, settled"),
-            two_col(
-                roma_svg(values=_eig, crown={ROMA_CITIES[_best]}),
-                bars_html(_eig, ROMA_CITIES, top=_eig.max(), fmt="{:.2f}"),
-                left_basis=430,
-            ),
-            mo.md(
-                f"**{ROMA_CITIES[_best]}** wins the settled game too. The nearest "
-                f"rival is Alexandria, within {100 * _gap:.0f}% — one road short "
-                "of Roma's five, and holding its own on importance. Question 7 "
-                "played forever, asked of an empire: every crown in the empire's "
-                "four boxes reads the same name, which is what it means to say "
-                "all roads lead to Rome."
-            ),
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ## Break it: the Channel crossing
-
-    Question 11 broke your club network with one new club, and one of the
-    candidates went from indispensable to dispensable. The empire's version:
-    the one sea lane to Londinium.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    cut_switch = mo.ui.switch(label="cut the Channel crossing")
-    cut_switch
-    return (cut_switch,)
-
-
-@app.cell(hide_code=True)
-def _(cut_switch):
-    _g = roma_graph(cut=cut_switch.value)
-    _clo = np.asarray(_g.closeness(), dtype=float)
-    _har = np.asarray(_g.harmonic_centrality(), dtype=float)
-    _pieces = [sorted(ROMA_CITIES[i] for i in c) for c in _g.components()]
-    _har_best = int(np.nanargmax(_har))
-    if not cut_switch.value:
-        _say = note(
-            "Flip the switch. The Channel crossing — Colonia to Londinium — is "
-            "the only bridge on the map, which is Question 11's hint: break the "
-            "one road a city hangs by, and everything downstream changes."
         )
     else:
-        _nan = int(np.sum(~np.isfinite(_clo)))
-        _say = mo.md(
-            f"Londinium is an island: {len(_pieces)} pieces, one city on its "
-            "own. By the notes' definition, closeness needs every distance, and "
-            "one unreachable city makes every sum infinite — igraph, asked "
-            f"anyway, answers only for who you can still reach ({_nan} of the "
-            "twelve give no answer at all; the rest are ranked among the "
-            "reachable only). **Harmonic centrality just drops Londinium's "
-            f"contribution and carries on**: {ROMA_CITIES[_har_best]} still "
-            f"first at {_har[_har_best]:.2f}. The whole difference is taking the "
-            "reciprocal *before* the sum instead of after — which is why the "
-            "notes keep harmonic centrality around."
+        _v = ROMA_MEASURES[reward.value]
+        _top = ROMA_CITIES[int(np.argmax(_v))]
+        _all = {ROMA_CITIES[int(np.argmax(m))] for m in ROMA_MEASURES.values()}
+        _verdict = (
+            f"**{_top}** wins all four questions. All roads lead to Rome."
+            if _all == {_top}
+            else f"**{_top}** wins this one."
         )
-    mo.vstack(
-        [
-            two_col(
-                roma_svg(values=_har, cut=cut_switch.value, crown={ROMA_CITIES[_har_best]}),
-                roma_svg(values=_clo, cut=cut_switch.value),
-                left_basis=430,
-            ),
-            mo.md(
-                "left: harmonic centrality, which survives the cut · right: "
-                "closeness, which does not"
-            ),
-            _say,
-        ]
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ---
-
-    # Your own network
-
-    Any network you can write as a list of pairs, `igraph.Graph(n=..., edges=...)`
-    will take — and every question this lab asked is one `g.`-call away:
-    `.degree()`, `.distances()`, `.components()`, `.betweenness()`,
-    `.eigenvector_centrality()`. The matching question is yours to pick; the
-    notes' closing table is the menu.
-
-    *Data.* The twelve cities, their positions and their roads follow the
-    course's Module 6 map (`slides/m06/figures/verify_numbers.py`), which
-    records every edge as a documented Roman road or sea lane. A bigger Roman
-    road network — a hundred-odd places — lives in the repository under
-    `data/roman-roads`, and the hands-on notebook uses it.
-    """)
+        _out = mo.vstack(
+            [
+                mo.md(
+                    "---\n\n# 4 · 🏛️ All roads lead to Rome\n\n"
+                    "In 20 BC Augustus set up the Golden Milestone in the Forum, "
+                    "and the empire's roads were measured from it. Twelve "
+                    "cities, the roads and sea lanes between them, and your "
+                    "four questions:"
+                ),
+                reward,
+                mo.Html(roma_svg(_v, crown={_top})),
+                mo.md(_verdict),
+            ]
+        )
+    _out
     return
 
 

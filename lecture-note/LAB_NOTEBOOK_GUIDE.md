@@ -11,9 +11,10 @@ machine, the thing they have just done in pencil. Four of them exist, under
 `lecture-note/m02-small-world/pen-and-paper/`,
 `lecture-note/m05-clustering/pen-and-paper/` and
 `lecture-note/m06-centrality/pen-and-paper/` (m05 is not tied to a sheet; see
-[the graph-tool lab](#a-lab-that-needs-graph-tool-m05); m06 runs the Big
-Cheese sheet's four questions on its club network and then asks the same four
-of the empire), and each directory holds:
+[the graph-tool lab](#a-lab-that-needs-graph-tool-m05); m06 is not tied to a
+sheet either: one eleven-node network on which degree, closeness, betweenness
+and the settled score game crown four different nodes, then Rome as a reward
+that unlocks when the four checks are green), and each directory holds:
 
 - `lab.py` — the student's copy
 - `lecture-hall.css` — the look, copied verbatim from the mini-project's
