@@ -4,12 +4,14 @@ then the network splits and the two pieces slide apart (5).
 
     python3 morph-demo/build.py     # writes morph-demo/morph-demo.md and morph-demo.html
 
-Each disc carries a fixed view-transition-name (n_E, n_F, ...). Marp CLI's bespoke template runs
-document.startViewTransition between slides, so the browser moves and resizes every disc that has
-the same name on both slides. Labels and edges never change, so they are not named.
+Each disc and each edge is an HTML box with a fixed view-transition-name (n_E, e_EF, ...). Marp CLI's
+bespoke template runs document.startViewTransition between slides, so the browser moves, resizes and
+recolours every box that has the same name on both slides. They are HTML, not SVG, on purpose:
+Chrome does not capture SVG shapes (<circle>, <line>) for a view transition.
 Needs a Chromium-based browser; the PDF/PPTX exports show three still slides.
 """
 
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -50,29 +52,32 @@ SLIDES = [
 ]
 
 
-def svg(graph, xy, sc, scale):
+def net(graph, xy, sc, scale):
+    """The network as HTML boxes, not SVG shapes: Chrome gives a view transition a box to capture
+    for an HTML element, and none for an SVG <circle> or <line>. Each edge is a thin div rotated
+    to join its two ends; each node is a round div with its letter inside."""
     def px(u):
         x, y = xy[u]
         return X0 + x * SX, Y0 - y * SY
 
     lo, hi = min(sc.values()), max(sc.values())
     winner = max(sc, key=sc.get)
-    out = [f'<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}" xmlns="http://www.w3.org/2000/svg">']
+    out = [f'<div class="net" style="position:relative;width:{W}px;height:{H}px">']
     for a, b in sorted(tuple(sorted(e)) for e in graph.edges()):
         (x1, y1), (x2, y2) = px(a), px(b)
-        out.append(f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="#555" '
-                   f'stroke-width="3" style="view-transition-name:e_{a}{b}"/>')
+        length, angle = math.hypot(x2 - x1, y2 - y1), math.degrees(math.atan2(y2 - y1, x2 - x1))
+        out.append(f'<div style="position:absolute;left:{x1:.0f}px;top:{y1 - 1.5:.1f}px;width:{length:.0f}px;height:3px;'
+                   f'background:#555;transform-origin:0 50%;transform:rotate({angle:.2f}deg);'
+                   f'view-transition-name:e_{a}{b}"></div>')
     for u in ORDER:
         x, y = px(u)
         r = 8 + 26 * sc[u] / scale if scale else 12 + 22 * (sc[u] - lo) / (hi - lo)
-        fill = RED if u == winner else BLUE
-        out.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}" fill="{fill}" fill-opacity=".85" '
-                   f'stroke="{INK}" stroke-width="2.5" style="view-transition-name:n_{u}"/>')
-        out.append(f'<text x="{x:.0f}" y="{y + 7:.0f}" text-anchor="middle" font-size="20" '
-                   f'font-weight="700" fill="#fff" stroke="{INK}" stroke-width=".6" '
-                   f'style="view-transition-name:t_{u}">{u}</text>')
-    out.append("</svg>")
-    return "\n".join(out)
+        out.append(f'<div style="position:absolute;left:{x - r:.1f}px;top:{y - r:.1f}px;width:{2 * r:.1f}px;height:{2 * r:.1f}px;'
+                   f'box-sizing:border-box;border:2.5px solid {INK};border-radius:50%;'
+                   f'background:{RED if u == winner else BLUE};color:#fff;font:700 20px/1 sans-serif;'
+                   f'display:flex;align-items:center;justify-content:center;view-transition-name:n_{u}">{u}</div>')
+    out.append("</div>")
+    return "".join(out)
 
 
 md = ["""---
@@ -90,7 +95,7 @@ for i, (name, q, graph, xy, sc, scale, line, trans) in enumerate(SLIDES):
         md.append("\n---\n")
     md.append(f"<!-- _transition: {trans} -->\n")
     md.append(f"## {name}\n\n<hr>\n\n{q}" + (" Disc size is the score, rescaled from the smallest to the largest." if not scale else "")
-              + f'\n\n<div class="fig">\n\n{svg(graph, xy, sc, scale)}\n\n</div>\n\n<div class="cue">\n\n*{line}*\n\n</div>\n')
+              + f'\n\n<div class="fig">\n\n{net(graph, xy, sc, scale)}\n\n</div>\n\n<div class="cue">\n\n*{line}*\n\n</div>\n')
 (HERE / "morph-demo.md").write_text("\n".join(md))
 
 subprocess.run(["marp", "--no-stdin", "--html", "--theme", str(HERE.parent / "network-science.css"),
