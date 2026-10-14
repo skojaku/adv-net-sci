@@ -13,8 +13,9 @@ machine, the thing they have just done in pencil. Four of them exist, under
 `lecture-note/m06-centrality/pen-and-paper/` (m05 is not tied to a sheet; see
 [the graph-tool lab](#a-lab-that-needs-graph-tool-m05); m06 is not tied to a
 sheet either: one eleven-node network on which degree, closeness, betweenness
-and the settled score game crown four different nodes, then Rome as a reward
-that unlocks when the four checks are green), and each directory holds:
+and the settled score game crown four different nodes, then the empire's road
+network as a reward that unlocks when the four checks are green; see
+[the road map](#the-road-map-m06)), and each directory holds:
 
 - `lab.py` — the student's copy
 - `lecture-hall.css` — the look, copied verbatim from the mini-project's
@@ -233,6 +234,29 @@ are or which block is which. Every sentence under a figure is computed from the
 fit (`pct(...)`, `argmax`, counts), and the "which block holds Alaska" question
 is marked against the fit that was drawn. Keep it that way, and look at what molab
 draws before class, because that is what the students see.
+
+## The road map (m06)
+
+The reward at the end of `m06-centrality/pen-and-paper/lab.py` draws the Roman
+road network over a terrain picture. Both travel inside the file:
+`uv run --with pillow --with scipy python tools/build_m06_lab_data.py` rewrites
+the one line that ends in `# BUILT-DATA`.
+
+- **Places, not junctions.** The 4,529 points in `data/roman-roads` are road
+  junctions and waypoints; 390 of them lie near Rome. Points within 150 km of
+  each other (complete linkage) are merged into one place, which leaves about
+  300 and makes Rome a single node. The cut-off was chosen for the size, not
+  for a result: Rome ranks well below the middle on all four measures
+  (roughly 165th to 230th of 285), and the most central place by degree,
+  closeness and eigenvector is in Anatolia or the Balkans. The data covers the
+  east more densely, so the caption says where Rome ranks and claims nothing.
+- **Terrain.** About 25 OpenTopoMap tiles (zoom 5) are fetched once, by the
+  tool, stitched, washed out and stored as a 150 KB JPEG, so the roads stay the
+  loudest thing on the page. The page must carry the attribution (CC-BY-SA,
+  OpenStreetMap contributors, SRTM). Nodes are placed with the same Web
+  Mercator formula the tool cropped with.
+- **Scores** are computed in the kit on the largest connected piece (closeness
+  needs every place to reach every other); the few cut-off places are dashed.
 
 ## Checking a notebook before calling it done
 
