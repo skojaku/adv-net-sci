@@ -93,30 +93,28 @@ numbered. $-1$ if it is disconnected, or has a self-loop or a double edge, or
 has 13 or more nodes (then (b) is marked on it as drawn). $0$ if nothing
 checkable is drawn.
 
-Four centers [8]. Two points for each measure: the center named \emph{and} the evidence
-that it is the largest and that nothing ties with it. Mark each measure on the
-student's own graph, not on the model graph.
+Four centers [8]. Two points for each measure: the node named is the center of
+that measure \emph{on the student's own graph}, and no other node ties with it.
+The sheet asks for the node only, so no working is required; mark the named node,
+not the arithmetic. Mark on the student's graph, not on the model graph; type its
+edge list into \texttt{check\_bcde.py} to see all four. A named node that is one of
+two tied centers scores $0$ for that measure: the center is not unique.
 \begin{itemize}[leftmargin=1.4em, itemsep=0.1em, topsep=0.2em]
-  \item \emph{Degree.} Easy: the degrees are read off the drawing.
-  \item \emph{Closeness.} The totals $\sum_j d_{ij}$ are integers, so a tie
-        is a tie, exactly. Full marks need the top two totals shown. Closeness is
-        large when the total is small, so the center is the node with the
-        \emph{smallest} total. A student who picks the largest total has the
-        measure upside down.
-  \item \emph{Betweenness.} Credit counting by the definition: the shortest
-        paths through the node, shared out when there are several. A fractional
-        count such as $1/2$ for a pair with two routes is right.
-  \item \emph{Eigenvector.} A student cannot solve $Ax = \lambda x$ for 12
-        nodes by hand, and does not need to. Full marks: values from a few
-        rounds of repeated multiplication by $A$ (start from all ones),
-        or a stated check with code, that put the claimed center above
-        the rest. Half marks: a plausible node with no numbers behind it.
-        $0$: ``the node with the most links''. The model graph is built so that
-        the eigenvector center (node 1, degree 3) is not the degree center
-        (node 3, degree 4).
+  \item \emph{Degree.} Read off the drawing.
+  \item \emph{Closeness.} Closeness is large when the total distance
+        $\sum_j d_{ij}$ is small, so the center is the node with the
+        \emph{smallest} total. A student who names the node with the largest
+        total has the measure upside down. The totals are integers, so a tie is
+        a tie, exactly.
+  \item \emph{Betweenness.} Shortest paths through the node, shared out when
+        there are several (a pair with two routes counts $1/2$ for each).
+  \item \emph{Eigenvector.} Not solvable by hand on 12 nodes, so do not expect a
+        derivation; the script settles it. Watch for ``the node with the most
+        links'': the model graph is built so that the eigenvector center (node
+        1, degree 3) is not the degree center (node 3, degree 4).
 \end{itemize}
-$-1$ from the total, once, if the four centers are not four different nodes but
-each measure was argued correctly. That graph answers a different question.
+$-1$ from the total, once, if each named node is right but the four centers are
+not four different nodes. That graph answers a different question.
 
 \textbf{Traps in the task, so the marking is steady.}
 \begin{itemize}[leftmargin=1.4em, itemsep=0.1em, topsep=0.2em]

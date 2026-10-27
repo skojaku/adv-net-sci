@@ -5,9 +5,9 @@ is the question and a box to draw in; page 2 is a work page with a table.
 
 **The question.** One page, one question, 10 points, no definitions and no work
 page: the sheet explains what a BCDE graph is, says "at most 12 nodes", and leaves
-a blank box. Students look up the four measures themselves. Marks (in the key,
-not on the sheet): the graph is valid, 2; each measure's most central node with
-the evidence that nothing ties with it, 2 each. Answers are photographed and
+blank space (no answer box). Students look up the four measures themselves. Marks (in the key,
+not on the sheet): the graph is valid, 2; each measure's most central node, named
+correctly on the student's own graph with no tie, 2 each (no working is asked for). Answers are photographed and
 uploaded to a Google Form (QR square on the sheet).
 
 This is the "distinct singleton centers" problem of Brandes and Hildenbrand,

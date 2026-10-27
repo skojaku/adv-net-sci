@@ -52,9 +52,9 @@ DESCRIPTION = (
     "Advanced Network Science - Fall 2026\n\n"
     "20 minutes - 10 points.\n\n"
     f"The question: {QUIZ_PDF}\n\n"
-    "Write your answer in the space on the sheet: the graph, the most central "
-    "node under each of the four measures, and the evidence. Photograph the "
-    "sheet and upload it below - one photo."
+    "Write your answer in the space on the sheet: the graph, and the most "
+    "central node under each of the four measures. Photograph the sheet and "
+    "upload it below - one photo."
 )
 
 
