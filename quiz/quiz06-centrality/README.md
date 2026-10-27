@@ -88,13 +88,33 @@ are decided to 1e-9; closeness is decided on the exact integer sum of distances.
       beside Quiz 5's; the upload question still points at it).
       - Responder: <https://docs.google.com/forms/d/e/1FAIpQLScYKKqDkybxGbCmuo9y0__oCWbFLvw7iWf4bmiMtfckhgKitQ/viewform>
       - Editor: <https://docs.google.com/forms/d/1eccy9rko9kDemSq8dwgDsN0ubT8gekQOHOnrCrVpdlI/edit>
-- [ ] **Three short links on the droplet**, as for Quiz 5. The QR square and
-      the form's description already point at them, so **they are dead until
-      these exist**:
-      - `go.skojaku.com/quiz06` → the PDF on Drive
+- [x] **Two short links on the droplet**, 2026-10-27, beside the `quiz05`
+      pair. Validated and reloaded; both answer 302. The pre-edit Caddyfile is
+      `/etc/caddy/Caddyfile.bak-2026-10-27-quiz06` (`ssh digitalocean`).
       - `go.skojaku.com/ans-quiz06` → the responder URL above
-- [ ] `quiz06.pdf` on Drive, in the `adv-net-sci-ops` folder, read-only to the
-      `binghamton.edu` domain, link-only.
+      - `go.skojaku.com/quiz06` → the PDF on Drive
+- [x] **`quiz06.pdf` on Drive**, in the `adv-net-sci-ops` folder beside Quiz 5's,
+      uploaded 2026-10-27. File id `18L_K6dql4RQICp6ii2avo6nOx-FAXrwU`.
+      **Not shared yet**: Quiz 5's is read-only to the `binghamton.edu` domain,
+      link-only, and `hq drive share` has no domain option, so set it in Drive
+      (General access → Binghamton University, Viewer). Until then
+      `go.skojaku.com/quiz06` does not open for students. Re-upload after any edit:
+
+      ```sh
+      GOOGLE_WORKSPACE_CLI_CONFIG_DIR=~/.config/gws-binghamton \
+      GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file \
+      gws drive files update --params '{"fileId": "18L_K6dql4RQICp6ii2avo6nOx-FAXrwU"}' \
+          --upload quiz06.pdf --upload-content-type application/pdf
+      ```
+- [x] **The file-responses folders** exist (checked 2026-10-27): `Quiz 6 — Four
+      centers (File responses)` with `Question 1 (File responses)` inside, made
+      by Google, as for Quiz 5. They sit in the Drive **root**; Quiz 5's is under
+      `SSIE 641 Advanced Topics in Network Science/Submission/`. Move
+      `Quiz 6 — Four centers (File responses)` there.
+- [ ] **Publish the form.** The copy arrived unpublished and not accepting
+      responses (`publishSettings.publishState` empty; Quiz 5's reads
+      `isPublished` and `isAcceptingResponses` true). Until then students cannot
+      submit.
 - [ ] The date, and so the Brightspace quiz name (`m06-<date>`).
 - [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/`, kept in step with
       `solutions.tex` (the grader maps the upload question `Question 1`).
