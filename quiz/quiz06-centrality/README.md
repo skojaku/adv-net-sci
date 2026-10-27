@@ -106,19 +106,24 @@ are decided to 1e-9; closeness is decided on the exact integer sum of distances.
       gws drive files update --params '{"fileId": "18L_K6dql4RQICp6ii2avo6nOx-FAXrwU"}' \
           --upload quiz06.pdf --upload-content-type application/pdf
       ```
-- [x] **The file-responses folders** exist (checked 2026-10-27): `Quiz 6 — Four
-      centers (File responses)` with `Question 1 (File responses)` inside, made
-      by Google, as for Quiz 5. They sit in the Drive **root**; Quiz 5's is under
-      `SSIE 641 Advanced Topics in Network Science/Submission/`. Move
-      `Quiz 6 — Four centers (File responses)` there.
-- [ ] **Publish the form.** The copy arrived unpublished and not accepting
-      responses (`publishSettings.publishState` empty; Quiz 5's reads
-      `isPublished` and `isAcceptingResponses` true). Until then students cannot
-      submit.
-- [ ] The date, and so the Brightspace quiz name (`m06-<date>`).
+- [x] **The file-responses folders** exist: `Quiz 6 — Four centers (File
+      responses)` with `Question 1 (File responses)` inside, made by Google, as
+      for Quiz 5. They arrived in the Drive root and were moved to
+      `SSIE 641 Advanced Topics in Network Science/Submission/` on 2026-10-27,
+      beside Quiz 5's.
+- [x] **The form is published and accepting responses** since 2026-10-27
+      (`setPublishSettings`; the copy had arrived unpublished). Not tested with a
+      real submission.
+- [x] **Brightspace**, 2026-10-27: grade item `m06-1027` (id 664768, 10 points,
+      category Quiz); quiz `m06-1027` (id 93507, active, unlimited attempts,
+      2026-10-27 09:40 to **2026-11-15 23:59**, the Sunday after two weeks), its
+      description linking `go.skojaku.com/ans-quiz06` and `go.skojaku.com/quiz06`;
+      the row in `adv-net-sci-ops/brightspace/course/deadlines.yaml`
+      (`sync-deadlines` shows no drift). The PDF is also a page, `Quiz 6 — Find a
+      BCDE graph`, in the module **M06**, which is **still hidden**, so students
+      cannot see that page until the module is shown.
 - [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/`, kept in step with
       `solutions.tex` (the grader maps the upload question `Question 1`).
-- [ ] The Brightspace quiz and grade item, and the `deadlines.yaml` row.
 - [ ] **The time.** The sheet says 20 minutes. Finding a graph is quick with a
       template; checking four centralities on 12 nodes, eigenvector above all,
       is not. If it is done in class, 20 minutes may be tight.
