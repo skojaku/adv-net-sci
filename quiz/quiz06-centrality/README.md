@@ -119,9 +119,17 @@ are decided to 1e-9; closeness is decided on the exact integer sum of distances.
       2026-10-27 09:40 to **2026-11-15 23:59**, the Sunday after two weeks), its
       description linking `go.skojaku.com/ans-quiz06` and `go.skojaku.com/quiz06`;
       the row in `adv-net-sci-ops/brightspace/course/deadlines.yaml`
-      (`sync-deadlines` shows no drift). The PDF is also a page, `Quiz 6 — Find a
-      BCDE graph`, in the module **M06**, which is **still hidden**, so students
-      cannot see that page until the module is shown.
+      (`sync-deadlines` shows no drift). The module **M06 was shown to students on 2026-10-27**, with two pages:
+      `Slides — All Roads Lead to Rome` (the deck with the lab slide) and
+      `Quiz 6 question (PDF)` (the final sheet). Three older pages stay hidden:
+      the first deck (`All Roads Lead to Rome`), the first PDF page (`Quiz 6 —
+      Find a BCDE graph`) and `tmp quiz06 refresh (delete me)`, a test page.
+      bscli cannot replace a page's file (`new-page` does nothing when the title
+      exists, and an upload with an existing file name becomes `… - Copy.pdf`),
+      so a new version is a new page under a new title and a new file name; delete
+      the hidden ones in Brightspace when convenient.
+- [ ] **Share `quiz06.pdf` on Drive** to the `binghamton.edu` domain (see above);
+      `go.skojaku.com/quiz06` needs it.
 - [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/`, kept in step with
       `solutions.tex` (the grader maps the upload question `Question 1`).
 - [ ] **The time.** The sheet says 20 minutes. Finding a graph is quick with a
