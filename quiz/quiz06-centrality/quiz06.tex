@@ -1,18 +1,19 @@
-% Quiz 06 --- Find a graph whose four centers are four different nodes.
-% Printed, worked in class, 20 minutes. One question, 10 points. Page 1 is the
-% question and a box to draw in; page 2 is a work page with a table.
+% Quiz 06 --- Find a BCDE graph. Printed, worked in class, 20 minutes. One page,
+% one question, 10 points. Answers are photographed and uploaded to the Google
+% Form (go.skojaku.com/ans-quiz06).
 %
 % The task is the Brandes--Hildenbrand (2014, Network Science 2(3), 416--418)
 % "distinct singleton centers" problem: a connected graph in which betweenness,
 % closeness, degree and eigenvector centrality each have exactly one most
-% central node, and the four nodes are different. The smallest such graphs have
-% 10 nodes; the node limit on this sheet is 12 (see README.md for why).
+% central node, and the four nodes are different. The paper calls these graphs
+% BCDE. The smallest have 10 nodes; the node limit on this sheet is 12 (see
+% README.md for why).
 %
-% The sheet does not say "use code", and does not forbid it. Do not add either.
-% It also does not name the graph class (the paper calls it BCDE): the four
-% measures are named in full, so there is no letter to confuse with a node.
+% The sheet explains what a BCDE graph is and leaves the four definitions to the
+% students (lecturer's call, 2026-10-27). It does not say "use code", and does
+% not forbid it. Do not add either.
 %
-% go.skojaku.com does not point at this file; the answers are in solutions.tex.
+% The answers are in solutions.tex.
 %
 % Compile with: xelatex -interaction=nonstopmode quiz06.tex   (run twice)
 \documentclass[a4paper, 11pt]{extarticle}
@@ -26,94 +27,49 @@
 
 \begin{document}
 
-\quizhead{Quiz 6 \; --- \; Four centers}
+\quizhead{Quiz 6 \; --- \; Find a BCDE graph}
         {20 minutes \quad$\cdot$\quad 10 points}
         {Fall 2026}
 
-% ---------------------------------------------------------------------------
-\question{1}{10}{Find a graph with four different centers.}
-
-\begin{tcolorbox}[colback=pltblue!4, colframe=pltblue!35, boxrule=0.5pt,
-                  sharp corners, boxsep=2pt, left=6pt, right=6pt,
-                  top=4pt, bottom=4pt]
-{\small
-Take a connected, undirected graph with $N$ nodes and no self-loops or
-multiple edges. Write $d_{ij}$ for the shortest-path distance from $i$ to $j$,
-and $\sigma_{st}$ for the number of shortest paths from $s$ to $t$, of which
-$\sigma_{st}(i)$ pass through $i$. For a node $i$:
+\begin{tcolorbox}[colback=white, colframe=rulegrey, boxrule=0.5pt,
+                  sharp corners, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.14\textwidth}
 \begin{center}
-\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{@{}ll@{}}
-\textbf{degree} & $k_i$, the number of neighbors of $i$ \\
-\textbf{closeness} & $\displaystyle \frac{N-1}{\sum_{j} d_{ij}}$ \\
-\textbf{betweenness} & $\displaystyle \sum_{s<t,\; s,t \neq i} \frac{\sigma_{st}(i)}{\sigma_{st}}$ \\
-\textbf{eigenvector} & $x_i$, where $A x = \lambda_{\max} x$ and every $x_i > 0$ \\
-\end{tabular}
+\includegraphics[width=1.6cm]{quiz06-form-qr.png}
 \end{center}
-The \emph{center} under a measure is the node with the largest value. The
-center is \emph{unique} when no other node ties with it.
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.83\textwidth}
+{\small
+Write your answer in the space below, photograph the sheet, and upload the
+photo. Point a camera at the square, or type \formshort.
 }
+\end{minipage}
 \end{tcolorbox}
 
-\vspace{0.3em}
-Draw a graph with \textbf{at most 12 nodes} such that
-\begin{itemize}[leftmargin=1.4em, itemsep=0.1em, topsep=0.2em]
-  \item under each of the four measures, the center is unique, and
-  \item the four centers are four different nodes.
+% ---------------------------------------------------------------------------
+\question{1}{10}{Build a BCDE graph.}
+
+A connected graph is a \textbf{BCDE graph} if, under each of the four
+centrality measures below, exactly one node is the most central, and these four
+nodes are four different nodes of the graph:
+
+\begin{itemize}[leftmargin=1.4em, itemsep=0.1em, topsep=0.3em]
+  \item[\textbf{B}] betweenness centrality
+  \item[\textbf{C}] closeness centrality
+  \item[\textbf{D}] degree centrality
+  \item[\textbf{E}] eigenvector centrality
 \end{itemize}
 
-(a) [2 pts] Draw the graph below. Number the nodes $1, 2, \dots$ The graph must
-be connected, with at most 12 nodes.
+\vspace{0.3em}
+Draw a BCDE graph with \textbf{at most 12 nodes}. The graph must be connected,
+with no self-loops and no multiple edges. Number the nodes.
 
-(b) [8 pts] For each of the four measures, name the center and show that it
-beats every other node. Use the table on the back if it helps.
-
-\vspace{0.2em}
-\drawbox{7.4cm}{Your graph}
-
-\vfill
-
-{\footnotesize\color{rulegrey}
-Done early? (not graded) Brandes and Hildenbrand (2014) searched every
-connected graph with fewer than 10 nodes by computer and found no graph with
-four different unique centers. How few nodes can you manage?}
-
-% ===========================================================================
-\newpage
-
-{\large\bfseries Work page}\par
-\vspace{-0.4em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par
-\vspace{0.4em}
-
-{\small Fill in as much as you need. Then circle each center.}
-
-\vspace{0.5em}
-\renewcommand{\arraystretch}{1.9}
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textbf{node} & \textbf{degree} & $\sum_j d_{ij}$ \textbf{(for closeness)} &
-\textbf{betweenness} & \textbf{eigenvector} \\
-\hline
-1  & & & & \\ \hline
-2  & & & & \\ \hline
-3  & & & & \\ \hline
-4  & & & & \\ \hline
-5  & & & & \\ \hline
-6  & & & & \\ \hline
-7  & & & & \\ \hline
-8  & & & & \\ \hline
-9  & & & & \\ \hline
-10 & & & & \\ \hline
-11 & & & & \\ \hline
-12 & & & & \\ \hline
-\end{tabular}
-\end{center}
+\vspace{0.3em}
+Then, for each of the four measures, give the most central node and show that
+it is more central than every other node.
 
 \vspace{0.6em}
-{\small
-For eigenvector centrality, you do not need $\lambda_{\max}$ exactly. Any
-values of $x$ that you can justify will do, as long as they show who is
-largest.}
+\drawbox{12.0cm}{Your answer}
 
 \end{document}

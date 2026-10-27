@@ -40,6 +40,23 @@
 \raggedbottom
 \pagestyle{empty}
 
+% ---------------------------------------------------------------------------
+% The submission link.
+%
+% Both the QR square and the printed address are the course's own short link,
+% not the form's: paper outlives any one form. Caddy on the course droplet
+% points go.skojaku.com/ans-quiz06 at the current Google Form
+% (/etc/caddy/Caddyfile, block go.skojaku.com). Swapping the form is a line on
+% the server, not a reprint.
+%
+% If the link ever changes, rebuild the square with
+%
+%   uvx --from segno segno --output=quiz06-form-qr.png --scale=20 --border=1 \
+%       --error=m "<the url>"
+% ---------------------------------------------------------------------------
+\newcommand{\formlink}{https://go.skojaku.com/ans-quiz06}
+\newcommand{\formshort}{\href{\formlink}{\texttt{go.skojaku.com/ans-quiz06}}}
+
 % Quiz header. #1 = title, #2 = the line under it, #3 = term.
 \newcommand{\quizhead}[3]{%
   {\footnotesize\textsc{Advanced Network Science} \hfill \textsc{#3}}\par

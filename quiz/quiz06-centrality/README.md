@@ -3,18 +3,19 @@
 **Draft.** An in-class quiz on M06 (centrality), one question, 10 points. Page 1
 is the question and a box to draw in; page 2 is a work page with a table.
 
-**The question.** Draw a connected graph with **at most 12 nodes** in which
-betweenness, closeness, degree and eigenvector centrality each have exactly one
-most central node, and the four nodes are all different. Part (a), the drawing,
-is 2 points; part (b), naming each center and showing it beats every other node,
-is 8 (2 per measure).
+**The question.** One page, one question, 10 points, no definitions and no work
+page: the sheet explains what a BCDE graph is, says "at most 12 nodes", and leaves
+a blank box. Students look up the four measures themselves. Marks (in the key,
+not on the sheet): the graph is valid, 2; each measure's most central node with
+the evidence that nothing ties with it, 2 each. Answers are photographed and
+uploaded to a Google Form (QR square on the sheet).
 
 This is the "distinct singleton centers" problem of Brandes and Hildenbrand,
 *Smallest graphs with distinct singleton centers*, Network Science 2(3),
-416–418 (2014). The paper calls these graphs **BCDE** (Betweenness, Closeness,
-Degree, Eigenvector). The lecturer's name for them was "ABCD"; the sheet uses
-neither and names the four measures in full, so no letter can be mistaken for a
-node. Their findings, for reference:
+416–418 (2014). The paper calls these graphs **BCDE** (Betweenness, Closeness, Degree,
+Eigenvector), and so does the sheet. ("ABCD", said on 2026-10-27, was a slip.)
+The sheet explains what a BCDE graph is and leaves the definitions of the four
+measures to the students. Their findings, for reference:
 
 - no graph with fewer than **10** nodes works; there are seven with 10 nodes
   (and 14 to 16 edges);
@@ -49,9 +50,11 @@ call, 2026-10-27: by hand is better, and a student who wants code will ask).
 
 | File | What it is |
 |---|---|
-| `quiz06.tex` / `quiz06.pdf` | The sheet handed out. |
+| `quiz06.tex` / `quiz06.pdf` | The sheet handed out: one page. |
 | `solutions.tex` / `solutions.pdf` | Answer key: a 12-node, 13-edge model graph with every value, and marking notes. |
-| `quizkit.tex` | Shared preamble, Quiz 5's without the form link. |
+| `quizkit.tex` | Shared preamble: Quiz 5's, with the form link for Quiz 6. |
+| `build_form.py` | Makes the Google Form by copying Quiz 4's (the API cannot make upload questions), keeping one upload question; `--info` rewrites its words only. |
+| `quiz06-form-qr.png` | The QR square on the sheet. Encodes `go.skojaku.com/ans-quiz06`. |
 | `check_bcde.py` | Checks a student's edge list: values, each center, ties, and the verdict. |
 
 Build the PDFs (xelatex, run twice so the links resolve):
@@ -72,20 +75,31 @@ uv run --with networkx --with numpy check_bcde.py --demo              # the mode
 Exit 0 means four different unique centers. Ties in betweenness and eigenvector
 are decided to 1e-9; closeness is decided on the exact integer sum of distances.
 
-## Still to do
+## The plumbing
 
-Nothing below has been made. The quiz is a PDF and a key, and nothing else.
-
+- [x] **The Google Form** made 2026-10-27 with `build_form.py --create`: a Drive
+      copy of Quiz 4's form with its second upload question deleted, so one
+      upload question (`Question 1`: images, 1 file, 10 MB, required) is left,
+      then the title, description and text item rewritten. Email collection
+      `VERIFIED`. Not checked: whether the copy arrives published and accepting
+      responses (Quiz 5's did, since 2026-10-12), and the file-responses folder,
+      which Google makes when the upload question is first opened in the editor
+      (move it under `SSIE 641 Advanced Topics in Network Science/Submission/`,
+      beside Quiz 5's; the upload question still points at it).
+      - Responder: <https://docs.google.com/forms/d/e/1FAIpQLScYKKqDkybxGbCmuo9y0__oCWbFLvw7iWf4bmiMtfckhgKitQ/viewform>
+      - Editor: <https://docs.google.com/forms/d/1eccy9rko9kDemSq8dwgDsN0ubT8gekQOHOnrCrVpdlI/edit>
+- [ ] **Three short links on the droplet**, as for Quiz 5. The QR square and
+      the form's description already point at them, so **they are dead until
+      these exist**:
+      - `go.skojaku.com/quiz06` → the PDF on Drive
+      - `go.skojaku.com/ans-quiz06` → the responder URL above
+- [ ] `quiz06.pdf` on Drive, in the `adv-net-sci-ops` folder, read-only to the
+      `binghamton.edu` domain, link-only.
 - [ ] The date, and so the Brightspace quiz name (`m06-<date>`).
-- [ ] How students hand it in. Quiz 5 used a Google Form with two photo uploads
-      (`build_form.py` there copies Quiz 4's form). This sheet has no QR square
-      or form address yet.
-- [ ] Short links on the droplet, as for Quiz 5 (`quiz06`, `ans-quiz06`).
-- [ ] `quiz06.pdf` on Drive, in the `adv-net-sci-ops` folder.
 - [ ] The rubric in `adv-net-sci-ops/grading/quiz/rubrics/`, kept in step with
-      `solutions.tex`.
+      `solutions.tex` (the grader maps the upload question `Question 1`).
 - [ ] The Brightspace quiz and grade item, and the `deadlines.yaml` row.
 - [ ] **The time.** The sheet says 20 minutes. Finding a graph is quick with a
       template; checking four centralities on 12 nodes, eigenvector above all,
       is not. If it is done in class, 20 minutes may be tight.
-- [ ] Print the sheet, double-sided.
+- [ ] Print the sheet.
