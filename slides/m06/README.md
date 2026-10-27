@@ -7,7 +7,7 @@ Lecturer decisions: `plan.md`. Slide list and figure groups: `review/DECK_SPEC.m
 
 ## Files
 
-    m06-centrality.md     the deck (131 slides: day 1 is 1-61, day 2 is 62-131)
+    m06-centrality.md     the deck (132 slides: day 1 is 1-61, day 2 is 62-132)
     theme.css             the house theme (slide skill, house/theme-house.css) plus an m06
                           appendix: the power-iteration chart and a fixed figure box (below)
     scrub.js              injects the pencil filter the two live stages use

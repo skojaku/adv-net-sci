@@ -3346,6 +3346,16 @@ Closeness: NY 17 at Middletown. Harmonic: I-95 in the Bronx. Eccentricity: NY 17
 
 <!-- _class: L-f -->
 
+## Open <span class="hot">go.skojaku.com/m06lab</span>
+
+<!--
+The Module 6 coding exercise, a marimo notebook on molab (m06-who-is-central-lab-v2). go.skojaku.com/m06lab is a redirect on the course droplet (Caddyfile, handle /m06lab*), checked 2026-10-27 to answer 302 to the notebook. Students open it, work through it, then come back for the next slide.
+-->
+
+---
+
+<!-- _class: L-f -->
+
 ## Draw a network with four winners
 
 Degree, closeness, eccentricity and betweenness each rank a different node first.
