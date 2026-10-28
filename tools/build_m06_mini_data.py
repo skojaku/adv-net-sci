@@ -155,6 +155,11 @@ def main():
     for k, (_, cs) in SCENARIOS.items():
         block.append(f"    {k!r}: {capacity(cs)!r},")
     block.append("}")
+    # where people live, for the animation: one point per census tract
+    block.append("TRACTS = [")
+    for (la, lo), p in zip(tl, tp):
+        block.append(f"    ({lo:.3f}, {la:.3f}, {int(p)}),")
+    block.append("]")
     rings, labels = basemap()
     block.append(f"BASEMAP = {rings!r}")
     block.append(f"BOROUGHS = {labels!r}")
