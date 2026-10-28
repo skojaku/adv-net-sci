@@ -51,6 +51,7 @@ with app.setup(hide_code=True):
     # ---------------------------------------------------------------- style
     INK, MUTED, RULE = "#1a1a1a", "#6b6b6b", "#d8d4cc"
     RUST, BLUE = "#b5482f", "#2f5d8a"
+    FULL = "#8c877b"  # a hospital that has reached its capacity
     SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif"
     MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
 
@@ -228,7 +229,9 @@ with app.setup(hide_code=True):
     SIM0 = {k: simulate(CITY[k].edges, CITY[k].capacity) for k in SCENARIOS}
     ARRIVED = {k: SIM0[k].arrived for k in SCENARIOS}
 
-    def patients_of(edges, capacity, count=1500, seed=3):
+    PATIENT_DOTS = 6000  # how many dots stand for the whole population
+
+    def patients_of(edges, capacity, count=PATIENT_DOTS, seed=3):
         """Individual patients (one dot ~ POP/count people) whose fates follow
         the simulation in expectation: at each stop a patient is treated with
         the share the hospital really treats, otherwise passed to one of its
@@ -530,7 +533,9 @@ with app.setup(hide_code=True):
     def _shade(values, scale):
         v = np.asarray(values, dtype=float)
         t = np.zeros(N)
-        if scale == "linear":
+        if scale == "none":
+            pass
+        elif scale == "linear":
             if v.max() > 0:
                 t = np.clip(v, 0, None) / v.max()
         elif scale == "rank0":  # zero stays pale; the rest by rank
@@ -550,6 +555,8 @@ with app.setup(hide_code=True):
         rings=None,
         dots=(),
         links=True,
+        full_at=None,
+        cycle=1.0,
         fmt="{:,.0f}",
     ):
         """New York City. One circle per hospital: area ~ the people it serves,
@@ -557,7 +564,9 @@ with app.setup(hide_code=True):
         you added; blue rings mark the hospitals in `rings`. `dots` are moving
         patients: dicts with route (hospital ids), color, dur and begin in
         seconds, and optionally stops (the fraction of dur at which each
-        hospital is reached)."""
+        hospital is reached). `full_at[i]` is the second, within a loop of
+        `cycle` seconds, at which hospital i fills and turns gray (None: it
+        never does)."""
         pad = 12
         s = (size - 2 * pad) / max(_W, _H)
 
@@ -601,12 +610,24 @@ with app.setup(hide_code=True):
                 for i in range(N)
                 if rings[i]
             )
-        circles = "".join(
-            f'<circle cx="{sx[i]:.1f}" cy="{sy[i]:.1f}" r="{rad[i]:.1f}" '
-            f'fill="{_ramp(t[i])}" stroke="{INK}" stroke-width="1">'
-            f"<title>#{i} {NAMES[i]} · {fmt.format(values[i])}</title></circle>"
-            for i in range(N)
-        )
+        def _circle(i):
+            fill, anim = _ramp(t[i]), ""
+            if full_at is not None and full_at[i] is not None:
+                if full_at[i] <= 0:
+                    fill = FULL
+                else:
+                    anim = (
+                        f'<animate attributeName="fill" calcMode="discrete" '
+                        f'values="{fill};{FULL}" keyTimes="0;{full_at[i] / cycle:.4f}" '
+                        f'dur="{cycle:.2f}s" repeatCount="indefinite"/>'
+                    )
+            return (
+                f'<circle cx="{sx[i]:.1f}" cy="{sy[i]:.1f}" r="{rad[i]:.1f}" '
+                f'fill="{fill}" stroke="{INK}" stroke-width="1">'
+                f"<title>#{i} {NAMES[i]} · {fmt.format(values[i])}</title>{anim}</circle>"
+            )
+
+        circles = "".join(_circle(i) for i in range(N))
         moving = "".join(_moving_dot(d, sx, sy) for d in dots)
         w, h = pad * 2 + _W * s, pad * 2 + _H * s
         return mo.Html(
@@ -778,13 +799,16 @@ def _():
     sim1b_scale = mo.ui.slider(
         0.8, 1.4, step=0.05, value=1.0, label="capacity × (1 = as scored)", show_value=True
     )
+    sim1b_color = mo.ui.radio(
+        options=["when full", "referrals received"], value="when full", label="colour"
+    )
     sim1b_links = mo.ui.checkbox(value=True, label="show links")
-    mo.hstack([sim1b_city, sim1b_scale, sim1b_links], justify="start", gap=2)
-    return sim1b_city, sim1b_links, sim1b_scale
+    mo.hstack([sim1b_city, sim1b_scale, sim1b_color, sim1b_links], justify="start", gap=2)
+    return sim1b_city, sim1b_color, sim1b_links, sim1b_scale
 
 
 @app.cell(hide_code=True)
-def _(sim1b_city, sim1b_links, sim1b_scale):
+def _(sim1b_city, sim1b_color, sim1b_links, sim1b_scale):
     _k = sim1b_city.value
     _cap = CITY[_k].capacity * sim1b_scale.value
     _sim = simulate(CITY[_k].edges, _cap)
@@ -801,25 +825,39 @@ def _(sim1b_city, sim1b_links, sim1b_scale):
         }
         for _route, _treated in patients_of(CITY[_k].edges, _cap)
     ]
+    # the second at which each hospital is full: round h ends at second h
+    _full_at = [
+        next((float(h) for h in range(HOPS + 1) if _sim.treated[h][i] >= _cap[i] - 1e-6), None)
+        for i in range(N)
+    ]
+    _when_full = sim1b_color.value == "when full"
     mo.hstack(
         [
             svg_map(
                 _sim.arrived,
                 _k,
-                scale="rank0",
-                rings=_sim.treated[-1] >= _cap - 1e-6,
+                scale="none" if _when_full else "rank0",
+                full_at=_full_at if _when_full else None,
+                cycle=_cycle,
                 dots=_dots,
                 links=sim1b_links.value,
             ),
             mo.vstack(
                 [
                     note(
-                        f"Each dot is about {POP.sum() / 1500:,.0f} patients sent on from a full hospital, "
-                        "one hop per second. Blue: treated at the end of the route. "
-                        "Rust: nobody takes them. Darker hospital: more referrals received. "
-                        "Blue ring: full."
+                        f"Each dot is about {POP.sum() / PATIENT_DOTS:,.0f} patients sent on from a full "
+                        "hospital, one hop per second. Blue: treated at the end of the route. "
+                        "Rust: nobody takes them. "
+                        + (
+                            "A hospital turns gray when it is full."
+                            if _when_full
+                            else "Darker hospital: more referrals received."
+                        )
                     ),
-                    note(f"<b>{100 * _sim.unserved:.1f}%</b> of the people end up unserved."),
+                    note(
+                        f"<b>{sum(f is not None for f in _full_at)}</b> of {N} hospitals "
+                        f"fill up. <b>{100 * _sim.unserved:.1f}%</b> of the people end up unserved."
+                    ),
                     top_table(_sim.arrived, "referrals received"),
                 ]
             ),
