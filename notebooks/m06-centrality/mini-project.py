@@ -2578,7 +2578,8 @@ with app.setup(hide_code=True):
         walks to the nearest hospital, and is treated if the hospital still has
         room when they get there. The hospital's own catchment keeps priority,
         as in the simulation: the last people of a catchment to arrive are the
-        ones turned away. They are sent on to a random referral partner, and so
+        ones turned away. The same people, from the same homes, are drawn for any
+        edges and capacity. They are sent on to a random referral partner, and so
         on up to HOPS times; whether they are treated at a partner is drawn
         with the share that partner really treats.
 
@@ -2588,7 +2589,8 @@ with app.setup(hide_code=True):
         out = [[] for _ in range(N)]
         for i, j in edges:
             out[i].append(j)
-        rng = np.random.default_rng(seed)
+        rng = np.random.default_rng(seed)  # who the people are and where they live
+        route_rng = np.random.default_rng(seed + 1)  # where the turned-away are sent
         unit = POP.sum() / count
         dots = []
         treated_at = [[] for _ in range(N)]  # the seconds at which someone is treated at i
@@ -2625,9 +2627,9 @@ with app.setup(hide_code=True):
                     for hop in range(1, HOPS + 1):
                         if not out[node]:
                             break
-                        node = int(rng.choice(out[node]))
+                        node = int(route_rng.choice(out[node]))
                         route.append(node)
-                        if rng.random() < sim.share[hop][node]:
+                        if route_rng.random() < sim.share[hop][node]:
                             treated = True
                             break
                     if treated:
@@ -3437,17 +3439,31 @@ def _():
 def _(watch_city, watch_when):
     _k = watch_city.value
     if watch_when.value == "before":
-        _sim, _new, _rings = SIM0[_k], (), None
+        _sim, _new, _extra = SIM0[_k], [], np.zeros(N)
     else:
         _r = run_proposal(propose, _k)
-        _sim, _new, _rings = _r["sim"], _r["new"], _r["extra"] > 0
+        _sim, _new, _extra = _r["sim"], _r["new"], _r["extra"]
+    _dots, _gauge = crowd_of(CITY[_k].edges + list(_new), CITY[_k].capacity + _extra)
     mo.hstack(
         [
-            svg_map(_sim.dropped, _k, scale="rank0", extra_edges=_new, rings=_rings),
+            svg_map(
+                _sim.dropped,
+                _k,
+                scale="none",
+                extra_edges=_new,
+                rings=_extra > 0,
+                gauge=_gauge,
+                cycle=CYCLE,
+                dots=_dots,
+            ),
             mo.vstack(
                 [
-                    note("Darker: more people left unserved. Blue: your links and the hospitals you enlarged."),
-                    note(f"<b>{100 * _sim.unserved:.2f}%</b> unserved."),
+                    note(
+                        "The same people, before and after. Gray fills a hospital as it fills up. "
+                        "Blue lines: links you added. Blue rings: hospitals you enlarged. "
+                        "Blue dots: treated in the end. Rust: nobody takes them."
+                    ),
+                    note(f"<b>{100 * _sim.unserved:.2f}%</b> of the people end up unserved."),
                     top_table(_sim.dropped, "people unserved"),
                 ]
             ),
