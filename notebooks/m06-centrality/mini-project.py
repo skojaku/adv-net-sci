@@ -127,6 +127,8 @@ with app.setup(hide_code=True):
         'A': [126900, 78200, 284000, 6100, 149000, 306700, 313400, 129200, 15700, 36600, 284900, 76100, 389500, 144500, 99600, 403900, 109400, 139800, 202200, 175000, 36900, 66100, 41500, 112700, 52400, 58900, 355200, 48100, 18600, 144300, 271600, 180900, 295100, 223000, 236300, 81200, 61100, 108100, 69700, 1900, 163100, 456600, 123900, 137900, 48100, 137500, 53200, 104600, 404300, 6800, 406100, 154800, 188900, 123700, 133200, 98100, 103800, 102200, 24100, 165800, 437500],
         'B': [255500, 9500, 226300, 7100, 277100, 415500, 495900, 120700, 8000, 98100, 153600, 60800, 230500, 190800, 145700, 235900, 57500, 61000, 414300, 104400, 89600, 141700, 74800, 273400, 128800, 148500, 256900, 130300, 16800, 148800, 263100, 199600, 314100, 117200, 131800, 134000, 64100, 54000, 39200, 3400, 65300, 289000, 48800, 308600, 64700, 221800, 117800, 65400, 364500, 16200, 192300, 127800, 120900, 147300, 105100, 238100, 82800, 146500, 40800, 109600, 337000],
     }
+    BASEMAP = [[(-73.9626, 40.739), (-73.9614, 40.7428), (-73.9562, 40.7497), (-73.9413, 40.7669), (-73.9364, 40.7695), (-73.935, 40.7717), (-73.9375, 40.7725), (-73.9379, 40.7741), (-73.9364, 40.7769), (-73.9339, 40.7781), (-73.9318, 40.7779), (-73.9299, 40.7762), (-73.9248, 40.7788), (-73.9172, 40.7842), (-73.9103, 40.7907), (-73.9107, 40.7931), (-73.9125, 40.7961), (-73.8906, 40.7901), (-73.8883, 40.787), (-73.8783, 40.7854), (-73.8731, 40.7859), (-73.8708, 40.7879), (-73.8702, 40.7909), (-73.863, 40.7977), (-73.8531, 40.8001), (-73.8354, 40.8022), (-73.8174, 40.8058), (-73.8113, 40.8054), (-73.7941, 40.8005), (-73.7952, 40.7917), (-73.7939, 40.789), (-73.7841, 40.7901), (-73.7808, 40.7919), (-73.7807, 40.7956), (-73.7783, 40.7967), (-73.7756, 40.7956), (-73.7706, 40.7884), (-73.7743, 40.7862), (-73.7678, 40.7788), (-73.7655, 40.7745), (-73.7579, 40.7669), (-73.7562, 40.7664), (-73.7549, 40.7672), (-73.7553, 40.7717), (-73.7534, 40.7731), (-73.7551, 40.7766), (-73.753, 40.7813), (-73.7503, 40.7825), (-73.7016, 40.7525), (-73.7004, 40.7392), (-73.7079, 40.7278), (-73.7165, 40.7265), (-73.7303, 40.7222), (-73.727, 40.7107), (-73.7256, 40.6796), (-73.7275, 40.6742), (-73.7282, 40.6625), (-73.7262, 40.6585), (-73.725, 40.6527), (-73.7297, 40.6506), (-73.7351, 40.6497), (-73.7414, 40.6469), (-73.7414, 40.6405), (-73.7423, 40.6401), (-73.7395, 40.6357), (-73.74, 40.6351), (-73.7426, 40.6356), (-73.7413, 40.6373), (-73.7424, 40.6381), (-73.7439, 40.6375), (-73.746, 40.6352), (-73.7674, 40.6266), (-73.7688, 40.6244), (-73.7676, 40.6215), (-73.7667, 40.615), (-73.7652, 40.6149), (-73.76, 40.6113), (-73.7547, 40.6104), (-73.7491, 40.6118), (-73.7455, 40.6118), (-73.7432, 40.6072), (-73.7384, 40.6027), (-73.7385, 40.5959), (-73.7372, 40.593), (-73.7445, 40.5929), (-73.751, 40.589), (-73.7503, 40.5906), (-73.7523, 40.5918), (-73.7579, 40.5921), (-73.7749, 40.5908), (-73.8068, 40.5846), (-73.8345, 40.5774), (-73.8788, 40.5621), (-73.8962, 40.5574), (-73.9051, 40.5564), (-73.938, 40.5437), (-73.9405, 40.544), (-73.9399, 40.554), (-73.9354, 40.5574), (-73.9316, 40.5575), (-73.9255, 40.5613), (-73.9112, 40.5649), (-73.9058, 40.5625), (-73.8998, 40.5634), (-73.8921, 40.5683), (-73.8824, 40.5682), (-73.8792, 40.5747), (-73.8499, 40.5887), (-73.8345, 40.6072), (-73.833, 40.6283), (-73.8483, 40.6435), (-73.8549, 40.6427), (-73.8561, 40.6492), (-73.8632, 40.6583), (-73.8576, 40.6601), (-73.8584, 40.6635), (-73.8557, 40.6639), (-73.8576, 40.6717), (-73.8604, 40.6713), (-73.8623, 40.6792), (-73.8633, 40.6794), (-73.8641, 40.6824), (-73.866, 40.6819), (-73.8689, 40.6951), (-73.874, 40.6942), (-73.8796, 40.6911), (-73.8845, 40.6867), (-73.8896, 40.6842), (-73.8901, 40.685), (-73.8925, 40.6834), (-73.8942, 40.6853), (-73.8965, 40.6824), (-73.9012, 40.6879), (-73.9018, 40.6908), (-73.9012, 40.6914), (-73.9058, 40.6941), (-73.9043, 40.6957), (-73.9118, 40.6999), (-73.9107, 40.701), (-73.9129, 40.7024), (-73.9118, 40.7034), (-73.9219, 40.7094), (-73.9207, 40.7105), (-73.9222, 40.7129), (-73.924, 40.714), (-73.9243, 40.7156), (-73.9227, 40.7165), (-73.9278, 40.7265), (-73.9291, 40.7277), (-73.9375, 40.7298), (-73.9397, 40.7315), (-73.9422, 40.7357), (-73.9471, 40.7375), (-73.9551, 40.7394), (-73.9625, 40.7368), (-73.9626, 40.739)], [(-73.7724, 40.8595), (-73.7705, 40.8601), (-73.7656, 40.8557), (-73.7689, 40.8517), (-73.7688, 40.8482), (-73.7679, 40.8457), (-73.7698, 40.845), (-73.7716, 40.8472), (-73.7724, 40.8595)], [(-73.7926, 40.8548), (-73.7906, 40.8585), (-73.7888, 40.8584), (-73.7879, 40.8541), (-73.7848, 40.8512), (-73.7822, 40.8467), (-73.7831, 40.8445), (-73.7815, 40.8389), (-73.783, 40.8375), (-73.7842, 40.8371), (-73.7856, 40.838), (-73.7911, 40.8472), (-73.7899, 40.8504), (-73.7926, 40.8548)], [(-73.9338, 40.8822), (-73.9298, 40.8887), (-73.9183, 40.9177), (-73.8594, 40.9004), (-73.8591, 40.9025), (-73.8572, 40.9029), (-73.8574, 40.9046), (-73.8563, 40.9062), (-73.8538, 40.9072), (-73.8549, 40.9082), (-73.8527, 40.9099), (-73.8511, 40.91), (-73.8535, 40.9075), (-73.8515, 40.9066), (-73.8502, 40.9074), (-73.8453, 40.9056), (-73.8444, 40.9042), (-73.8414, 40.9042), (-73.8392, 40.8992), (-73.8397, 40.8972), (-73.8384, 40.8941), (-73.824, 40.8899), (-73.8224, 40.8896), (-73.8232, 40.8912), (-73.7941, 40.8836), (-73.7945, 40.8831), (-73.7937, 40.8823), (-73.7949, 40.8806), (-73.7949, 40.8792), (-73.7937, 40.8787), (-73.7908, 40.8802), (-73.7889, 40.879), (-73.7848, 40.8785), (-73.7834, 40.8718), (-73.786, 40.8695), (-73.7912, 40.8689), (-73.7952, 40.8575), (-73.7988, 40.8542), (-73.7981, 40.8513), (-73.7998, 40.8487), (-73.8014, 40.8488), (-73.8046, 40.8546), (-73.8038, 40.8581), (-73.8044, 40.8616), (-73.806, 40.8618), (-73.8076, 40.8605), (-73.809, 40.8605), (-73.8109, 40.8628), (-73.8154, 40.8646), (-73.818, 40.8636), (-73.8169, 40.8615), (-73.8137, 40.8604), (-73.8126, 40.8587), (-73.8126, 40.8544), (-73.8166, 40.8535), (-73.815, 40.8452), (-73.8167, 40.8439), (-73.8152, 40.8311), (-73.8129, 40.8277), (-73.8142, 40.8259), (-73.8128, 40.8244), (-73.8085, 40.8257), (-73.807, 40.8252), (-73.8045, 40.8185), (-73.7983, 40.8168), (-73.7983, 40.8159), (-73.8034, 40.8115), (-73.8018, 40.8103), (-73.7909, 40.8066), (-73.7902, 40.805), (-73.7937, 40.8035), (-73.7941, 40.8005), (-73.8113, 40.8054), (-73.8174, 40.8058), (-73.8354, 40.8022), (-73.8531, 40.8001), (-73.863, 40.7977), (-73.8702, 40.7909), (-73.8716, 40.7868), (-73.8731, 40.7859), (-73.8783, 40.7854), (-73.8883, 40.787), (-73.8906, 40.7901), (-73.9125, 40.7961), (-73.9189, 40.7989), (-73.923, 40.8024), (-73.9273, 40.8026), (-73.9325, 40.8089), (-73.9323, 40.8195), (-73.9335, 40.8332), (-73.933, 40.8357), (-73.9282, 40.8455), (-73.92, 40.8567), (-73.9098, 40.8683), (-73.9086, 40.8717), (-73.907, 40.8735), (-73.9072, 40.8764), (-73.9095, 40.8789), (-73.9114, 40.8793), (-73.9152, 40.8756), (-73.9198, 40.8766), (-73.9226, 40.8788), (-73.9338, 40.8822)], [(-74.0064, 40.6887), (-73.9985, 40.7003), (-73.9975, 40.6997), (-74.002, 40.6918), (-74.0007, 40.6906), (-74.003, 40.6904), (-74.0046, 40.6882), (-74.0064, 40.6887)], [(-74.0232, 40.7199), (-74.014, 40.7576), (-73.9632, 40.8269), (-73.9528, 40.8511), (-73.9338, 40.8822), (-73.9226, 40.8788), (-73.9198, 40.8766), (-73.9152, 40.8756), (-73.9114, 40.8793), (-73.9095, 40.8789), (-73.9072, 40.8764), (-73.9071, 40.873), (-73.9086, 40.8717), (-73.9098, 40.8683), (-73.92, 40.8567), (-73.9282, 40.8455), (-73.933, 40.8357), (-73.9335, 40.8332), (-73.9323, 40.8195), (-73.9325, 40.8089), (-73.9273, 40.8026), (-73.923, 40.8024), (-73.9189, 40.7989), (-73.9125, 40.7961), (-73.9107, 40.7931), (-73.9103, 40.7907), (-73.9172, 40.7842), (-73.9283, 40.7769), (-73.9299, 40.7762), (-73.9318, 40.7779), (-73.9339, 40.7781), (-73.9364, 40.7769), (-73.9379, 40.7741), (-73.9375, 40.7725), (-73.935, 40.7717), (-73.9364, 40.7695), (-73.9413, 40.7669), (-73.9597, 40.7453), (-73.9626, 40.739), (-73.9623, 40.7329), (-73.9612, 40.7295), (-73.9615, 40.7239), (-73.9676, 40.7165), (-73.9699, 40.7093), (-73.9696, 40.7076), (-73.9703, 40.7073), (-73.9728, 40.7094), (-73.9755, 40.7075), (-73.981, 40.7054), (-73.9865, 40.705), (-73.9915, 40.7056), (-73.9945, 40.7043), (-73.9951, 40.703), (-73.9977, 40.7013), (-73.9964, 40.7034), (-73.9971, 40.7056), (-74.0001, 40.7064), (-74.0127, 40.7005), (-74.0163, 40.7017), (-74.0192, 40.7066), (-74.0171, 40.7166), (-74.0232, 40.7199)], [(-74.0263, 40.6863), (-74.0195, 40.6934), (-74.0155, 40.6934), (-74.0121, 40.6907), (-74.0134, 40.688), (-74.0246, 40.6839), (-74.0263, 40.6848), (-74.0263, 40.6863)], [(-74.0417, 40.6264), (-74.0387, 40.6355), (-74.0334, 40.6439), (-74.0276, 40.6447), (-74.0245, 40.6474), (-74.0244, 40.6504), (-74.0076, 40.6625), (-74.0043, 40.6615), (-74.0, 40.6638), (-74.0023, 40.6675), (-74.0099, 40.6686), (-74.0117, 40.6651), (-74.016, 40.6647), (-74.0178, 40.6657), (-74.0189, 40.6713), (-74.0188, 40.6796), (-74.0082, 40.686), (-74.0064, 40.6887), (-74.0046, 40.6882), (-74.003, 40.6904), (-74.0007, 40.6906), (-74.002, 40.6918), (-73.9975, 40.6997), (-73.9985, 40.7003), (-73.9945, 40.7043), (-73.9915, 40.7056), (-73.9865, 40.705), (-73.9792, 40.7058), (-73.9728, 40.7094), (-73.9703, 40.7073), (-73.9696, 40.7076), (-73.9699, 40.7093), (-73.9676, 40.7165), (-73.9615, 40.7239), (-73.9612, 40.7295), (-73.9627, 40.7364), (-73.9551, 40.7394), (-73.9527, 40.7393), (-73.9422, 40.7357), (-73.9397, 40.7315), (-73.9375, 40.7298), (-73.9291, 40.7277), (-73.9278, 40.7265), (-73.9227, 40.7165), (-73.9243, 40.7156), (-73.924, 40.714), (-73.9222, 40.7129), (-73.9207, 40.7105), (-73.9219, 40.7094), (-73.9118, 40.7034), (-73.9129, 40.7024), (-73.9107, 40.701), (-73.9118, 40.6999), (-73.9043, 40.6957), (-73.9058, 40.6941), (-73.9012, 40.6914), (-73.9018, 40.6908), (-73.9012, 40.6879), (-73.8965, 40.6824), (-73.8942, 40.6853), (-73.8925, 40.6834), (-73.8901, 40.685), (-73.8896, 40.6842), (-73.8845, 40.6867), (-73.8796, 40.6911), (-73.874, 40.6942), (-73.8689, 40.6951), (-73.866, 40.6819), (-73.8641, 40.6824), (-73.8633, 40.6794), (-73.8623, 40.6792), (-73.8604, 40.6713), (-73.8576, 40.6717), (-73.8557, 40.6639), (-73.8584, 40.6635), (-73.8576, 40.6601), (-73.8632, 40.6583), (-73.8561, 40.6492), (-73.8549, 40.6427), (-73.8483, 40.6435), (-73.833, 40.6283), (-73.8345, 40.6072), (-73.8499, 40.5887), (-73.8792, 40.5747), (-73.8835, 40.5789), (-73.8955, 40.578), (-73.8965, 40.5833), (-73.8987, 40.5875), (-73.9004, 40.5881), (-73.9114, 40.5859), (-73.9133, 40.5829), (-73.9158, 40.582), (-73.9227, 40.5835), (-73.9302, 40.5836), (-73.9331, 40.5823), (-73.9313, 40.5767), (-73.932, 40.5758), (-73.9463, 40.5756), (-73.9909, 40.5706), (-74.002, 40.5706), (-74.0029, 40.5723), (-74.0115, 40.5745), (-74.0129, 40.5779), (-74.0109, 40.5806), (-74.006, 40.582), (-74.0007, 40.5812), (-73.9983, 40.5819), (-73.9993, 40.5846), (-73.9959, 40.5883), (-73.9971, 40.5914), (-74.0109, 40.6008), (-74.0201, 40.6034), (-74.0314, 40.6052), (-74.0402, 40.6148), (-74.0417, 40.6264)], [(-74.2556, 40.5079), (-74.2519, 40.5139), (-74.2443, 40.5185), (-74.2425, 40.5183), (-74.2407, 40.5193), (-74.2407, 40.5205), (-74.2429, 40.5212), (-74.2417, 40.5313), (-74.2478, 40.5434), (-74.2283, 40.5554), (-74.2189, 40.5546), (-74.2122, 40.5572), (-74.2037, 40.585), (-74.2041, 40.5893), (-74.1968, 40.597), (-74.1954, 40.6018), (-74.1961, 40.6162), (-74.201, 40.6169), (-74.2018, 40.6195), (-74.2006, 40.6314), (-74.1877, 40.6426), (-74.1815, 40.6446), (-74.178, 40.6426), (-74.1743, 40.6446), (-74.1614, 40.6387), (-74.1544, 40.6372), (-74.1494, 40.6376), (-74.1488, 40.6389), (-74.1424, 40.6395), (-74.1344, 40.6421), (-74.1298, 40.6415), (-74.1275, 40.6399), (-74.1216, 40.6409), (-74.1204, 40.6424), (-74.1068, 40.6459), (-74.1, 40.6454), (-74.0938, 40.6461), (-74.0865, 40.6486), (-74.079, 40.6482), (-74.0715, 40.6428), (-74.0736, 40.6378), (-74.0733, 40.6308), (-74.0719, 40.624), (-74.0641, 40.6169), (-74.0531, 40.6037), (-74.0536, 40.5995), (-74.076, 40.5783), (-74.0927, 40.5656), (-74.105, 40.5545), (-74.1082, 40.5543), (-74.113, 40.548), (-74.1164, 40.548), (-74.1228, 40.5436), (-74.1354, 40.5304), (-74.1372, 40.5301), (-74.1403, 40.5333), (-74.1397, 40.5351), (-74.1348, 40.5352), (-74.1281, 40.5412), (-74.1275, 40.5426), (-74.1295, 40.5454), (-74.1322, 40.5462), (-74.1357, 40.5464), (-74.1384, 40.5451), (-74.1419, 40.5418), (-74.1422, 40.5373), (-74.1487, 40.5345), (-74.157, 40.529), (-74.1696, 40.5233), (-74.172, 40.5233), (-74.178, 40.5196), (-74.1811, 40.5207), (-74.1845, 40.5195), (-74.1948, 40.5101), (-74.1965, 40.5098), (-74.2008, 40.5132), (-74.2089, 40.5115), (-74.2198, 40.5026), (-74.2332, 40.5013), (-74.2467, 40.4961), (-74.2502, 40.4967), (-74.2546, 40.5023), (-74.2556, 40.5079)]]
+    BOROUGHS = [('Queens', -73.7942, 40.6767), ('Bronx', -73.8698, 40.8524), ('Manhattan', -73.9497, 40.7919), ('Brooklyn', -73.9395, 40.6543), ('Staten Island', -74.146, 40.5719)]
     # BUILT-DATA-END
 
     NAMES = [h[0] for h in HOSPITALS]
@@ -160,7 +162,9 @@ with app.setup(hide_code=True):
         carry = POP.copy()
         arrived = np.zeros(N)
         dropped = np.zeros(N)
+        waiting, treated = [], []  # per round: patients present, treated so far
         for hop in range(HOPS + 1):
+            waiting.append(carry.copy())
             nxt = np.zeros(N)
             for i in range(N):
                 if carry[i] <= 0:
@@ -173,29 +177,40 @@ with app.setup(hide_code=True):
                         nxt[j] += over / len(out[i])
                 else:
                     dropped[i] += over
+            treated.append(served.copy())
             arrived += nxt
             carry = nxt
         return types.SimpleNamespace(
-            arrived=arrived, dropped=dropped, unserved=dropped.sum() / POP.sum()
+            arrived=arrived,
+            dropped=dropped,
+            unserved=dropped.sum() / POP.sum(),
+            waiting=waiting,
+            treated=treated,
         )
 
-    def pass_through(edges):
-        """No capacity limit. Every hospital sends one patient to every other
-        hospital, along the shortest referral path (ties split equally).
-        Counts, for each hospital, the patients that pass through it on the way
-        to somewhere else."""
+    PAIRS = [(a, b) for a in range(N) for b in range(N) if a != b]
+    ORDER = np.random.default_rng(5).permutation(len(PAIRS))  # the order patients are sent
+
+    def shortest_paths(edges):
+        """{(from, to): every shortest referral path}."""
         g = igraph.Graph(n=N, edges=list(edges), directed=True)
-        traffic = np.zeros(N)
-        for s in range(N):
-            paths = g.get_all_shortest_paths(s, mode="out")
-            by_target = {}
-            for p in paths:
+        found = {}
+        for a in range(N):
+            for p in g.get_all_shortest_paths(a, mode="out"):
                 if len(p) > 1:
-                    by_target.setdefault(p[-1], []).append(p)
-            for ps in by_target.values():
-                for p in ps:
-                    for mid in p[1:-1]:
-                        traffic[mid] += 1.0 / len(ps)
+                    found.setdefault((a, p[-1]), []).append(p)
+        return found
+
+    def traffic_of(paths, pairs):
+        """No capacity limit. Each pair sends one patient along its shortest
+        referral path (ties split equally). Counts, for each hospital, the
+        patients that pass through it on the way to somewhere else."""
+        traffic = np.zeros(N)
+        for pair in pairs:
+            ps = paths[pair]
+            for p in ps:
+                for mid in p[1:-1]:
+                    traffic[mid] += 1.0 / len(ps)
         return traffic
 
     CITY = {
@@ -204,7 +219,8 @@ with app.setup(hide_code=True):
         )
         for k in SCENARIOS
     }
-    TRAFFIC = {k: pass_through(CITY[k].edges) for k in SCENARIOS}
+    PATHS = {k: shortest_paths(CITY[k].edges) for k in SCENARIOS}
+    TRAFFIC = {k: traffic_of(PATHS[k], PAIRS) for k in SCENARIOS}
     SIM0 = {k: simulate(CITY[k].edges, CITY[k].capacity) for k in SCENARIOS}
     ARRIVED = {k: SIM0[k].arrived for k in SCENARIOS}
 
@@ -454,54 +470,103 @@ with app.setup(hide_code=True):
         r, g_, b = (lo + (hi - lo) * float(np.clip(t, 0, 1))).astype(int)
         return f"rgb({r},{g_},{b})"
 
-    def svg_map(values, k, size=560, extra_edges=(), extra_capacity=None, fmt="{:,.0f}"):
-        """The city. One circle per hospital, area ~ the people it serves, fill
-        ~ `values` (rank-scaled, so one huge value does not wash out the rest).
-        Thin grey lines are referral links; rust lines are links you added; a
-        ring marks a hospital whose capacity you raised."""
-        pad = 24
-        ky = np.cos(np.radians(LAT.mean()))
-        x = (LON - LON.min()) * ky
-        y = LAT.max() - LAT
-        scale = (size - 2 * pad) / max(x.max(), y.max())
-        sx, sy = pad + x * scale, pad + y * scale
-        r = _ranks(values) / max(N - 1, 1)
+    _xs = [p[0] for ring in BASEMAP for p in ring] + list(LON)
+    _ys = [p[1] for ring in BASEMAP for p in ring] + list(LAT)
+    _KY = np.cos(np.radians(np.mean(_ys)))
+    _W, _H = (max(_xs) - min(_xs)) * _KY, max(_ys) - min(_ys)
+
+    def _shade(values, scale):
+        v = np.asarray(values, dtype=float)
+        t = np.zeros(N)
+        if scale == "linear":
+            if v.max() > 0:
+                t = np.clip(v, 0, None) / v.max()
+        elif scale == "rank0":  # zero stays pale; the rest by rank
+            pos = v > 0
+            if pos.any():
+                t[pos] = 0.2 + 0.8 * _ranks(v[pos]) / max(pos.sum() - 1, 1)
+        else:
+            t = _ranks(v) / max(N - 1, 1)
+        return t
+
+    def svg_map(
+        values,
+        k,
+        size=560,
+        scale="rank",
+        extra_edges=(),
+        rings=None,
+        path=(),
+        fmt="{:,.0f}",
+    ):
+        """New York City. One circle per hospital: area ~ the people it serves,
+        fill ~ `values`. Thin lines are referral links. Blue lines are links
+        you added (or the path of the last patient sent); blue rings mark the
+        hospitals in `rings`."""
+        pad = 12
+        s = (size - 2 * pad) / max(_W, _H)
+
+        def px(lon):
+            return pad + (np.asarray(lon) - min(_xs)) * _KY * s
+
+        def py(lat):
+            return pad + (max(_ys) - np.asarray(lat)) * s
+
+        sx, sy = px(LON), py(LAT)
+        land = "".join(
+            '<polygon points="'
+            + " ".join(f"{px(x):.1f},{py(y):.1f}" for x, y in ring)
+            + f'" fill="#f4f0e8" stroke="#cfc8b9" stroke-width="0.8"/>'
+            for ring in BASEMAP
+        )
+        names = "".join(
+            f'<text x="{px(x):.1f}" y="{py(y):.1f}" text-anchor="middle" '
+            f'font-family="{SANS}" font-size="11" letter-spacing="1.5" fill="#8a8272" '
+            f'stroke="#f4f0e8" stroke-width="3" paint-order="stroke" '
+            f'pointer-events="none">{n.upper()}</text>'
+            for n, x, y in BOROUGHS
+        )
+        t = _shade(values, scale)
         rad = 3.5 + 9.0 * np.sqrt(POP / POP.max())
         links = "".join(
             f'<line x1="{sx[i]:.1f}" y1="{sy[i]:.1f}" x2="{sx[j]:.1f}" y2="{sy[j]:.1f}" '
-            f'stroke="#ddd8cd" stroke-width="0.5"/>'
+            f'stroke="#8f8a7e" stroke-opacity="0.35" stroke-width="0.6"/>'
             for i, j in CITY[k].edges
         )
         added = "".join(
             f'<line x1="{sx[i]:.1f}" y1="{sy[i]:.1f}" x2="{sx[j]:.1f}" y2="{sy[j]:.1f}" '
-            f'stroke="{BLUE}" stroke-width="1.8"/>'
-            for i, j in extra_edges
+            f'stroke="{BLUE}" stroke-width="2"/>'
+            for i, j in list(extra_edges) + list(zip(path[:-1], path[1:]))
         )
-        rings = ""
-        if extra_capacity is not None:
-            rings = "".join(
+        ring_svg = ""
+        if rings is not None:
+            ring_svg = "".join(
                 f'<circle cx="{sx[i]:.1f}" cy="{sy[i]:.1f}" r="{rad[i] + 3.5:.1f}" '
-                f'fill="none" stroke="{BLUE}" stroke-width="1.8"/>'
+                f'fill="none" stroke="{BLUE}" stroke-width="2"/>'
                 for i in range(N)
-                if extra_capacity[i] > 0
+                if rings[i]
             )
         dots = "".join(
             f'<circle cx="{sx[i]:.1f}" cy="{sy[i]:.1f}" r="{rad[i]:.1f}" '
-            f'fill="{_ramp(r[i])}" stroke="{INK}" stroke-width="1">'
+            f'fill="{_ramp(t[i])}" stroke="{INK}" stroke-width="1">'
             f"<title>#{i} {NAMES[i]} · {fmt.format(values[i])}</title></circle>"
             for i in range(N)
         )
+        w, h = pad * 2 + _W * s, pad * 2 + _H * s
         return mo.Html(
-            f'<svg width="{size}" height="{size}" viewBox="0 0 {size} {size}" '
-            f'style="background:#ffffff;border:1px solid {RULE};border-radius:4px">'
-            f"{links}{added}{rings}{dots}</svg>"
+            f'<svg width="{w:.0f}" height="{h:.0f}" viewBox="0 0 {w:.0f} {h:.0f}" '
+            f'style="background:#e9eef1;border:1px solid {RULE};border-radius:4px">'
+            f"{land}{links}{added}{ring_svg}{dots}{names}</svg>"
         )
 
-    def top_table(values, label, how=8, fmt="{:,.0f}"):
+    def _short(name, width=28):
+        return name if len(name) <= width else name[: width - 1] + "…"
+
+    def top_table(values, label, how=6, fmt="{:,.0f}"):
         order = np.argsort(-np.asarray(values))[:how]
         return table_html(
             ["hospital", "#", label],
-            [[NAMES[i][:34], str(i), fmt.format(values[i])] for i in order],
+            [[_short(NAMES[i]), str(i), fmt.format(values[i])] for i in order],
         )
 
 
@@ -510,13 +575,11 @@ def _():
     mo.md(r"""
     # Mini project m06
 
-    ## The city
+    ## New York's hospitals
 
-    There are 61 hospitals in New York City (the map below shows them), and 8.8 million people. Everyone goes to the nearest hospital, so each hospital serves a **catchment**: the people nearer to it than to any other. The circle area is the catchment size.
+    There are 61 hospitals and 8.8 million people. Everyone goes to the nearest hospital. Circle area represents the people served. Lines are **referral links**: a hospital may send patients to linked hospitals.
 
-    Hospitals pass patients to each other along **referral links** (grey lines; the link $i \to j$ means $i$ may send patients to $j$). Locations and populations are real (NYS Department of Health, 2020 Census). **Who refers to whom, and how many patients each hospital can treat, are simulation assumptions.** There are two cities, A and B: the same hospitals and people, but different referral links and capacities. Everything you write must work on both.
-
-    The notebook has two questions. Question 1 is about finding the bottlenecks, and question 2 is about fixing them.
+    Locations and populations are real. Links and capacities are simulated. Cities **A** and **B** have the same hospitals, but different links and capacities. Your answers must work on both.
     """)
     return
 
@@ -524,15 +587,8 @@ def _():
 @app.cell(hide_code=True)
 def _():
     explore_city = mo.ui.radio(options=SCENARIOS, value=SCENARIOS[0], label="city")
-    explore_color = mo.ui.dropdown(
-        options=[
-            "people in the catchment",
-            "spare capacity (capacity minus people)",
-            "Q1a: traffic passing through, no capacity limit",
-            "Q1b: referrals received, with capacity limits",
-        ],
-        value="people in the catchment",
-        label="colour by",
+    explore_color = mo.ui.radio(
+        options=["people served", "spare capacity"], value="people served", label="colour"
     )
     mo.hstack([explore_city, explore_color], justify="start", gap=2)
     return explore_city, explore_color
@@ -540,37 +596,59 @@ def _():
 
 @app.cell(hide_code=True)
 def _(explore_city, explore_color):
-    _k, _what = explore_city.value, explore_color.value
-    if _what.startswith("people"):
+    _k = explore_city.value
+    if explore_color.value == "people served":
         _v, _lab = POP, "people"
-    elif _what.startswith("spare"):
-        _v, _lab = CITY[_k].capacity - POP, "capacity − people"
-    elif _what.startswith("Q1a"):
-        _v, _lab = TRAFFIC[_k], "patients passing through"
     else:
-        _v, _lab = ARRIVED[_k], "referrals received"
-    mo.hstack(
-        [svg_map(_v, _k), top_table(_v, _lab)],
-        justify="start",
-        gap=2,
-        wrap=True,
-    )
+        _v, _lab = CITY[_k].capacity - POP, "capacity − people"
+    mo.hstack([svg_map(_v, _k), top_table(_v, _lab)], justify="start", gap=2, wrap=True)
     return
 
 
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ---
+    # Question 1. Where are the bottlenecks?
 
-    # Question 1. Which hospitals are the bottlenecks?
+    ## 1a. No capacity limit
 
-    ## 1a. Without capacity limits
+    Every hospital sends one patient to every other hospital along the shortest referral path. A hospital's **traffic** is the number of patients passing through it.
 
-    Suppose a patient at any hospital may need a specialist at any other hospital. Every hospital sends **one patient to every other hospital**, along the shortest referral path (if there are several shortest paths, the patient is split equally among them). A hospital's **traffic** is the number of patients that pass through it on their way to somewhere else, not counting the ones that start or end there. The map above shows it under "Q1a".
-
-    Write `bottleneck_no_capacity(g)`. It receives the referral network `g` (an `igraph.Graph`, directed, vertices `0..60`) and returns **one number per hospital**, higher meaning more traffic. It is scored by how well its ranking of the hospitals agrees with the true traffic ranking (rank correlation, 1 is perfect), averaged over the two cities.
+    Send the patients and watch. Then write `bottleneck_no_capacity(g)`. Return one number per hospital. Higher values must indicate more traffic. The score is the rank correlation with the true traffic (1 = same order).
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    sim1a_city = mo.ui.radio(options=SCENARIOS, value=SCENARIOS[0], label="city")
+    sim1a_sent = mo.ui.slider(
+        0, len(PAIRS), step=N - 1, value=10 * (N - 1), label="patients sent", show_value=True
+    )
+    mo.hstack([sim1a_city, sim1a_sent], justify="start", gap=2)
+    return sim1a_city, sim1a_sent
+
+
+@app.cell(hide_code=True)
+def _(sim1a_city, sim1a_sent):
+    _k, _m = sim1a_city.value, sim1a_sent.value
+    _pairs = [PAIRS[i] for i in ORDER[:_m]]
+    _traffic = traffic_of(PATHS[_k], _pairs)
+    _last = PATHS[_k][_pairs[-1]][0] if _pairs else []
+    mo.hstack(
+        [
+            svg_map(_traffic, _k, scale="rank0", path=_last),
+            mo.vstack(
+                [
+                    note("Blue: the last patient's path. Darker: more patients passing through."),
+                    top_table(_traffic, "passed through", fmt="{:,.1f}"),
+                ]
+            ),
+        ],
+        justify="start",
+        gap=2,
+        wrap=True,
+    )
     return
 
 
@@ -595,15 +673,10 @@ def _():
     mo.vstack(
         [
             scoreboard(
-                "1a · traffic without capacity limits",
+                "1a · traffic",
                 _lines,
-                "rank correlation with the true traffic, averaged over cities A and B. higher is better.",
+                "rank correlation with the true traffic, mean of A and B. higher is better.",
                 lambda v: f"{v:.2f}",
-            ),
-            table_html(
-                ["city", "your correlation"],
-                [[f"city {k}", f"{r['value']:.2f}"] for k, r in _mine.items()],
-                highlight=1,
             ),
             complaints(_mine),
         ]
@@ -616,26 +689,67 @@ def _():
     mo.md(r"""
     ## 1b. With capacity limits
 
-    Now the hospitals have capacities (the map above, "spare capacity", shows where there is room). The patients do not choose a specialist any more; they simply get ill:
+    Hospitals have capacities, and people fall ill:
 
-    1. Every person goes to the nearest hospital.
-    2. A hospital treats patients until its capacity is used up. The rest are **split equally among the hospitals it refers to**.
-    3. A hospital that receives referred patients does the same: treats what it can, passes on the rest.
-    4. A patient is passed on at most **4 times**. After that nobody takes them and they are unserved.
+    1. Everyone goes to the nearest hospital.
+    2. A hospital treats patients until full. The rest are **split equally among the hospitals it links to**.
+    3. Those hospitals do the same.
+    4. A patient is passed on at most 4 times, then goes unserved.
 
-    A hospital's **load** is the number of referred patients sent to it, whether or not it could treat them. Look at the map coloured by "Q1b: referrals received" and compare it with "Q1a".
+    A hospital's **load** is the number of referred patients sent to it.
 
-    Write `bottleneck_with_capacity(g, pop, capacity)`: the network, the catchment sizes and the capacities (each an array of length 61 except `g`), returning one number per hospital. It is scored the same way, against the load. The starting code is the answer to 1a. **Your score has to hold up on both cities.**
+    Run the simulation. Write `bottleneck_with_capacity(g, pop, capacity)`: one number per hospital, higher = more load. The starting code is your 1a answer.
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### ✍️ 1. Your reasoning, in English
+    sim1b_city = mo.ui.radio(options=SCENARIOS, value=SCENARIOS[0], label="city")
+    sim1b_scale = mo.ui.slider(
+        0.8, 1.4, step=0.05, value=1.0, label="capacity × (1 = as scored)", show_value=True
+    )
+    sim1b_round = mo.ui.slider(0, HOPS, step=1, value=0, label="round", show_value=True)
+    mo.hstack([sim1b_city, sim1b_scale, sim1b_round], justify="start", gap=2)
+    return sim1b_city, sim1b_round, sim1b_scale
 
-    Write 4 to 10 plain sentences a person could follow with a pencil: what the simulation does that your 1a answer does not, and how your score reflects it. This text is graded; the agent codes from it.
+
+@app.cell(hide_code=True)
+def _(sim1b_city, sim1b_round, sim1b_scale):
+    _k, _r = sim1b_city.value, sim1b_round.value
+    _cap = CITY[_k].capacity * sim1b_scale.value
+    _sim = simulate(CITY[_k].edges, _cap)
+    _full = _sim.treated[_r] >= _cap - 1e-6
+    _received = sum(_sim.waiting[1 : _r + 1]) if _r else np.zeros(N)
+    mo.hstack(
+        [
+            svg_map(_sim.waiting[_r], _k, scale="linear", rings=_full),
+            mo.vstack(
+                [
+                    note(
+                        "Darker: patients at this hospital in this round. "
+                        "Blue ring: full. Round 0 is the catchments."
+                    ),
+                    note(f"At the end <b>{100 * _sim.unserved:.1f}%</b> of the people are unserved."),
+                    top_table(_received, "referrals received so far")
+                    if _r
+                    else note("Move the round slider to pass the patients on."),
+                ]
+            ),
+        ],
+        justify="start",
+        gap=2,
+        wrap=True,
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### ✍️ 1. Why does your score fit?
+
+    3 to 6 short sentences: what the simulation does that your 1a answer ignores, and how your score captures it. This is graded; the agent codes from it.
     """)
     return
 
@@ -673,15 +787,10 @@ def _():
     mo.vstack(
         [
             scoreboard(
-                "1b · referrals received with capacity limits",
+                "1b · load",
                 _lines,
-                "rank correlation with the simulated load, averaged over cities A and B. higher is better.",
+                "rank correlation with the simulated load, mean of A and B. higher is better.",
                 lambda v: f"{v:.2f}",
-            ),
-            table_html(
-                ["city", "your correlation"],
-                [[f"city {k}", f"{r['value']:.2f}"] for k, r in _mine.items()],
-                highlight=1,
             ),
             complaints(_mine),
         ]
@@ -692,36 +801,32 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ---
+    # Question 2. Spend 100
 
-    # Question 2. Fix it with a budget
+    - A new referral link costs **8**.
+    - **10,000 patients** of extra capacity at a hospital costs **4** (fractions allowed).
+    - You cannot add hospitals or remove links.
 
-    You run the health system, with a budget of **100**. You may
-
-    - **add referral links**: any ordered pair of different hospitals that is not linked yet costs **8**;
-    - **add capacity** at any hospital: **10,000 patients** of capacity costs **4** (fractions are fine);
-    - nothing else. No new hospitals, and no links removed.
-
-    Write `propose(city)`. It receives one city and returns a proposal:
+    Write `propose(city)`. It returns:
 
     ```python
-    {"edges": [(3, 41), (17, 5)],         # new links: from hospital 3 to 41, from 17 to 5
-     "capacity": {12: 6.0, 30: 2.5}}      # units of 10,000: hospital 12 gets 60,000, hospital 30 gets 25,000
+    {"edges": [(3, 41), (17, 5)],      # links 3→41 and 17→5
+     "capacity": {12: 6.0, 30: 2.5}}   # hospital 12 gets +60,000, hospital 30 gets +25,000
     ```
 
-    | what | gives |
-    | :--- | :--- |
-    | `city.n`, `city.names` | 61, and the hospital names |
-    | `city.lat`, `city.lon` | where each hospital is |
-    | `city.pop` | people in each catchment |
-    | `city.capacity` | patients each hospital can treat |
-    | `city.edges` | the current links, a list of `(from, to)` |
-    | `city.graph` | the same links as a directed `igraph.Graph` |
-    | `city.budget`, `city.edge_cost`, `city.unit`, `city.unit_cost` | 100, 8, 10000, 4 |
+    ```
+    city.names, city.lat, city.lon     per hospital
+    city.pop, city.capacity            per hospital (arrays)
+    city.edges                         [(from, to), ...]
+    city.graph                         the same, as a directed igraph.Graph
+    city.budget, city.edge_cost, city.unit, city.unit_cost
+    ```
 
-    The score is the **share of people left unserved** by the simulation of 1b after your changes, averaged over cities A and B. Lower is better. A proposal that costs too much, repeats a link or names a hospital that does not exist is **rejected whole** and nothing is applied. The same function is run on each city and sees only that city. It must work on any city of this kind, not only on A and B.
+    Score: share of people unserved by the 1b simulation, averaged over A and B. Lower is better.
 
-    Your answers to Question 1 are tools you can use here: `bottleneck_with_capacity` is yours to call.
+    A proposal is rejected whole if it exceeds budget, repeats a link, or names a missing hospital.
+
+    `propose(city)` receives one city at a time. It must work on any city of this kind.
     """)
     return
 
@@ -729,9 +834,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### ✍️ 2. Your reasoning, in English
+    ### ✍️ 2. Why there?
 
-    Write 4 to 10 plain sentences a person could follow with a pencil: where you put the money, why there, and why you split it between links and capacity as you did. This text is graded; the agent codes from it.
+    3 to 6 short sentences: where the money goes, and why you split it between links and capacity this way. This is graded; the agent codes from it.
     """)
     return
 
@@ -777,11 +882,11 @@ def _():
             scoreboard(
                 "2 · people left unserved",
                 _lines,
-                "share of the population nobody takes, averaged over cities A and B. lower is better.",
+                "mean of A and B. lower is better.",
                 lambda v: f"{100 * v:.2f}%",
             ),
             table_html(
-                ["city", "unserved", "links added", "capacity added", "spent"],
+                ["city", "unserved", "links", "capacity added", "spent"],
                 [
                     [
                         f"city {k}",
@@ -802,16 +907,6 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## Watch your proposal
-
-    The map is coloured by the patients nobody could take, by the hospital that gave up on them last. Blue lines are the links you added; blue rings are the hospitals whose capacity you raised.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
     watch_city = mo.ui.radio(options=SCENARIOS, value=SCENARIOS[0], label="city")
     watch_when = mo.ui.radio(options=["before", "after your proposal"], value="after your proposal", label="")
     mo.hstack([watch_city, watch_when], justify="start", gap=2)
@@ -822,16 +917,17 @@ def _():
 def _(watch_city, watch_when):
     _k = watch_city.value
     if watch_when.value == "before":
-        _sim, _new, _extra = SIM0[_k], (), None
+        _sim, _new, _rings = SIM0[_k], (), None
     else:
         _r = run_proposal(propose, _k)
-        _sim, _new, _extra = _r["sim"], _r["new"], _r["extra"]
+        _sim, _new, _rings = _r["sim"], _r["new"], _r["extra"] > 0
     mo.hstack(
         [
-            svg_map(_sim.dropped, _k, extra_edges=_new, extra_capacity=_extra),
+            svg_map(_sim.dropped, _k, scale="rank0", extra_edges=_new, rings=_rings),
             mo.vstack(
                 [
-                    note(f"<b>{100 * _sim.unserved:.2f}%</b> of the people unserved.", BLUE),
+                    note("Darker: more people left unserved. Blue: your links and the hospitals you enlarged."),
+                    note(f"<b>{100 * _sim.unserved:.2f}%</b> unserved."),
                     top_table(_sim.dropped, "people unserved"),
                 ]
             ),
@@ -850,10 +946,13 @@ def _():
 
     ## Submit
 
-    - One submission per team.
-    - Create the URL to your notebook with the Share button at the top, then click `🔗 Copy Notebook URL`.
-    - Submit the link through the Google Form: **<https://go.skojaku.com/m06mini>**
-    - The two English cells (✍️ 1 and ✍️ 2) are worth more than the three scores. A team that explains a design, implements it and loses to the benchmark has done the assignment. A team with a good score and a vague paragraph has not.
+    One submission per team.
+    Click Share, then `🔗 Copy Notebook URL`.
+    Send the link through **<https://go.skojaku.com/m06mini>**.
+
+    The two ✍️ texts count more than the scores.
+    A clear design that loses to the benchmark is a good answer.
+    A high score with a vague text is not.
     """)
     return
 
