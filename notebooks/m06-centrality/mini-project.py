@@ -2966,6 +2966,7 @@ with app.setup(hide_code=True):
         links=True,
         gauge=None,
         cycle=1.0,
+        legend=(),
         fmt="{:,.0f}",
     ):
         """New York City. One circle per hospital: area ~ the people it serves,
@@ -2973,7 +2974,9 @@ with app.setup(hide_code=True):
         you added; blue rings mark the hospitals in `rings`. `dots` are moving
         people (see _moving_dot). `gauge[i]` is how full hospital i is over a
         loop of `cycle` seconds, as (seconds, fractions): a gray disc that
-        grows inside its circle (None: nothing)."""
+        grows inside its circle (None: nothing). `legend` is a list of (kind,
+        colour, text) drawn in the lower right corner, kind being "dot", "disc",
+        "ring", "line" or "shade"."""
         pad = 12
         s = (size - 2 * pad) / max(_W, _H)
 
@@ -3042,10 +3045,41 @@ with app.setup(hide_code=True):
         )
         moving = "".join(_moving_dot(d, px, py) for d in dots)
         w, h = pad * 2 + _W * s, pad * 2 + _H * s
+        key = ""
+        if legend:
+            kw = 36 + 5.8 * max(len(text) for _, _, text in legend)
+            kh = 8 + 17 * len(legend)
+            x0, y0 = w - pad - kw, h - pad - kh
+            key = (
+                f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{kw:.0f}" height="{kh}" rx="3" '
+                f'fill="#ffffff" fill-opacity="0.88" stroke="{RULE}"/>'
+            )
+            for r, (kind, color, text) in enumerate(legend):
+                cx, cy = x0 + 16, y0 + 16 + 17 * r
+                if kind == "dot":
+                    mark = f'<circle cx="{cx}" cy="{cy}" r="3.6" fill="{color}" stroke="#ffffff" stroke-width="0.6"/>'
+                elif kind == "disc":
+                    mark = f'<circle cx="{cx}" cy="{cy}" r="5.5" fill="{color}" stroke="{INK}"/>'
+                elif kind == "ring":
+                    mark = (
+                        f'<circle cx="{cx}" cy="{cy}" r="4" fill="#efe9df" stroke="{INK}"/>'
+                        f'<circle cx="{cx}" cy="{cy}" r="7" fill="none" stroke="{color}" stroke-width="2"/>'
+                    )
+                elif kind == "line":
+                    mark = f'<line x1="{cx - 9}" y1="{cy}" x2="{cx + 9}" y2="{cy}" stroke="{color}" stroke-width="2"/>'
+                else:  # shade: pale to dark
+                    mark = (
+                        f'<circle cx="{cx - 5}" cy="{cy}" r="5" fill="{_ramp(0)}" stroke="{INK}"/>'
+                        f'<circle cx="{cx + 5}" cy="{cy}" r="5" fill="{color}" stroke="{INK}"/>'
+                    )
+                key += (
+                    f"{mark}<text x=\"{cx + 16}\" y=\"{cy + 4}\" font-family=\"{SANS}\" "
+                    f'font-size="11" fill="{INK}">{text}</text>'
+                )
         return mo.Html(
             f'<svg width="{w:.0f}" height="{h:.0f}" viewBox="0 0 {w:.0f} {h:.0f}" '
             f'style="background:#e9eef1;border:1px solid {RULE};border-radius:4px">'
-            f"{land}{links}{added}{ring_svg}{base}{filling}{outline}{moving}{names}</svg>"
+            f"{land}{links}{added}{ring_svg}{base}{filling}{outline}{moving}{names}{key}</svg>"
         )
 
     def _short(name, width=28):
@@ -3139,10 +3173,20 @@ def _(sim1a_city, sim1a_links, sim1a_sent):
         )
     mo.hstack(
         [
-            svg_map(_traffic, _k, scale="rank0", dots=_dots, links=sim1a_links.value),
+            svg_map(
+                _traffic,
+                _k,
+                scale="rank0",
+                dots=_dots,
+                links=sim1a_links.value,
+                legend=[
+                    ("dot", BLUE, "patient on the way to a specialist"),
+                    ("shade", RUST, "darker: more patients pass through"),
+                ],
+            ),
             mo.vstack(
                 [
-                    note("Each dot is a patient on the shortest path to the hospital that treats them. Darker: more patients have passed through."),
+                    note("Each dot is one patient, sent along the shortest referral path."),
                     top_table(_traffic, "passed through", fmt="{:,.0f}"),
                 ]
             ),
@@ -3237,19 +3281,23 @@ def _(sim1b_city, sim1b_color, sim1b_links, sim1b_scale):
                 cycle=CYCLE,
                 dots=_dots,
                 links=sim1b_links.value,
+                legend=[
+                    ("dot", HOME, "person (at home, or treated at the nearest hospital)"),
+                    ("dot", BLUE, "turned away, treated at a partner"),
+                    ("dot", RUST, "turned away, nobody takes them"),
+                ]
+                + (
+                    [("disc", FULL, "hospital filling up")]
+                    if _when_full
+                    else [("shade", RUST, "darker: more referrals received")]
+                ),
             ),
             mo.vstack(
                 [
                     note(
-                        f"Each dot is about {POP.sum() / PATIENT_DOTS:,.0f} people. They start at home, "
-                        "go to the nearest hospital and are treated while there is room. "
-                        "People who arrive after a hospital is full are sent on, one hop per second. "
-                        "Blue: treated in the end. Rust: nobody takes them. "
-                        + (
-                            "Gray fills a hospital as it fills up."
-                            if _when_full
-                            else "Darker hospital: more referrals received."
-                        )
+                        f"Each dot is about {POP.sum() / PATIENT_DOTS:,.0f} people. They go to the nearest "
+                        "hospital and are treated while there is room. Those who arrive after it is full "
+                        "are sent on, one hop per second."
                     ),
                     note(
                         f"<b>{_full}</b> of {N} hospitals fill up. "
@@ -3455,14 +3503,18 @@ def _(watch_city, watch_when):
                 gauge=_gauge,
                 cycle=CYCLE,
                 dots=_dots,
+                legend=[
+                    ("dot", HOME, "person (at home, or treated at the nearest hospital)"),
+                    ("dot", BLUE, "turned away, treated at a partner"),
+                    ("dot", RUST, "turned away, nobody takes them"),
+                    ("disc", FULL, "hospital filling up"),
+                    ("line", BLUE, "link you added"),
+                    ("ring", BLUE, "hospital you enlarged"),
+                ],
             ),
             mo.vstack(
                 [
-                    note(
-                        "The same people, before and after. Gray fills a hospital as it fills up. "
-                        "Blue lines: links you added. Blue rings: hospitals you enlarged. "
-                        "Blue dots: treated in the end. Rust: nobody takes them."
-                    ),
+                    note("The same people, before and after your proposal."),
                     note(f"<b>{100 * _sim.unserved:.2f}%</b> of the people end up unserved."),
                     top_table(_sim.dropped, "people unserved"),
                 ]
