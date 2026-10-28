@@ -507,8 +507,8 @@ with app.setup(hide_code=True):
         if "stops" in d:
             seg = np.array([np.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:])])
             frac = np.concatenate([[0.0], np.cumsum(seg) / max(seg.sum(), 1e-9)])
-            times = list(d["stops"]) + [1.0]
-            where = list(frac) + [1.0]
+            times = [0.0] + list(d["stops"]) + [1.0]  # waits at home until stops[0]
+            where = [0.0] + list(frac) + [1.0]
             keys = (
                 f' calcMode="linear" keyPoints="{";".join(f"{v:.4f}" for v in where)}"'
                 f' keyTimes="{";".join(f"{v:.4f}" for v in times)}"'
@@ -565,8 +565,8 @@ with app.setup(hide_code=True):
         patients: dicts with route (hospital ids), color, dur and begin in
         seconds, and optionally stops (the fraction of dur at which each
         hospital is reached). `full_at[i]` is the second, within a loop of
-        `cycle` seconds, at which hospital i fills and turns gray (None: it
-        never does)."""
+        `cycle` seconds, at which hospital i starts to fill; it is gray one
+        second later (None: it never fills)."""
         pad = 12
         s = (size - 2 * pad) / max(_W, _H)
 
@@ -613,14 +613,11 @@ with app.setup(hide_code=True):
         def _circle(i):
             fill, anim = _ramp(t[i]), ""
             if full_at is not None and full_at[i] is not None:
-                if full_at[i] <= 0:
-                    fill = FULL
-                else:
-                    anim = (
-                        f'<animate attributeName="fill" calcMode="discrete" '
-                        f'values="{fill};{FULL}" keyTimes="0;{full_at[i] / cycle:.4f}" '
-                        f'dur="{cycle:.2f}s" repeatCount="indefinite"/>'
-                    )
+                a, b = full_at[i] / cycle, (full_at[i] + 1.0) / cycle
+                anim = (
+                    f'<animate attributeName="fill" values="{fill};{fill};{FULL};{FULL}" '
+                    f'keyTimes="0;{a:.4f};{b:.4f};1" dur="{cycle:.2f}s" repeatCount="indefinite"/>'
+                )
             return (
                 f'<circle cx="{sx[i]:.1f}" cy="{sy[i]:.1f}" r="{rad[i]:.1f}" '
                 f'fill="{fill}" stroke="{INK}" stroke-width="1">'
@@ -812,7 +809,7 @@ def _(sim1b_city, sim1b_color, sim1b_links, sim1b_scale):
     _k = sim1b_city.value
     _cap = CITY[_k].capacity * sim1b_scale.value
     _sim = simulate(CITY[_k].edges, _cap)
-    _cycle = float(HOPS + 1) + 1.5  # one second per round, then a pause
+    _cycle = float(HOPS + 2) + 1.5  # round 0 (patients reach their own hospital), then one second per hop, then a pause
     _rng = np.random.default_rng(13)
     _dots = [
         {
@@ -820,12 +817,12 @@ def _(sim1b_city, sim1b_color, sim1b_links, sim1b_scale):
             "color": BLUE if _treated else RUST,
             "dur": _cycle,
             "begin": 0.0,
-            "stops": [j / _cycle for j in range(len(_route))],
+            "stops": [(j + 1) / _cycle for j in range(len(_route))],
             "jitter": tuple(_rng.uniform(-4, 4, 2)),
         }
         for _route, _treated in patients_of(CITY[_k].edges, _cap)
     ]
-    # the second at which each hospital is full: round h ends at second h
+    # the second at which each hospital starts to fill: round h runs from second h to h + 1
     _full_at = [
         next((float(h) for h in range(HOPS + 1) if _sim.treated[h][i] >= _cap[i] - 1e-6), None)
         for i in range(N)
