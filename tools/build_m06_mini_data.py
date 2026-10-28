@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11,<3.14"
-# dependencies = ["numpy", "pandas", "pyshp", "shapely"]
+# dependencies = ["numpy", "pandas", "shapely"]
 # ///
 """Rebuild the data block of notebooks/m06-centrality/mini-project.py.
 
@@ -17,8 +17,8 @@ Sources (both public, no key):
               five NYC counties
   population  2020 Census, centers of population by tract
               (www2.census.gov/geo/docs/reference/cenpop2020/tract)
-  map         2020 Census cartographic boundaries, county subdivisions of New
-              York State, clipped to the shoreline; the five boroughs, simplified
+  map         NYC Department of City Planning, borough boundaries clipped to the
+              shoreline (ArcGIS feature service), simplified
 
 Everything else -- who refers to whom, how many beds -- is a simulation
 assumption, drawn here with fixed seeds and then frozen into the notebook.
@@ -28,7 +28,6 @@ assumption, drawn here with fixed seeds and then frozen into the notebook.
 
 import io
 import json
-import zipfile
 import re
 import urllib.parse
 import urllib.request
@@ -36,7 +35,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import shapefile
 from shapely.geometry import shape
 
 NOTEBOOK = Path(__file__).resolve().parent.parent / "notebooks/m06-centrality/mini-project.py"
@@ -87,28 +85,25 @@ def tracts():
     return t[["LATITUDE", "LONGITUDE"]].values.astype(float), t.POPULATION.values
 
 
-def basemap(tol=0.0005):
-    """The five boroughs as outlines (lon, lat) and one label point each."""
-    z = zipfile.ZipFile(io.BytesIO(get("https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_36_cousub_500k.zip")))
-    stem = next(n for n in z.namelist() if n.endswith(".shp"))[:-4]
-    r = shapefile.Reader(
-        shp=io.BytesIO(z.read(stem + ".shp")),
-        shx=io.BytesIO(z.read(stem + ".shx")),
-        dbf=io.BytesIO(z.read(stem + ".dbf")),
+def basemap(tol=0.0006):
+    """The five boroughs, clipped to the shoreline, as outlines (lon, lat) and
+    one label point each. The Census boundaries are legal boundaries that run
+    through the East and Harlem Rivers, so Manhattan stops being an island;
+    the city's own shoreline-clipped file keeps the water."""
+    url = (
+        "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/"
+        "NYC_Borough_Boundary/FeatureServer/0/query?where=1%3D1&outFields=BoroName&outSR=4326&f=geojson"
     )
     rings, labels = [], []
-    for sr in r.iterShapeRecords():
-        rec = sr.record.as_dict()
-        if f"{int(rec['COUNTYFP']):03d}" not in [f"{c:03d}" for c in COUNTY_FIPS]:
-            continue
-        poly = shape(sr.shape.__geo_interface__).simplify(tol)
+    for f in json.loads(get(url))["features"]:
+        poly = shape(f["geometry"])
         parts = list(poly.geoms) if poly.geom_type == "MultiPolygon" else [poly]
+        parts = [p.simplify(tol) for p in parts]
         for part in parts:
-            if part.area > 2e-5:  # drop specks
+            if part.area > 1e-5:  # drop specks of marsh
                 rings.append([(round(x, 4), round(y, 4)) for x, y in part.exterior.coords])
-        biggest = max(parts, key=lambda p: p.area)
-        c = biggest.representative_point()
-        labels.append((rec["NAME"], round(c.x, 4), round(c.y, 4)))
+        c = max(parts, key=lambda p: p.area).representative_point()
+        labels.append((f["properties"]["BoroName"], round(c.x, 4), round(c.y, 4)))
     return rings, labels
 
 
