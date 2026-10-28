@@ -36,7 +36,7 @@
 
 import marimo
 
-__generated_with = "0.25.0"
+__generated_with = "0.25.2"
 app = marimo.App(width="medium")
 
 with app.setup(hide_code=True):
@@ -761,7 +761,7 @@ def _():
     Hospitals have capacities, and people fall ill:
 
     1. Everyone goes to the nearest hospital.
-    2. A hospital treats patients until full. The rest are **split equally among the hospitals it links to**.
+    2. A hospital treats patients until full. The rest are redirected to other hospitals it links to.
     3. Those hospitals do the same.
     4. A patient is passed on at most 4 times, then goes unserved.
 
