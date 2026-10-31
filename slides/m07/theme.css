@@ -1,0 +1,1177 @@
+/* @theme house */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;600&display=swap');
+
+/* 2026-10-17: this file is the theme of the lecturer's CCS 2027 deck (talks-ccs-2027-disruption), now the
+   current house look: Libre Baskerville text, black ink, red #B14434 / blue #3959A6 emphasis with a brush
+   underline, Caveat handwriting, a black footer bar for the paper reference, and no breadcrumb line
+   (the `header` rules below are kept for old decks; do not use `<!-- header: -->`). The rules from the
+   top of the file down to "Look of the deck" are the older layout rules; the section near the end overrides
+   their fonts and colours. The magic-move stage (MAGIC_MOVE.md) is at the end of the layout rules. */
+
+/* 1280x720 (16:9). All sizes are the 1920px design values / 1.5
+   2026-10-14: type set as in the lecturer's CompleNet 2026 deck: titles in Meslo bold,
+   centred and large; Libre Baskerville only for quotations; asides in Excalifont. */
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 40px 80px 60px;
+  background: #FDFBF7 url('figures/washi-scan.jpg') center / cover no-repeat;   /* real washi paper scan (the lecturer's own file p0074_l.jpeg, rotated and cropped 16:9) */
+  color: #000000;
+  /* m06 v3: the lecturer's own slides set text in MesloLGS NF (installed on his machine;
+     Menlo is the near-identical fallback). Headings keep Libre Baskerville. */
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.42;
+  letter-spacing: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ---------- headings ---------- */
+
+/* The title is the message: Meslo bold, centred, 44px (one line holds about 40
+   characters). No rule, no box, no colour around it; one keyword inside it may be
+   coloured (.hot / .cool) or set in italics. `left` on the slide aligns it with a list. */
+section h2 {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: #000000;
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  text-align: center;
+  text-wrap: balance;
+  flex: none;
+}
+section.left h2 { text-align: left; }
+
+/* older decks put <hr> under every title; it is now an invisible spacer, so the
+   titles still line up and old markup renders unchanged */
+section h2 + hr {
+  border: 0;
+  height: 0;
+  background: none;
+  margin: 0 0 22px;
+  flex: none;
+  width: 100%;
+}
+
+/* the line under the title: context, a question, or the method in one line */
+section .sub {
+  font-size: 32px;
+  line-height: 1.35;
+  text-align: center;
+  margin: 6px auto 18px;
+  max-width: 1080px;
+}
+section .sub.muted { color: #6b6b6b; font-style: italic; font-size: 28px; }
+
+/* the line under the figure: the conclusion, in bold, one keyword coloured */
+section .take {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  margin: auto auto 0;
+  padding-top: 14px;
+  max-width: 1080px;
+}
+/* the failure that ends a mystery, on a dark band across the bottom of the slide */
+section .take.dark {
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: none; margin: 0;
+  padding: 22px 80px 26px; background: #1F2028; color: #ffffff;
+  font-size: 30px; font-weight: 400;
+}
+
+/* colour a word without making it a defined term (no brush underline). No gold: on white it
+   has 2:1 contrast, so it is for routes and fills only (FIGURE_GUIDE, accent-3). */
+section .hot, section .ul-hot { color: #B14434; }
+section .cool, section .ul-cool { color: #3959A6; }
+section .muted { color: #6b6b6b; }
+section .teal { color: #8FA3D6; }
+section .olive { color: #B14434; }
+
+/* ---------- the breadcrumb: `<!-- header: Results -->` ----------
+   A short line from the left edge, a dot, and the topic or source the run of slides
+   is about (CompleNet: "Results", "DeepWalk (Perozzi et al. 2014)"). Marp repeats a
+   header on every following slide until `<!-- header: "" -->`. */
+section > header {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding-left: 208px;
+  font-size: 24px;
+  color: #6b6b6b;
+  white-space: nowrap;
+}
+section > header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 186px;
+  height: 2px;
+  background: #B3B3B3;
+}
+section > header::after {
+  content: "";
+  position: absolute;
+  left: 184px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #6b6b6b;
+}
+section:has(> header) { padding-top: 66px; }
+section.lead > header, section.L-d > header { display: none; }
+
+/* ---------- small fixed pieces ---------- */
+
+/* a reference to someone else's work: bottom left, small, muted */
+section .ref {
+  position: absolute; left: 40px; bottom: 40px; max-width: 980px;
+  font-size: 15px; line-height: 1.3; color: #6b6b6b;
+}
+/* one's own paper behind the slide: "Kojaku et al. / Nat. Comm. 2023" (+ the venue's logo) */
+section .paper {
+  position: absolute; left: 40px; bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 20px; line-height: 1.2; color: #000000;
+}
+section .paper.top { top: 22px; bottom: auto; }
+section .paper img { height: 36px; width: auto; }
+/* a small picture of the subject, top right, when the talk returns to it */
+section .thumb {
+  position: absolute; top: 22px; right: 40px; height: 112px; width: auto;
+  box-shadow: 0 3px 10px rgba(48, 50, 61, 0.25);
+}
+section .thumb img { height: 112px; width: auto; }
+/* what the last step showed, kept in place but faded, so the new part reads first */
+section .past { opacity: 0.3; }
+/* a handwritten aside in the page (in a figure, use figlib.aside) */
+section .aside {
+  font-family: 'Caveat', cursive;
+  font-size: 32px; line-height: 1.2; color: #6b6b6b;
+}
+/* photographs and screenshots on white carry a soft shadow; drawings do not */
+section .fig.photo img, section .shot img, section img.shot {
+  box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28);
+}
+
+section h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3959A6;
+}
+
+/* ---------- title slide ----------
+   CompleNet 2026: the title in Meslo bold on the left, then venue, date and name in
+   regular weight, logos bottom left, a QR code to the slides bottom right. */
+
+section.lead {
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 22px;
+}
+section.lead h1 {
+  margin: 0;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.01em;
+  color: #000000;
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  max-width: 900px;
+}
+section.lead hr { display: none; }
+section.lead .eyebrow {
+  font-size: 21px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+section.lead .sub {
+  font-size: 30px;
+  line-height: 1.35;
+  color: #000000;
+  text-align: left;
+  margin: 0;
+  max-width: 870px;
+}
+section.lead .credit {
+  font-size: 23px;
+  letter-spacing: 0.02em;
+  color: #6b6b6b;
+}
+section.lead .logos { position: absolute; left: 80px; bottom: 44px; display: flex; gap: 24px; align-items: center; }
+section.lead .logos img { height: 70px; width: auto; }
+section.lead .qr { position: absolute; right: 80px; bottom: 44px; height: 130px; width: auto; }
+
+/* ---------- part openers ----------
+   CompleNet 2026 opens each part with the paper it is about: the title in bold,
+   centred; the authors in one small line; their faces in a row. Without a
+   paper, the part's question as the title and one line under it. The band of older
+   decks is now a muted line at the top (same markup: <div class="band">). */
+
+section.part {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+section.part .band {
+  position: absolute;
+  top: 26px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+section.part .band .count { letter-spacing: 0.1em; }
+section.part h2 {
+  margin: 0 auto;
+  font-size: 48px;
+  line-height: 1.22;
+  max-width: 1040px;
+}
+section.part p {
+  margin: 22px auto 0;
+  font-size: 26px;
+  line-height: 1.4;
+  color: #000000;
+  max-width: 1000px;
+}
+section.part .faces { display: flex; justify-content: center; gap: 18px; margin-top: 28px; }
+section.part .faces figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+section.part .faces img { height: 120px; width: auto; }
+section.part .faces figcaption { font-size: 15px; color: #6b6b6b; }
+
+/* Shallow slides: centre the BODY in the space under the rule, and leave the
+   title where it always is. Centring the whole section pushed the title down
+   the frame, so a `mid` slide's heading no longer lined up with its neighbours'.
+   The auto margins put the slack above and below the body block only.
+   Add `<!-- _class: mid -->` to the slide. */
+section.mid { justify-content: flex-start; }
+section.mid > h2 + hr { margin-bottom: auto; }
+section.mid > :last-child { margin-bottom: auto; }
+
+/* ...but `section .formula:last-child { margin-bottom: 0 }` further down has the
+   SAME specificity (0,2,1) and comes later, so it won on every `mid` slide whose
+   last block is a formula panel — which is most of the question slides. With the
+   bottom auto margin gone, the top one pushed the whole body to the floor: 360px
+   of dead band under the rule, and the page number rendering inside the beige
+   panel. Two independent reviewers reported it from different slides.
+   The override has to out-specify that rule, not merely repeat it. */
+section.mid > .formula:last-child,
+section.mid > div:last-child,
+section.mid > p:last-child { margin-bottom: auto; }
+
+/* ---------- body ---------- */
+
+section p {
+  margin: 0 0 20px;
+  max-width: 1080px;
+  text-wrap: pretty;
+}
+section p:last-child { margin-bottom: 0; }
+
+section ul, section ol {
+  margin: 0 0 20px;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+section ul:last-child, section ol:last-child { margin-bottom: 0; }
+section li { line-height: 1.42; }
+section li::marker { color: #3959A6; }
+section li:has(> ul) { font-weight: 700; }
+section li ul { margin: 8px 0 0; gap: 6px; font-size: 26px; font-weight: 400; }
+
+/* Key terms: `strong` is a term where it is defined, hot (orange) with the lecturer's brush
+   underline (figures/brush-hot.png, built by figs_ui.py), as in his "query vector" figure.
+   Sky blue is structural (list chevrons) and the second emphasis; a coloured word that is not
+   a definition is a .hot / .cool span, without the underline. */
+strong { font-weight: 700; color: #B14434; }
+strong.cool { color: #3959A6; }
+em { font-style: italic; }
+a { color: #3959A6; text-decoration: none; }
+a:hover { color: #22336b; }
+
+/* annotations / secondary copy — slightly gray */
+section .note,
+section blockquote {
+  font-size: 27px;
+  line-height: 1.45;
+  color: #6b6b6b;
+  margin: 14px 0 26px;
+  border: 0;
+  padding: 0;
+  max-width: 1080px;
+}
+section .note:last-child, section blockquote:last-child { margin-bottom: 0; }
+
+/* lecturer's cues — readable from the lectern, not from the back row.
+   Wrap your own prompting bullets in <div class="cue"> … </div>. Body size,
+   so it is easy to read up close; near-white, so the room reads it as texture
+   rather than text. #d2d2d2 is fainter than the page number (#b3b3b3) —
+   darken it if your projector washes out, lighten it if the room sees it. */
+section .cue,
+section .cue p,
+section .cue li,
+section .cue strong {
+  color: #d2d2d2;
+  font-weight: 400;
+}
+section .cue li::marker { color: #d2d2d2; }
+
+/* handwriting, for figure labels and captions */
+section .hand,
+section figcaption {
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  font-size: 24px;
+  color: #6b6b6b;
+}
+
+/* ---------- formula panel ---------- */
+
+section .formula {
+  padding: 8px 0;
+  margin: 0 0 22px;
+  font-size: 40px;
+  text-align: center;
+}
+section .formula.panel { background: #f7f4f1; padding: 22px 28px; font-size: 32px; }
+section .formula:last-child { margin-bottom: 0; }
+section .katex { color: #000000; }
+section .katex-display { margin: 0; }
+
+/* labelled derivation rows: | LABEL | formula | */
+section table.steps,
+section table.steps td { border: 0; }
+section table.steps td:first-child {
+  width: 210px;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3959A6;
+  vertical-align: middle;
+}
+
+/* ---------- tables ---------- */
+
+section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 24px;
+}
+section th {
+  text-align: left;
+  padding: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+}
+section td {
+  padding: 17px 0;
+  border-bottom: 1px solid #eeeeee;
+  color: #000000;
+}
+
+/* ---------- utility layout ---------- */
+
+section .cols {
+  display: grid;
+  /* minmax(0, 1fr), not 1fr: a `1fr` track is minmax(auto, 1fr), so an
+     unbreakable element in one column -- a wide LaTeX formula, say -- widens
+     its own track and steals room from the figure beside it. That made the
+     figure column 370px on one slide and 537px on every other. Pinning the
+     minimum to 0 keeps both columns at (1120 - 46) / 2 = 537px always. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 46px;
+  align-items: start;
+}
+section .cols3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+section .fig { min-width: 0; display: flex; flex-direction: column; align-items: center; }
+section .fig img {
+  max-width: 100%;
+  max-height: 380px;
+  width: auto !important;   /* defeats Marp's inline width:NNNpx */
+  height: auto;
+}
+/* modifiers: use when text above the figure eats the row */
+section .fig.tight img { max-height: 320px; }
+/* modifier: use on the deck's one .fig holding two stacked images */
+section .fig.stack img { max-height: 190px; }
+/* modifier: title + figure + caption and NOTHING else on the slide.
+   Module 06's working graph is twelve cities with names like "Thessalonica",
+   and at the 36pt in-figure type floor those labels do not fit beside a
+   1080x356 drawing -- three cities have zero collision-free sides before any
+   other label is placed. The choice was a taller figure or smaller type, and
+   FIGURE_GUIDE is explicit that type never gives way. 440 is what fits: the
+   content box ends at y=660, the heading and rule take ~150, and the caption
+   takes ~40. check_render.py fails the build if anything overflows. */
+section .fig.tall img { max-height: 400px; }
+
+/* three-up statistic row */
+section .stats {
+  display: flex;
+  gap: 46px;
+  flex: 1;
+  align-items: center;
+}
+section .stats > div {
+  flex: 1;
+  border-left: 4px solid #3959A6;
+  padding-left: 29px;
+}
+section .stats .n {
+  font-size: 74px;
+  line-height: 1;
+  color: #000000;
+}
+section .stats .cap {
+  margin-top: 14px;
+  font-size: 23px;
+  line-height: 1.4;
+  color: #6b6b6b;
+}
+
+/* numbered takeaway list */
+section .steps-list { display: flex; flex-direction: column; gap: 26px; }
+section .steps-list > div { display: flex; gap: 26px; align-items: baseline; }
+section .steps-list .i { font-size: 25px; color: #3959A6; flex: none; }
+
+/* secondary accents — use only where a contrast carries meaning */
+.accent-2 { color: #B14434; }
+.accent-3 { color: #B14434; }
+
+/* pagination */
+section::after {
+  font-family: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  font-size: 16px;
+  color: #b3b3b3;
+  right: 80px;
+  bottom: 24px;
+}
+section.lead::after,
+section.part::after { display: none; }
+/* ---------- photographs in a row (m06 slide 2) ----------
+   Three portraits at one height. The credit line is legally required, not read
+   from the back row, so it is the one text on a slide allowed below the floor. */
+section .photos { display: flex; justify-content: center; align-items: flex-end; gap: 12px; margin: 0 0 6px; }
+section .photos p { display: contents; }
+section .photos img { height: 228px; width: auto; }
+section .photo-credit { font-size: 15px; line-height: 1.3; color: #6b6b6b; text-align: center; margin: 6px 0 0; }
+
+/* ---------- frame scrubber (scrub.js) ----------
+   A build's frames, stepped by the lecturer: a slider and two buttons under the figure.
+   Added by the script in the presentation only; the export shows the last frame. */
+section .scrub-bar {
+  display: flex; align-items: center; gap: 10px; margin-top: 10px; width: 78%;
+  font-size: 18px; color: #6b6b6b;
+}
+section .scrub-range { flex: 1; accent-color: #B14434; height: 18px; margin: 0; }
+section .scrub-btn {
+  border: 1.5px solid #6b6b6b; background: #ffffff; color: #000000; border-radius: 6px;
+  font: inherit; font-size: 15px; line-height: 1; padding: 4px 9px; cursor: pointer;
+}
+section .scrub-btn:hover { border-color: #B14434; color: #B14434; }
+section .scrub-count { min-width: 3.4em; text-align: right; }
+
+/*-----------------------------------------------------------------------------
+  ANIMATION STAGE — the slide-sized port of lecture-note/assets/anim.css.
+
+  Same ink, same paper, same class names, so a scene script written for the
+  lecture note runs here unchanged; only the sizes differ, because a slide's
+  body is 30px where the note's is 18px. Drive it with
+  lecture-note/assets/anim.js and a scene file from lecture-note/assets/anim/.
+
+  This deck's theme writes its colours as literals rather than tokens, so the
+  tokens the kit expects are declared here, once, from this deck's palette.
+-----------------------------------------------------------------------------*/
+
+section {
+  --ink: #000000;
+  --ink-soft: #6b6b6b;
+  --ink-faint: #D9D9D9;
+  --accent: #3959A6;
+  --accent-soft: #e3f1fa;
+  --contrast: #B14434;
+  --contrast-soft: #fbeadf;
+  --rule: #e4e0dc;
+  --paper: #FDFBF7;
+  --hand: 'MesloLGS NF', 'MesloLGS Nerd Font', Menlo, ui-monospace, monospace;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+/* ---------- animation stage ---------- */
+/* The slide-sized port of lecture-note/assets/anim.css. Same ink, same paper,
+   same class names, so a scene script written for the note runs here unchanged
+   — only the sizes differ, because a slide's body is 30px where the note's is
+   18px. Drive it with slides/assets/anim.js.
+   Wrap the stage in <div class="stage-wrap"> when you want it centred. */
+
+section .anim-stage {
+  /* short private names, exactly as in the note's kit */
+  --_ink: var(--ink);
+  --_ink-soft: var(--ink-soft);
+  --_ink-faint: var(--ink-faint);
+  --_paper: var(--paper);
+  --_white: #ffffff;
+  --_accent: var(--accent);
+  --_accent-soft: var(--accent-soft);
+  --_amber: var(--contrast);
+  --_amber-soft: var(--contrast-soft);
+  --_rule: var(--rule);
+  --_hand: var(--hand);
+  --_mono: var(--mono);
+  --_shade: rgba(34, 33, 43, 0.18);
+
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 14px 16px 16px;
+  color: var(--_ink);
+  background-color: var(--_paper);
+  background-image:
+    linear-gradient(rgba(57, 89, 166, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 89, 166, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 2px solid var(--_ink);
+  border-radius: 14px 7px 16px 9px / 9px 16px 7px 14px;
+  box-shadow: 4px 5px 0 -1px var(--_shade);
+}
+
+section .anim-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+}
+section .anim-step {
+  font-family: var(--_hand);
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+section .anim-step .anim-num {
+  display: inline-block;
+  min-width: 32px;
+  margin-right: 8px;
+  padding: 0 7px;
+  text-align: center;
+  color: #fff;
+  background: var(--_accent);
+  border-radius: 12px 6px 12px 6px / 6px 12px 6px 12px;
+}
+
+section .anim-dots { display: flex; gap: 0; flex: none; }
+section .anim-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+section .anim-dot::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: 1.8px solid var(--_ink);
+  border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+  background: transparent;
+}
+section .anim-dot[aria-current="true"]::before {
+  background: var(--_accent);
+  border-color: var(--_accent);
+}
+
+section .anim-btn {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 5px 11px;
+  color: var(--_ink);
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 14px 6px 14px 6px / 6px 14px 6px 14px;
+  box-shadow: 2px 2px 0 -0.5px rgba(34, 33, 43, 0.35);
+  cursor: pointer;
+  flex: none;
+}
+section .anim-btn:hover { background: var(--_accent-soft); }
+section .anim-btn:active { transform: translate(1px, 1px); box-shadow: none; }
+
+section .anim-grid-2 {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+section .anim-panel {
+  --tilt: 0deg;
+  position: relative;
+  margin: 0 0 10px;
+  padding: 9px 11px 10px;
+  background: var(--_white);
+  border: 1.8px solid var(--_ink);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  box-shadow: 2px 3px 0 -1px var(--_shade);
+  transform: rotate(var(--tilt));
+}
+section .anim-panel:last-child { margin-bottom: 0; }
+
+/* .anim-stack tilts its panels alternately, like a real pile. */
+section .anim-stack > .anim-panel:nth-child(even) { --tilt: -0.3deg; }
+section .anim-stack > .anim-panel:nth-child(odd) { --tilt: 0.25deg; }
+/* An unpadded window frame with its own chrome; a dark terminal; an empty slot
+   waiting to be filled. The modifiers compose with .anim-panel. */
+section .anim-panel--frame {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-width: 2px;
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  box-shadow: 3px 4px 0 -1px rgba(34, 33, 43, 0.25);
+}
+section .anim-panel--term { background: #221f30; color: #ece9f5; }
+section .anim-panel--dashed {
+  background: #fbf8ff;
+  border: 2.2px dashed var(--_ink);
+  border-radius: 12px 6px 14px 7px / 7px 14px 6px 12px;
+  box-shadow: none;
+}
+section .anim-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: #86c5ff;
+  animation: anim-blink 1s step-end infinite;
+}
+@keyframes anim-blink { 50% { opacity: 0; } }
+
+section .anim-caption {
+  font-family: var(--_hand);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--_ink-soft);
+  margin-top: 5px;
+}
+section .anim-quote {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.4;
+  padding-left: 10px;
+  border-left: 3px solid var(--_accent);
+}
+/* A row of the drawing's own numbers. The gap is load-bearing: without it the
+   label and its value run together into one word. */
+section .anim-readout {
+  font-family: var(--_mono);
+  font-size: 20px;
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+section .anim-readout b { font-weight: 700; }
+section .anim-readout--tight { gap: 13px; font-size: 18px; }
+section .anim-tally {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--_hand);
+  font-size: 23px;
+  line-height: 1.5;
+  color: var(--_ink);
+}
+section .anim-tally b { font-weight: 700; }
+section .anim-big {
+  font-family: var(--_hand);
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--_ink);
+}
+/* The per-scene prose, and the stage's own account of itself for a reader who
+   cannot see the drawing. Two lines are reserved so the box never jumps. */
+section .anim-note {
+  font-family: var(--_hand);
+  font-size: 21px;
+  line-height: 1.3;
+  color: var(--_ink);
+  margin-top: 10px;
+  padding-left: 9px;
+  border-left: 3px solid var(--_accent);
+  /* Three lines, always. The longest note either deck mounts is 286 characters,
+     which wraps to three at this size across a full-width stage; reserving them
+     stops the drawing above jumping as the scenes change. */
+  min-height: calc(3 * 1.3em);
+}
+
+/* SVG ink — identical to the note's, so a scene's own geometry needs no edit.
+   The cap is a variable: set --anim-svg-max on the stage (or on the wrapper
+   holding one wide drawing) rather than re-declaring .anim-svg. */
+section .anim-svg {
+  display: block;
+  width: 100%;
+  max-width: var(--anim-svg-max, 420px);
+  height: auto;
+  margin: 0 auto;
+}
+section .anim-edge {
+  stroke: var(--_ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+}
+section .anim-node { fill: var(--_accent); stroke: var(--_ink); stroke-width: 1.8; }
+section .anim-node-off { fill: var(--_white); stroke: var(--_ink-faint); stroke-width: 1.8; }
+section .anim-accent-stroke { stroke: var(--_accent); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-accent-fill { fill: var(--_accent); }
+section .anim-amber-stroke { stroke: var(--_amber); stroke-width: 2.4; fill: none; stroke-linejoin: round; }
+section .anim-amber-fill { fill: var(--_amber); }
+section .anim-axis { stroke: var(--_ink); stroke-width: 1.4; }
+section .anim-marker { stroke: var(--_amber); stroke-width: 1.6; stroke-dasharray: 3 3; }
+section .anim-marker--accent { stroke: var(--_accent); }
+section .anim-marker--faint { stroke: var(--_ink-faint); }
+section .anim-label { font-family: var(--_hand); font-size: 11px; fill: var(--_ink); }
+section .anim-faint { stroke: var(--_ink-faint); fill: var(--_ink-faint); }
+section .anim-knockout {
+  paint-order: stroke fill;
+  stroke: var(--_paper);
+  stroke-width: var(--anim-knockout-w, 3px);
+  stroke-linejoin: round;
+}
+section .anim-shade { fill: var(--_accent); fill-opacity: 0.16; stroke: none; }
+section .anim-trail {
+  stroke: var(--_amber);
+  stroke-width: 4.5;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+section .anim-token { fill: var(--_amber); stroke: var(--_ink); stroke-width: 1.8; }
+
+/* motion primitives — plain add-on classes, so ink and motion stay separable */
+section .anim-draw {
+  stroke-dasharray: var(--dash, 240);
+  stroke-dashoffset: var(--dash, 240);
+  animation: anim-draw 0.4s ease forwards;
+}
+@keyframes anim-draw { to { stroke-dashoffset: 0; } }
+section .anim-fade { opacity: 0; animation: anim-fade 0.3s ease forwards; }
+@keyframes anim-fade { to { opacity: 1; } }
+section .anim-fade-out { animation: anim-fade-out 0.45s ease forwards; }
+@keyframes anim-fade-out { from { opacity: 1; } to { opacity: 0; } }
+section .anim-glide { transition: transform 0.34s cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+section .anim-pop { animation: anim-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+@keyframes anim-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+
+/* the knob — see mountKnob() in slides/assets/anim.js */
+section .anim-range { max-width: 420px; margin: 8px auto 4px; }
+section .anim-track {
+  position: relative;
+  height: 10px;
+  margin: 16px 7px 9px;
+  background: var(--_rule);
+  border: 1.8px solid var(--_ink);
+  border-radius: 8px 4px 8px 4px / 4px 8px 4px 8px;
+  touch-action: none;
+  cursor: pointer;
+}
+section .anim-knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background: var(--_accent);
+  border: 1.8px solid var(--_ink);
+  border-radius: 58% 42% 50% 50% / 50% 50% 42% 58%;
+  transition: left 0.12s linear;
+  touch-action: none;
+  cursor: grab;
+}
+section .anim-knob-live { transition: none; cursor: grabbing; }
+
+/* ---------- per-stage rules ---------- */
+
+/* Power iteration (m06): the scenes are lecture-note/assets/anim/power-step.js.
+   One press of the arrow is one x <- A x. The kit's step number counts scenes
+   (1 to 10), which would read as t + 1, so it is hidden and the label says
+   "step t" itself. */
+section #power-step { --anim-svg-max: 440px; }
+section #power-step .anim-grid-2 { grid-template-columns: 440px minmax(0, 1fr); gap: 30px; align-items: center; }
+section #power-step .anim-step { font-size: 34px; }
+section #power-step .anim-step .anim-num { display: none; }
+section #power-step .anim-note { font-size: 30px; min-height: 1.3em; }
+section #power-step .anim-caption { font-size: 24px; margin-top: 0; }
+section #power-step .anim-panel { padding: 12px 18px 14px; }
+section #power-step .ps-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.5s ease; filter: url(#m06-pencil); }
+section #power-step .ps-name {
+  font-family: var(--_hand); font-size: 28px; font-weight: 700; fill: var(--_ink);
+  pointer-events: none; transition: fill 0.5s ease;
+}
+section #power-step .ps-val { font-family: var(--_hand); font-size: 23px; fill: var(--_ink); }
+section #power-step .ps-ring {
+  fill: none; stroke: var(--_amber); stroke-width: 2.6; stroke-dasharray: 5 4;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+section #power-step .ps-rank {
+  font-family: var(--_hand); font-size: 30px; font-weight: 700; line-height: 1.2;
+  letter-spacing: 0; margin: 2px 0 8px; white-space: nowrap;
+}
+
+/* Turn the dial (m06): the scenes are lecture-note/assets/anim/katz-dial.js.
+   The knob wrapper is a block in a block here, but its auto side margins are
+   zeroed anyway: they collapse the track to nothing inside any flex column. */
+section #katz-dial { --anim-svg-max: 490px; }
+section #katz-dial .anim-grid-2 { grid-template-columns: 490px minmax(0, 1fr); gap: 24px; align-items: center; }
+section #katz-dial .anim-step { font-size: 34px; }
+section #katz-dial .anim-note { font-size: 28px; min-height: 1.3em; }
+section #katz-dial .anim-panel { padding: 12px 20px 14px; }
+section #katz-dial .kd-node { stroke: var(--_ink); stroke-width: 2.2; transition: fill 0.2s ease; filter: url(#m06-pencil); }
+section #katz-dial .kd-edge { stroke-width: 3; opacity: 0.55; }
+section #katz-dial .kd-hull { fill: none; stroke: var(--_ink-faint); stroke-width: 2.6; stroke-dasharray: 8 7; }
+section #katz-dial .kd-alpha { font-family: var(--_hand); font-size: 30px; font-weight: 700; line-height: 1.2; }
+section #katz-dial .kd-alpha sub { font-size: 0.7em; }
+section #katz-dial .kd-range { position: relative; margin: 0; max-width: none; padding-top: 28px; }
+section #katz-dial .anim-track { margin: 8px 7px 6px; }
+section #katz-dial .kd-mark {
+  position: absolute; top: -9px; bottom: -9px; left: 0; width: 3px; margin-left: -1.5px;
+  background: var(--_amber); border-radius: 2px;
+}
+section #katz-dial .kd-pole {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font-family: var(--_hand); font-size: 24px; line-height: 1.1; color: var(--_amber); font-weight: 700;
+  white-space: nowrap;
+}
+section #katz-dial .kd-pole sub, section #katz-dial .kd-end2 sub { font-size: 0.7em; }
+section #katz-dial .kd-ends {
+  position: relative; display: flex; justify-content: space-between; margin: 0 2px;
+  font-family: var(--_hand); font-size: 21px; color: var(--_ink-soft);
+}
+section #katz-dial .kd-still { cursor: default; }
+section #katz-dial .kd-share { font-size: 30px; margin-top: 10px; min-height: 1.1em; white-space: nowrap; }
+section #katz-dial .kd-warn sub { font-size: 0.7em; }
+section #katz-dial .kd-warn {
+  font-family: var(--_hand); font-size: 28px; line-height: 1.2; font-weight: 700;
+  color: var(--_amber); min-height: 2.4em;
+}
+
+/* =====================================================================
+   Slide layouts. A-F are the lecturer's sketch (2026-10-13); 2026-10-14 aligned them
+   with his CompleNet 2026 deck and added G and Q. HOUSE_STYLE section 8 says which
+   slide takes which.
+   B  title + big figure                     (class L-b)   the default
+   G  figure only, no title                  (class L-g)
+   A  title + sub + figure + takeaway        (class L-a)
+   F  statement, centred, large              (class L-f)
+   C  text | picture, either side            (class L-c; plain `cols` = bullets | figure)
+   E  paragraph | photo                      (class L-e)
+   Q  quotation | portrait                   (class L-q)
+   D  full image or colour field             (class L-d, L-d field)
+   ===================================================================== */
+
+/* B: the title says it; the figure does the rest */
+section.L-b .fig { flex: 1; justify-content: center; }
+section.L-b .fig img { max-height: 480px; max-width: 1080px; }
+section.L-b .take ~ .fig img, section.L-b .fig:has(+ .take) img { max-height: 420px; }
+
+/* G: the figure alone. A build's later steps whose drawing labels itself, a row of
+   objects or an illustration the speaker narrates. */
+section.L-g { justify-content: center; }
+section.L-g .fig { flex: 1; justify-content: center; }
+section.L-g .fig img { max-height: 600px; max-width: 1120px; }
+
+/* A: title, a line under it, the figure, the conclusion under the figure */
+section.L-a > p:not(.take):not(.sub):not(.ref) {
+  font-size: 32px;
+  line-height: 1.38;
+  text-align: center;
+  margin: -6px auto 14px;
+  max-width: 1080px;
+}
+section.L-a .fig { flex: 1; justify-content: center; }
+section.L-a .fig img { max-height: 380px; }
+section.L-a .fig.tight img { max-height: 320px; }   /* A with both a .sub and a .take */
+section.L-a .fig.pair p { display: flex; gap: 32px; justify-content: center; margin: 0; max-width: none; }
+section.L-a .fig.pair img { max-height: 340px; box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+section.L-a .cue { text-align: center; }
+
+/* F: one statement, large and centred; a question in italics; at most two sentences or
+   one small picture under it. `.num` puts a big muted "#1" beside a recurring claim. */
+section.L-f { justify-content: center; align-items: center; text-align: center; }
+section.L-f h2 { font-size: 62px; line-height: 1.22; margin: 0 0 30px; max-width: 1080px; }
+section.L-f > p { font-size: 34px; line-height: 1.45; max-width: 980px; margin: 0 auto 10px; }
+section.L-f .fig img { max-height: 240px; }
+section.L-f:has(.num) { align-items: flex-start; text-align: left; }
+section.L-f:has(.num) h2 { text-align: left; max-width: 760px; }
+section.L-f .num {
+  position: absolute; right: 110px; top: 50%; transform: translateY(-50%);
+  font-size: 120px; font-weight: 700; color: #6b6b6b;
+}
+
+/* C: a question, a term or at most three items, set large beside a picture. Put the
+   picture's div first to put it on the left. */
+section.L-c .cols { flex: 1; align-items: center; }
+section.L-c .cols > div:not(.fig) { font-size: 36px; line-height: 1.35; text-align: center; }
+section.L-c .cols > div:not(.fig) h3 { font-size: 40px; color: #000000; margin: 0 0 18px; }
+section.L-c .cols > div:not(.fig) ul { text-align: left; font-size: 30px; }
+section.L-c .fig img { max-height: 470px; }
+
+/* E: a block of text, a big photograph */
+section.L-e .cols { align-items: center; }
+section.L-e .big { font-size: 30px; line-height: 1.45; }
+section.L-e .big p { font-size: 30px; line-height: 1.45; margin: 0 0 0.6em; max-width: none; }
+section.L-e .fig img { max-height: 400px; box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+
+/* Q: a quotation in Baskerville, the phrase that matters in hot; the source under it;
+   the speaker's portrait (black and white) on the right */
+section.L-q { justify-content: center; }
+section.L-q .cols { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); align-items: center; }
+section.L-q blockquote {
+  position: relative;
+  margin: 0; padding: 0;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 36px; line-height: 1.45; color: #000000;
+}
+section.L-q blockquote::before {
+  content: "\201C\201D"; position: absolute; left: -6px; top: -64px;
+  font-size: 64px; color: #6b6b6b;
+}
+section.L-q blockquote p { margin: 0; max-width: none; }
+section.L-q .who {
+  margin: 28px 0 0; text-align: center;
+  font-family: 'Libre Baskerville', Georgia, serif; font-size: 22px; color: #6b6b6b;
+}
+section.L-q .fig img { max-height: 340px; filter: grayscale(1); box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+section.L-q.center .cols { display: block; text-align: center; }
+section.L-q.center blockquote { font-style: italic; font-size: 44px; }
+section.L-q.center blockquote::before { display: none; }
+
+/* D: the picture fills the slide; a white box carries the words */
+section.L-d { padding: 0; background: #1F2028; justify-content: center; align-items: center; }
+section.L-d .fig { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+section.L-d .fig p { margin: 0; max-width: none; display: contents; }
+section.L-d .fig img { max-width: 1280px; max-height: 720px; width: auto !important; height: auto; }
+section.L-d .overlay {
+  position: absolute; left: 44px; bottom: 44px; max-width: 880px;
+  background: rgba(255, 255, 255, 0.92); border-radius: 16px; padding: 16px 26px;
+  font-size: 31px; line-height: 1.38;
+}
+section.L-d .overlay p { margin: 0; max-width: none; }
+section.L-d .overlay .credit { display: block; margin-top: 8px; font-size: 18px; line-height: 1.3; color: #6b6b6b; }
+section.L-d::after { color: #ffffff; }
+section.L-d:not(.field) > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* D field: a colour field, the title in white, the figure on a white card
+   (CompleNet: Law / Science / Patents panels); the field colour is set per slide */
+section.L-d.field { padding: 40px 80px 60px; justify-content: flex-start; background: #000000; }
+section.L-d.field h2 { color: #ffffff; }
+section.L-d.field .fig { position: static; flex: 1; }
+section.L-d.field .fig img { background: #ffffff; padding: 12px; max-height: 470px; max-width: 1080px; }
+section.L-d.field:has(.take.dark) .fig img { max-height: 390px; }   /* room for the band */
+
+/* a figure authored for the 537 px column and shown larger on a full-width layout (A, B, G): one child in a `cols` wrapper */
+section.L-a .cols, section.L-b .cols, section.L-g .cols, section.L-d.field .cols { display: flex; flex: 1; justify-content: center; align-items: center; gap: 0; }
+section.L-a .cols .fig, section.L-b .cols .fig, section.L-g .cols .fig, section.L-d.field .cols .fig { flex: 0 1 auto; }
+
+/* =====================================================================================
+   ccs-2027 deck: the magic-move stage (MAGIC_MOVE.md). Objects are absolutely positioned HTML
+   boxes with a view-transition-name (mm.py writes them); the HTML export in Chrome moves, resizes
+   and recolours every box that carries the same name on two consecutive slides.
+   ===================================================================================== */
+
+/* Only objects that move are animated. Everything else cuts at once: no cross-fade of the page,
+   nothing fades in or out, and the new picture of a moving object is shown from the first frame
+   while its box travels to the new place and size (MAGIC_MOVE.md). */
+::view-transition-group(*) {
+  animation-duration: max(.8s, var(--marp-bespoke-transition-animation-duration));
+  animation-timing-function: ease-in-out;
+}
+::view-transition-old(*), ::view-transition-new(*) {
+  animation: none !important;
+  mix-blend-mode: normal !important;
+}
+::view-transition-old(*) { opacity: 0 !important; }
+::view-transition-new(*) { opacity: 1 !important; }
+
+section .stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+section .o { position: absolute; box-sizing: border-box; }
+section .o.pic img { display: block; width: 100%; height: 100%; object-fit: fill; }
+section .o.pic.cover img { object-fit: cover; }
+section .o.pic.ph { box-shadow: 0 4px 14px rgba(48, 50, 61, 0.28); }
+section .o.pic.round img { border-radius: 50%; }
+section .o.tx { display: flex; align-items: center; white-space: nowrap; line-height: 1.2; }
+section .o.tx.ser { font-family: 'Libre Baskerville', Georgia, serif; }
+section .o.mx { display: flex; align-items: center; line-height: 1.2; }
+section .o.mx p { margin: 0; max-width: none; }
+section .o.ln.hd::after {
+  content: ""; position: absolute; right: -1px; top: 50%;
+  margin-top: calc(var(--hs) * -0.5);
+  border-left: var(--hs) solid var(--c);
+  border-top: calc(var(--hs) * 0.5) solid transparent;
+  border-bottom: calc(var(--hs) * 0.5) solid transparent;
+}
+section .o.ov { pointer-events: none; }
+section .o.ov svg { display: block; overflow: visible; }
+section .o.aside, section .tx.aside {
+  font-family: 'Caveat', cursive; color: #6b6b6b; font-weight: 400;
+}
+section .mi { font-family: 'Libre Baskerville', Georgia, serif; font-style: italic; }
+section .o.blist ul { margin: 0; }
+section.left .sub { text-align: left; margin-left: 0; }
+/* a vector arrow above a word: "man", as in the analogy slides */
+section .vec { position: relative; display: inline-block; }
+section .vec::before { content: ""; position: absolute; left: 0; right: 4px; top: -0.12em; height: 2px; background: currentColor; }
+section .vec::after {
+  content: ""; position: absolute; right: 0; top: calc(-0.12em - 4px);
+  border-left: 8px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+}
+/* slide 2: the paper this talk is about */
+section.paperopen h2 { font-size: 40px; max-width: 1120px; }
+
+/* decision-tree boxes: "cite" followed by a small diamond / square icon */
+section .o.tb {
+  display: flex; align-items: center; justify-content: center; gap: 0.28em; white-space: nowrap;
+  background: #FFFFFF; border: 2px solid #22336b; line-height: 1;
+}
+section .ic { display: inline-block; width: 0.62em; height: 0.62em; background: #C9C9C9; vertical-align: middle; }
+section .ic.dm { background: #22336b; transform: rotate(45deg) scale(0.9); margin: 0 0.1em; }
+section .ic.eg { background: #4d4d4d; transform: rotate(45deg) scale(0.9); margin: 0 0.1em; }
+section .ic.fa { background: #FFFFFF; border: 2px solid #22336b; }
+section .amp { color: #B14434; font-weight: 700; margin: 0 0.1em; }
+section .o.tri { width: 0; height: 0; }
+
+/* a (query, key) training pair: two discs */
+section .o.pair { display: flex; align-items: center; justify-content: center; }
+section .pd { display: block; border-radius: 50%; border: 3px solid #4d4d4d; box-sizing: border-box; flex: none; }
+section .tx sub { font-size: 0.62em; }
+section .o.pic.top img { object-position: top; }
+section .o.pic.faded img { opacity: 0.5; }
+
+/* An arrow that is new on a build step grows from its base to its tip (build.py adds `grow`).
+   The classes only act in the presentation (Marp marks the current slide); exports show the finished arrow. */
+@keyframes mm-grow { from { width: 0; } }
+@keyframes mm-draw { from { stroke-dashoffset: 1; } }
+@keyframes mm-pop { from { opacity: 0; } }
+.bespoke-marp-active section .o.ln.grow { animation: mm-grow .55s ease-out; }
+.bespoke-marp-active section .o.ov.grow .shaft { stroke-dasharray: 1; animation: mm-draw .6s ease-out; }
+.bespoke-marp-active section .o.ov.grow .ahead { animation: mm-pop .12s linear .48s backwards; }
+
+/* a claim with its evidence line, as one list item (Summary) */
+section .claim { font-weight: 700; }
+section .sub2 { display: block; font-size: 26px; font-weight: 400; margin-top: 6px; }
+
+
+/* =====================================================================================
+   Look of the deck: Libre Baskerville, black ink, red key terms, blue accent, round blue bullets and
+   Caveat handwriting (the lecturer's m06 palette). The LAYOUT stays the house one (HOUSE_STYLE section 8):
+   centred bold titles with no rule, F / B / G / C / A layouts as in layouts.md.
+   ===================================================================================== */
+section { color: #000000; font-family: 'Libre Baskerville', Georgia, serif; }
+section h2 { font-family: 'Libre Baskerville', Georgia, serif; color: #000000; }
+section .hot { color: #B14434; }
+section .cool, section .ul-cool { color: #3959A6; }
+section h3 { color: #3959A6; }
+section .muted { color: #6b6b6b; }
+section.L-q blockquote, section.L-q .who, section .ref, section .take.dark { font-family: 'Libre Baskerville', Georgia, serif; }
+section .hand, section figcaption { font-family: 'Caveat', cursive; font-size: 26px; color: #6b6b6b; }
+/* Caveat is small for its size: the handwriting is set 1.35 times larger than the size the slide asks for */
+section .tx.aside > span { font-size: 1.35em; line-height: 1; }
+
+/* What matters is underlined with the lecturer's brush (HOUSE_STYLE section 4): key terms, the coloured word of a title
+   and the value of a winner. */
+section strong, section .ul-hot, section .ul-cool {
+  background: url('figures/brush-hot.png') left bottom / 100% 0.28em no-repeat;
+  padding-bottom: 0.1em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+section strong.cool, section .ul-cool { background-image: url('figures/brush-cool.png'); }
+
+/* Nodes as in the skill: a pencil outline drawn twice, slightly off each other, and a grainy fill when coloured
+   (figlib.grain: +-7.5 % mottling of every coloured or grey pixel; white paper is left alone). */
+section .o.dc, section .o.sq, section .o.dm { filter: url(#mm-pencil); }
+section .o.dc::before, section .o.sq::before {
+  content: ""; position: absolute; inset: -2.5px; border: 1.2px solid rgba(0, 0, 0, 0.38); border-radius: inherit;
+  transform: translate(1.2px, 0.8px) rotate(0.8deg); pointer-events: none;
+}
+section .o.gr {
+  background-image: url('figures/grain.png') !important; background-blend-mode: multiply !important; background-size: 128px 128px !important;
+}
+
+/* ---- review round of 2026-10-15 ---- */
+/* bullets must be readable from the back row */
+section.L-c .cols > div:not(.fig) ul { font-size: 44px; line-height: 1.3; }
+section.L-c .cols > div:not(.fig) li ul { font-size: 36px; }
+section ul { font-size: 40px; }
+/* quotations: colour only, no underline */
+section.L-q .hot { background: none; padding-bottom: 0; }
+/* part opener: bigger faces, logos at the bottom left */
+section.part .faces.big img { height: 205px; }
+section.part .faces.big { gap: 30px; margin-top: 24px; }
+section.part .faces figcaption { font-size: 24px; }
+section .logos2 { position: absolute; left: 44px; bottom: 34px; display: flex; gap: 26px; align-items: center; }
+section .logos2 img { height: 54px; width: auto; }
+
+section .gpar { color: #8a8a8a; font-weight: 400; font-size: 0.66em; }
+section .sub.big { font-size: 46px; margin-top: 2px; }
+section .sub { margin: 0 auto 4px; }
+
+section.part .faces.big img { height: 250px; }
+section.L-c .cols { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+section.L-c .cols > div:not(.fig) ul { font-size: 42px; }
+section.L-q blockquote { font-size: 44px; }
+section.L-q .who { font-size: 28px; }
+
+/* paper reference bar: one line, small, white on black, at the foot of every slide */
+section > footer {
+  position: absolute; left: 0; right: 0; bottom: 0; width: auto; height: 26px; margin: 0; padding: 0 22px;
+  background: #000000; color: #ffffff; font-family: 'Libre Baskerville', Georgia, serif; font-size: 13.5px; line-height: 26px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; z-index: 50;
+}
+
+/* no paper texture on the dark full-bleed slides */
+section.L-d { background-image: none; }
+
+/* paper texture (2026-10-21): a figure drawn on white must not show as a white box on the washi, so figures multiply
+   into the paper; photos, faces and the dark full-bleed slides keep their own colours */
+section .fig img { mix-blend-mode: multiply; }
+section.L-d .fig img, section.L-d img, section .fig.photo img, section .faces img { mix-blend-mode: normal; }
