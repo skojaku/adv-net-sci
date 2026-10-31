@@ -40,6 +40,79 @@ Lecture plan: about 90 minutes. Say the budget here: 1 minute per content slide,
 
 ---
 
+<!-- _class: L-c -->
+<!-- _footer: "" -->
+
+## A man leaves the pub
+
+<div class="cols">
+<div>
+
+He walks **1 yard**, turns in a random direction, walks **1 yard** again.
+
+He does this 100 times.
+
+**Where do you look for him?**
+
+</div>
+<div class="fig">
+<div class="ph">The first lines of Karl Pearson's letter to Nature, 27 July 1905 (facsimile or a re-typeset quotation, with credit). Under it: a pub, a lamp post, no answer yet</div>
+</div>
+</div>
+
+<div class="cue">Far away? Near the pub? Tell your neighbour.</div>
+<!--
+[#2] beat: hook (story): Pearson's question, 1905
+source: K. Pearson, The Problem of the Random Walk, Nature 72, 294 (1905), doi:10.1038/072294b0. Check the exact wording against the original before quoting.
+Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a biological question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). Question slide: never shows the answer.
+-->
+
+---
+
+<!-- _class: L-a -->
+<!-- _footer: "" -->
+
+## Look near where he started
+
+<div class="fig">
+<div style="display:flex;width:100%;height:360px"><div class="ph">LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn tangles, brush strokes in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a soft blob centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.</div></div>
+</div>
+
+
+<div class="take">
+
+Rayleigh answered the next week: he had solved it in 1880, for <span class="hot">waves</span>
+
+</div>
+
+<!--
+[#3] beat: answer: Pearson's walker (the density peaks at the start)
+source: J. W. Strutt (Lord Rayleigh), Nature 72, 318 (1905); K. Pearson, Nature 72, 342 (1905). Figure: simulation, seed fixed in the figure script.
+figure: LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn tangles, brush strokes in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a soft blob centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.
+Pearson's own remark, as quoted in secondary sources (verify in the original): the most probable place to find a drunken man who is at all capable of keeping on his feet is somewhere near his starting point. Be careful about the claim: per unit area the density is highest at the start, yet the typical distance grows like the square root of n (about 10 yards after 100 steps). Link: a short walk remembers where it began; a long one spreads out. Rayleigh had met the same mathematics in 1880, adding n waves of random phase.
+-->
+
+---
+
+<!-- _class: L-b -->
+<!-- _footer: "" -->
+
+## One walk, three worlds
+
+<div class="fig">
+<div style="display:flex;width:100%;height:400px"><div class="ph">THREE PANELS in a row, each a picture with a one-line caption: (1) pollen grains in water, the zig-zag trace of one grain (Perrin's drawing, public domain): 'pollen, explained by Einstein in 1905'; (2) a mosquito: 'mosquitoes and malaria, the question behind Pearson's letter'; (3) a hand-drawn web graph with a surfer: 'the web, 1998: a random surfer ranks pages'. A grey arrow pointing right with the aside: 'and on a network?'</div></div>
+</div>
+
+
+<!--
+[#4] beat: hook: the same walk in three fields
+source: Perrin, Les atomes (1913) for the trace; PageRank: Page, Brin, Motwani, Winograd (1998). Check each year before showing it.
+figure: THREE PANELS in a row, each a picture with a one-line caption: (1) pollen grains in water, the zig-zag trace of one grain (Perrin's drawing, public domain): 'pollen, explained by Einstein in 1905'; (2) a mosquito: 'mosquitoes and malaria, the question behind Pearson's letter'; (3) a hand-drawn web graph with a surfer: 'the web, 1998: a random surfer ranks pages'. A grey arrow pointing right with the aside: 'and on a network?'
+Dates to verify before the slide is finished: Brown 1827 (pollen); Einstein 1905 (explanation); Perrin (the measurement that settled it); Page and Brin 1998 (PageRank). The point: one idea, many fields. What does it tell us on a network? That is the next slide.
+-->
+
+---
+
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
@@ -47,7 +120,7 @@ Lecture plan: about 90 minutes. Say the budget here: 1 minute per content slide,
 
 
 <!--
-[#2] beat: spine 1: the question
+[#5] beat: spine 1: the question
 Open with the drunkard in the lecture note: no map, no destination, no memory. The walker is the measuring instrument.
 -->
 
@@ -64,7 +137,7 @@ Open with the drunkard in the lecture note: no map, no destination, no memory. T
 
 
 <!--
-[#3] beat: mechanism: the rule
+[#6] beat: mechanism: the rule
 source: lecture-note/m07 fig-m07-net (re-drawn in house style)
 figure: Small 7-node network, hand-drawn. A walker (ring) stands on a node with 4 neighbours. Each of the 4 edges is labelled 1/4 (an amount, not a share). A grey aside: 'no memory of where it came from'.
 The only rule: divide your chance evenly among your edges. Keep this picture; it returns when P is introduced.
@@ -81,7 +154,7 @@ The only rule: divide your chance evenly among your edges. Keep this picture; it
 
 
 <!--
-[#4] beat: live: the simulator (karate club)
+[#7] beat: live: the simulator (karate club)
 figure: LIVE: random walk simulator, karate club, exactly as used last term (assets/vis/random-walks/index.html, no edits). The lecturer clicks Walk x20, then Run 5,000 steps.
 Drive the tool in front of the room: click Walk about twenty times, then Run 5,000 steps. Default network is the karate club (34 nodes, 78 edges). The orange ticks (k/2m) are visible in this tool; on the student sheet we hide them (see plan.md, open question 2).
 -->
@@ -108,7 +181,7 @@ Drive the tool in front of the room: click Walk about twenty times, then Run 5,0
 
 <div class="cue">Take a minute. Tell your neighbour.</div>
 <!--
-[#5] beat: question to the room (Q1)
+[#8] beat: question to the room (Q1)
 Question slide: never shows the answer. Let a few people answer aloud. Expect: 'neighbourhood of the start' and 'the popular nodes'.
 -->
 
@@ -125,7 +198,7 @@ Question slide: never shows the answer. Let a few people answer aloud. Expect: '
 
 
 <!--
-[#6] beat: answer to Q1
+[#9] beat: answer to Q1
 source: screenshots of the unchanged tool
 figure: LEFT: the tool after 20 steps, nodes shaded by visits: dark nodes cluster around the start node. RIGHT: after 5,000 steps: dark nodes are the hubs (33 and 0). Grey ring call-outs: 'the start', 'hubs'.
 The answer to the previous slide, on its own figure. Short: where you started. Long: the most connected nodes. Do not yet say 'proportional to degree'; the sheet finds that.
@@ -142,7 +215,7 @@ The answer to the previous slide, on its own figure. Short: where you started. L
 
 
 <!--
-[#7] beat: live: the simulator (two rooms)
+[#10] beat: live: the simulator (two rooms)
 figure: LIVE: same tool, ?dataFile=two-cliques.json: two 5-cliques joined by a single edge.
 Switch to the two-room network. Ask the room to watch the walker, not the bars.
 -->
@@ -173,7 +246,7 @@ C: about 200
 
 <div class="cue">Take a guess.</div>
 <!--
-[#8] beat: question to the room (Q2)
+[#11] beat: question to the room (Q2)
 Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it stays about 21 steps (computed from k/2m: the bridge is used with probability 1/42 per step overall, and the walker is in room 1 half of the time).
 -->
 
@@ -181,6 +254,8 @@ Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it st
 
 <!-- _class: L-b -->
 <!-- _footer: "" -->
+
+<div class="optflag">OPTIONAL</div>
 
 ## A short walk stays in its <span class="hot">room</span>
 
@@ -190,7 +265,7 @@ Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it st
 
 
 <!--
-[#9] beat: answer to Q2
+[#12] beat: answer to Q2
 figure: Same network. The walker's path drawn as a brush stroke, coloured by room (room 1 cool, room 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'.
 Short walks remember the room they started in. This is the community signal we will find in the second eigenvector.
 -->
@@ -204,7 +279,7 @@ Short walks remember the room they started in. This is the community signal we w
 
 
 <!--
-[#10] beat: spine 2: the mystery
+[#13] beat: spine 2: the mystery
 The maths answers exactly this. First, your hands: Pen & Paper Part 1.
 -->
 
@@ -227,7 +302,7 @@ The maths answers exactly this. First, your hands: Pen & Paper Part 1.
 
 
 <!--
-[#11] beat: Pen & Paper Part 1: opener
+[#14] beat: Pen & Paper Part 1: opener
 figure: QR code (large) to the simulator, plus the short link
 Students open the tool on their phones or laptops from the QR code on the sheet. Part 1 must be finished before the maths. The sheet has a printed line: STOP, wait for the lecture.
 -->
@@ -254,7 +329,7 @@ Students open the tool on their phones or laptops from the QR code on the sheet.
 </div>
 </div>
 <!--
-[#12] beat: Pen & Paper Part 1: instructions
+[#15] beat: Pen & Paper Part 1: instructions
 The wording on the slide is a reminder only; the sheet carries the full text. Walk around the room.
 -->
 
@@ -271,7 +346,7 @@ The wording on the slide is a reminder only; the sheet carries the full text. Wa
 
 
 <!--
-[#13] beat: debrief Q1 (the sketch)
+[#16] beat: debrief Q1 (the sketch)
 source: simulation, 6 walkers per start node, seed fixed in the figure script
 figure: Line plot. x: steps (log scale, 10 to 20,000). y: correlation between visit share and degree. Dots at 0.37, 0.53, 0.76, 0.89, 0.96, 0.99, 1.00 (mean over all 34 starts), a pale band for min to max. Grey call-out: 'at 20 steps, it depends on where you start'.
 Compare with the sketches on the sheets. The common mistake: a straight line. The real curve rises fast, then saturates. Numbers in this wireframe come from a 204-walker simulation; the final figure script asserts them.
@@ -302,7 +377,7 @@ Share of time = degree ÷ <span class="hot">2m</span>
 </div>
 
 <!--
-[#14] beat: debrief Q2 (degree ÷ share)
+[#17] beat: debrief Q2 (degree ÷ share)
 figure: Scatter: x = degree, y = share of visits after 20,000 steps, 34 dots on a straight line through the origin. Node 33 (degree 17, share 0.109) and node 11 (degree 1, share 0.0064) circled, hot. Grey call-outs: '17 ÷ 0.109 = 156', '1 ÷ 0.0064 = 156'.
 The student ratios scatter (node 11 is noisy: about 130 to 180 at 5,000 steps, about 140 to 180 at 20,000). Say so: the ratio is a law of large numbers, not an identity of one run. The most visited node is 33 in about 3 runs out of 4 and node 0 otherwise; both give 156.
 -->
@@ -316,7 +391,7 @@ The student ratios scatter (node 11 is noisy: about 130 to 180 at 5,000 steps, a
 
 
 <!--
-[#15] beat: spine 3: part question
+[#18] beat: spine 3: part question
 From here: the maths. Everything is a picture of vectors and matrices, drawn as in the centrality lecture (circle = eigenvalue, tall bar = vector).
 -->
 
@@ -333,7 +408,7 @@ From here: the maths. Everything is a picture of vectors and matrices, drawn as 
 
 
 <!--
-[#16] beat: P (the 'two rooms' network, the motif of the rest of the lecture)
+[#19] beat: P (the 'two rooms' network, the motif of the rest of the lecture)
 source: figure script on smallgraphs.py (same graph as the sheet's Part 3)
 figure: LEFT (small): the 12-node 'two rooms' network (nodes 0-5 and 6-11, two bridge edges 2-8 and 5-11). RIGHT: its transition matrix P as a heat map, 12 x 12, two dense blocks on the diagonal, thin entries off the blocks. Grey call-out on one row: 'row i = the odds of leaving i, sums to 1'.
 Introduce the two-room network that we use until the end and that the sheet uses in Part 3. Do not reveal the eigenvector yet.
@@ -364,7 +439,7 @@ After $t$ steps: $x(t) = x(0)\,P^{t}$
 </div>
 
 <!--
-[#17] beat: x P
+[#20] beat: x P
 figure: Matrix picture in the M06 style: a wide bar (distribution x(t), 12 cells, shaded) times the square P = a wide bar (x(t+1)). Small network beside it with the walker's probability mass drawn as node shading. Grey call-out: 'x is a row vector: row x column'.
 Convention: row vector, as in the lecture note (x(t) = x(0) P^t, P_ij = A_ij / k_i). If you want the column form from your brief, we use P transposed; see plan.md.
 -->
@@ -384,7 +459,7 @@ Convention: row vector, as in the lecture note (x(t) = x(0) P^t, P_ij = A_ij / k
 
 
 <!--
-[#18] beat: P^t as heat maps (1/3)
+[#21] beat: P^t as heat maps (1/3)
 figure: Heat map of P^1 (12 x 12), same crop and position as the previous step: two dense diagonal blocks. Callout: 't = 1: stays in its room'
 Build step 1/3, t = 1. The same drawing grows: only the matrix changes. At t = 40 the total variation distance of the worst start is about 0.005.
 -->
@@ -404,7 +479,7 @@ Build step 1/3, t = 1. The same drawing grows: only the matrix changes. At t = 4
 
 
 <!--
-[#19] beat: P^t as heat maps (2/3)
+[#22] beat: P^t as heat maps (2/3)
 figure: Heat map of P^5 (12 x 12), same crop and position as the previous step: the blocks blur. Callout: 't = 5: starting to leak'
 Build step 2/3, t = 5. The same drawing grows: only the matrix changes. At t = 40 the total variation distance of the worst start is about 0.005.
 -->
@@ -430,7 +505,7 @@ Every row becomes the same: <span class="hot">π</span>
 </div>
 
 <!--
-[#20] beat: P^t as heat maps (3/3)
+[#23] beat: P^t as heat maps (3/3)
 figure: Heat map of P^40 (12 x 12), same crop and position as the previous step: every row identical. Callout: 't = 40: all rows = pi'
 Build step 3/3, t = 40. The same drawing grows: only the matrix changes. At t = 40 the total variation distance of the worst start is about 0.005.
 -->
@@ -450,7 +525,7 @@ Build step 3/3, t = 40. The same drawing grows: only the matrix changes. At t = 
 
 
 <!--
-[#21] beat: recap: eigendecomposition (M06, light touch)
+[#24] beat: recap: eigendecomposition (M06, light touch)
 source: slides/m06/figures/decomp-sum.png (reused unchanged)
 Two sentences only: circle = eigenvalue, tall bar = eigenvector, wide bar = its transpose. Do not re-derive. The students saw this for the adjacency matrix.
 -->
@@ -480,7 +555,7 @@ Powers only touch the <span class="hot">circles</span>
 </div>
 
 <!--
-[#22] beat: P as a sum of circles and bars
+[#25] beat: P as a sum of circles and bars
 figure: Same pictorial grammar as M06: circle (eigenvalue, size = |lambda|), tall bar phi_k (right eigenvector), wide bar psi_k^T (left eigenvector); k = 1 blue, k = 2 gold, the rest pale; shown as terms 1, 2, ..., 12. A grey aside: 'for P, the tall and wide bars are two different vectors (each is the other rescaled by degree)'.
 The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T. The left-right distinction is a detail: stated once, kept in the appendix. See plan.md, open question 3.
 -->
@@ -500,7 +575,7 @@ The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T.
 
 
 <!--
-[#23] beat: P^t as circles (1/3)
+[#26] beat: P^t as circles (1/3)
 figure: P^1 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^1: circles at 1, 0.89, 0, 0, 0, -0.09, -0.2, -0.2, -0.27, -0.33, -0.38, -0.42. First circle always full size, blue. Callout: 'one step'
 Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
@@ -520,7 +595,7 @@ Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-room network (co
 
 
 <!--
-[#24] beat: P^t as circles (2/3)
+[#27] beat: P^t as circles (2/3)
 figure: P^5 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^5: circle 2 at 0.55, the rest almost gone. First circle always full size, blue. Callout: 'lambda_2^5 = 0.55'
 Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
@@ -540,7 +615,7 @@ Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-room network (co
 
 
 <!--
-[#25] beat: P^t as circles (3/3)
+[#28] beat: P^t as circles (3/3)
 figure: P^40 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^40: circle 2 at 0.01; circle 1 untouched. First circle always full size, blue. Callout: 'only the circle at 1 is left: every row is pi'
 Build step 3/3, t = 40. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
@@ -567,7 +642,7 @@ After many steps, which one is still there?
 
 <div class="cue">Take 20 seconds.</div>
 <!--
-[#26] beat: Q3 (which circle dies last)
+[#29] beat: Q3 (which circle dies last)
 Trick: the second circle (0.89) lasts long, but the first (1) never dies. The question is about 'last of those that die'. Be explicit after the answer.
 -->
 
@@ -591,7 +666,7 @@ $0.89^{t}$: 0.55 at $t = 5$, 0.31 at $t = 10$, 0.01 at $t = 40$
 </div>
 </div>
 <!--
-[#27] beat: A3
+[#30] beat: A3
 Same figure as the question, with the answer added.
 -->
 
@@ -608,7 +683,7 @@ Same figure as the question, with the answer added.
 
 
 <!--
-[#28] beat: distance to pi (small multiples)
+[#31] beat: distance to pi (small multiples)
 figure: Five small bar charts in a row: the walker's distribution x(t) on the 12 nodes for t = 0, 1, 3, 10, 40, starting at node 0. A flat reference line pi on each chart (pi = degree / 60). Under each: 'distance to pi' as a number (1-norm), shrinking to about 0.
 Define distance as the 1-norm, as the lecture note does. Numbers come from the figure script (total variation 0.93, 0.63, 0.38, 0.17, 0.005; the 1-norm is twice these).
 -->
@@ -628,7 +703,7 @@ Define distance as the 1-norm, as the lecture note does. Numbers come from the f
 
 
 <!--
-[#29] beat: mixing time diagram (1/3)
+[#32] beat: mixing time diagram (1/3)
 figure: Curves: distance to pi against t, one thin grey line per starting node (12), and a black line for the worst start. Callout: 'where you start matters at first'.
 Build step 1/3. The same canvas. The formula appears only at the end, after the diagram has said it.
 -->
@@ -648,7 +723,7 @@ Build step 1/3. The same canvas. The formula appears only at the end, after the 
 
 
 <!--
-[#30] beat: mixing time diagram (2/3)
+[#33] beat: mixing time diagram (2/3)
 figure: Same plot plus a horizontal line at epsilon. Callout: 'how close is close enough?'
 Build step 2/3. The same canvas. The formula appears only at the end, after the diagram has said it.
 -->
@@ -674,7 +749,7 @@ $t_{\mathrm{mix}} = \min\{\,t : \max_{x(0)} \|x(t) - \pi\|_1 \le \epsilon\,\}$
 
 
 <!--
-[#31] beat: mixing time diagram (3/3)
+[#34] beat: mixing time diagram (3/3)
 figure: Same plot; the point where the worst-start line crosses epsilon marked hot, with a vertical line down to the axis labelled 'mixing time'.
 Build step 3/3. The same canvas. The formula appears only at the end, after the diagram has said it.
 -->
@@ -683,6 +758,8 @@ Build step 3/3. The same canvas. The formula appears only at the end, after the 
 
 <!-- _class: L-a -->
 <!-- _footer: "" -->
+
+<div class="optflag">OPTIONAL</div>
 
 ## Q: how long to forget on a 10-clique?
 
@@ -700,7 +777,7 @@ Build step 3/3. The same canvas. The formula appears only at the end, after the 
 <div class="cue">Take a guess: 1 step, 5 steps, 50 steps.</div>
 
 <!--
-[#32] beat: Q4 (clique)
+[#35] beat: Q4 (clique)
 figure: A 10-clique, hand-drawn, nodes in a ring; the walker on node 0
 One graph per question. A: one step. lambda_2 = -1/9; relaxation time about 0.9 steps.
 -->
@@ -709,6 +786,8 @@ One graph per question. A: one step. lambda_2 = -1/9; relaxation time about 0.9 
 
 <!-- _class: L-a -->
 <!-- _footer: "" -->
+
+<div class="optflag">OPTIONAL</div>
 
 ## A: one step is almost enough
 
@@ -730,7 +809,7 @@ $\lambda_2 = -1/9$: the walker forgets in <span class="hot">about 1 step</span>
 </div>
 
 <!--
-[#33] beat: A4
+[#36] beat: A4
 figure: Same clique, same position. Distance-to-pi curve as an inset: below epsilon at t = 1
 -->
 
@@ -755,7 +834,7 @@ Two 5-cliques joined by one edge (21 edges)
 <div class="cue">Same, 5x, or 15x slower than the clique?</div>
 
 <!--
-[#34] beat: Q5 (two cliques)
+[#37] beat: Q5 (two cliques)
 figure: The two-clique network (the tool's two-cliques.json), the walker in room 1
 The edges halved but the answer is 15x slower. Trick: the clique has more edges, but what matters is the bottleneck.
 -->
@@ -785,7 +864,7 @@ $\lambda_2 = 0.93$: about <span class="hot">14 steps</span> to forget
 </div>
 
 <!--
-[#35] beat: A5
+[#38] beat: A5
 figure: Same network. Inset: distance-to-pi curve with the clique's curve in pale for comparison
 tau = 1/(1 - 0.927) = 13.7. Compare 0.9 for the clique: fifteen-fold.
 -->
@@ -815,7 +894,7 @@ Small gap, <span class="hot">long memory</span>
 </div>
 
 <!--
-[#36] beat: spectral gap (gauge)
+[#39] beat: spectral gap (gauge)
 figure: A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (-0.11, tau 0.9), karate club (0.87, tau 7.6), two rooms (0.89, tau 9), two 5-cliques + bridge (0.93, tau 14), ring of 1,000 (0.99998, tau 50,000). Past 0.99 the gauge is shaded hot.
 'Spectral gap' = 1 - lambda_2. t_mix is a few tau: the logarithm in the lecture note's bound pays for epsilon and the rarest node. Not derived here.
 -->
@@ -835,7 +914,7 @@ figure: A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (
 
 
 <!--
-[#37] beat: (optional) the bound
+[#40] beat: (optional) the bound
 figure: The formula t_mix < tau log(1/(epsilon pi_min)) on the left; on the right the 12-node distance curve with tau marked and 2 tau, 3 tau as ticks.
 Cut candidate: the formula is in the lecture note; show it only if the room is quick.
 -->
@@ -849,7 +928,7 @@ Cut candidate: the formula is in the lecture note; show it only if the room is q
 
 
 <!--
-[#38] beat: spine 4: the fact
+[#41] beat: spine 4: the fact
 Taught as a fact; the next two slides give a reason for each half, in pictures, not a proof.
 -->
 
@@ -866,7 +945,7 @@ Taught as a fact; the next two slides give a reason for each half, in pictures, 
 
 
 <!--
-[#39] beat: lambda = 1 exists (P 1 = 1)
+[#42] beat: lambda = 1 exists (P 1 = 1)
 figure: Picture: the square P times a tall bar of all ones (cells '1') = the same tall bar. One row of P highlighted; its cells sum to the first cell of the result (= 1). Callout: 'P 1 = 1'.
 The vector of ones is a right eigenvector with eigenvalue 1, because each row of P is a list of odds.
 -->
@@ -884,7 +963,7 @@ The vector of ones is a right eigenvector with eigenvalue 1, because each row of
 
 
 <!--
-[#40] beat: no eigenvalue above 1
+[#43] beat: no eigenvalue above 1
 figure: Two frames on a 7-node network: numbers on the nodes (largest = 9); one step replaces every number by the average of its neighbours; the largest number can only stay or fall. Frame 2 is the same drawing with the new numbers; the largest is now 6.5.
 P f replaces each entry by a neighbour average. That cannot raise the maximum, so |lambda| <= 1.
 -->
@@ -914,7 +993,7 @@ $\pi_i = k_i / 2m$: degree, and <span class="hot">nothing else</span>
 </div>
 
 <!--
-[#41] beat: lambda = 1 is pi (ties to the tool)
+[#44] beat: lambda = 1 is pi (ties to the tool)
 figure: The first term alone: a tall bar of ones times a wide bar pi = a matrix whose every row is pi (the last heat map of the previous build, at the same position). Beside it the simulator's bars with the orange k/2m ticks (thumbnail).
 This is why the bars of the tool settled on their ticks and why degree ÷ share = 2m on the sheet. Reversibility is in the appendix.
 -->
@@ -934,7 +1013,7 @@ This is why the bars of the tool settled on their ticks and why degree ÷ share 
 
 
 <!--
-[#42] beat: Pen & Paper Parts 2-3: opener
+[#45] beat: Pen & Paper Parts 2-3: opener
 Everyone has now finished Part 1 and crossed the line on the sheet.
 -->
 
@@ -958,7 +1037,7 @@ Everyone has now finished Part 1 and crossed the line on the sheet.
 </div>
 </div>
 <!--
-[#43] beat: Pen & Paper Parts 2-3: instructions
+[#46] beat: Pen & Paper Parts 2-3: instructions
 Part 2 can be done with a pencil only; Part 3 needs a laptop or a phone. Pair students if there are not enough devices.
 -->
 
@@ -987,7 +1066,7 @@ Only the term with $\lambda = 1$ <span class="hot">stays</span>
 </div>
 
 <!--
-[#44] beat: debrief Part 2
+[#47] beat: debrief Part 2
 figure: The 4-node diamond network (degrees 2, 2, 3, 3) on the left. Right: bar charts of x(t) for t = 0, 1, 2, 5, 10 converging to pi = (0.2, 0.2, 0.3, 0.3). Under them the expansion: pi - 0.5 (0)^t psi_2 + 0 psi_3 + 0.3 (-2/3)^t psi_4, with the t = 2 line checked against x(2) = (1/3, 1/3, 1/6, 1/6).
 Check: x(1) = pi + 0.3 (-2/3) psi_4 = (0, 0, 0.5, 0.5). x(2) = (1/3, 1/3, 1/6, 1/6). The eigenvalue -2/3 alternates the sign: the walker hops between {0,1} and {2,3}, then settles. Eigenpairs are on the sheet, not computed by students.
 -->
@@ -1005,7 +1084,7 @@ Check: x(1) = pi + 0.3 (-2/3) psi_4 = (0, 0, 0.5, 0.5). x(2) = (1/3, 1/3, 1/6, 1
 
 
 <!--
-[#45] beat: debrief Part 3 (second eigenvector)
+[#48] beat: debrief Part 3 (second eigenvector)
 source: numpy, the sheet's one-cell code
 figure: Point plot: x = node index 0 to 11, y = second eigenvector of P (scaled to max 1). Nodes 0-5 on top (about +1; the bridge nodes 2 and 5 at about +0.74), nodes 6-11 on the bottom (about -1; 8 and 11 at -0.74). Room 1 cool, room 2 hot. A dashed line at 0. Callout: 'the sign tells the room'.
 The cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The eigenvector of P (right) is constant inside each room by symmetry; sign is arbitrary, so the two rooms may swap colours.
@@ -1036,7 +1115,7 @@ Walker starts at node 0
 </div>
 
 <!--
-[#46] beat: debrief Part 3 (what dominates early)
+[#49] beat: debrief Part 3 (what dominates early)
 figure: Line plot: x = steps (0 to 40), y = probability of being in room 1: 1.00, 1.00, 0.92, 0.88, 0.80 (t = 5), 0.67 (t = 10), 0.55 (t = 20), 0.505 (t = 40). A dashed curve 0.5 + 0.5 x 0.889^t over it. Callout at t about 3: 'the other eleven circles are gone'.
 After about three steps, only two circles are left: the one at 1 (degree) and the one at 0.89 (the rooms). The second dies on the time scale tau = 9. This is the bookend: short walks see rooms, long walks see degree.
 -->
@@ -1047,13 +1126,13 @@ After about three steps, only two circles are left: the one at 1 (degree) and th
 <!-- _footer: "" -->
 
 <div class="fig">
-<div style="display:flex;width:100%;height:560px"><div class="ph">Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 14). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).</div></div>
+<div style="display:flex;width:100%;height:560px"><div class="ph">Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 17). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).</div></div>
 </div>
 
 
 <!--
-[#47] beat: summary (claims with thumbnails)
-figure: Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 14). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).
+[#50] beat: summary (claims with thumbnails)
+figure: Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 17). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).
 Three claims, each pointing back at the picture that proved it. Then say what is next.
 -->
 
@@ -1070,7 +1149,7 @@ Three claims, each pointing back at the picture that proved it. Then say what is
 
 
 <!--
-[#48] beat: close: back to the opening picture, then a question for next time
+[#51] beat: close: back to the opening picture, then a question for next time
 figure: The opening picture again: the karate club, nodes shaded by long-run visits, with two nodes marked A and B
 Next time: hitting time, commute time, PageRank and Walktrap (see the lecture note). The close answers the opening picture; it never says 'Thank you'.
 -->

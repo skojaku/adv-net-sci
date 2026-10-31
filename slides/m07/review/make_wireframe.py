@@ -31,11 +31,28 @@ def cool(w):
 
 
 # ============================================================================ A. INTUITION
-part("A  Intuition: what a blind walker learns (live tool, then Pen & Paper Part 1)", 26)
+part("A  Intuition: Pearson's walker, then what a blind walker learns (live tool, Pen & Paper Part 1)", 29)
 
 S("lead", title="Random Walks: What Does a Blind Walker Learn?",
   body='<p class="sub">Module 7 · Advanced Network Science<br>Sadamori Kojaku</p>\n\n<p class="ref">(school logo, bottom left, as in the CCS deck)</p>',
   beat="title", note="Lecture plan: about 90 minutes. Say the budget here: 1 minute per content slide, builds take seconds. The Pen & Paper sheet is worked in two blocks (Part 1 before the maths, Parts 2-3 after).")
+
+S("L-c", title="A man leaves the pub",
+  body='<div class="cols">\n<div>\n\nHe walks **1 yard**, turns in a random direction, walks **1 yard** again.\n\nHe does this 100 times.\n\n**Where do you look for him?**\n\n</div>\n<div class="fig">\n<div class="ph">The first lines of Karl Pearson\'s letter to Nature, 27 July 1905 (facsimile or a re-typeset quotation, with credit). Under it: a pub, a lamp post, no answer yet</div>\n</div>\n</div>',
+  cue="Far away? Near the pub? Tell your neighbour.", beat="hook (story): Pearson's question, 1905",
+  src="K. Pearson, The Problem of the Random Walk, Nature 72, 294 (1905), doi:10.1038/072294b0. Check the exact wording against the original before quoting.",
+  note="Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a biological question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). Question slide: never shows the answer.")
+
+S("L-a", title="Look near where he started",
+  ph=["LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn tangles, brush strokes in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a soft blob centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'."],
+  take=f"Rayleigh answered the next week: he had solved it in 1880, for {hot('waves')}", beat="answer: Pearson's walker (the density peaks at the start)", h=360,
+  src="J. W. Strutt (Lord Rayleigh), Nature 72, 318 (1905); K. Pearson, Nature 72, 342 (1905). Figure: simulation, seed fixed in the figure script.",
+  note="Pearson's own remark, as quoted in secondary sources (verify in the original): the most probable place to find a drunken man who is at all capable of keeping on his feet is somewhere near his starting point. Be careful about the claim: per unit area the density is highest at the start, yet the typical distance grows like the square root of n (about 10 yards after 100 steps). Link: a short walk remembers where it began; a long one spreads out. Rayleigh had met the same mathematics in 1880, adding n waves of random phase.")
+
+S("L-b", title="One walk, three worlds",
+  ph=["THREE PANELS in a row, each a picture with a one-line caption: (1) pollen grains in water, the zig-zag trace of one grain (Perrin's drawing, public domain): 'pollen, explained by Einstein in 1905'; (2) a mosquito: 'mosquitoes and malaria, the question behind Pearson's letter'; (3) a hand-drawn web graph with a surfer: 'the web, 1998: a random surfer ranks pages'. A grey arrow pointing right with the aside: 'and on a network?'"],
+  beat="hook: the same walk in three fields", src="Perrin, Les atomes (1913) for the trace; PageRank: Page, Brin, Motwani, Winograd (1998). Check each year before showing it.",
+  note="Dates to verify before the slide is finished: Brown 1827 (pollen); Einstein 1905 (explanation); Perrin (the measurement that settled it); Page and Brin 1998 (PageRank). The point: one idea, many fields. What does it tell us on a network? That is the next slide.")
 
 S("L-f", title=f"A walker with no map takes random steps. What does it {hot('learn')} about the network?",
   beat="spine 1: the question", note="Open with the drunkard in the lecture note: no map, no destination, no memory. The walker is the measuring instrument.")
@@ -68,7 +85,7 @@ S("L-c", title="Two rooms, one door",
   cue="Take a guess.", beat="question to the room (Q2)",
   note="Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it stays about 21 steps (computed from k/2m: the bridge is used with probability 1/42 per step overall, and the walker is in room 1 half of the time).")
 
-S("L-b", title=f"A short walk stays in its {hot('room')}",
+S("L-b", title=f"A short walk stays in its {hot('room')}", opt=True,
   ph=["Same network. The walker's path drawn as a brush stroke, coloured by room (room 1 cool, room 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'."],
   beat="answer to Q2", note="Short walks remember the room they started in. This is the community signal we will find in the second eigenvector.")
 
@@ -159,12 +176,12 @@ for k, d in enumerate(["Curves: distance to pi against t, one thin grey line per
       ph=[d], build=(k, 3), h=380, beat=f"mixing time diagram ({k}/3)",
       note=f"Build step {k}/3. The same canvas. The formula appears only at the end, after the diagram has said it.")
 
-S("L-a", title="Q: how long to forget on a 10-clique?",
+S("L-a", title="Q: how long to forget on a 10-clique?", opt=True,
   sub="10 nodes, every pair connected (45 edges)",
   ph=["A 10-clique, hand-drawn, nodes in a ring; the walker on node 0"],
   cue="Take a guess: 1 step, 5 steps, 50 steps.", beat="Q4 (clique)", h=420,
   note="One graph per question. A: one step. lambda_2 = -1/9; relaxation time about 0.9 steps.")
-S("L-a", title="A: one step is almost enough",
+S("L-a", title="A: one step is almost enough", opt=True,
   sub="10 nodes, every pair connected (45 edges)",
   ph=["Same clique, same position. Distance-to-pi curve as an inset: below epsilon at t = 1"],
   take=f"$\\lambda_2 = -1/9$: the walker forgets in {hot('about 1 step')}", beat="A4", h=420)
@@ -234,7 +251,7 @@ S("L-a", title=f"Early on, the {hot('community')} is what is left",
   note="After about three steps, only two circles are left: the one at 1 (degree) and the one at 0.89 (the rooms). The second dies on the time scale tau = 9. This is the bookend: short walks see rooms, long walks see degree.")
 
 S("L-g", title=None,
-  ph=["Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 14). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve)."],
+  ph=["Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 17). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve)."],
   beat="summary (claims with thumbnails)", note="Three claims, each pointing back at the picture that proved it. Then say what is next.", h=560)
 
 S("L-f", title=f"Next: how long does the walker take to {hot('get there')}?",
@@ -369,17 +386,18 @@ Style: house (`theme.css` = `house/theme-house.css`). Layouts per HOUSE_STYLE se
 {chr(10).join(lines)}
 
 Total {total} minutes. Over budget by about {total - 90} minutes at 1 minute per content slide: the builds take seconds, the three
-Pen & Paper blocks are fixed. Cut candidates in order: the optional bound slide, the answer to Q2 (two rooms), the Q4 / A4 clique pair.
+Pen & Paper blocks are fixed. Slides flagged OPTIONAL are the cut candidates, in order: the bound slide, the answer to Q2 (two rooms), the Q4 / A4 clique pair.
 
 ## Motifs (one picture per concept, back each time the concept is)
 
 | concept | picture | colour | where it returns |
 |---|---|---|---|
-| the walker's rule | 7-node network, ring on the walker, 1/k labels | ink | slide 3, 47 |
-| the real network | karate club in the live tool | tool's own | 4-6, 14, 48 |
-| the two-room network (12 nodes) | two blocks, bridges 2-8 and 5-11 | room 1 cool, room 2 hot | 16-20, 23-27, 45-46 |
-| eigenvalue, eigenvector | circle, tall bar, wide bar (M06) | u1 blue, u2 gold, rest pale | 21-27, 36, 39-41 |
-| pi = degree / 2m | wide bar of shares, orange ticks of the tool | hot | 14, 41, 47 |
+| the walker's rule | 7-node network, ring on the walker, 1/k labels | ink | slide 6, 50 |
+| the drunkard (Pearson 1905) | pub, lamp post, tangled paths, the blob of end points | ink, pale paths | 2-4 |
+| the real network | karate club in the live tool | tool's own | 7-9, 17, 51 |
+| the two-room network (12 nodes) | two blocks, bridges 2-8 and 5-11 | room 1 cool, room 2 hot | 19-23, 26-30, 48-49 |
+| eigenvalue, eigenvector | circle, tall bar, wide bar (M06) | u1 blue, u2 gold, rest pale | 24-30, 39, 42-44 |
+| pi = degree / 2m | wide bar of shares, orange ticks of the tool | hot | 17, 44, 50 |
 
 ## Slide list
 
