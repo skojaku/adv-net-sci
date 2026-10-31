@@ -28,7 +28,7 @@ section.L-c .cols .fig .ph { height: 380px; flex: none; }
 <!-- _class: lead -->
 <!-- _footer: "" -->
 
-# Random Walks: What Does a Blind Walker Learn?
+# Random Walks
 
 <p class="sub">Module 7 · Advanced Network Science<br>Sadamori Kojaku</p>
 
@@ -43,16 +43,14 @@ Lecture plan: about 90 minutes. Say the budget here: 1 minute per content slide,
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## A man leaves the pub
+## Where is the walker after 100 steps?
 
 <div class="cols">
 <div>
 
-He walks **1 yard**, turns in a random direction, walks **1 yard** again.
+A man walks **1 yard**, turns in a random direction, and walks **1 yard** again. He repeats this 100 times.
 
-He does this 100 times.
-
-**Where do you look for him?**
+Pearson asked this in *Nature* in 1905.
 
 </div>
 <div class="fig">
@@ -60,7 +58,7 @@ He does this 100 times.
 </div>
 </div>
 
-<div class="cue">Far away? Near the pub? Tell your neighbour.</div>
+<div class="cue">Far from the start, or near it? Tell your neighbour.</div>
 <!--
 [#2] beat: hook (story): Pearson's question, 1905
 source: K. Pearson, The Problem of the Random Walk, Nature 72, 294 (1905), doi:10.1038/072294b0. Check the exact wording against the original before quoting.
@@ -72,23 +70,23 @@ Open with the history. In July 1905 the statistician Karl Pearson asked the read
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## Look near where he started
+## Most likely near the start
 
 <div class="fig">
-<div style="display:flex;width:100%;height:360px"><div class="ph">LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn tangles, brush strokes in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a soft blob centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.</div></div>
+<div style="display:flex;width:100%;height:360px"><div class="ph">LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn paths in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a cloud of points centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.</div></div>
 </div>
 
 
 <div class="take">
 
-Rayleigh answered the next week: he had solved it in 1880, for <span class="hot">waves</span>
+Rayleigh replied the next week: he had solved it in 1880, for <span class="hot">waves</span>
 
 </div>
 
 <!--
 [#3] beat: answer: Pearson's walker (the density peaks at the start)
 source: J. W. Strutt (Lord Rayleigh), Nature 72, 318 (1905); K. Pearson, Nature 72, 342 (1905). Figure: simulation, seed fixed in the figure script.
-figure: LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn tangles, brush strokes in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a soft blob centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.
+figure: LEFT: the paths of 5 walkers of 100 steps from the same lamp post (hand-drawn paths in pale colours, the pub in the middle). RIGHT: the end points of 10,000 walkers as a cloud of points centred on the pub; a grey ring at distance about 10 yards with the call-out 'typical distance after 100 steps'.
 Pearson's own remark, as quoted in secondary sources (verify in the original): the most probable place to find a drunken man who is at all capable of keeping on his feet is somewhere near his starting point. Be careful about the claim: per unit area the density is highest at the start, yet the typical distance grows like the square root of n (about 10 yards after 100 steps). Link: a short walk remembers where it began; a long one spreads out. Rayleigh had met the same mathematics in 1880, adding n waves of random phase.
 -->
 
@@ -97,7 +95,7 @@ Pearson's own remark, as quoted in secondary sources (verify in the original): t
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## One walk, three worlds
+## Random walks appear in many fields
 
 <div class="fig">
 <div style="display:flex;width:100%;height:400px"><div class="ph">THREE PANELS in a row, each a picture with a one-line caption: (1) pollen grains in water, the zig-zag trace of one grain (Perrin's drawing, public domain): 'pollen, explained by Einstein in 1905'; (2) a mosquito: 'mosquitoes and malaria, the question behind Pearson's letter'; (3) a hand-drawn web graph with a surfer: 'the web, 1998: a random surfer ranks pages'. A grey arrow pointing right with the aside: 'and on a network?'</div></div>
@@ -116,7 +114,7 @@ Dates to verify before the slide is finished: Brown 1827 (pollen); Einstein 1905
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## A walker with no map takes random steps. What does it <span class="hot">learn</span> about the network?
+## What does a random walk tell us about a <span class="hot">network</span>?
 
 
 <!--
@@ -129,7 +127,7 @@ Open with the drunkard in the lecture note: no map, no destination, no memory. T
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## One step: pick a <span class="hot">neighbour</span> at random
+## One step: move to a random <span class="hot">neighbour</span>
 
 <div class="fig">
 <div style="display:flex;width:100%;height:400px"><div class="ph">Small 7-node network, hand-drawn. A walker (ring) stands on a node with 4 neighbours. Each of the 4 edges is labelled 1/4 (an amount, not a share). A grey aside: 'no memory of where it came from'.</div></div>
@@ -215,9 +213,9 @@ The answer to the previous slide, on its own figure. Short: where you started. L
 
 
 <!--
-[#10] beat: live: the simulator (two rooms)
+[#10] beat: live: the simulator (two communities)
 figure: LIVE: same tool, ?dataFile=two-cliques.json: two 5-cliques joined by a single edge.
-Switch to the two-room network. Ask the room to watch the walker, not the bars.
+Switch to the two-community network. Ask the room to watch the walker, not the bars.
 -->
 
 ---
@@ -225,12 +223,12 @@ Switch to the two-room network. Ask the room to watch the walker, not the bars.
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## Two rooms, one door
+## Two communities joined by one edge
 
 <div class="cols">
 <div>
 
-**How many steps** until the walker crosses to the other room?
+**How many steps** until the walker crosses to the other community?
 
 A: about 3
 
@@ -240,14 +238,14 @@ C: about 200
 
 </div>
 <div class="fig">
-<div class="ph">The 10-node two-room network, the walker in room 1, the single edge between the rooms marked with a grey arrow</div>
+<div class="ph">The 10-node two-community network, the walker in community 1, the single edge between the communities marked with a grey arrow</div>
 </div>
 </div>
 
 <div class="cue">Take a guess.</div>
 <!--
 [#11] beat: question to the room (Q2)
-Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it stays about 21 steps (computed from k/2m: the bridge is used with probability 1/42 per step overall, and the walker is in room 1 half of the time).
+Answer B. A walker in community 1 uses the bridge with chance 1/21 per step, so it stays about 21 steps (computed from k/2m: the bridge is used with probability 1/42 per step overall, and the walker is in community 1 half of the time).
 -->
 
 ---
@@ -257,17 +255,17 @@ Answer B. A walker in room 1 uses the bridge with chance 1/21 per step, so it st
 
 <div class="optflag">OPTIONAL</div>
 
-## A short walk stays in its <span class="hot">room</span>
+## A short walk stays in its <span class="hot">community</span>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:400px"><div class="ph">Same network. The walker's path drawn as a brush stroke, coloured by room (room 1 cool, room 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'.</div></div>
+<div style="display:flex;width:100%;height:400px"><div class="ph">Same network. The walker's path drawn as a brush stroke, coloured by community (community 1 cool, community 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'.</div></div>
 </div>
 
 
 <!--
 [#12] beat: answer to Q2
-figure: Same network. The walker's path drawn as a brush stroke, coloured by room (room 1 cool, room 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'.
-Short walks remember the room they started in. This is the community signal we will find in the second eigenvector.
+figure: Same network. The walker's path drawn as a brush stroke, coloured by community (community 1 cool, community 2 hot); a time strip under it shows long runs of one colour, about 21 steps each. Grey call-out: 'about 21 steps per visit'.
+Short walks remember the community they started in. This is the community signal we will find in the second eigenvector.
 -->
 
 ---
@@ -275,7 +273,7 @@ Short walks remember the room they started in. This is the community signal we w
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## Short walks see <span class="hot">rooms</span>. Long walks see <span class="hot">degree</span>. When does one turn into the other?
+## Short walks show <span class="hot">communities</span>. Long walks show <span class="hot">degree</span>. Why?
 
 
 <!--
@@ -288,7 +286,7 @@ The maths answers exactly this. First, your hands: Pen & Paper Part 1.
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## Pen & Paper, Part 1: <span class="hot">measure</span> it
+## Pen & Paper, Part 1
 
 <div class="sub">
 
@@ -312,7 +310,7 @@ Students open the tool on their phones or laptops from the QR code on the sheet.
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## Part 1: three things to do
+## Part 1: tasks
 
 <div class="cols">
 <div class="left">
@@ -338,7 +336,7 @@ The wording on the slide is a reminder only; the sheet carries the full text. Wa
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## Correlation <span class="hot">climbs</span>, then flattens
+## Correlation <span class="hot">rises</span> with the steps
 
 <div class="fig">
 <div style="display:flex;width:100%;height:400px"><div class="ph">Line plot. x: steps (log scale, 10 to 20,000). y: correlation between visit share and degree. Dots at 0.37, 0.53, 0.76, 0.89, 0.96, 0.99, 1.00 (mean over all 34 starts), a pale band for min to max. Grey call-out: 'at 20 steps, it depends on where you start'.</div></div>
@@ -357,7 +355,7 @@ Compare with the sketches on the sheets. The common mistake: a straight line. Th
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## Degree ÷ share is <span class="hot">one number</span>
+## Degree ÷ share is <span class="hot">constant</span>
 
 <div class="sub">
 
@@ -387,7 +385,7 @@ The student ratios scatter (node 11 is noisy: about 130 to 180 at 5,000 steps, a
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## Why does the walker <span class="hot">forget</span> where it started?
+## Why does a long walk not depend on the <span class="hot">start</span>?
 
 
 <!--
@@ -400,18 +398,18 @@ From here: the maths. Everything is a picture of vectors and matrices, drawn as 
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## The whole walk is <span class="hot">one matrix</span>
+## The walk is defined by <span class="hot">one matrix</span>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:400px"><div class="ph">LEFT (small): the 12-node 'two rooms' network (nodes 0-5 and 6-11, two bridge edges 2-8 and 5-11). RIGHT: its transition matrix P as a heat map, 12 x 12, two dense blocks on the diagonal, thin entries off the blocks. Grey call-out on one row: 'row i = the odds of leaving i, sums to 1'.</div></div>
+<div style="display:flex;width:100%;height:400px"><div class="ph">LEFT (small): the 12-node 'two communities' network (nodes 0-5 and 6-11, two bridge edges 2-8 and 5-11). RIGHT: its transition matrix P as a heat map, 12 x 12, two dense blocks on the diagonal, thin entries off the blocks. Grey call-out on one row: 'row i = the odds of leaving i, sums to 1'.</div></div>
 </div>
 
 
 <!--
-[#19] beat: P (the 'two rooms' network, the motif of the rest of the lecture)
+[#19] beat: P (the 'two communities' network, the motif of the rest of the lecture)
 source: figure script on smallgraphs.py (same graph as the sheet's Part 3)
-figure: LEFT (small): the 12-node 'two rooms' network (nodes 0-5 and 6-11, two bridge edges 2-8 and 5-11). RIGHT: its transition matrix P as a heat map, 12 x 12, two dense blocks on the diagonal, thin entries off the blocks. Grey call-out on one row: 'row i = the odds of leaving i, sums to 1'.
-Introduce the two-room network that we use until the end and that the sheet uses in Part 3. Do not reveal the eigenvector yet.
+figure: LEFT (small): the 12-node 'two communities' network (nodes 0-5 and 6-11, two bridge edges 2-8 and 5-11). RIGHT: its transition matrix P as a heat map, 12 x 12, two dense blocks on the diagonal, thin entries off the blocks. Grey call-out on one row: 'row i = the odds of leaving i, sums to 1'.
+Introduce the two-community network that we use until the end and that the sheet uses in Part 3. Do not reveal the eigenvector yet.
 -->
 
 ---
@@ -419,7 +417,7 @@ Introduce the two-room network that we use until the end and that the sheet uses
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## One step is one <span class="hot">multiplication</span>
+## One step is a <span class="hot">multiplication</span> by $P$
 
 <div class="sub">
 
@@ -454,13 +452,13 @@ Convention: row vector, as in the lecture note (x(t) = x(0) P^t, P_ij = A_ij / k
 ## Rows of $P^t$ <span class="hot">after t steps</span>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:430px"><div class="ph">Heat map of P^1 (12 x 12), same crop and position as the previous step: two dense diagonal blocks. Callout: 't = 1: stays in its room'</div></div>
+<div style="display:flex;width:100%;height:430px"><div class="ph">Heat map of P^1 (12 x 12), same crop and position as the previous step: two dense diagonal blocks. Callout: 't = 1: stays in its community'</div></div>
 </div>
 
 
 <!--
 [#21] beat: P^t as heat maps (1/3)
-figure: Heat map of P^1 (12 x 12), same crop and position as the previous step: two dense diagonal blocks. Callout: 't = 1: stays in its room'
+figure: Heat map of P^1 (12 x 12), same crop and position as the previous step: two dense diagonal blocks. Callout: 't = 1: stays in its community'
 Build step 1/3, t = 1. The same drawing grows: only the matrix changes. At t = 40 the total variation distance of the worst start is about 0.005.
 -->
 
@@ -515,7 +513,7 @@ Build step 3/3, t = 40. The same drawing grows: only the matrix changes. At t = 
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## Recall: a matrix = circles and bars
+## Recall: eigendecomposition
 
 <div class="fig">
 
@@ -535,7 +533,7 @@ Two sentences only: circle = eigenvalue, tall bar = eigenvector, wide bar = its 
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## $P$ is a sum of circles and bars too
+## $P$ has an eigendecomposition too
 
 <div class="sub">
 
@@ -550,7 +548,7 @@ $P = \sum_k \lambda_k\,\phi_k\,\psi_k^{\top}$
 
 <div class="take">
 
-Powers only touch the <span class="hot">circles</span>
+$P^t$ changes only the <span class="hot">eigenvalues</span>
 
 </div>
 
@@ -567,7 +565,7 @@ The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T.
 
 <div class="buildflag">build 1/3</div>
 
-## Each step <span class="hot">shrinks</span> the circles
+## The eigenvalues <span class="hot">shrink</span> as $t$ grows
 
 <div class="fig">
 <div style="display:flex;width:100%;height:430px"><div class="ph">P^1 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^1: circles at 1, 0.89, 0, 0, 0, -0.09, -0.2, -0.2, -0.27, -0.33, -0.38, -0.42. First circle always full size, blue. Callout: 'one step'</div></div>
@@ -577,7 +575,7 @@ The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T.
 <!--
 [#26] beat: P^t as circles (1/3)
 figure: P^1 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^1: circles at 1, 0.89, 0, 0, 0, -0.09, -0.2, -0.2, -0.27, -0.33, -0.38, -0.42. First circle always full size, blue. Callout: 'one step'
-Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
+Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-community network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
 
 ---
@@ -587,7 +585,7 @@ Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-room network (co
 
 <div class="buildflag">build 2/3</div>
 
-## Each step <span class="hot">shrinks</span> the circles
+## The eigenvalues <span class="hot">shrink</span> as $t$ grows
 
 <div class="fig">
 <div style="display:flex;width:100%;height:430px"><div class="ph">P^5 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^5: circle 2 at 0.55, the rest almost gone. First circle always full size, blue. Callout: 'lambda_2^5 = 0.55'</div></div>
@@ -597,7 +595,7 @@ Build step 1/3, t = 1. Eigenvalues are those of the 12-node two-room network (co
 <!--
 [#27] beat: P^t as circles (2/3)
 figure: P^5 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^5: circle 2 at 0.55, the rest almost gone. First circle always full size, blue. Callout: 'lambda_2^5 = 0.55'
-Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
+Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-community network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
 
 ---
@@ -607,7 +605,7 @@ Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-room network (co
 
 <div class="buildflag">build 3/3</div>
 
-## Each step <span class="hot">shrinks</span> the circles
+## The eigenvalues <span class="hot">shrink</span> as $t$ grows
 
 <div class="fig">
 <div style="display:flex;width:100%;height:430px"><div class="ph">P^40 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^40: circle 2 at 0.01; circle 1 untouched. First circle always full size, blue. Callout: 'only the circle at 1 is left: every row is pi'</div></div>
@@ -617,7 +615,7 @@ Build step 2/3, t = 5. Eigenvalues are those of the 12-node two-room network (co
 <!--
 [#28] beat: P^t as circles (3/3)
 figure: P^40 drawn as a sum of the same terms (same canvas as the previous step); circle areas = lambda^40: circle 2 at 0.01; circle 1 untouched. First circle always full size, blue. Callout: 'only the circle at 1 is left: every row is pi'
-Build step 3/3, t = 40. Eigenvalues are those of the 12-node two-room network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
+Build step 3/3, t = 40. Eigenvalues are those of the 12-node two-community network (computed): 1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423.
 -->
 
 ---
@@ -625,14 +623,14 @@ Build step 3/3, t = 40. Eigenvalues are those of the 12-node two-room network (c
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## Which circle dies last?
+## Which term stays the longest?
 
 <div class="cols">
 <div>
 
-The 12 circles for $t = 1$.
+The 12 eigenvalues of $P$.
 
-After many steps, which one is still there?
+After many steps, which term is still there?
 
 </div>
 <div class="fig">
@@ -642,8 +640,8 @@ After many steps, which one is still there?
 
 <div class="cue">Take 20 seconds.</div>
 <!--
-[#29] beat: Q3 (which circle dies last)
-Trick: the second circle (0.89) lasts long, but the first (1) never dies. The question is about 'last of those that die'. Be explicit after the answer.
+[#29] beat: Q3 (which term stays the longest)
+Trick: the second circle (0.89) lasts long, but the first (1) never decays. The question is about 'last of those that die'. Be explicit after the answer.
 -->
 
 ---
@@ -651,7 +649,7 @@ Trick: the second circle (0.89) lasts long, but the first (1) never dies. The qu
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## The <span class="hot">second</span> circle dies last
+## The <span class="hot">second</span> term stays the longest
 
 <div class="cols">
 <div>
@@ -675,7 +673,7 @@ Same figure as the question, with the answer added.
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## Forgetting is a <span class="hot">distance</span> that shrinks
+## The <span class="hot">distance</span> to $\pi$ decreases
 
 <div class="fig">
 <div style="display:flex;width:100%;height:400px"><div class="ph">Five small bar charts in a row: the walker's distribution x(t) on the 12 nodes for t = 0, 1, 3, 10, 40, starting at node 0. A flat reference line pi on each chart (pi = degree / 60). Under each: 'distance to pi' as a number (1-norm), shrinking to about 0.</div></div>
@@ -695,7 +693,7 @@ Define distance as the 1-norm, as the lecture note does. Numbers come from the f
 
 <div class="buildflag">build 1/3</div>
 
-## <span class="hot">Mixing time</span>: every start forgotten
+## <span class="hot">Mixing time</span>
 
 <div class="fig">
 <div style="display:flex;width:100%;height:380px"><div class="ph">Curves: distance to pi against t, one thin grey line per starting node (12), and a black line for the worst start. Callout: 'where you start matters at first'.</div></div>
@@ -715,7 +713,7 @@ Build step 1/3. The same canvas. The formula appears only at the end, after the 
 
 <div class="buildflag">build 2/3</div>
 
-## <span class="hot">Mixing time</span>: every start forgotten
+## <span class="hot">Mixing time</span>
 
 <div class="fig">
 <div style="display:flex;width:100%;height:380px"><div class="ph">Same plot plus a horizontal line at epsilon. Callout: 'how close is close enough?'</div></div>
@@ -735,7 +733,7 @@ Build step 2/3. The same canvas. The formula appears only at the end, after the 
 
 <div class="buildflag">build 3/3</div>
 
-## <span class="hot">Mixing time</span>: every start forgotten
+## <span class="hot">Mixing time</span>
 
 <div class="sub">
 
@@ -761,7 +759,7 @@ Build step 3/3. The same canvas. The formula appears only at the end, after the 
 
 <div class="optflag">OPTIONAL</div>
 
-## Q: how long to forget on a 10-clique?
+## Q: mixing time of a 10-clique?
 
 <div class="sub">
 
@@ -789,7 +787,7 @@ One graph per question. A: one step. lambda_2 = -1/9; relaxation time about 0.9 
 
 <div class="optflag">OPTIONAL</div>
 
-## A: one step is almost enough
+## A: about 1 step
 
 <div class="sub">
 
@@ -804,7 +802,7 @@ One graph per question. A: one step. lambda_2 = -1/9; relaxation time about 0.9 
 
 <div class="take">
 
-$\lambda_2 = -1/9$: the walker forgets in <span class="hot">about 1 step</span>
+$\lambda_2 = -1/9$: mixing takes <span class="hot">about 1 step</span>
 
 </div>
 
@@ -818,7 +816,7 @@ figure: Same clique, same position. Distance-to-pi curve as an inset: below epsi
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## Q: and with a single bridge?
+## Q: mixing time with one bridge?
 
 <div class="sub">
 
@@ -827,15 +825,15 @@ Two 5-cliques joined by one edge (21 edges)
 </div>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:420px"><div class="ph">The two-clique network (the tool's two-cliques.json), the walker in room 1</div></div>
+<div style="display:flex;width:100%;height:420px"><div class="ph">The two-clique network (the tool's two-cliques.json), the walker in community 1</div></div>
 </div>
 
 
-<div class="cue">Same, 5x, or 15x slower than the clique?</div>
+<div class="cue">The same, 5 times longer, or 15 times longer?</div>
 
 <!--
 [#37] beat: Q5 (two cliques)
-figure: The two-clique network (the tool's two-cliques.json), the walker in room 1
+figure: The two-clique network (the tool's two-cliques.json), the walker in community 1
 The edges halved but the answer is 15x slower. Trick: the clique has more edges, but what matters is the bottleneck.
 -->
 
@@ -844,7 +842,7 @@ The edges halved but the answer is 15x slower. Trick: the clique has more edges,
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## A: fifteen times slower
+## A: about 15 times longer
 
 <div class="sub">
 
@@ -859,7 +857,7 @@ Two 5-cliques joined by one edge (21 edges)
 
 <div class="take">
 
-$\lambda_2 = 0.93$: about <span class="hot">14 steps</span> to forget
+$\lambda_2 = 0.93$: mixing takes about <span class="hot">14 steps</span>
 
 </div>
 
@@ -874,7 +872,7 @@ tau = 1/(1 - 0.927) = 13.7. Compare 0.9 for the clique: fifteen-fold.
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## The slowest circle sets the <span class="hot">clock</span>
+## The <span class="hot">mixing time</span> follows from $\lambda_2$
 
 <div class="sub">
 
@@ -883,19 +881,19 @@ $\tau = \dfrac{1}{1-\lambda_2}$
 </div>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:300px"><div class="ph">A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (-0.11, tau 0.9), karate club (0.87, tau 7.6), two rooms (0.89, tau 9), two 5-cliques + bridge (0.93, tau 14), ring of 1,000 (0.99998, tau 50,000). Past 0.99 the gauge is shaded hot.</div></div>
+<div style="display:flex;width:100%;height:300px"><div class="ph">A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (-0.11, tau 0.9), karate club (0.87, tau 7.6), two communities (0.89, tau 9), two 5-cliques + bridge (0.93, tau 14), ring of 1,000 (0.99998, tau 50,000). Past 0.99 the gauge is shaded hot.</div></div>
 </div>
 
 
 <div class="take">
 
-Small gap, <span class="hot">long memory</span>
+Small gap, <span class="hot">long mixing time</span>
 
 </div>
 
 <!--
 [#39] beat: spectral gap (gauge)
-figure: A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (-0.11, tau 0.9), karate club (0.87, tau 7.6), two rooms (0.89, tau 9), two 5-cliques + bridge (0.93, tau 14), ring of 1,000 (0.99998, tau 50,000). Past 0.99 the gauge is shaded hot.
+figure: A horizontal gauge for lambda_2 from -0.2 to 1 with markers: 10-clique (-0.11, tau 0.9), karate club (0.87, tau 7.6), two communities (0.89, tau 9), two 5-cliques + bridge (0.93, tau 14), ring of 1,000 (0.99998, tau 50,000). Past 0.99 the gauge is shaded hot.
 'Spectral gap' = 1 - lambda_2. t_mix is a few tau: the logarithm in the lecture note's bound pays for epsilon and the rarest node. Not derived here.
 -->
 
@@ -955,7 +953,7 @@ The vector of ones is a right eigenvector with eigenvalue 1, because each row of
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## Why not more? An <span class="hot">average</span> can't grow
+## No eigenvalue is <span class="hot">larger</span> than 1
 
 <div class="fig">
 <div style="display:flex;width:100%;height:400px"><div class="ph">Two frames on a 7-node network: numbers on the nodes (largest = 9); one step replaces every number by the average of its neighbours; the largest number can only stay or fall. Frame 2 is the same drawing with the new numbers; the largest is now 6.5.</div></div>
@@ -973,7 +971,7 @@ P f replaces each entry by a neighbour average. That cannot raise the maximum, s
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## The circle at 1 is <span class="hot">π</span>
+## The eigenvalue 1 gives <span class="hot">π</span>
 
 <div class="sub">
 
@@ -988,7 +986,7 @@ The stationary distribution: $P^{t} \to \mathbf{1}\,\pi$
 
 <div class="take">
 
-$\pi_i = k_i / 2m$: degree, and <span class="hot">nothing else</span>
+$\pi_i = k_i / 2m$: proportional to <span class="hot">degree</span>
 
 </div>
 
@@ -1003,7 +1001,7 @@ This is why the bars of the tool settled on their ticks and why degree ÷ share 
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## Pen & Paper, Parts 2 and 3: <span class="hot">expand</span> it
+## Pen & Paper, Parts 2 and 3
 
 <div class="sub">
 
@@ -1022,7 +1020,7 @@ Everyone has now finished Part 1 and crossed the line on the sheet.
 <!-- _class: L-c -->
 <!-- _footer: "" -->
 
-## Parts 2 and 3: two things to do
+## Parts 2 and 3: tasks
 
 <div class="cols">
 <div class="left">
@@ -1046,7 +1044,7 @@ Part 2 can be done with a pencil only; Part 3 needs a laptop or a phone. Pair st
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## $x(t)$ = π + <span class="hot">shrinking</span> pieces
+## $x(t)$ = π + <span class="hot">decaying</span> terms
 
 <div class="sub">
 
@@ -1061,7 +1059,7 @@ Four nodes; eigenvalues $1,\ 0,\ -\tfrac13,\ -\tfrac23$
 
 <div class="take">
 
-Only the term with $\lambda = 1$ <span class="hot">stays</span>
+Only the term with $\lambda = 1$ <span class="hot">remains</span>
 
 </div>
 
@@ -1076,18 +1074,18 @@ Check: x(1) = pi + 0.3 (-2/3) psi_4 = (0, 0, 0.5, 0.5). x(2) = (1/3, 1/3, 1/6, 1
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## The second eigenvector splits the <span class="hot">rooms</span>
+## The second eigenvector separates the <span class="hot">communities</span>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:400px"><div class="ph">Point plot: x = node index 0 to 11, y = second eigenvector of P (scaled to max 1). Nodes 0-5 on top (about +1; the bridge nodes 2 and 5 at about +0.74), nodes 6-11 on the bottom (about -1; 8 and 11 at -0.74). Room 1 cool, room 2 hot. A dashed line at 0. Callout: 'the sign tells the room'.</div></div>
+<div style="display:flex;width:100%;height:400px"><div class="ph">Point plot: x = node index 0 to 11, y = second eigenvector of P (scaled to max 1). Nodes 0-5 on top (about +1; the bridge nodes 2 and 5 at about +0.74), nodes 6-11 on the bottom (about -1; 8 and 11 at -0.74). Community 1 cool, community 2 hot. A dashed line at 0. Callout: 'the sign gives the community'.</div></div>
 </div>
 
 
 <!--
 [#48] beat: debrief Part 3 (second eigenvector)
 source: numpy, the sheet's one-cell code
-figure: Point plot: x = node index 0 to 11, y = second eigenvector of P (scaled to max 1). Nodes 0-5 on top (about +1; the bridge nodes 2 and 5 at about +0.74), nodes 6-11 on the bottom (about -1; 8 and 11 at -0.74). Room 1 cool, room 2 hot. A dashed line at 0. Callout: 'the sign tells the room'.
-The cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The eigenvector of P (right) is constant inside each room by symmetry; sign is arbitrary, so the two rooms may swap colours.
+figure: Point plot: x = node index 0 to 11, y = second eigenvector of P (scaled to max 1). Nodes 0-5 on top (about +1; the bridge nodes 2 and 5 at about +0.74), nodes 6-11 on the bottom (about -1; 8 and 11 at -0.74). Community 1 cool, community 2 hot. A dashed line at 0. Callout: 'the sign gives the community'.
+The cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The eigenvector of P (right) is constant inside each community by symmetry; sign is arbitrary, so the two communities may swap colours.
 -->
 
 ---
@@ -1095,7 +1093,7 @@ The cell computes np.linalg.eig(P), orders by the real part, and plots column 1.
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## Early on, the <span class="hot">community</span> is what is left
+## Early on, the <span class="hot">community</span> signal dominates
 
 <div class="sub">
 
@@ -1104,20 +1102,20 @@ Walker starts at node 0
 </div>
 
 <div class="fig">
-<div style="display:flex;width:100%;height:360px"><div class="ph">Line plot: x = steps (0 to 40), y = probability of being in room 1: 1.00, 1.00, 0.92, 0.88, 0.80 (t = 5), 0.67 (t = 10), 0.55 (t = 20), 0.505 (t = 40). A dashed curve 0.5 + 0.5 x 0.889^t over it. Callout at t about 3: 'the other eleven circles are gone'.</div></div>
+<div style="display:flex;width:100%;height:360px"><div class="ph">Line plot: x = steps (0 to 40), y = probability of being in community 1: 1.00, 1.00, 0.92, 0.88, 0.80 (t = 5), 0.67 (t = 10), 0.55 (t = 20), 0.505 (t = 40). A dashed curve 0.5 + 0.5 x 0.889^t over it. Callout at t about 3: 'the other eleven circles are gone'.</div></div>
 </div>
 
 
 <div class="take">
 
-<span class="hot">Rooms</span> fade like $\lambda_2^{\,t}$. Degree is what remains.
+The community signal decays like $\lambda_2^{\,t}$. Degree remains.
 
 </div>
 
 <!--
 [#49] beat: debrief Part 3 (what dominates early)
-figure: Line plot: x = steps (0 to 40), y = probability of being in room 1: 1.00, 1.00, 0.92, 0.88, 0.80 (t = 5), 0.67 (t = 10), 0.55 (t = 20), 0.505 (t = 40). A dashed curve 0.5 + 0.5 x 0.889^t over it. Callout at t about 3: 'the other eleven circles are gone'.
-After about three steps, only two circles are left: the one at 1 (degree) and the one at 0.89 (the rooms). The second dies on the time scale tau = 9. This is the bookend: short walks see rooms, long walks see degree.
+figure: Line plot: x = steps (0 to 40), y = probability of being in community 1: 1.00, 1.00, 0.92, 0.88, 0.80 (t = 5), 0.67 (t = 10), 0.55 (t = 20), 0.505 (t = 40). A dashed curve 0.5 + 0.5 x 0.889^t over it. Callout at t about 3: 'the other eleven circles are gone'.
+After about three steps, only two terms are left: the term with eigenvalue 1 (degree) and the one at 0.89 (the communities). The second decays on the time scale tau = 9. This is the bookend: short walks see communities, long walks see degree.
 -->
 
 ---
@@ -1126,13 +1124,13 @@ After about three steps, only two circles are left: the one at 1 (degree) and th
 <!-- _footer: "" -->
 
 <div class="fig">
-<div style="display:flex;width:100%;height:560px"><div class="ph">Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 17). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).</div></div>
+<div style="display:flex;width:100%;height:560px"><div class="ph">Summary, three rows, each with a thumbnail of its figure: (1) the eigenvalue 1 = degree (thumb: scatter, slide 17). (2) The second eigenvalue = the communities, and its size determines the mixing time (thumb: gauge). (3) Short walks see communities; long walks see degree (thumb: the community-probability curve).</div></div>
 </div>
 
 
 <!--
 [#50] beat: summary (claims with thumbnails)
-figure: Summary, three rows, each with a thumbnail of its figure: (1) the circle at 1 = degree (thumb: scatter, slide 17). (2) The second circle = the rooms, and its size sets the mixing time (thumb: gauge). (3) Short walks see rooms; long walks see degree (thumb: the room-probability curve).
+figure: Summary, three rows, each with a thumbnail of its figure: (1) the eigenvalue 1 = degree (thumb: scatter, slide 17). (2) The second eigenvalue = the communities, and its size determines the mixing time (thumb: gauge). (3) Short walks see communities; long walks see degree (thumb: the community-probability curve).
 Three claims, each pointing back at the picture that proved it. Then say what is next.
 -->
 
@@ -1141,7 +1139,7 @@ Three claims, each pointing back at the picture that proved it. Then say what is
 <!-- _class: L-f -->
 <!-- _footer: "" -->
 
-## Next: how long does the walker take to <span class="hot">get there</span>?
+## Next: how long does it take to <span class="hot">reach</span> a node?
 
 <div class="fig">
 <div style="display:flex;width:100%;height:300px"><div class="ph">The opening picture again: the karate club, nodes shaded by long-run visits, with two nodes marked A and B</div></div>

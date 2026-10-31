@@ -4,6 +4,12 @@
 > copy here). The `house/` kit it names lives in that skill folder; its worked example is
 > `slides/m06/` (figures/figlib.py, figures/figs_ui.py, network-science.css).
 
+**Wording (2026-10-31, important; check it in every review):** write plainly, directly and briefly, with no ornament
+(「もっと端的に、シンプルに、直接的かつ簡潔に、飾らずに」). A title states the claim or the question literally and names things by
+their technical term: no thematic titles ("One walk, three worlds"), no verbs of life or war for mathematical objects
+("dies", "forgets", "sets the clock"), no metaphorical nouns ("rooms" for communities), no commands ("Measure it"). Rule N9 in
+`SLIDE_RUBRIC.md`; it holds from the first wireframe.
+
 Every rule below comes from his own review of a deck. It was settled on the Module 06
 centrality deck (adv-net-sci `slides/m06/`), rebuilt three times in October 2026; that deck
 is the worked example. He signed off on the result: 「色使い、スライドのつなぎ方、構成図、

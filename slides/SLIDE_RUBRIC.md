@@ -18,6 +18,8 @@ to report findings, not to fix them — fixing is a separate task.
 4. **Conversational.** Slides talk *with* students. Questions come before answers.
 5. **One complexity at a time.** Never introduce two unfamiliar ideas in the same step.
 6. **Interactive demo at every milestone.** Milestones are roughly the sections (parts) of the deck.
+7. **Direct wording** (the lecturer, 2026-10-31: 「もっと端的に、シンプルに、直接的かつ簡潔に、飾らずに」). Every title, sub, take, cue, label and bullet
+   says what the slide shows, in literal words: no figure of speech, no thematic label. See N9; it applies from the first wireframe.
 
 ## How to run a review
 
@@ -42,6 +44,8 @@ is a P1 finding. Note every place your eye hesitates or wanders: that hesitation
 is usually a figure or layout finding.
 
 ### 3. Checklist pass
+
+Read the wording first (N9): every title, sub, take, cue, bullet and label against the test in N9, before the figures.
 
 Go slide by slide against every criterion below. For dense slides, open the
 markdown source and confirm a disclosure mechanism exists (`*` fragment lists, or
@@ -154,6 +158,34 @@ Use the report format at the bottom. Order findings by severity, then slide numb
   Revealing the punchline in the same breath as the question is a Major. The answer
   must not appear *anywhere* on the question slide — a gray `note` has leaked the
   puzzle's answer twice; check the notes, not just the body.
+
+- **N9 · Major — Direct wording (a titled rule; check it on every slide).** The lecturer's
+  instruction of 2026-10-31, after a wireframe titled "One walk, three worlds" and "Which circle
+  dies last?": write plainly, directly and briefly, with no ornament. A title is the claim or the
+  question in literal words, naming things by their technical term. N7 and N8 cover the
+  vocabulary and the sentence; N9 is the check that a reviewer runs on **every** title, sub, take,
+  cue, bullet and figure label, and a figurative **title or F statement is a Major by itself**.
+  - **No thematic or poetic titles.** "One walk, three worlds" → "Random walks appear in many
+    fields". "A man leaves the pub" → "Where is the walker after 100 steps?". "Two rooms, one
+    door" → "Two communities joined by one edge". "Look near where he started" → "Most likely
+    near the start". A title that could be the name of a chapter in a novel is wrong.
+  - **No verbs of life, war or commerce for mathematical objects.** *dies, survives, forgets,
+    remembers, wins, buys, outvotes, collapses, refuses, sets the clock*. "Which circle dies
+    last?" → "Which term stays the longest?". "The slowest circle sets the clock" → "The mixing
+    time follows from λ₂". "Forgetting is a distance that shrinks" → "The distance to π
+    decreases". "Small gap, long memory" → "Small gap, long mixing time".
+  - **No metaphorical nouns for plain things.** "rooms" for communities, "world" for field,
+    "door" for an edge, "clock" for a time scale, "blind walker" for a random walker.
+  - **No commands as titles.** "Measure it", "Expand it" → "Pen & Paper, Part 1", with the
+    subject on the `.sub`.
+  - **No flourish at the end of a statement.** "…degree, and nothing else" → "…proportional to
+    degree".
+  - **One literal sentence per idea.** If a title needs an explanation to be understood, the
+    explanation is the title.
+  - **Test:** read each title aloud to someone who has not seen the figure. If they would
+    answer "what do you mean?", it is figurative. Report every hit as an exact old/new pair.
+    `gatelib` (`check_deck.py`, "figurative wording") lists likely hits; it is a prompt for the
+    reviewer, not a replacement for reading every slide.
 
 ### S — Deck structure (four-act arc + milestones)
 
