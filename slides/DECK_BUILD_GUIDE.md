@@ -1,81 +1,102 @@
 # Deck build guide
 
-How to build a **new** module deck from scratch. The other three files cover judgment and
-review — `SLIDE_RUBRIC.md` (what good is), `FIGURE_GUIDE.md` (how to draw),
-`REVIEW_PLAYBOOK.md` (how to run the review loop) — this one covers authoring: what the
-slides are for, the order of work that succeeded, and the Marp/theme facts that were
+How to build a **new** slide deck from scratch. The other guides bundled alongside this one
+cover judgment and review — `SLIDE_RUBRIC.md` (what good is), `FIGURE_GUIDE.md` (how to
+draw), `REVIEW_PLAYBOOK.md` (how to run the review loop) — this one covers authoring: what
+the slides are for, the order of work that succeeded, and the Marp/theme facts that were
 established the hard way. Written, like the others, to be executable by any agent.
 
-Everything here was learned rebuilding the Module 01 deck (30 slides → 78, thirteen
-rounds, two slide-by-slide passes by the lecturer himself). Where a rule quotes him, treat
-it as decided.
+Everything here was learned rebuilding an early deck from scratch — 30 slides grew to 78
+across thirteen rounds, including two full slide-by-slide passes. Where a rule states a
+preference rather than a measured fact, treat it as decided, not as an invitation to
+relitigate.
+
+**Read `HOUSE_STYLE.md` first; it wins where the two disagree.** This guide predates the house
+style: its measurements of the bundled "network-science" theme (heading, rule, fit budgets)
+and its GIF and slider advice are kept for decks built on that theme. A house deck is built from
+`house/`, steps its builds as runs of slides (no GIF, no slider), and plans its story before
+its slides (`HOUSE_STYLE.md` section 10.6).
 
 ## What these slides are for — the use model
 
-The lecturer's own framing, which changes what "good" means on every slide:
+The framing that changes what "good" means on every slide:
 
-> These are not slides for the audience to read. They are an aid for me to teach *through
-> dialogue with students*. Keep the text short, highlight what matters, lower the
+> These are not slides for the audience to read. They are an aid for teaching *through
+> dialogue with the room*. Keep the text short, highlight what matters, lower the
 > complexity of each individual slide — and get the density back by animating instead.
 
 What follows from it:
 
-- **Telegraphic is fine.** "Arrive by one edge, leave by another — two edges per visit."
-  Fragments, no verb, no article: all acceptable where the lecturer will say the sentence
-  aloud. Keep full sentences only where a student must reconstruct the argument later —
+- **Telegraphic is fine.** "Read the row, then read the column — two lookups per cell."
+  Fragments, no verb, no article: all acceptable where the presenter will say the sentence
+  aloud. Keep full sentences only where the audience must reconstruct the argument later —
   theorem statements, definitions.
-- **Density comes from motion, not text.** A build that animates (GIF) beats a paragraph.
-  Sliders and scripting are restricted in Marp — animation is the reachable interactivity;
-  treat live widgets as a notebook follow-up.
-- **Bold marks key terms and nothing else.** `strong` renders accent-2 red. Bold the terms
-  themselves (**graph**, **degree**, **path**…); unbold anything bolded for mere stress,
-  or the red loses its meaning.
-- **A question slide carries no answer — anywhere on the slide.** A gray `note` leaked the
-  puzzle's answer twice in m01. The answer goes on the *next* slide.
+- **Density comes from builds, not text.** A build (a run of slides, each adding one element
+  to the same figure) beats a paragraph. Live widgets belong in a notebook or app follow-up.
+- **Bold marks key terms and nothing else.** `strong` renders hot orange with a brush
+  underline. Bold the terms themselves (**the terms you are defining**…); unbold anything
+  bolded for mere stress, or the colour loses its meaning. A coloured keyword in a title is a
+  `.hot` span, not bold.
+- **A question slide carries no answer — anywhere on the slide.** A gray `note` leaked a
+  puzzle's answer twice in one deck. The answer goes on the *next* slide.
 - **Never put a paragraph below a fragmented list.** The room reads it before the bullets
   reveal, which defeats the build. Move it above, fold it into the last fragment, or make
   it a fragment.
-- **Interaction prompts must earn their place.** The lecturer cut "Turn to your neighbor —
-  30 seconds" and two "Your turn" slides outright. Keep an activity only when it teaches a
-  mechanism; drop ritual prompts.
-- **The interaction he asked to strengthen: concrete first, then predict.** Have students
-  compute one small case by hand ($A^2$, one entry), then *predict* the general one
-  ($A^3$, $A^4$) without computing. Two slides, not one.
+- **Interaction prompts must earn their place.** "Turn to your neighbor — 30 seconds" and
+  two open-ended "your turn" slides were cut outright in review. Keep an activity only when
+  it teaches a mechanism; drop ritual prompts.
+- **The interaction worth strengthening: concrete first, then predict.** Have the room
+  compute one small case by hand, then *predict* the general one without computing. Two
+  slides, not one.
 - **State the restriction on the slide *before* the number that depends on it.** A number
   is only as honest as the rule it was computed under, and the room can only check it if it
-  has the rule first. Module 02 does this twice well and once backwards, and the contrast is
-  the lesson: slide 24 fixes the denominator ("seven people make 21 pairs") one slide before
-  average path length is defined, and slide 8 marks the 64 completed chains as "the only ones
-  that carry data" one slide before slide 9 quotes their median. But `C̄ = 5/21` shipped in
-  Part Three while the convention it rests on — a degree-1 node's coefficient counts as
-  zero — was introduced as *new* forty slides later, in Part Six, on a slide that then asked
-  the room to think about it. A convention spent before it is stated turns a later question
-  into a formality.
+  has the rule first. One deck does this twice well and once backwards, and the contrast is
+  the lesson: one slide fixes the denominator ("seven people make 21 pairs") one slide
+  before a rate is defined from it, and another marks a subset as "the only ones that carry
+  data" one slide before the next slide quotes their median. But a computed ratio shipped
+  in an early part of the deck while the convention it rests on — that a zero-degree case
+  counts as zero, say — was introduced as *new* forty slides later, in a much later part,
+  on a slide that then asked the room to think about it. A convention spent before it is
+  stated turns a later question into a formality.
 
   Quoting someone else's published number under an unstated convention is a *different*
   case and is fine — nothing on the slide computes it, so there is no arithmetic for the
-  reader to fail. Pay it back later: Module 02 names the largest-component rule in Part Six
-  and adds "it is the convention behind Facebook's 4.74" there.
+  reader to fail. Pay it back later: one deck names the underlying convention in a later
+  part and ties it explicitly back to the number quoted earlier.
 - **When figure + text do not fit side by side, stack two rows** — figure full width,
   text on its own line — rather than shrinking both into `cols`.
 
-## Module directory
+## Deck directory
 
-Scaffold a new module from m01 — do not reinvent:
+Scaffold a new deck from the bundled template — do not reinvent:
 
-    slides/m0N/
-      m0N-<slug>.md         the deck (marp front matter, math: katex)
-      network-science.css   copy from m01 — the theme carries the lecturer-set type sizes
-      figures/              make_figures.py (+ make_animations.py), emitted PNG/GIF
-      check_render.py       copy from m01, adjust the deck filename — the build gate
-      review/               DECK_SPEC.md, FIGURE_SPEC.md, FIXES_Rn.md, rendered slide.NNN.png
-      README.md             build commands (copy m01's and adjust)
+    <deck-slug>/
+      <deck-slug>.md         the deck (marp front matter, math: katex)
+      theme.css               house/theme-house.css, copied under this name (the gate
+                               renders with <deck dir>/theme.css only)
+      figures/                make_figures.py, figlib.py and figs_ui.py from house/,
+                               emitted PNGs, frames/ for builds
+      check_render.py         copy from `~/.claude/skills/slide/template/`, adjust
+                               the deck filename — the build gate
+      review/                 DECK_SPEC.md, FIGURE_SPEC.md, FIXES_Rn.md, rendered slide.NNN.png
+      README.md               build commands (copy the template's and adjust)
 
-Content sources: the module's entry in `curriculum.yml` (big_question, hook, the concept
-list with prereqs — the four-act arc is nearly written there already) and
-`lecture-note/<module-slug>/`.
+See `~/.claude/skills/slide/template/` for a ready-to-copy starting point.
+
+`check_render.py` is not optional. A deck that skips it gets the gatelib line
+`(no check_render.py in module)` and every pixel-level check — overflow, text size,
+container mismatch — silently does not run. One results deck went through several review
+rounds that way; its bullet overflow and clipped legends were all found by eye, late.
+Copy the template's file when the deck directory is created, not "later".
+
+Gather your source material before writing DECK_SPEC.md — an outline, existing notes, a
+script, a curriculum entry, whatever you are starting from. The four-act arc (below) is
+often nearly written already in a good outline; find it before inventing one.
 
 ## Order of work
+
+For a **talk** (conference, seminar) the order is different: story, then a wireframe of every slide with dashed figure boxes,
+then red-pen rounds, then real figures, then animation. Follow `TALK_PLAYBOOK.md`; the list below is for lecture modules.
 
 What thirteen rounds settled into; skipping a step reliably cost a round.
 
@@ -83,27 +104,23 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
    one point, its figure, its question/answer beat. Restate the rubric's non-negotiables
    at the top (fragments use `*`; no tables; no code; `cols` is text + figure only;
    question and answer on separate slides; every concept slide has a figure). Verify
-   every number and claim in the spec before writing it down — two arithmetic errors
-   reached m01 slides *through* specs.
-2. **FIGURE_SPEC.md, then the generator.** All figures from one `make_figures.py` with
-   assertions per `FIGURE_GUIDE.md`. Animations in `make_animations.py`, importing
-   geometry and palette **from** `make_figures.py` so the two cannot drift.
+   every number and claim in the spec before writing it down — two arithmetic errors once
+   reached shipped slides *through* specs.
+2. **FIGURE_SPEC.md, then the generator.** All figures from one `make_figures.py` on
+   `house/figlib.py`, with assertions per `FIGURE_GUIDE.md`. A build's frames come from the
+   same code (`figlib.emit_frames`), so the steps and the still cannot drift.
 3. **Write the deck to the spec.**
 4. **Gate before any review:** render and run both checkers; both must exit 0.
 
        python3 figures/make_figures.py
-       python3 figures/make_animations.py
-       python3 check_deck.py m0N-<slug>.md   # source-level structural checks
-       marp m0N-<slug>.md --theme network-science.css --allow-local-files \
-            --images png -o review/slide.png
-       python3 check_render.py               # pixel-level rendered checks
+       cd ~/.claude/skills/slide && python3 -m gatelib review <deck_dir>   # render + all checks
 
-   `check_render.py` measures what a student sees — in-figure x-height ≥ 15px, node
-   discs 26–52px, drawing ≥ 150px, per-axis margin ≤ 30%, no ink below the pagination
-   row. It reproduced the human reviewers' measurements to the pixel; a green run is the
-   completion criterion for figure work (the lecturer's most-repeated complaint, stated
-   as a build failure).
-5. **Then the tiered review loop** — `/slide-review`, run per `REVIEW_PLAYBOOK.md`:
+   `check_render.py` measures what the audience sees — in-figure x-height ≥ 15px, drawing
+   ≥ 150px, per-axis margin ≤ 30%, no ink below the pagination row (plus node discs
+   26–52px, opt-in, for decks with circular node-diagrams — see `FIGURE_GUIDE.md`). It
+   reproduces a human reviewer's measurements to the pixel; a green run is the completion
+   criterion for figure work, not a matter of taste.
+5. **Then the tiered review loop** — `/slide` in review mode, run per `REVIEW_PLAYBOOK.md`:
    - **Tier 0** every round: `check_render.py` + `check_deck.py` (zero tokens)
    - **Tier 1** per round: LLM review of only changed slides, judgment criteria only
    - **Tier 2** once before shipping: full-deck LLM review, all criteria
@@ -114,11 +131,15 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
    the round number, gate status, and pending fixes.
 7. **Last, the filler pass** — `FILLER_PASS.md`. A separate top-to-bottom sweep whose
    only job is deleting padding: restatements, emphasis that carries no fact, retellings
-   of what the students already did. It runs **after** the deck is complete and green,
+   of what the audience already did. It runs **after** the deck is complete and green,
    never during drafting — while writing you cannot tell scaffolding from load-bearing
    wall, and cutting early costs content. Re-render and re-gate when it is done.
 
 ## Marp and theme facts (verified in the render, not assumed)
+
+These numbers describe the skill's bundled default `theme.css`. A deck using a different
+theme must re-measure them the same way — render a probe slide, measure the PNG — rather
+than assume they carry over.
 
 - **Fragments:** only `*` list markers fragment. `-` does not. A list that reveals an
   argument uses `*`; a caption-like aside stays `-`.
@@ -133,32 +154,27 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
   stripped by the sanitizer, and so are `style` attributes — style lives in the theme.
 - **Scripting works, in the `--html` export.** A `<script>` runs and an
   `<input type="range">` fires its listener — tested in a real browser, not read off the
-  HTML source. So a slider the lecturer can drag while talking is a real option, not a
+  HTML source. So a slider the presenter can drag while talking is a real option, not a
   closed door.
 
-  One condition, and it is a CLI flag: **`--html`, on every invocation**. `html: true` in
-  the front matter does nothing — Marpit has no such directive, and both decks that carried
-  the line were relying on a coincidence. What survives without the flag is Marp's own
-  default safelist, which covers `<div class="cols">` and `<figure>` but not `<script>`,
-  `<input>` or `<button>`; that is why the layout looked fine while the CSR widget printed
-  its own source code onto the slide in the image and PDF exports for three rounds.
+  Two conditions. It needs `--html` (or `html: true` in the front matter), and **that flag
+  matters for the whole deck**: without it the HTML export escapes *all* raw HTML to
+  literal text, including the existing `<div class="cols">` layout. And the `--images png`
+  path parses raw HTML either way, so `check_render.py` never exercises the export the
+  deck is actually given from — if you add scripted content, open the HTML and check it,
+  because nothing in the pipeline will.
 
-  Pass `--html` to the `--images png` render too, not just the HTML one. It costs nothing,
-  and it is what makes `check_render.py` measure the slide the lecture is actually given
-  from: with the flag, scripts *run* during the image export, so a widget or an animation
-  renders a real frame into the PNG instead of a wall of escaped text.
+  A caution worth carrying, since it cost a round once: "Marp restricts scripting" was an
+  over-generalisation of an SVG-specific finding, repeated in three briefs before anyone
+  tested `<script>` separately. **One negative result about one tag is not a result about
+  the sanitizer.** Test the thing you are about to rule out.
 
-  A caution worth carrying, since it cost this deck a round: "Marp restricts scripting" was
-  my own over-generalisation of an SVG-specific finding, repeated in three briefs before
-  anyone tested `<script>` separately. **One negative result about one tag is not a result
-  about the sanitizer.** Test the thing you are about to rule out.
-
-  Built and shipped on m01's "Store only the nonzeros": a slider that steps through the
-  matrix rows while the row's contiguous slice of `indices`/`data` highlights. Verified by
-  driving the real slider in the bundled Chromium — inject a small harness that dispatches
-  an `input` event and writes the outcome into the DOM, then read it with `--dump-dom`,
-  since `--dump-dom` cannot interact on its own. Checking that the `<script>` tag survived
-  the export is not the same as checking that it runs.
+  Built and shipped once on a slide teaching a sparse data-structure layout: a slider that
+  steps through rows while the row's contiguous slice of the underlying arrays highlights.
+  Verified by driving the real slider in the bundled Chromium — inject a small harness that
+  dispatches an `input` event and writes the outcome into the DOM, then read it with
+  `--dump-dom`, since `--dump-dom` cannot interact on its own. Checking that the `<script>`
+  tag survived the export is not the same as checking that it runs.
 
   Two gotchas that cost time here:
 
@@ -171,60 +187,65 @@ What thirteen rounds settled into; skipping a step reliably cost a round.
     cell collapses into one run-on number. Both looked fine in the HTML source and wrong on
     the slide.
 - KaTeX does not process `<figcaption>` — **nor any other raw HTML block**, including
-  `steps-list`. Module 02 shipped nine captions and a roadmap item that printed
-  `$C/C_{\mathrm{rand}}$` to the room as literal source. `check_render.py` fails the build
-  on it now; write the symbol as a word instead.
+  `steps-list`. One deck shipped nine captions and a roadmap item that printed a formula's
+  raw LaTeX source to the room as literal text. `check_render.py` fails the build on it
+  now; write the symbol as a word instead.
 - **A figure is authored for one container.** Put a full-width figure inside a `cols` column
   and it renders at 48% — 19px node discs against 39px on the identical figure laid out full
   width, invisible in the source. The gate compares the authored width against the container
   it is used in; keep the generator's declaration and the deck's markup in step.
 - `## Title` + `<hr>` stay on the same slide as their content; `---` after a title
   splits the slide.
-- House classes: `lead` (title), `part` (divider with `band` markup), `mid` (shallow
-  slide — centres the body block only; the heading stays at its fixed y so titles line
-  up deck-wide), `cols`, `fig` + `figcaption`, `formula`, `note`, `steps-list`.
-- Type floors (lecturer-set, already in the theme): body 30px, notes 27px, formula
-  panels and figcaptions 30px. In-figure text must land at least body-size **on the
-  slide** — he raised this four times on m01; it is now an assertion in the figure
-  generator and a `check_render.py` failure, not a review finding.
+- Classes of the bundled theme: `lead` (title), `part` (divider with `band` markup), `mid`
+  (shallow slide — centres the body block only; the heading stays at its fixed y so titles
+  line up deck-wide), `cols`, `fig` + `figcaption`, `formula`, `note`, `steps-list`. The house
+  theme keeps them and adds the layouts and pieces of `HOUSE_STYLE.md` sections 8 and 9
+  (markup: `house/layouts.md`).
+- Type floors (already in the theme): body 30px, notes 27px, formula panels and
+  figcaptions 30px. In-figure text must land at least body-size **on the slide** — raised
+  repeatedly in early review; it is now an assertion in the figure generator and a
+  `check_render.py` failure, not a review finding.
 
 ## Write the deck before you commission the figures
 
-Module 06 dispatched three figure modules in parallel while the deck was still
-being written, with the container for each figure taken from the *spec*. Two of
-the three authored most of their figures at full width for slides that ended up
-two-column, and `check_render.py` failed them all: a figure authored for 1080 px
-and used in a 537 px column renders at 50% of its intended scale.
+One deck dispatched three figure-generation tasks in parallel while the deck was still
+being written, with the container for each figure taken from the *spec*. Two of the three
+authored most of their figures at full width for slides that ended up two-column, and
+`check_render.py` failed them all: a figure authored for 1080 px and used in a 537 px
+column renders at 50% of its intended scale.
 
-Halving a figure's width is a **re-composition, not a re-declaration** — a wide
-slope chart, a 12x12 matrix or two cliques side by side do not survive it — so the
-cost of getting this wrong is a second authoring pass, not a one-line edit. Write
-the slide first, or at minimum fix the container per figure before dispatching,
-and put the list in the brief.
+Halving a figure's width is a **re-composition, not a re-declaration** — a wide slope
+chart, a large matrix, or two side-by-side panels do not survive it — so the cost of
+getting this wrong is a second authoring pass, not a one-line edit. Write the slide first,
+or at minimum fix the container per figure before dispatching, and put the list in the
+brief.
 
 ## What fits on a slide with a wide figure, measured
 
-For the m06 theme, on a slide with heading, rule, one line of body text, a
-full-width figure and a figcaption: the heading's ink ends at y=85, the rule sits
-at y=139, and a 349 bp figure plus caption ends at **y=606** against a page number
-at 617–629. Two lines of body text still fit. That is the budget; anything more
-and `check_render.py`'s CONTENT_BOTTOM check fires.
+For the bundled theme, on a slide with heading, rule, one line of body text, a full-width
+figure and a figcaption: the heading's ink ends at y=85, the rule sits at y=139, and a
+349 bp figure plus caption ends at **y=606** against a page number at 617–629. Two lines of
+body text still fit. That is the budget; anything more and `check_render.py`'s
+CONTENT_BOTTOM check fires.
 
-If a figure cannot be beside its text — Module 06's twelve-city map cannot, since
-the names do not fit at 537 px — then stack: one short line above, figure full
-width below. A deck where *every* slide does that is monotonous, so keep the
-two-column pattern wherever the figure is small enough to take it.
+If a figure cannot be beside its text — a wide map or diagram whose labels do not fit at
+537 px, say — then stack: one short line above, figure full width below. A deck where
+*every* slide does that is monotonous, so keep the two-column pattern wherever the figure
+is small enough to take it.
 
 ## What actually fits on a slide
 
-Arithmetic worth doing once, because ten of Module 05's thirteen first-run gate failures
+Arithmetic worth doing once, because ten of one deck's thirteen first-run gate failures
 were the same mistake. The theme reserves nothing below **y = 660** in a 720px frame, a
 title with its rule takes about **110px**, and a full-width figure may be **380px** tall
 (`fig tight` 320, `fig stack` 190). So:
 
 > a ~350px figure leaves room for **one** short line of text, and only above it.
 
-A line above *and* a line below does not fit. Move the second one into the `figcaption` —
+(Measured on the bundled theme. The house theme has no rule under the title, so its layout A
+holds a `.sub` above and a `.take` below a `fig tight` figure, 320 px.)
+
+On the bundled theme a line above *and* a line below does not fit. Move the second one into the `figcaption` —
 which is where prose belongs anyway — or shorten the drawing. Never shrink the type, and
 do not reach for `fig tight` to buy 60px: the generator asserts the figure fits the cap the
 deck's class declares, so a 349bp drawing in a `tight` container is a build failure, not a
@@ -236,193 +257,98 @@ height is fixed. Merge two items.
 
 ## Density from motion, not from more text
 
-The lecturer's framing: the slides are an aid for teaching through dialogue, so a slide
-should carry one point and the *build* should carry the rest. Where a static figure would
-need a legend or three panels, animate it instead — the m01 vocabulary slides draw the
-walk, trail and path one edge at a time, and the CSR slide constructs its three arrays row
-by row.
-
-There are two kinds of animation in these decks, and they are built differently.
-
-A **GIF** is generated by `figures/make_animations.py` from the same geometry as its static
-still, and is used exactly like an image. Cheap, works in every export, not interactive.
-
-A **stage** is the lecture note's animation kit: a scene array mounted against
-`lecture-note/assets/anim.{css,js}` by `mountScenes`, which gives you step dots, play and
-pause, a per-scene note, and — this is the part a GIF cannot do — a drawing the room can
-click and drag. Do not copy a stage into a deck. Put the scene array in
-`lecture-note/assets/anim/<stage>.js` and have both the note page and the deck load that
-one file with a `<script src>`; the slide-sized port of the kit's stylesheet already lives
-in `network-science.css`, so a deck adds markup and two script tags and nothing else.
-There are seven worked examples: the H1N1 ruler (intro) and m01's six — `kb-tracer`,
-`euler-builder`, `route-namer`, `comp-sweep`, `dir-reach`, `walk-power`.
-
-Where a stage earns its keep: a concept that is a **process unfolding in time**, or one
-whose rule the room can only feel by breaking it. m01's five new stages went to breadth-first
-search finding components, the two routes behind one entry of `A²`, strong-versus-weak
-reachability, naming your own route walk/trail/path, and building an Eulerian trail and then
-stranding it. What they replaced was nothing — the static slides stayed, because the lecturer
-wanted the deck long and only wanted it to stop being monotonous.
-
-**Give the room something to discover, which means the state space has to be big enough that
-not every move matters.** m01's directed-reachability stage first shipped on the deck's own
-three-node triangle: eight orientations, two of them strongly connected, and every single
-flip kills the verdict. Tidy, faithful to the neighbouring figure — and boring, because the
-first click teaches you everything the widget knows. Five corners and six streets give 64
-orientations, six of them strongly connected, and one street whose direction does not matter
-at all while the other five each break it alone. That last fact is the lesson (the chord is
-not on the only cycle through all five corners), and it does not exist on a triangle. Growing
-the graph costs a precomputed table of 64 rows and buys a stage worth handing over.
-
-The corollary is that the payoff has to be **readable off the drawing, not off the card**: put
-the per-node answer next to the node — that stage prints how many of the other four each
-corner can reach, so five fours *is* the verdict — and the card shrinks to a flag and a
-score. Bigger drawing, less text, in the same frame.
-
-What a stage costs: `--html` on every render (above), and a browser to verify it. A render
-proves the markup survived, not that the thing works. Serve the repo, point headless Chrome
-at the stage with `--virtual-time-budget`, and dispatch the clicks from a small script in
-the page.
-
-Have that page write two things into the DOM before the screenshot: `scrollHeight -
-clientHeight` on the `<section>`, and anything caught by `error`/`unhandledrejection`.
-A stage that overruns the 720px frame looks perfectly fine in a 780px-tall screenshot,
-and both of the layout bugs in m01's five new stages were found by that one line of text
-rather than by looking at the picture.
-
-Three traps that cost a round each while adding those five, all of them silent:
-
-- **`ctx.pause()` stalls whatever awaits `ctx.sleep` next.** The kit's grab-on-first-click
-  idiom pauses the sequencer so the drawing stays the room's. If the click handler then
-  `await`s a kit sleep — a breadth-first sweep laying down one ring at a time, say — that
-  sleep is paused too and the animation stops dead halfway through, on the lecturer's
-  screen, with no error. Either keep the handler synchronous, as `kb-tracer.cross()` is,
-  or give the click-driven path a plain `setTimeout` that the sequencer does not reach.
-- **A base rule written with `>` outspecifies every flat state class.**
-  `section #stage .grid > i` is one element more specific than `section #stage .cell-on`,
-  so the state's `color` lands and its `background` does not. The highlighted matrix cell
-  in `walk-power` shipped as white-on-white through a full render and a screenshot before
-  anyone read the pixels. Match the combinator: `.grid > i.cell-on`.
-- **The kit's knob wrapper collapses inside a flex column.** `.anim-range` carries
-  `margin: 8px auto 4px`, written for a block container. As a flex item those auto side
-  margins beat `stretch`, the track resolves to its content width — zero — and all that
-  renders is a knob floating in the middle of the card. Zero out the side margins.
-
-### A stage's own text budget
-
-The lecturer's verdict on m01's first cut: *"animation is text heavy… too much text
-is distracting."* He was right, and the fix is a rule, not a trim.
-
-**The scene note is a caption, not narration.** The kit reserves three lines because in
-the lecture note the note *is* the account of a drawing the reader cannot see. On a slide
-the lecturer is that account, and a paragraph under the picture competes with them for the
-room. One line, ≤ 80 characters, naming what just changed — enough for a glance and for a
-screen reader — and `min-height: 1.3em` per stage so it does not reserve the other two.
-The prose that used to sit there belongs in the slide's `<!-- speaker notes -->`, per step.
-
-**Then delete whatever the drawing already says.** Three separate offenders in m01's five,
-all of them written without noticing:
-
-- a "degrees 2 · 2 · 3 · 3 · 2" row beside a drawing that had just written all five numbers
-  inside their own discs
-- "still untaken: TL–BL" beside the one edge the drawing had just dashed
-- an `.anim-quote` at the end of nearly every scene, editorialising a conclusion the note
-  already carried in its one line
-
-What is left on the card is the running count, the verdict, and the reply to the last
-click. That is the bookkeeping a drawing genuinely cannot hold.
+The core framing: the slides are an aid for teaching through dialogue, so a slide should
+carry one point and the *build* should carry the rest. Where a static figure would need a
+legend or three panels, animate it instead — one deck's vocabulary slides draw a sequence
+one step at a time, and another slide constructs a data structure's internal arrays row by
+row.
 
 Two things that make an animation teach rather than decorate:
 
-- **Loop back to what the deck shows next.** The CSR animation settles on the exact frame
+- **Loop back to what the deck shows next.** One such animation settles on the exact frame
   its neighbouring static figure uses, so the loop hands off instead of resting somewhere
   arbitrary.
 - **Generate it from the same data as the static figure, and assert they agree.** Duplicating
   geometry between an animation and its still is how the two drift; compute both from the
   one source and check.
 
+- **Magic move between two slides** (the same object slides, resizes or recolours) is a
+  different mechanism from a build inside one slide: matching `view-transition-name`s, HTML
+  boxes rather than SVG shapes, Chrome HTML output only. Procedure and pitfalls:
+  `MAGIC_MOVE.md`.
+
 ## A figcaption says what nothing else on the slide says — and survives the figure changing
 
 Two failure modes, and the second one is the interesting one.
 
-**The caption restates the drawing.** By module 04's fourth round this was the single most common
-Minor in the deck: a figure printing "78% of 23,133 authors sit at k ≤ 10" under a caption reading
-"78% of authors have ten coauthors or fewer", the same sentence twice, 120px apart. The division of
-labour is **numbers in the drawing, prose in the caption** — and the test is not "does the caption
+**The caption restates the drawing.** By one deck's fourth round this was the single most
+common Minor in the deck: a figure printing a percentage under a caption restating the same
+percentage in words, the same sentence twice, 120px apart. The division of labour is
+**numbers in the drawing, prose in the caption** — and the test is not "does the caption
 describe the figure" but "does the caption say something nothing else on the slide says".
 
-Run it as a **criterion over every captioned slide**, not as a list of slides. Module 04 fixed this
-class four times from four lists and it kept coming back, because each list was the slides someone
-had happened to look at. When it was finally run as a criterion it turned up a slide neither of two
-prior passes had caught, and cleared seven suspects that did not hold up once the render was
-actually opened.
+Run it as a **criterion over every captioned slide**, not as a list of slides. One deck
+fixed this class four times from four lists and it kept coming back, because each list was
+the slides someone had happened to look at. When it was finally run as a criterion it
+turned up a slide neither of two prior passes had caught, and cleared seven suspects that
+did not hold up once the render was actually opened.
 
-**The caption is orphaned by a fix to the figure it describes.** A caption written truthfully in
-round 3 read "twenty ends, and how they divide up among the eight". In round 4 the figure was
-regrouped **by degree** to fix a different defect. The caption did not change; the drawing moved
-under it, and a sentence that had been correct became false without anybody editing it.
+**The caption is orphaned by a fix to the figure it describes.** A caption written
+truthfully in one round described a grouping that a later round changed to fix a different
+defect. The caption did not change; the drawing moved under it, and a sentence that had
+been correct became false without anybody editing it.
 
-That one is not caught by reading captions, because nothing about the caption looks wrong. Two
-defences:
+That one is not caught by reading captions, because nothing about the caption looks wrong.
+Two defences:
 
-- After changing a figure, **re-read the caption of every slide that uses it** — the same rule as
-  "check every slide that uses the figure", extended to the words underneath.
-- Prefer captions a regrouping cannot stale. The replacement here was "q(k) is a share of hands,
-  not a share of girls", which stays true however the hands are arranged.
+- After changing a figure, **re-read the caption of every slide that uses it** — the same
+  rule as "check every slide that uses the figure", extended to the words underneath.
+- Prefer captions a regrouping cannot stale. Describe the *shape* of the finding ("most of
+  the mass sits at the low end") rather than the specific grouping that produced it.
 
-## When the pen-and-paper sheet runs first
+## When the module also has a worksheet or a lab
 
-Module 03, 2026-09. The lecturer moved the worksheet to *before* the lecture, and it
-changed what the deck is for more than any editing pass could: the students walk in
-having already built a minimum spanning tree, tabulated the damage from every single
-failure, plotted two removal orders and redesigned the grid. A deck that then derives
-those things is teaching people what they are holding.
+Read the exercise sheet and the notebook **before** the deck spec, and divide the work
+explicitly. The division that survived Module 02:
 
-So **read the sheet question by question and write down, per question, what the deck no
-longer has to do.** m03's table is at the top of `m03/review/DECK_SPEC.md`; it is what
-took the deck from 76 slides to 32. Two rules fell out of it:
+- **Deck, before the exercise** — the story, the evidence, and the one question the
+  exercise turns on. It ends on a hand-out slide that states the exercise's premise in two
+  lines and stops.
+- **The exercise** — every quantity the audience can work out with a pencil.
+- **Deck, after the exercise** — the term, the symbol and the general formula for each
+  thing they just computed, then the material paper cannot reach.
+- **The lab** — sweeps, large-*n* behaviour, and anything that needs a slider.
 
-- **Name it, do not derive it.** "What you drew on paper has a name" is a whole slide's
-  worth of work when the drawing is already in their hand. The derivation slides that
-  used to lead up to it are the cut.
-- **Spend the recovered time on what the sheet cannot reach.** m03's sheet stops at
-  measuring the damage; percolation, q(k), kappa, Molloy-Reed and f_c are the half of the
-  module that has to come from the room, and they kept all of their slides.
+The criterion is `SLIDE_RUBRIC.md` S6, and it is worth a lot of slides: Module 02 went from
+95 to 47 mostly by deleting questions the sheet already asks. Budget the live-taught part
+generously (Module 02: the first thirteen slides get half the half-hour) and let the
+post-exercise naming pass run fast.
 
-## The text budget, stated as a number
+Three failures that only appear once you start cutting:
 
-The lecturer's constraint, in his own terms: *"We can spend only 1-2 minutes per slide.
-We cannot read all text."* At 30px body that is:
+- **A figure can leak an answer.** `ring-lattice.png` draws the worksheet's own town and
+  prints C-bar = 0.50 on it, which is the answer to the sheet's clustering question. The
+  hand-out slide needed a new, unannotated build of the same geometry. Check every figure
+  on and before the hand-out slide against the sheet's answer key, not just the slide text.
+- **Cutting a build strands the figures downstream of it.** Module 02 deleted the two
+  slides that introduced a chord and a long edge; the diameter figure two slides later
+  still drew both, so the room would have met a graph it had never been shown. After
+  deleting a build, re-read every later figure that was drawn on top of it.
+- **Deleting a slide can orphan a figure into being wrong.** A caption written for the old
+  neighbouring slide survives the deletion and now describes nothing. Same defence as the
+  figcaption section above: re-read the caption, not just the image.
 
-> **At most two lines of body text on a slide.** The title carries the claim, the
-> figcaption carries what the drawing does not say, and everything else is spoken.
+## Ship the artifact the deck is read from
 
-A third line is not a style preference to argue about — it is the slide overflowing its
-minute. Two m03 slides failed `check_render`'s CONTENT_BOTTOM only because a body line
-wrapped to two, which pushed a 360px figure past y=660; shortening the sentence fixed
-both. Write the line, render, and count the lines on the *rendered* slide, because a
-75-character sentence wraps and a 55-character one does not.
-
-The corollary is the ordering rule: **animation first, then the still.** Where a stage
-exists it goes on the slide *before* the static figure that freezes its last frame — the
-room watches the mechanism, then reads it. m03 runs five stages in 32 slides on exactly
-that pattern.
-
-## Two traps that cost a round each in m03's stages
-
-- **A multi-line string literal followed by `.split()` binds to the last literal only.**
-  784 lattice values pasted as `"a,b,c" + "d,e,f" + ... .split(",").map(Number)` gives you
-  a *string* of characters, silently: `FIELD[i]` is `"1"`, every comparison is nonsense,
-  and the widget renders a plausible-looking wrong picture. Wrap the concatenation in
-  parentheses, and assert the parsed length before you believe anything it prints.
-- **Compute the number from the drawing when you can.** The percolation stage finds its
-  largest cluster with a union-find over the 784 stones actually on screen rather than
-  reading a table, so the red stones and the "largest puddle 24%" cannot disagree. Where
-  a table is unavoidable, check it against the live computation once in a test and say so
-  in the file's header.
+If the deck is distributed as a PDF (the house convention for results decks is a
+compiled PDF committed next to the markdown), recompile and commit that PDF with **every**
+content commit — deck edits and figure regenerations both. One experiment's committed
+`results.pdf` was four days and one full rewrite behind its `results.md`: readers of the
+PR were reviewing conclusions the run had already retracted. The render gate does not
+check this; make it part of the commit, not a separate step someone remembers.
 
 ## Keeping this current
 
-Same contract as the other three files: when building a deck teaches something new about
-*authoring*, add it here; drawing lessons go to `FIGURE_GUIDE.md`, loop lessons to
-`REVIEW_PLAYBOOK.md`, defect definitions to `SLIDE_RUBRIC.md`.
+Same contract as the other guides bundled with this skill: when building a deck teaches
+something new about *authoring*, add it here; drawing lessons go to `FIGURE_GUIDE.md`, loop
+lessons to `REVIEW_PLAYBOOK.md`, defect definitions to `SLIDE_RUBRIC.md`.

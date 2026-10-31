@@ -3,8 +3,9 @@
 > **Scope.** The pedagogy below applies to every deck. The *technical* syntax in
 > this file (Quarto revealjs, `:::` callouts, `.incremental`) describes the
 > legacy decks in `slides/legacy/`. New decks are Marp — see
-> `slides/DECK_BUILD_GUIDE.md`, `slides/SLIDE_RUBRIC.md`, and
-> `slides/FIGURE_GUIDE.md`.
+> `slides/HOUSE_STYLE.md` (the look and the wording rule N9), `slides/DECK_BUILD_GUIDE.md`,
+> `slides/SLIDE_RUBRIC.md`, and `slides/FIGURE_GUIDE.md`. These are copies of the slide skill
+> (`~/.claude/skills/slide`, canonical); refresh them with `tools/sync_slide_skill.sh`.
 
 ## Interactive Teaching Philosophy
 When creating slides for Sadamori, follow his interactive, step-by-step narrative approach:
