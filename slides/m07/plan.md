@@ -5,6 +5,8 @@
 
 ## 見るもの
 
+背景は普通の白です(2026-10-31、先生の指示。和紙の背景は使いません。`theme.css` の `section` の背景を `#FFFFFF` にしています)。
+
 - `sheets-landscape.pdf`(1ページ12枚、4列×3行)、`sheets-portrait.pdf`(1ページ8枚、タブレットで赤ペンを入れる用)。48枚、各枚に番号と役割を付けています。
 - `deck.md`(Marp)。`sh review/render.sh` で作り直せます。
 - `review/DECK_SPEC.md`(全スライドの一覧、spine、時間配分、モチーフ表)。`review/make_wireframe.py` が `deck.md` とこの一覧を同時に作ります。
