@@ -29,15 +29,16 @@ def img(name, w=1080, scrub=False, caption=None):
 
 
 def S(cls, title=None, sub=None, fig=None, take=None, cue=None, beat="", note="", src="", opt=False, build=None,
-      body=None, w=1080, scrub=False, sub_muted=False, caption=None, figs=()):
+      body=None, w=1080, scrub=False, sub_muted=False, caption=None, figs=(), ref=None):
     SLIDES.append(dict(cls=cls, title=title, sub=sub, fig=fig, take=take, cue=cue, beat=beat, note=note, src=src,
-                       opt=opt, build=build, body=body, w=w, scrub=scrub, sub_muted=sub_muted, caption=caption,
+                       opt=opt, build=build, body=body, w=w, scrub=scrub, sub_muted=sub_muted, caption=caption, ref=ref,
                        figs=list(figs) + ([fig] if fig else [])))
 
 
-def two_col(text, fig, w=537, cue=None):
+def two_col(text, fig, w=537, cue=None, ref=None):
     c = f'\n\n<div class="cue">\n\n{cue}\n\n</div>' if cue else ""
-    return (f'<div class="cols">\n<div>\n\n{text}\n\n</div>\n<div class="fig">\n\n![w:{w}](figures/{fig}.png)\n\n</div>\n</div>' + c)
+    r = f'\n\n<div class="ref">{ref}</div>' if ref else ""
+    return (f'<div class="cols">\n<div>\n\n{text}\n\n</div>\n<div class="fig">\n\n![w:{w}](figures/{fig}.png)\n\n</div>\n</div>' + r + c)
 
 
 # ============================================================================ A. INTUITION
@@ -45,21 +46,22 @@ part("A  Intuition: Pearson's walker, then what a blind walker learns (Pen & Pap
 
 S("lead", title="Random Walks", beat="title",
   body='<div class="eyebrow">Advanced Topics in Network Science · Module 07</div>\n\n<div class="credit">Sadamori Kojaku · Binghamton University</div>',
-  note="About 90 minutes. The Pen & Paper sheet is worked in two blocks: Part 1 right after slide 6 (before any maths, so the room finds the facts first), Parts 2 and 3 after the maths. 1 minute per content slide; builds take seconds.")
+  note="About 90 minutes. The Pen & Paper sheet is worked in two blocks: the first right after slide 6 (before any maths, so the room finds the facts first), the second after the maths (the second eigenvector). 1 minute per content slide; builds take seconds.")
 
 S("L-c", title="Where is the walker after 100 steps?", fig=None, beat="hook (story): Pearson's question, 1905",
   body=two_col("A man walks **1 yard**, turns in a random direction, and walks **1 yard** again. He repeats this 100 times.\n\nPearson asked this in *Nature* in 1905.", "pearson-walker",
-               cue="Far from the start, or near it? Tell your neighbour."),
+               cue="Far from the start, or near it? Tell your neighbour.", ref="Pub: Jim Osley, CC BY-SA 2.0 (geograph.org.uk)"),
   figs=["pearson-walker"],
   src="K. Pearson, The Problem of the Random Walk, Nature 72, 294 (1905), doi:10.1038/072294b0. Check the wording against the original before quoting it.",
-  note="Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). A question slide: it never shows the answer.")
+  note="Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). A question slide: it never shows the answer. For the record: the typical distance after 100 steps is about 10 yards (the square root of 100); Rayleigh answered the next week that he had solved it in 1880, for waves. The room gets the next story instead.")
 
-S("L-g", fig="pearson-answer", take=f"Rayleigh replied the next week: he had solved it in 1880, for {hot('waves')}",
-  beat="answer: Pearson's walker (the density peaks at the start)",
-  src="J. W. Strutt (Lord Rayleigh), Nature 72, 318 (1905); K. Pearson, Nature 72, 342 (1905). Figure: simulation, seed fixed in figures/figs_a.py.",
-  note="Pearson's own remark, as quoted in secondary sources (verify in the original): the most probable place to find a drunken man who is at all capable of keeping on his feet is somewhere near his starting point. Careful: per unit area the density is highest at the start, yet the typical distance grows like the square root of n (about 10 yards after 100 steps; the grey ring). A short walk remembers where it began; a long one spreads out. Rayleigh had met the same mathematics in 1880, adding n waves of random phase.")
+S("L-g", fig="polya", take=f"2D: the walker always comes home. 3D: only {hot('34%')} of walkers ever do.",
+  beat="story: Polya's recurrence (2D returns, 3D does not)",
+  src="G. Polya, Math. Annalen 84, 149 (1921). Return probability in 3D on the cubic lattice: 0.3405 (Polya's random walk constant). Figure: seeded walks, chosen for illustration; the numbers are asserted by simulation in figures/figs_a.py. The remark 'a drunk man will find his way home, but a drunk bird may get lost forever' is attributed to S. Kakutani; check before quoting it.",
+  note="Start where Pearson stopped. Pearson asked where the walker is. Polya (1921) asked a different question: does the walker ever come back to where it started? On the street grid (2D) it comes back with probability 1, however long it takes. In space (3D) it comes back with probability about 0.34: two out of three drunken birds are lost for good. This is the first surprise about random walks: the answer depends on the dimension. On a network, the same question has an answer that depends on the shape of the network; the lecture's maths answers it for finite networks. (Pearson's answer, for the record: typical distance 10 yards, the square root of 100.)")
 
 S("L-b", title="Random walks appear in many fields", fig="fields", beat="hook: the same walk in three fields",
+  ref="Mosquito: CDC / James D. Gathany (public domain) · trajectory: Jean Perrin (public domain)",
   src="Pollen: Brown 1827, Einstein 1905, Perrin (Les atomes, 1913). PageRank: Page, Brin, Motwani, Winograd (1998). Check each year before the slide is final.",
   note="One idea, many fields. Verify the dates before the lecture: Brown 1827 (pollen); Einstein 1905 (the explanation); Perrin (the measurement that settled it); Page and Brin 1998. The arrow is the question for the next slide.")
 
@@ -98,7 +100,7 @@ S("L-a", title=f"Degree ÷ share is {hot('constant')}", sub="Karate club: 34 nod
 part("B  Maths: why the start stops mattering (matrices, circles, mixing time, eigenvalue 1)", 38)
 
 S("L-f", title=f"Why does a long walk not depend on the {hot('start')}?", beat="spine 3: part question",
-  note="From here: the maths, as pictures of vectors and matrices drawn as in the centrality lecture (circle = eigenvalue, tall bar = vector).")
+  note="From here: the maths, as pictures of vectors and matrices drawn as in the centrality lecture (circle = eigenvalue, column = vector).")
 
 S("L-b", title=f"The walk is defined by {hot('one matrix')}", fig="P-def", beat="P (the two-community network, the motif of the rest of the lecture)",
   src="figures/smallgraphs.py (the same 12-node network as Part 3 of the sheet)",
@@ -110,7 +112,7 @@ for k, (case, tk) in enumerate([
         ("x = a mix", "$x = (0.5, 0.05, \\dots)$: $xP$ is a mix of the rows")], 1):
     S("L-a", title=f"One step is a {hot('multiplication')} by $P$", sub="$x(t+1) = x(t)\\,P$", fig=f"xP-{k}", take=tk,
       build=(k, 3), beat=f"x P, how to read it ({k}/3)", w=1080,
-      note=f"Build {k}/3. {case}: the walker's distribution is a wide bar (a row vector); one step is the wide bar times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.")
+      note=f"Build {k}/3. {case}: the walker's distribution is a row vector; one step is the row times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.")
 
 S("L-a", title="After $t$ steps", sub="$x(t) = x(0)\\,P^{t}$", fig="xPt", beat="x(0) P^t",
   note="t steps are t multiplications by the same matrix. The next slides show P^t itself.")
@@ -127,11 +129,11 @@ S("L-b", title="What each entry of $P^t$ says", fig="Pt-zoom", beat="zoom into P
 S("L-b", title="Recall: eigendecomposition", fig=None, beat="recap: eigendecomposition (M06, light touch)",
   body='<div class="fig">\n\n![w:1080](figures/m06-decomp-sum.png)\n\n</div>', figs=["m06-decomp-sum"],
   src="slides/m06/figures/decomp-sum.png (reused unchanged)",
-  note="Two sentences only: circle = eigenvalue, tall bar = eigenvector, wide bar = its transpose. Do not re-derive; the room saw this for the adjacency matrix.")
+  note="Two sentences only: circle = eigenvalue, column = eigenvector, row = its transpose. Do not re-derive; the room saw this for the adjacency matrix.")
 
 S("L-a", title="$P$ has an eigendecomposition too", sub="$P = \\sum_k \\lambda_k\\,\\phi_k\\,\\psi_k^{\\top}$", fig="P-decomp",
   take=f"$P^t$ changes only the {hot('eigenvalues')}", beat="P as a sum of circles and bars",
-  note="The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T. For P the tall bar (right eigenvector) and the wide bar (left eigenvector) are two different vectors: each is the other rescaled by degree. Say it once; the appendix of the note has it.")
+  note="The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T. For P the column (right eigenvector) and the row (left eigenvector) are two different vectors: each is the other rescaled by degree. Say it once; the appendix of the note has it.")
 
 for k, (t, say) in enumerate([(1, "one step"), (5, "$\\lambda_2^5 = 0.56$"), (40, "only the circle at 1 is left")], 1):
     S("L-b", title=f"The eigenvalues {hot('shrink')} as $t$ grows", fig=f"Pt-circles-{k}", build=(k, 3),
@@ -148,12 +150,12 @@ S("L-c", title=f"The {hot('second')} term stays the longest", beat="A3",
   figs=["lam-curves-a"], note="Same figure as the question, with the answer added.")
 
 for k, say in enumerate(["where you start matters at first; later the second term dominates",
-                         "how close is close enough?",
+                         "how close is close enough? epsilon = 1/2 in the 1-norm, which is 1/4 in total variation distance, the usual choice in the Markov chain literature",
                          "the mixing time: the first t at which every start is within the threshold"], 1):
     S("L-a", title=f"{hot('Mixing time')}",
       sub="$t_{\\mathrm{mix}} = \\min\\{\\,t : \\max_{x(0)} \\|x(t) - \\pi\\|_1 \\le \\epsilon\\,\\}$" if k == 3 else None,
       fig=f"mix-{k}", build=(k, 3), beat=f"mixing time ({k}/3)",
-      note=f"Build {k}/3: {say}. One thin line per starting node, a black line for the worst start; epsilon = 0.25 gives t = 13 on this network. The formula appears only at the end, after the diagram has said it.")
+      note=f"Build {k}/3: {say}. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.")
 
 S("L-a", title="Q: mixing time of a 10-clique?", sub="10 nodes, every pair connected (45 edges)", fig="clique-q", opt=True,
   cue="Take a guess: 1 step, 5 steps, 50 steps.", beat="Q4 (clique)",
@@ -161,15 +163,23 @@ S("L-a", title="Q: mixing time of a 10-clique?", sub="10 nodes, every pair conne
 S("L-a", title="A: about 1 step", sub="10 nodes, every pair connected (45 edges)", fig="clique-a", opt=True,
   take=f"$\\lambda_2 = -1/9$: mixing takes {hot('about 1 step')}", beat="A4")
 S("L-a", title="Q: mixing time with one bridge?", sub="Two 5-cliques joined by one edge (21 edges)", fig="twoclique-q",
-  cue="The same, 5 times longer, or 20 times longer?", beat="Q5 (two cliques)",
-  note="The graph has fewer edges than the clique, and mixing takes 20 times longer. What matters is the bottleneck.")
-S("L-a", title="A: about 20 times longer", sub="Two 5-cliques joined by one edge (21 edges)", fig="twoclique-a",
-  take=f"$\\lambda_2 = 0.93$: mixing takes about {hot('20 steps')}", beat="A5",
-  note="At epsilon = 0.25: 1 step for the clique, 20 for the bridged cliques. The relaxation time tau = 1/(1 - 0.927) = 13.8 against 0.9.")
+  cue="The same, 3 times longer, or 10 times longer?", beat="Q5 (two cliques)",
+  note="The graph has fewer edges than the clique, and mixing takes 10 times longer. What matters is the bottleneck.")
+S("L-a", title="A: about 10 times longer", sub="Two 5-cliques joined by one edge (21 edges)", fig="twoclique-a",
+  take=f"$\\lambda_2 = 0.93$: mixing takes about {hot('10 steps')}", beat="A5",
+  note="At epsilon = 1/2: 1 step for the clique, 10 for the bridged cliques. The relaxation time tau = 1/(1 - 0.927) = 13.8 against 0.9 (the lecture note's fifteen-fold).")
 
-S("L-a", title=f"The {hot('mixing time')} follows from $\\lambda_2$", sub="$\\tau = \\dfrac{1}{1-\\lambda_2}$", fig="gap-gauge",
-  take=f"Small gap, {hot('long mixing time')}", beat="spectral gap (gauge)",
-  note="'Spectral gap' = 1 - lambda_2. The mixing time is a few tau: the logarithm in the lecture note's bound pays for epsilon and the rarest node. Not derived here.")
+S("L-a", title=f"The {hot('relaxation time')}", sub="$\\tau = \\dfrac{1}{1-\\lambda_2}$", fig="relax-curve",
+  take=f"The slowest term shrinks by a factor of $e$ in {hot('$\\tau$ steps')}", beat="relaxation time",
+  note="The relaxation time is a property of the network alone: the time in which the slowest term, lambda_2^t, shrinks by a factor e (0.889^9 = 0.35, close to 1/e = 0.37). It is NOT the mixing time. The mixing time is the time until every start is within epsilon of pi, and it depends on epsilon.")
+
+S("L-a", title=f"Small gap, long {hot('relaxation time')}", sub="$\\tau = \\dfrac{1}{1-\\lambda_2}$, the gap is $1-\\lambda_2$", fig="gap-gauge",
+  take=f"The closer $\\lambda_2$ is to 1, the longer {hot('$\\tau$')}", beat="spectral gap (gauge)",
+  note="'Spectral gap' = 1 - lambda_2. A bottleneck (two cliques and one edge, a ring) gives lambda_2 near 1 and a long relaxation time. tau is the lecture note's 1/(1 - lambda_2).")
+
+S("L-a", title=f"{hot('Mixing time')} is a few $\\tau$", sub="A smaller $\\epsilon$ costs a few more $\\tau$", fig="tau-vs-mix",
+  take="$t_{\\mathrm{mix}} < \\tau\\,\\log\\bigl(1/(\\epsilon\\,\\pi_{\\min})\\bigr)$", beat="mixing time versus relaxation time",
+  note="Relaxation time and mixing time are two numbers. tau = 1/(1 - lambda_2) is a time scale of the network. The mixing time t_mix(epsilon) is the first t at which every start is within epsilon of pi. They are of the same order: the table shows t_mix at epsilon = 1/2 and at 0.05 next to tau. The bound in the lecture note pays for epsilon and for the rarest node inside the logarithm; it is an upper bound, not an equality. Do not derive it.")
 
 S("L-f", title=f"One eigenvalue is always {hot('1')}. Others diminish.", beat="spine 4: the fact",
   note="Taught as a fact. The next three slides give a reason, in pictures, not a proof.")
@@ -177,31 +187,25 @@ S("L-f", title=f"One eigenvalue is always {hot('1')}. Others diminish.", beat="s
 S("L-b", title=f"Why 1? Every row of $P$ sums to {hot('1')}", fig="P1-eq-1", beat="lambda = 1 exists (P 1 = 1)",
   note="P times the vector of ones is the vector of ones, because each row of P is a list of odds that adds to 1. A vector that P does not change. (The walker's own stationary distribution is the matching LEFT eigenvector; the next slides.)")
 
-S("L-b", title=f"No eigenvalue is {hot('larger')} than 1", fig="no-larger", beat="no eigenvalue above 1",
-  note="P f replaces each entry by the average of the neighbours' entries. An average cannot exceed the largest entry, so |lambda| <= 1.")
+S("L-a", title=f"No eigenvalue is {hot('larger')} than 1", sub="$Pf$ gives each node the average of its neighbours' values", fig="no-larger",
+  take="The largest value can only shrink, so $\\lambda \\le 1$", beat="no eigenvalue above 1",
+  note="Take a vector f with P f = lambda f, and look at the node i where |f| is largest. P f gives node i the average of its neighbours' values. An average of numbers that are at most f_i in size is at most f_i in size. So |lambda| f_i <= f_i, that is |lambda| <= 1. The drawing uses a node holding the largest number, 9: its new number is the average of its neighbours, 6.")
 
-S("L-a", title="Detailed balance condition", sub="$\\pi_i\\,P_{ij} = \\pi_j\\,P_{ji}$", fig="detailed-balance",
+S("L-a", title="Detailed balance condition", sub="$\\Pr(i \\to j) = \\Pr(j \\to i)$", fig="detailed-balance",
   take=f"$\\pi_i = k_i / 2m$: proportional to {hot('degree')}", beat="the eigenvalue 1 gives pi (ties to the simulator's ticks)",
-  note="If walkers are spread as pi, the flow along an edge is the same in both directions: pi_i / k_i = pi_j / k_j, so pi is proportional to the degree. This is why the bars of the simulator settled on their k/2m ticks and why degree ÷ share = 2m on the sheet.")
+  note="Detailed balance: when the walkers are spread as pi, the chance that a walker is at i and steps to j equals the chance that a walker is at j and steps to i: pi_i P_ij = pi_j P_ji. Here Pr(i -> j) means that joint event, not the conditional P_ij. With P_ij = 1/k_i and P_ji = 1/k_j this reads pi_i / k_i = pi_j / k_j for every edge, so pi is proportional to the degree k_i, and the total is 2m: pi_i = k_i / 2m. That is why the bars of the simulator settled on their k/2m ticks and why degree ÷ share = 2m on the sheet.")
 
 # ============================================================================ C. PEN & PAPER 2, 3
-part("C  Pen & Paper, then debrief", 30)
+part("C  Pen & Paper, then debrief", 20)
 
-S("L-f", title="Pen & Paper", sub="20 minutes", beat="Pen & Paper: second block",
-  note="Everyone has finished Part 1 and crossed the line on the sheet. Parts 2 and 3 follow.")
+S("L-f", title="Pen & Paper", sub="10 minutes · plot the second eigenvector", beat="Pen & Paper: second block",
+  note="Everyone has finished the first block and crossed the line on the sheet. This block: twelve nodes, run one cell, plot the second eigenvector (a laptop or a phone; pair students if there are not enough devices). The QR code and link of the notebook come with the sheet. The four-node exercise (the diamond) is not used on the slides any more.")
 
-S("L-c", title="Tasks", beat="Pen & Paper: instructions",
-  body=two_col("2. Four nodes: write $x(t)$ with the eigenvalues, check $t = 2$\n\n3. Twelve nodes: run one cell, plot the second eigenvector", "tasks-diamond"),
-  figs=["tasks-diamond"],
-  note="Part 2 can be done with a pencil only; Part 3 needs a laptop or a phone (the QR code on the slide is a placeholder until the notebook is published). Pair students if there are not enough devices.")
-
-S("L-a", title=f"$x(t)$ = π + {hot('decaying')} terms", sub="Four nodes; eigenvalues $1,\\ 0,\\ -\\tfrac13,\\ -\\tfrac23$", fig="diamond-expansion",
-  beat="debrief Part 2",
-  note="x(0) = (1, 0, 0, 0) = pi - 0.5 psi_2 + 0.3 psi_4. x(1) = (0, 0, 0.5, 0.5), x(2) = (1/3, 1/3, 1/6, 1/6). The eigenvalue -2/3 alternates the sign: the walker hops between {0, 1} and {2, 3}, then settles. The eigenpairs are on the sheet; the students do not compute them.")
-
-S("L-b", title="What is the decaying term?", fig="eigvec2", beat="debrief Part 3 (second eigenvector)",
+S("L-b", title=f"$x(t) = \\pi\\,+$ {hot('decaying')} terms",
+  body='<div class="cols" style="gap: 36px;">\n<div class="fig">\n\n![w:756](figures/eigvec2.png)\n\n</div>\n<div style="flex: 0 0 250px; text-align: left; font-size: 30px; line-height: 1.4;">\n\nThe slowest decaying term is the **second eigenvector**.\n\nPositive: one community. Negative: the other.\n\n</div>\n</div>',
+  figs=["eigvec2"], beat="debrief Part 3 (second eigenvector; the expansion)",
   src="numpy, the sheet's one-cell code",
-  note="The cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The sign gives the community; the sign itself is arbitrary, so the two communities may swap colours on a student's screen.")
+  note="x(t) = pi + sum over k >= 2 of c_k lambda_k^t psi_k: the walker's distribution is pi plus terms that decay. The slowest decaying term is the one with lambda_2 = 0.89, and its eigenvector is the plot: nodes 0-5 on one side of zero, nodes 6-11 on the other. The sheet's cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The sign itself is arbitrary, so the two communities may swap colours on a student's screen.")
 
 S("L-a", title=f"Early on, the {hot('community')} signal dominates", sub="Walker starts at node 0", fig="comm-curve",
   take="The community signal decays like $\\lambda_2^{\\,t}$. Degree remains.", beat="debrief Part 3 (what dominates early)",
@@ -251,6 +255,8 @@ def render_slide(i, sl):
             out += [f'<div class="{klass}">', "", sl["sub"], "", "</div>", ""]
         if sl["fig"]:
             out += [img(sl["fig"], sl["w"], sl["scrub"], sl["caption"]), ""]
+        if sl["ref"]:
+            out += [f'<div class="ref">{sl["ref"]}</div>', ""]
         if sl["take"]:
             out += ['<div class="take">', "", sl["take"], "", "</div>", ""]
         if sl["cue"]:
@@ -303,7 +309,7 @@ Figures: `figures/BRIEF.md` (who draws what); numbers: `figures/smallgraphs.py`.
 |---|---|---|---|
 {chr(10).join(lines)}
 
-Total {total} minutes. The Pen & Paper blocks (10 and 20 minutes) are fixed; the builds take seconds.
+Total {total} minutes. The Pen & Paper blocks (10 and 10 minutes) are fixed; the builds take seconds.
 
 ## Slide list
 

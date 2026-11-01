@@ -17,6 +17,10 @@ import numpy as np
 import figlib as F
 import smallgraphs as G
 
+# a 756 px figure (70 % of the slide width) for the slide with the explanation beside it; theme cap 480 px
+F.DESIGN["wide"] = F.CONTAINER["wide"] = 756
+F.FIG_H["w"] = 480
+
 # the walks behind degree-share
 DS_SEED, DS_STEPS = 0, 20000
 
@@ -261,7 +265,7 @@ def _mix_base(g):
 def _mix_notes(ax, g):
     o = ""
     # where you start matters at first
-    tx, ty = ax.X(17), ax.Y(1.8)
+    tx, ty = ax.X(9), ax.Y(1.8)
     o += g.text(tx, ty, "where you start\\\\matters at first", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
     o += arrow((tx - 10, ty - 14), (ax.X(2.5), ax.Y(1.27)))
     # lambda_2 dominates the tail
@@ -274,7 +278,9 @@ def _mix_notes(ax, g):
 def _mix_eps(ax, g):
     y = ax.Y(G.EPS)
     o = dashed((ax.x0, y), (ax.x1, y), color="ink", w=2.0)
-    o += g.text(ax.X(MT), y + 52, "how close is\\\\close enough?", anchor="east", size=F.FONT_HAND, hand=True, color="muted")
+    # the usual choice: total variation 1/4 is 1/2 in the 1-norm of the lecture note
+    o += g.text(ax.X(MT), y + 56, "$\\epsilon = 1/2$", anchor="east", size=F.FONT_MATH, color="ink")
+    o += g.text(ax.X(MT), y + 112, "the usual choice", anchor="east", size=F.FONT_HAND, hand=True, color="muted")
     return o, y
 
 
@@ -301,6 +307,70 @@ def f_mix():
         frames.append(o)
     names = ["mix-1", "mix-2", "mix-3"]
     F.emit_group(list(zip(names, frames)), container="full", h=430, hmod="", nodes=False, prefix=False)
+
+
+# --------------------------------------------------------------------------- relax-curve
+def f_relax_curve():
+    lam = G.LAM12[1]
+    tau = 1 / (1 - lam)
+    assert abs(tau - 9.0) < 0.05 and abs(lam ** tau - 1 / np.e) < 0.03, (tau, lam ** tau)
+    ax = F.Axes((140, 110, 1000, 250), (0, 30), (0, 1), xticks=[0, 10, 20, 30], yticks=[0, 1],
+                yfmt=lambda v: f"{v:g}")
+    g = Gate("relax-curve")
+    o = frame(ax)
+    tick_boxes(ax, g)
+    tt = np.linspace(0, 30, 181)
+    pts = [ax.P(t, lam ** t) for t in tt]
+    o += F.polyline(pts, color=BLUE, w=4.4)
+    g.line(pts, "curve")
+    ye = ax.Y(1 / np.e)
+    o += dashed((ax.x0, ye), (ax.X(tau), ye), color="muted", w=1.8)
+    o += g.text(ax.x0 - 22, ye, "$1/e$", anchor="east", size=F.FONT_MATH, color="muted")
+    p = ax.P(tau, lam ** tau)
+    o += dashed((p[0], p[1] - 12), (p[0], ax.y0), color="hot", w=2.4)
+    o += F.dot(*p, color=RED, d=22)
+    g.dot(*p, r=11, tag="tau")
+    o += g.text(p[0], ax.y0 - 66, "$\\tau = 9$", anchor="north", size=F.FONT_MATH, color="hot")
+    o += g.text(ax.x0 + 6, ax.y1 + 40, "the second term, $\\lambda_2^{\\,t}$", anchor="west", size=F.FONT_MATH, color="muted")
+    o += g.text(ax.x1 + 40, ax.y0, "$t$", anchor="west", size=F.FONT_MATH)
+    ax_, ay_ = ax.X(14), ax.Y(0.80)
+    o += g.text(ax_, ay_, "the slowest term shrinks\\\\by a factor of e", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
+    o += arrow((ax_ - 10, ay_ - 8), (p[0] + 22, p[1] + 20), bend=18)
+    g.check()
+    F.emit("relax-curve", o, container="full", h=330, hmod="tight", nodes=False)
+
+
+# --------------------------------------------------------------------------- tau-vs-mix
+def f_tau_vs_mix():
+    rows = G.tau_table()
+    want = {"10-clique": (0.9, 1, 2), "karate club": (7.6, 10, 27), "two communities": (9.0, 7, 27),
+            "two cliques + bridge": (13.8, 10, 41)}
+    for n, tau, t1, t2 in rows:
+        w0 = want[n]
+        assert abs(tau - w0[0]) < 0.06 and (t1, t2) == w0[1:], (n, tau, t1, t2)
+        assert t1 <= t2, n
+    g = Gate("tau-vs-mix")
+    cols = [470.0, 725.0, 950.0]
+    top, pitch = 222.0, 42.0
+    o = ""
+    heads = [("relaxation time", "$\\tau$"), ("mixing time", "$\\epsilon = 1/2$"), ("mixing time", "$\\epsilon = 0.05$")]
+    for c, (h1, h2) in zip(cols, heads):
+        col = "hot" if c == cols[-1] else "ink"
+        o += g.text(c, top + 52, h1, anchor="south", color=col)
+        o += g.text(c, top + 2, h2, anchor="south", size=F.FONT_MATH, color=col)
+    yrule = top - 12
+    o += F.seg((30, yrule), (1050, yrule), color="ink", w=2.4, sketch=False)
+    SZ = F.FONT + 4
+    for i, (n, tau, t1, t2) in enumerate(rows):
+        y = yrule - 38 - i * pitch
+        o += g.text(30, y, n, anchor="west", size=F.FONT)
+        o += g.text(cols[0], y, f"{tau:.1f}", size=SZ)
+        o += g.text(cols[1], y, f"{t1}", size=SZ)
+        o += g.text(cols[2], y, f"{t2}", size=SZ, color="hot")
+    yb = yrule - 38 - (len(rows) - 1) * pitch - 28
+    o += F.seg((30, yb), (1050, yb), color="muted", w=1.6, sketch=False)
+    g.check()
+    F.emit("tau-vs-mix", o, container="full", h=340, hmod="tight", nodes=False)
 
 
 # --------------------------------------------------------------------------- gap-gauge
@@ -379,7 +449,7 @@ def f_eigvec2():
     if r2[0] < 0:
         r2 = -r2
     assert np.all(r2[:6] > 0.5) and np.all(r2[6:] < -0.5)
-    ax = F.Axes((100, 78, 985, 330), (-0.6, 11.6), (-1.25, 1.25), xticks=list(range(12)), yticks=[-1, 0, 1],
+    ax = F.Axes((96, 112, 690, 364), (-0.6, 11.6), (-1.25, 1.25), xticks=list(range(12)), yticks=[-1, 0, 1],
                 yfmt=lambda v: f"{v:g}")
     g = Gate("eigvec2")
     o = frame(ax)
@@ -394,12 +464,12 @@ def f_eigvec2():
             assert abs(abs(r2[n]) - 0.74) < 0.01
             o += F.ring(*p, size=26, grow=14, color="ink", w=2.2)
     o += g.text(ax.x0 + 6, ax.y1 + 34, "second eigenvector", anchor="west", color="muted")
-    o += g.text(ax.x1 + 14, ax.y0, "node", anchor="west", color="muted")
-    ax_, ay_ = ax.X(7.0), ax.Y(0.80)
+    o += g.text(ax.x1, ax.y0 - 92, "node", anchor="east", color="muted")
+    ax_, ay_ = ax.X(6.3), ax.Y(0.80)
     o += g.text(ax_, ay_, "the sign gives\\\\the community", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
     o += arrow((ax_ + 150, ay_ - 52), (ax_ + 150, ax.Y(0) + 12))
     g.check()
-    F.emit("eigvec2", o, container="full", h=400, hmod="tall", nodes=False)
+    F.emit("eigvec2", o, container="wide", h=470, hmod="w", nodes=False)
 
 
 # --------------------------------------------------------------------------- comm-curve
@@ -439,7 +509,7 @@ def f_comm_curve():
 
 
 FIGURES = [("degree-share", f_degree_share), ("lam-curves-q", f_lam_q), ("lam-curves-a", f_lam_a),
-           ("mix", f_mix), ("gap-gauge", f_gap_gauge), ("diamond-expansion", f_diamond_expansion),
+           ("mix", f_mix), ("relax-curve", f_relax_curve), ("tau-vs-mix", f_tau_vs_mix), ("gap-gauge", f_gap_gauge), ("diamond-expansion", f_diamond_expansion),
            ("eigvec2", f_eigvec2), ("comm-curve", f_comm_curve)]
 
 if __name__ == "__main__":

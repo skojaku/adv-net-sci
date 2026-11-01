@@ -9,10 +9,12 @@
     Pt-zoom                a 3 x 3 patch of P^5 enlarged
     P-decomp               P = sum of lambda_k phi_k psi_k^T (terms 1, 2, 12)
     Pt-circles-1 .. -3     the same canvas, circle areas = |lambda_k|^t for t = 1, 5, 40
-    P1-eq-1                P times a tall bar of ones = the same bar
+    P1-eq-1                P times a column of ones = the same column
 
 Every number is computed from smallgraphs.py. Notation as in M06 (figs_decomp.py): circle = eigenvalue
-(area proportional to |value|), tall bar = right eigenvector, wide bar = left eigenvector, square = matrix.
+(area proportional to |value|), column (tall bar) = right eigenvector, row (wide bar) = left eigenvector, square = matrix.
+
+Colour of every heat map (round 2): low values blue, high values red, through a pale yellow; see GRAD / fill_of.
 """
 
 import sys
@@ -28,7 +30,10 @@ F.FIG_H["lt"] = 420
 
 check()
 N = 12
-VMAX = 0.25                                  # the one colour scale of every heat map: 0 faint, 0.25 full blue
+VMAX = 0.3                                   # the one colour scale of every heat map: 0 blue ... 0.3 and above red
+GAMMA = 0.5                                  # square-root stretch: .07 (t = 40) stays clearly apart from 0 and from .25
+# blue (0) - light blue - pale yellow - orange - red (max); the lecturer, 2026-10-31: "small = blue, large = red"
+GRAD = [(0.0, (57, 89, 166)), (0.22, (140, 170, 225)), (0.42, (238, 240, 235)), (0.58, (250, 226, 140)), (0.78, (232, 148, 88)), (1.0, (177, 68, 52))]
 BLUE, GOLD, PALEFILL = "cool!70", "hot!85", "pale"
 
 
@@ -49,8 +54,39 @@ def num(v):
     return s[1:] if s.startswith("0.") else s
 
 
+def rgb_of(v, vmax=VMAX):
+    u = min(max(v / vmax, 0.0), 1.0) ** GAMMA
+    for (a, ca), (b, cb) in zip(GRAD, GRAD[1:]):
+        if u <= b:
+            f = (u - a) / (b - a)
+            return tuple(int(round(ca[k] + f * (cb[k] - ca[k]))) for k in range(3))
+    return GRAD[-1][1]
+
+
 def fill_of(v, vmax=VMAX):
-    return F.shade(v / vmax)
+    r, g, b = rgb_of(v, vmax)
+    return "fill={rgb,255:red,%d;green,%d;blue,%d}" % (r, g, b)
+
+
+def ink_on(v, vmax=VMAX):
+    """a number written on the cell: white on the dark blue and the dark red, ink on the light middle"""
+    r, g, b = rgb_of(v, vmax)
+    return "white" if 0.2126 * r + 0.7152 * g + 0.0722 * b < 125 else "ink"
+
+
+def key(x0, ytop, hgt, ticks=(0, 0.15, 0.3), w=18):
+    """a vertical colour key: 0 at the bottom (blue), VMAX at the top (red); the ticks read right of the strip"""
+    n = 48
+    o = ""
+    for i in range(n):
+        v = (i + .5) / n * VMAX
+        y0 = ytop - hgt + i * hgt / n
+        o += f"\\fill[{fill_of(v)}] ({x0:.1f},{y0:.1f}) rectangle ({x0 + w:.1f},{y0 + hgt / n + .4:.1f});\n"
+    o += rect(x0, ytop - hgt, x0 + w, ytop, w=1.8)
+    for tv in ticks:
+        y = ytop - hgt + tv / VMAX * hgt
+        o += F.text(x0 + w + 8, y, (("0" if tv == 0 else ("%g" % tv).lstrip("0")) + ("+" if tv == VMAX else "")), anchor="west", size=F.FONT)
+    return o
 
 
 def rect(x0, y0, x1, y1, fill=None, color="ink", w=1.6):
@@ -59,7 +95,7 @@ def rect(x0, y0, x1, y1, fill=None, color="ink", w=1.6):
 
 
 def heat(x0, ytop, M, c, vmax=VMAX, numbers=False, split=True, outline="ink"):
-    """An n x n matrix of cells c bp wide; the fill is faint (0) to blue (vmax). A dashed line marks the
+    """An n x n matrix of cells c bp wide; the fill is blue (0) to red (vmax). A dashed line marks the
     boundary of the two communities (after node 5)."""
     n = len(M)
     o = ""
@@ -73,7 +109,7 @@ def heat(x0, ytop, M, c, vmax=VMAX, numbers=False, split=True, outline="ink"):
     if numbers:
         for i in range(n):
             for j in range(n):
-                o += F.text(x0 + (j + .5) * c, ytop - (i + .5) * c, num(M[i][j]), size=F.FONT)
+                o += F.text(x0 + (j + .5) * c, ytop - (i + .5) * c, num(M[i][j]), size=F.FONT, color=ink_on(M[i][j]))
     if split:
         h = 6
         o += f"\\draw[muted,line width=1.6bp,dash pattern=on 6bp off 5bp] ({x0 + h * c:.1f},{ytop - n * c:.1f}) -- ({x0 + h * c:.1f},{ytop:.1f});\n"
@@ -105,7 +141,7 @@ def tall(x0, ytop, vec, c, vmax=1.0, numbers=None, fill_mode="blue"):
         o += f"\\draw[white,line width=0.6bp] ({x0:.1f},{ytop - k * c:.1f}) -- ({x0 + c:.1f},{ytop - k * c:.1f});\n"
     if numbers:
         for i in range(n):
-            o += F.text(x0 + c / 2, ytop - (i + .5) * c, numbers, size=F.FONT)
+            o += F.text(x0 + c / 2, ytop - (i + .5) * c, numbers, size=F.FONT, color=ink_on(vec[i], vmax))
     o += rect(x0, ytop - n * c, x0 + c, ytop, w=2.0)
     return o
 
@@ -141,12 +177,13 @@ def mtext(x, y, s, size=F.FONT_MATH, color="ink", anchor="center"):
 
 
 def hot_rows(x0, ytop, rows, n, c, w=3.0):
-    return "".join(rect(x0 - 1, ytop - (i + 1) * c, x0 + n * c + 1, ytop - i * c, color="hot", w=w) for i in rows)
+    """a black frame round the rows under discussion: red would vanish on the red cells of the new scale"""
+    return "".join(rect(x0 - 1, ytop - (i + 1) * c, x0 + n * c + 1, ytop - i * c, color="ink", w=w) for i in rows)
 
 
 # --------------------------------------------------------------------------- P-def
 PD_C = 28                                          # cell side, bp
-PD_X0, PD_YTOP = 640, 392
+PD_X0, PD_YTOP = 600, 392
 
 
 def f_Pdef():
@@ -156,6 +193,7 @@ def f_Pdef():
     o += no
     # the matrix, right
     o += heat(PD_X0, PD_YTOP, P12, PD_C)
+    o += key(PD_X0 + N * PD_C + 32, PD_YTOP, N * PD_C)
     # "to" over the columns, "from" beside the rows, and the two blocks
     cxm = PD_X0 + N * PD_C / 2
     o += F.text(cxm, PD_YTOP + 56, "to", size=F.FONT)
@@ -166,7 +204,7 @@ def f_Pdef():
     r = 8
     o += hot_rows(PD_X0, PD_YTOP, [r], N, PD_C, w=3.4)
     yr = PD_YTOP - (r + .5) * PD_C
-    c, _ = F.callout("row 8: the odds of leaving\\\\node 8. They sum to 1", (255, 122), (PD_X0 - 8, yr), anchor="center",
+    c, _ = F.callout("row 8: the odds of leaving\\\\node 8. They sum to 1", (235, 122), (PD_X0 - 8, yr), anchor="center",
                      bend=-12, gap=8)
     o += c
     F.emit("P-def", o, container="full", h=470, hmod="l", nodes=True)
@@ -198,7 +236,7 @@ def f_xP(case):
     y = x @ P12
     assert np.allclose(y, sum(x[i] * P12[i] for i in range(N)))
     nz = [i for i in range(N) if x[i] > 0]
-    o = wide(XP_X, XP_YC, x, XC, vmax=1.0)
+    o = wide(XP_X, XP_YC, x, XC)
     o += op(XP_X + N * XC + 40, XP_YC, "$\\times$")
     o += heat(XP_P, XP_YTOP, P12, XC)
     o += hot_rows(XP_P, XP_YTOP, nz, N, XC, w=3.0)
@@ -208,7 +246,7 @@ def f_xP(case):
     o += mtext(XP_P + N * XC / 2, XP_YTOP + 34, "$P$")
     o += mtext(XP_R + N * XC / 2, XP_YTOP + 34, "$xP$")
     for i in nz:     # the weight above each non-zero cell of x, the node number beside the row of P it picks
-        o += rect(XP_X + i * XC, XP_YC - XC / 2, XP_X + (i + 1) * XC, XP_YC + XC / 2, color="hot", w=3.0)
+        o += rect(XP_X + i * XC, XP_YC - XC / 2, XP_X + (i + 1) * XC, XP_YC + XC / 2, color="ink", w=3.0)
         o += F.text(XP_X + (i + .5) * XC, XP_YC + XC / 2 + 24, wnum(x[i]), color="hot", size=F.FONT)
         o += F.text(XP_X + (i + .5) * XC, XP_YC - XC / 2 - 22, str(i), color="muted", size=F.FONT)
         o += F.text(XP_P - 14, XP_YTOP - (i + .5) * XC, str(i), color="hot", anchor="east", size=F.FONT)
@@ -232,7 +270,7 @@ def f_xPt():
     gap = 46
     xs = [26]
     o = ""
-    o += wide(xs[0], yc, x0, c, vmax=1.0)
+    o += wide(xs[0], yc, x0, c)
     xp = xs[0] + side
     ppos = []
     cur = xp
@@ -260,8 +298,8 @@ def f_xPt():
 
 
 # --------------------------------------------------------------------------- Pt-slider
-SL_C = 28
-SL_X0, SL_YTOP = 70, 380
+SL_C = 30
+SL_X0, SL_YTOP = 150, 396
 SL_NOTE = {1: "stays in its\\\\community", 5: "starting to leak", 40: "every row is\\\\the same"}
 
 
@@ -269,24 +307,25 @@ def slider_frame(t):
     o = heat(SL_X0, SL_YTOP, Pt(t), SL_C)
     o += F.text(SL_X0 + N * SL_C / 2, SL_YTOP + 44, "to", size=F.FONT)
     o += F.text(SL_X0 - 34, SL_YTOP - N * SL_C / 2, "from", size=F.FONT, rot=90)
-    o += F.text(820, SL_YTOP - 90, "$t=%d$" % t, size=84)
+    o += key(SL_X0 + N * SL_C + 30, SL_YTOP, N * SL_C)
+    o += F.text(840, SL_YTOP - 120, "$t=%d$" % t, size=96)
     if t in SL_NOTE:
-        o += F.text(820, SL_YTOP - 200, SL_NOTE[t], color="muted", size=F.FONT)
+        o += F.text(840, SL_YTOP - 250, SL_NOTE[t], color="muted", size=F.FONT)
     return o
 
 
 def f_slider():
     ts = [1, 40] if "--test" in sys.argv else range(1, 41)
     frames = [slider_frame(t) for t in ts]
-    F.emit_frames("Pt-slider", frames, container="full", h=480, hmod="lt", nodes=False, box=(36, 442))
+    F.emit_frames("Pt-slider", frames, container="full", h=480, hmod="l", nodes=False, box=None)
 
 
 # --------------------------------------------------------------------------- Pt-40
 def f_Pt40():
     M = Pt(40)
     assert np.allclose(np.round(M, 2), np.round(np.tile(PI12, (N, 1)), 2)), "every row is pi to 2 decimals"
-    c, rp = 66, 30
-    x0, ytop = 200, 372
+    c, rp = 58, 30
+    x0, ytop = 186, 372
     o = ""
     for i in range(N):
         for j in range(N):
@@ -297,7 +336,7 @@ def f_Pt40():
         o += f"\\draw[white,line width=0.8bp] ({x0:.1f},{ytop - k * rp:.1f}) -- ({x0 + N * c:.1f},{ytop - k * rp:.1f});\n"
     for i in range(N):
         for j in range(N):
-            o += F.text(x0 + (j + .5) * c, ytop - (i + .5) * rp, num(M[i][j]), size=F.FONT)
+            o += F.text(x0 + (j + .5) * c, ytop - (i + .5) * rp, num(M[i][j]), size=F.FONT, color=ink_on(M[i][j]))
         o += F.text(x0 - 12, ytop - (i + .5) * rp, "start %d" % i, color="muted", anchor="east", size=F.FONT)
     for j in range(N):
         o += F.text(x0 + (j + .5) * c, ytop + 22, str(j), color="muted", size=F.FONT)
@@ -305,7 +344,8 @@ def f_Pt40():
     # the bracket at the right: the same row in every row
     bx = x0 + N * c + 14
     o += (f"\\draw[hot,line width=3bp] ({bx:.1f},{ytop:.1f}) -- ({bx + 12:.1f},{ytop:.1f}) -- ({bx + 12:.1f},{ytop - N * rp:.1f}) -- ({bx:.1f},{ytop - N * rp:.1f});\n")
-    o += mtext(bx + 52, ytop - N * rp / 2, "$\\pi$", size=62, color="hot")
+    o += mtext(bx + 48, ytop - N * rp / 2, "$\\pi$", size=62, color="hot")
+    o += key(bx + 88, ytop, N * rp)
     F.emit("Pt-40", o, container="full", h=420, hmod="lt", nodes=False)
 
 
@@ -317,18 +357,18 @@ def f_zoom():
     o = heat(x0, ytop, M, c)
     o += mtext(x0 + N * c / 2, ytop + 36, "$P^{5}$")
     bx1, by0 = x0 + z * c, ytop - z * c
-    o += rect(x0, by0, bx1, ytop, color="hot", w=3.4)
+    o += rect(x0, by0, bx1, ytop, color="ink", w=3.4)
     big = 90
     X0, YT = 500, 440
     for i in range(z):
         for j in range(z):
             xl, yt = X0 + j * big, YT - i * big
             o += f"\\fill[{fill_of(M[i][j])}] ({xl:.1f},{yt - big:.1f}) rectangle ({xl + big:.1f},{yt:.1f});\n"
-            o += F.text(xl + big / 2, yt - big / 2, num(M[i][j]), size=F.FONT)
+            o += F.text(xl + big / 2, yt - big / 2, num(M[i][j]), size=F.FONT, color=ink_on(M[i][j]))
     for k in range(1, z):
         o += f"\\draw[white,line width=0.8bp] ({X0 + k * big:.1f},{YT - z * big:.1f}) -- ({X0 + k * big:.1f},{YT:.1f});\n"
         o += f"\\draw[white,line width=0.8bp] ({X0:.1f},{YT - k * big:.1f}) -- ({X0 + z * big:.1f},{YT - k * big:.1f});\n"
-    o += rect(X0, YT - z * big, X0 + z * big, YT, color="hot", w=3.4)
+    o += rect(X0, YT - z * big, X0 + z * big, YT, color="ink", w=3.4)
     o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({bx1:.1f},{ytop:.1f}) -- ({X0 - 4:.1f},{YT:.1f});\n"
     o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({bx1:.1f},{by0:.1f}) -- ({X0 - 4:.1f},{YT - z * big:.1f});\n"
     ex, ey = X0 + 2.5 * big, YT - .5 * big
@@ -428,7 +468,7 @@ D0 = D1 / LAM12[0]
 
 def f_decomp():
     o = decomp_row("$P=$", [LAM12[i] for i in K], [D0 * abs(LAM12[i]) for i in K])
-    a, _ = F.aside("tall and wide bars\\\\are different vectors", (POS["t1"] + 120, ROW_YTOP + 98), (POS["t1"] + SLOT[1] + TG + 60, ROW_YTOP - 8),
+    a, _ = F.aside("column and row are\\\\different vectors for P", (POS["t1"] + 120, ROW_YTOP + 98), (POS["t1"] + SLOT[1] + TG + 60, ROW_YTOP - 8),
                    anchor="center", bend=25, gap=8)
     o += a
     F.emit("P-decomp", o, container="full", h=ROW_H, hmod="tight", nodes=False, box=None)
@@ -473,7 +513,7 @@ def f_P1():
     o += mtext(bx2 + c / 2, ytop + 36, "$\\mathbf{1}$")
     r = 3
     o += hot_rows(x0, ytop, [r], N, c, w=3.4)
-    o += rect(bx2 - 1, ytop - (r + 1) * c, bx2 + c + 1, ytop - r * c, color="hot", w=3.4)
+    o += rect(bx2 - 1, ytop - (r + 1) * c, bx2 + c + 1, ytop - r * c, color="ink", w=3.4)
     yr = ytop - (r + .5) * c
     o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({x0 + N * c + 2:.1f},{yr:.1f}) -- ({bx2 - 4:.1f},{yr:.1f});\n"
     cc, _ = F.callout("this row sums to 1", (x0 + 120, ytop - N * c - 30), (x0 + 40, ytop - (r + 1) * c - 4), anchor="center", bend=0, gap=6) if False else ("", None)

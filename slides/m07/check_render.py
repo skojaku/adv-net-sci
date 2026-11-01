@@ -25,5 +25,5 @@ run(
     fig_h={"": 600, "tight": 320, "stack": 190, "tall": 400},
 
     # Filenames to skip measurement on (historical photos, screenshots, etc.)
-    exempt_figures=["qr-sim.png"],   # a QR code is shown at a fixed 440 px
+    exempt_figures=["qr-sim.png", "eigvec2.png"],   # eigvec2 is shown at 756 px beside a sentence   # a QR code is shown at a fixed 440 px
 )

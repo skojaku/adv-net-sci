@@ -11,7 +11,7 @@ MESLO = "/Users/skojaku/Library/Fonts/MesloLGSNerdFontPropo-Regular.ttf"
 HOT, INK, MUTED = "#B14434", "#000000", "#6B6B6B"
 ROWS = [
     ("1", [("The eigenvalue ", INK), ("1", HOT), (" gives the ", INK), ("degree", HOT)], ["degree-share"]),
-    ("2", [("The second eigenvalue gives the ", INK), ("communities", HOT), (" and the ", INK), ("mixing time", HOT)], ["eigvec2", "gap-gauge"]),
+    ("2", [("The second eigenvalue gives the ", INK), ("communities", HOT), (" and the ", INK), ("mixing time", HOT)], ["relax-curve", "eigvec2"]),
     ("3", [("Short walks see ", INK), ("communities", HOT), (". Long walks see ", INK), ("degree", HOT), (".", INK)], ["comm-curve"]),
 ]
 

@@ -201,8 +201,12 @@ def spectral_gap_table():
 
 
 # --------------------------------------------------------------------------- the distance threshold
-EPS = 0.25          # "close enough": ||x(t) - pi||_1 <= EPS, for every starting node
-TMIX12, TMIXK, TMIXC10, TMIXTC = 13, 15, 1, 20      # mixing times at EPS (asserted in check)
+# "close enough": ||x(t) - pi||_1 <= EPS for every starting node.  The usual convention in the Markov-chain
+# literature (Levin, Peres, Wilmer) is a total variation distance of 1/4.  Total variation is half the 1-norm
+# the lecture note uses, so the same threshold is 1/2 in the 1-norm.  (2026-10-31: v2 used 0.25 for no reason.)
+EPS = 0.5
+EPS_SMALL = 0.05    # a tighter threshold, to show that a smaller epsilon costs a few extra tau
+TMIX12, TMIXK, TMIXC10, TMIXTC = 7, 10, 1, 10      # mixing times at EPS (asserted in check)
 
 
 # --------------------------------------------------------------------------- the numbers the slides state
@@ -258,10 +262,17 @@ def check():
     assert CLIQUE10.number_of_edges() == 45 and abs(LAMC10[1] + 1 / 9) < 1e-9
     assert TWOC.number_of_edges() == 21 and abs(LAMTC[1] - 0.927) < 0.001
     assert abs(1 / (1 - LAMTC[1]) - 13.7) < 0.1 and 1 / (1 - LAMC10[1]) < 1
-    # mixing times at EPS: the clique takes 1 step, the bridged cliques 20 ("about 20 times longer")
+    # mixing times at EPS: the clique takes 1 step, the bridged cliques 10 ("about 10 times longer")
     assert [mixing_time(P, pi, EPS) for P, pi in ((P12, PI12), (PK, PIK), (PC10, PIC10), (PTC, PITC))] == \
         [TMIX12, TMIXK, TMIXC10, TMIXTC]
     return True
+
+
+def tau_table():
+    """(name, tau, t_mix at EPS, t_mix at EPS_SMALL) for the four networks of the gauge (not the ring)."""
+    nets = [("10-clique", PC10, PIC10, LAMC10), ("karate club", PK, PIK, LAMK),
+            ("two communities", P12, PI12, LAM12), ("two cliques + bridge", PTC, PITC, LAMTC)]
+    return [(n, 1 / (1 - lam[1]), mixing_time(P, pi, EPS), mixing_time(P, pi, EPS_SMALL)) for n, P, pi, lam in nets]
 
 
 def main():
@@ -276,6 +287,8 @@ def main():
               " clique10", mixing_time(PC10, PIC10, e), " two5", mixing_time(PTC, PITC, e))
     for r in spectral_gap_table():
         print("gap", r[0], round(r[1], 5), round(r[2], 1))
+    for r in tau_table():
+        print("tau", r[0], round(r[1], 1), "t_mix(eps)", r[2], "t_mix(eps small)", r[3])
     print("OK")
 
 

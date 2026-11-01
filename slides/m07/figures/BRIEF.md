@@ -67,3 +67,48 @@ Use `F.Axes` (and TikZ) for plots; no bar charts. Curves hand-drawn weight; labe
 | `eigvec2` | L-b | full 1080 x 430 | Point plot: x = node index 0..11, y = second eigenvector of P (scaled so the max is 1, community 1 positive, via `eigsystem`). Nodes 0-5 cool, 6-11 hot, dashed line at 0; the bridge nodes 2, 5, 8, 11 at ±0.74 ringed. Callout: "the sign gives the community". |
 | `comm-curve` | L-a (sub + take) | full 1080 x 330 | x = steps 0..40, y = probability of being in community 1 from start node 0, dots at t = 0, 1, 2, 3, 5, 10, 20, 40 joined by a curve (1, 1, .92, .88, .80, .67, .55, .505) and the dashed curve 0.5 + 0.5·0.889^t over it (assert they agree within 0.06 for t ≥ 3); a dashed line at 0.5; callout at t ≈ 3: "the other eleven circles are gone". |
 | `summary` | L-g | full 1080 x 560 | Built LAST from the other figures' PNGs as thumbnails: three rows, each a claim in one line with a thumbnail: (1) "The eigenvalue 1 gives the degree" (thumb `degree-share`); (2) "The second eigenvalue gives the communities and the mixing time" (thumbs `eigvec2`, `gap-gauge`); (3) "Short walks see communities. Long walks see degree." (thumb `comm-curve`). Compose with PIL after the other workers' files exist. |
+
+---
+
+# Round 2 (2026-10-31, after the lecturer's comments on deck v2)
+
+Shared change first: `smallgraphs.py` now has `EPS = 0.5` (1-norm; the standard total-variation 1/4), `EPS_SMALL = 0.05`, the mixing times at EPS
+(clique 1, karate 10, two communities 7, two bridged cliques 10) and `tau_table()`. v2 used 0.25 with no reason; every figure that drew
+epsilon or a mixing time must now follow `G.EPS` and the `TMIX*` constants (never typed). Photos are in `figures/photos/` (credits in
+`photos/CREDITS.md`): `pub.jpg` (colour photo, 1600 x 1323), `mosquito.jpg` (colour, 1920 x 1277), `perrin.png` (black line plot of a Brownian
+trajectory, 1280 x 1100, public domain). Composite photos with PIL after the TikZ render (so the grain is not put on a photo); a photo is shown
+without the hand-drawn frame but with a thin pale outline. Credits go on the slide, not in the figure.
+Wording in plain English (rule N9). Rename "tall bar / wide bar" to "column / row" in every label.
+
+## Worker A (module `figs_a.py`; edit the existing functions, add the new ones)
+
+| file | layout | size | what |
+|---|---|---|---|
+| `pearson-walker` (redo) | L-c right | col 537 x 460 | TOP: the existing small drawing (stick figure on the grid, one path, "1 yard"), at about 537 x 200. BELOW it, the pub photo (`pub.jpg`) cropped to the building, about 537 x 250, placed directly under the drawing. Nothing else. |
+| `polya` (new, replaces the Rayleigh slide) | L-g with a `.take` | full 1080 x 470 | Pólya's recurrence. LEFT panel "2D": a seeded random walk on the square lattice (400 steps) that returns to its start several times; the start marked with a ring, the returns with small hot dots. RIGHT panel "3D": a seeded random walk on the cubic lattice drawn in a simple oblique projection, 400 steps, that leaves and does not come back; the start ringed. Panel labels "2D" and "3D". Same scale feel, same line weight, pale muted path with the start/return marks hot. Add `check()`-style assertions: the 2D seed returns at least 4 times in 400 steps, the 3D seed returns at most once. Also assert by simulation (10,000 walkers, 3D, 2,000 steps, seeded) that the fraction that ever returns is between 0.30 and 0.36 (Pólya's 0.3405 is the limit) and, for 2D, that the fraction returning within 2,000 steps is above 0.80 and rising (it tends to 1 only slowly: do not print a 2D number on the figure). |
+| `fields` (redo) | L-b | full 1080 x 420 | THREE panels in a row using PHOTOS, with the whole composition horizontally centred on the canvas (assert that the ink bounding box is centred within 4 px): (1) the Perrin trajectory (`perrin.png`, recoloured muted/ink) with caption "pollen in water, 1905"; (2) the mosquito photo, cropped square, caption "mosquitoes and malaria"; (3) the small web drawing with the surfer ring (keep your drawing), caption "the web, 1998". NO grey arrow and NO "and on a network?" aside any more (they pulled the picture to the left; the question is on the next slide). Equal panel sizes, equal gaps. |
+| `no-larger` (redo; wireframe: 'no eigenvalue above 1') | L-a (sub + take) | full 1080 x 320 | One node and its neighbourhood, before and after one averaging step, so that the room sees WHY the largest number cannot grow. LEFT: node i (hot ring) holding the largest number, 9 (drawn in the disc), with four neighbours holding 7, 5, 9, 3 (all at most 9; draw numbers big in the discs). A big arrow labelled "replace by the average of the neighbours". RIGHT: the same drawing, node i now holds 6 = (7+5+9+3)/4, written under the arrow or the node. Assert the arithmetic and that every neighbour is <= the number at i. No second network. |
+| `detailed-balance` (redo) | L-a (sub + take) | full 1080 x 320 | Two nodes i and j joined by an edge (k_i = 3, k_j = 2, so 2m = 10 with the other edges stubbed out as before). TWO labelled arrows of equal weight between them: i to j labelled "at i, then step to j: $\pi_i \cdot \frac{1}{k_i}$" and j to i labelled "at j, then step to i: $\pi_j \cdot \frac{1}{k_j}$", an equals sign between the two labels. Below: the numbers π_i = 3/10, π_j = 2/10 giving 0.1 = 0.1 (assert). The slide's `.sub` carries the statement Pr(i to j) = Pr(j to i); keep the figure's words short. |
+| `clique-q`, `clique-a`, `twoclique-q`, `twoclique-a` | L-a | as before | Re-run with the new `G.EPS` (0.5): the crossings are now at t = 1 (clique) and t = 10 (bridged cliques); y range 0 to 2; the dashed line at 0.5 labelled "ε = 1/2". Assert the crossing marks against `G.TMIXC10` / `G.TMIXTC`. |
+
+## Worker B (module `figs_b.py`; all matrix figures)
+
+1. NEW COLOUR SCALE for every heat map in the deck (the lecturer found the shading hard to read): low values BLUE, high values RED, through a light middle
+   (a pale yellow is allowed): for example cool `#3959A6` at 0, pale yellow `#F4E7B0` in the middle, hot `#B14434` at the maximum, interpolated in a
+   perceptually even way (you may use a square-root or gamma stretch so that values near 0.07 to 0.15, the t = 40 case, are clearly different from 0 and
+   from 0.5). Zero entries are the lowest colour. The same scale and the same stretch in `P-def`, `xP-1..3`, `xPt`, `Pt-slider`, `Pt-40`, `Pt-zoom`,
+   `P1-eq-1`. Add a thin colour key (a strip with 0, 0.25, 0.5 under or beside the matrix) on `P-def`, `Pt-slider` and `Pt-40` only. Values that are
+   written as numbers must stay readable on every colour (ink on the pale colours, white on the dark ones).
+2. `Pt-slider`: use the empty space. The matrix is larger (about 400 px square), the "t = N" label and the callout sit close to it. Keep the 40 frames.
+3. `P-decomp`, `Pt-circles-1..3`: replace every label that says "tall"/"wide" with "column"/"row": the aside becomes "for P, the column and the row are different vectors".
+   (The pictograms keep their shapes.)
+4. If anything else in `figs_b.py` mentions epsilon or a mixing time, use `G.EPS`.
+
+## Worker C (module `figs_c.py`)
+
+1. `mix-1`, `mix-2`, `mix-3`: epsilon is now `G.EPS` = 0.5, the crossing of the worst start is at t = 7 (`G.TMIX12`). Build 2's aside: "ε = 1/2, the usual choice" (short). Build 3: the red dot at t = 7 and the label "mixing time".
+2. NEW `relax-curve` (L-a, sub + take, full 1080 x 320): x = t (0 to 30), y = λ2^t for the 12-node network (λ2 = 0.889), a smooth curve, the dashed line y = 1/e at 0.37, the hot dot at t = τ = 9 where the curve crosses it, a vertical dashed line down to the axis labelled "τ = 9", and the aside "the slowest term shrinks by a factor e in τ steps". Assert λ2^τ is within 0.03 of 1/e.
+3. `gap-gauge`: keep; the labels already say τ. (The lead renames the slide.)
+4. NEW `tau-vs-mix` (L-a, sub + take, full 1080 x 300): a table drawn in figlib text, four rows (`G.tau_table()`: 10-clique, karate club, two communities, two cliques + bridge) and three numeric columns: "relaxation time τ" (1 decimal), "mixing time, ε = 1/2" and "mixing time, ε = 0.05" (integers). The numbers in each row grow left to right, which is the point: a smaller ε costs a few more τ. Row names left, numbers right-aligned, thin rules, hot on the last column. Use `G.tau_table()` only.
+5. `eigvec2` (redo, narrower): the new slide shows the figure at 70 % of the width with a one-line explanation beside it, so author it at 756 px wide and 430 high (add a container entry `"wide": 756` to `F.CONTAINER`/`F.DESIGN` in your module; do not edit figlib.py). Keep the content: nodes 0..11 on x, the second eigenvector (scaled to max 1, community 1 positive) on y, community 1 blue, community 2 red, the dashed zero line, the bridge nodes 2, 5, 8, 11 ringed at +-0.74, the callout "the sign gives the community".
+6. `summary`: figs_summary.py builds it from the other PNGs: re-run it last (`python3 figs_summary.py`). Change its row 2 thumbnails to `eigvec2` and `gap-gauge` as now (nothing to do if the files still exist), and add `relax-curve` as the row-2 first thumbnail instead of `gap-gauge` if there is room.

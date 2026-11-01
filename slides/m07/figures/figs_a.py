@@ -75,16 +75,52 @@ def walk_nodes(P, start, steps, seed):
     return G.walk(P, start, steps, np.random.default_rng(seed))
 
 
+# ============================================================================ photo composites
+PHOTOS = F.OUT / "photos"
+
+
+def _photo(name, crop, box_px):
+    """crop = (x0, y0, x1, y1) in source pixels; box_px = (w, h) in raster pixels."""
+    from PIL import Image
+    im = Image.open(PHOTOS / name).convert("RGB").crop(crop)
+    return im.resize(box_px, Image.LANCZOS)
+
+
+def emit_photo(name, body, container, h, hmod, photos, centred=False):
+    """Render the TikZ body, paste the photos on the 4x raster (after the grain, so a photo is not
+    mottled), then run figlib's gates and save.  photos = [(PIL image, (x, y_from_top, w, h) in bp)]."""
+    from PIL import Image
+    w = F.DESIGN[container]
+    im = F.render(body, w, h)
+    for ph, (x, y, pw, pwh) in photos:
+        assert ph.size == (int(pw * F.PXBP), int(pwh * F.PXBP)), (name, ph.size)
+        im.paste(ph, (int(x * F.PXBP), int(y * F.PXBP)))
+    im, fw, fh, *_ = F.crop_and_check(name, im, container, hmod, nodes=False)
+    if centred:
+        xs = np.where(np.asarray(im.convert("L")) < 200)[1]
+        off = ((xs.min() + xs.max()) / 2 - fw / 2) / F.PXBP
+        assert abs(off) <= 4, f"{name}: the ink is {off:+.1f}bp off the centre of the canvas"
+    im.save(F.OUT / f"{name}.png")
+    F._built.append(name)
+    F._report(name, im, container, hmod)
+
+
+def frame_rect(x0, y0, x1, y1, color="pale", w=3.0):
+    return f"\\draw[{color},line width={w}bp] ({x0},{y0}) rectangle ({x1},{y1});\n"
+
+
 # ============================================================================ pearson-walker
 def f_pearson_walker():
-    ox, oy = 186.0, 120.0                       # where the walker stands (screen)
+    """TOP: the walker on a field, one yard per step.  BELOW it: the pub (photo)."""
+    H, dy = 560.0, 262.0                       # canvas height; the drawing is shifted up by dy
+    ox, oy = 186.0, 120.0                       # where the walker stands (screen, before the shift)
     sh, sy = 0.28, 0.5                          # the field is drawn at an angle: shear and squash
     L = 70                                      # one yard, in field units
 
     def S(u, v):
         return (ox + u + sh * v, oy + sy * v)
 
-    o = ""
+    o = f"\\begin{{scope}}[shift={{(0,{dy})}}]\n"
     us = list(range(-140, 281, L))
     vs = list(range(-70, 211, L))
     for v in vs:
@@ -105,9 +141,15 @@ def f_pearson_walker():
                  ((x, y + 92), (x - 30, y + 62)), ((x, y + 92), (x + 30, y + 62))]:
         o += F.seg(p, q, color="ink", w=4.0)
     mid = ((sp[0][0] + sp[1][0]) / 2, (sp[0][1] + sp[1][1]) / 2)
-    t, _ = F.aside("1 yard", at=(mid[0] + 40, mid[1] - 70), target=(mid[0] + 6, mid[1] - 8), anchor="north", bend=-30)
+    t, _ = F.aside("1 yard", at=(mid[0] + 96, mid[1] - 26), target=(mid[0] + 12, mid[1] - 2), anchor="west", bend=-25)
     o += t
-    F.emit("pearson-walker", o, container="col", h=420, hmod="c", nodes=False)
+    o += "\\end{scope}\n"
+    # the pub, directly under the drawing: a pale frame, the photo pasted over it
+    px0, pw, ph_ = 18.0, 500.0, 250.0
+    ptop = H - (oy + sy * -70 + dy) + 14             # just below the lowest grid line
+    o += frame_rect(px0 - 2, H - ptop + 2, px0 + pw + 2, H - ptop - ph_ - 2)
+    pub = _photo("pub.jpg", (90, 520, 1300, 1130), (int(pw * F.PXBP), int(ph_ * F.PXBP)))
+    emit_photo("pearson-walker", o, "col", int(H), "c", [(pub, (px0, ptop, pw, ph_))])
 
 
 # ============================================================================ pearson-answer
@@ -167,50 +209,114 @@ def f_pearson_answer():
 
 # ============================================================================ fields
 def f_fields():
+    """Three panels, centred: pollen (Perrin's trace), a mosquito (photo), the web (drawing)."""
+    from PIL import Image
+    H = 350.0
+    pw, ph_, gap = 320.0, 240.0, 30.0
+    x0 = [(1080 - (3 * pw + 2 * gap)) / 2 + k * (pw + gap) for k in range(3)]        # 30, 380, 730
+    top = 12.0                                                                        # raster top of every panel
+    ty1, ty0 = H - top, H - top - ph_                                                  # tikz y of the panel
     o = ""
-    w, gap, top = 240.0, 20.0, 330.0                 # panel width, gap, panel top
-    x0 = [8.0 + k * (w + gap) for k in range(3)]
-    cap_y = 8.0
-    # (1) pollen: the zig-zag trace of one grain
-    rng = np.random.default_rng(1827)
-    st = rng.normal(size=(70, 2))
-    tr = np.cumsum(st, axis=0)
-    tr = tr - tr.mean(axis=0)
-    tr = tr / np.abs(tr).max(axis=0) * np.array([w / 2 - 14, 112.0])
-    cx, cy = x0[0] + w / 2, cap_y + 100 + 130
-    pts = [(cx + a, cy + b) for a, b in tr]
-    o += F.polyline(pts, color="ink", w=2.4)
-    o += F.dot(*pts[0], color="cool", d=14) + F.dot(*pts[-1], color="hot", d=14)
-    # (2) a mosquito
-    mx, my = x0[1] + w / 2, cap_y + 100 + 130
-    o += f"\\fill[faint] ({mx - 12},{my + 8}) ellipse (46bp and 20bp);\n"
-    o += f"\\draw[ink,line width=3bp,rotate around={{-12:({mx - 12},{my + 8})}}] ({mx - 12},{my + 8}) ellipse (46bp and 17bp);\n"
-    o += f"\\fill[ink] ({mx + 52},{my + 24}) circle (13bp);\n"
-    o += F.seg((mx + 62, my + 30), (mx + 112, my + 56), color="ink", w=3.2)          # proboscis
-    o += F.seg((mx - 54, my + 4), (mx - 100, my - 6), color="ink", w=3.4)             # tail
-    for dx, rot in ((8, 28), (-18, 18)):                                                # wings
-        o += (f"\\draw[ink,line width=2.4bp,fill=white,opacity=0.9,rotate around={{{rot}:({mx + dx},{my + 40})}}] "
-              f"({mx + dx},{my + 62}) ellipse (14bp and 44bp);\n")
-    for dx, e in ((14, 30), (-6, 26), (-26, 22)):                                      # six legs
-        o += F.seg((mx + dx, my - 6), (mx + dx + e * 0.5, my - 56), color="ink", w=2.6)
-        o += F.seg((mx + dx, my - 6), (mx + dx - e * 0.9, my - 52), color="ink", w=2.6)
-    # (3) the web: a small graph with a surfer
-    wx, wy = x0[2], cap_y + 100 + 130
-    wpos = {0: (wx + 34, wy + 70), 1: (wx + 122, wy + 100), 2: (wx + 206, wy + 38), 3: (wx + 50, wy - 70),
-            4: (wx + 140, wy - 28), 5: (wx + 208, wy - 90)}
+    for k in range(3):
+        o += frame_rect(x0[k] - 2, ty0 - 2, x0[k] + pw + 2, ty1 + 2)
+    # (3) the web: a small graph with a surfer, centred in its panel
+    cx, cy = x0[2] + pw / 2, (ty0 + ty1) / 2
+    off = {0: (-87, 65), 1: (1, 95), 2: (85, 33), 3: (-71, -75), 4: (19, -33), 5: (87, -95)}
+    wpos = {n: (cx + 1.12 * a, cy + 1.0 * b) for n, (a, b) in off.items()}
     wed = [(0, 1), (1, 2), (0, 4), (1, 4), (3, 4), (4, 5), (2, 5), (3, 0)]
-    for a, b in wed:
-        o += F.seg(wpos[a], wpos[b], color="ink", w=2.6)
+    for a_, b_ in wed:
+        o += F.seg(wpos[a_], wpos[b_], color="ink", w=2.6)
     o += discs_ink(wpos, size=F.NODE)
     o += F.ring(*wpos[4], size=F.NODE, color="hot", w=3.4, grow=16)
-    # captions
-    for k, cap in enumerate(["pollen in\\\\water, 1905", "mosquitoes\\\\and malaria", "the web,\\\\1998"]):
-        o += F.text(x0[k] + w / 2, cap_y + 82, cap, anchor="north")
-    # the arrow and the aside
-    ax = x0[2] + w + 6
-    o += F.seg((ax + 8, 240), (ax + 66, 240), color="muted", w=4.2, arrow=ARROW, sketch=False)
-    o += F.text(ax + 88, 247, "and on a\\\\network?", color="muted", anchor="west", size=F.FONT_HAND, hand=True)
-    F.emit("fields", o, container="full", h=420, hmod="b", nodes=True)
+    for k, cap in enumerate(["a grain in water\\\\(Perrin's trace)", "mosquitoes\\\\and malaria", "the web, 1998\\\\(a random surfer)"]):
+        o += F.text(x0[k] + pw / 2, ty0 - 12, cap, anchor="north")
+    # (1) Perrin's trace, recoloured grey; (2) the mosquito
+    pr0 = Image.open(PHOTOS / "perrin.png").convert("RGBA")
+    pr = Image.new("RGBA", pr0.size, "white")
+    pr.alpha_composite(pr0)
+    pr = pr.convert("L")
+    pr = pr.resize((int(pr.width * (ph_ - 16) / pr.height), int(ph_ - 16)), Image.LANCZOS)
+    pr = pr.point(lambda v: int(255 - (255 - v) * 0.78)).convert("RGB")
+    canvas = Image.new("RGB", (int(pw * F.PXBP), int(ph_ * F.PXBP)), "white")
+    pr4 = pr.resize((int(pr.width * F.PXBP), int(pr.height * F.PXBP)), Image.LANCZOS)
+    canvas.paste(pr4, ((canvas.width - pr4.width) // 2, (canvas.height - pr4.height) // 2))
+    mq = _photo("mosquito.jpg", (380, 60, 1900, 1200), (int(pw * F.PXBP), int(ph_ * F.PXBP)))
+    emit_photo("fields", o, "full", int(H), "b", [(canvas, (x0[0], top, pw, ph_)), (mq, (x0[1], top, pw, ph_))],
+               centred=True)
+
+
+# ============================================================================ polya
+def _lattice_walk(dim, steps, seed):
+    rng = np.random.default_rng(seed)
+    axis = rng.integers(0, dim, steps)
+    sign = rng.choice([-1, 1], steps)
+    d = np.zeros((steps, dim), dtype=int)
+    d[np.arange(steps), axis] = sign
+    return np.vstack([np.zeros((1, dim), dtype=int), np.cumsum(d, axis=0)])
+
+
+def _returns(path):
+    return int((np.abs(path[1:]).sum(axis=1) == 0).sum())
+
+
+def _frac_returning(dim, walkers, steps, seed):
+    """fraction of walkers that have been back at the start at least once within `steps`, and at step 400."""
+    rng = np.random.default_rng(seed)
+    pos = np.zeros((walkers, dim), dtype=np.int16)
+    back = np.zeros(walkers, dtype=bool)
+    at400 = None
+    for t in range(1, steps + 1):
+        axis = rng.integers(0, dim, walkers)
+        pos[np.arange(walkers), axis] += rng.choice(np.array([-1, 1], dtype=np.int16), walkers)
+        back |= (pos == 0).all(axis=1)
+        if t == 400:
+            at400 = back.mean()
+    return back.mean(), at400
+
+
+def f_polya():
+    steps = 400
+    # a seed for each panel: 2D comes back to the start several times, 3D never does
+    s2 = next(s for s in range(1, 2000) if _returns(_lattice_walk(2, steps, s)) in (4, 5, 6, 7)
+              and np.ptp(_lattice_walk(2, steps, s), axis=0).max() >= 26)
+    s3 = next(s for s in range(1, 2000) if _returns(_lattice_walk(3, steps, s)) == 0
+              and 26 <= np.ptp(_lattice_walk(3, steps, s)[:, :2] + 0.0, axis=0).max() <= 38
+              and np.abs(_lattice_walk(3, steps, s)[-1]).sum() >= 24)
+    p2, p3 = _lattice_walk(2, steps, s2), _lattice_walk(3, steps, s3)
+    r2, r3 = _returns(p2), _returns(p3)
+    assert r2 >= 4 and r3 <= 1, (r2, r3)
+    # the probabilities behind the picture (Polya 1921): 3D, the chance of ever coming back is 0.34
+    f3, f3_400 = _frac_returning(3, 10000, 2000, 7)
+    f2, f2_400 = _frac_returning(2, 10000, 2000, 7)
+    assert 0.30 <= f3 <= 0.36, f3
+    # 2D: the return probability is 1 in the limit, but the approach is very slow (about 1 - pi/ln n)
+    assert 0.50 <= f2 <= 0.72 and f2 > f2_400 > f3, (f2, f2_400, f3)
+    print(f"    polya: seeds {s2} / {s3}; returns {r2} / {r3}; within 2,000 steps: 2D {f2:.2f}, 3D {f3:.2f}")
+
+    def to_screen(path, dim):
+        if dim == 2:
+            return path.astype(float)
+        x, y, z = path.T.astype(float)             # an oblique projection of the cubic lattice
+        return np.c_[x + 0.55 * z, y + 0.35 * z]
+
+    o = ""
+    panels = [("2D", p2, 2, 275.0), ("3D", p3, 3, 805.0)]
+    cy = 270.0
+    xys = [to_screen(p, d) for _, p, d, _cx in panels]
+    size = max((xy.max(axis=0) - xy.min(axis=0)).max() for xy in xys)
+    sc = 360.0 / size                              # one scale for both panels
+    for (name, p, d, cx), xy in zip(panels, xys):
+        o += frame_rect(cx - 250, cy - 190, cx + 250, cy + 190)
+        o += F.text(cx, cy + 190 + 8, name, anchor="south", size=F.FONT)
+        mid = (xy.max(axis=0) + xy.min(axis=0)) / 2
+        pts = [(cx + sc * (a - mid[0]), cy + sc * (b - mid[1])) for a, b in xy]
+        o += F.polyline(pts, color="muted", w=2.6)
+        o += F.dot(*pts[-1], color="ink", d=13)
+        o += F.ring(*pts[0], size=22, color="hot", w=3.6, grow=8)
+        o += F.dot(*pts[0], color="hot", d=14)
+    o += F.text(275.0, cy - 190 - 8, f"back at the start {r2} times", anchor="north")
+    o += F.text(805.0, cy - 190 - 8, "never back at the start", anchor="north")
+    F.emit("polya", o, container="full", h=int(2 * cy + 30), hmod="g", nodes=False)
 
 
 # ============================================================================ walk-rule
@@ -333,7 +439,7 @@ def _inset_axes(xmax, xticks):
                 yticks=[0, 1, 2], xfmt=lambda v: f"{int(v)}", yfmt=lambda v: f"{int(v)}")
     o = ax.frame()
     o += F.seg(ax.P(0, G.EPS), ax.P(xmax, G.EPS), color="muted", w=2.6, dash=F.DASH)
-    o += F.text(ax.X(xmax) + 6, ax.Y(G.EPS) + 2, "$\\epsilon$", color="muted", anchor="west", size=F.FONT_MATH)
+    o += F.text(ax.X(xmax) - 6, ax.Y(G.EPS) + 8, "$\\epsilon = \\frac{1}{2}$", color="muted", anchor="south east", size=F.FONT_MATH)
     return ax, o
 
 
@@ -356,7 +462,7 @@ def f_clique():
     q += a_
     ts = list(range(0, 5))
     d = G.worst_dist(G.PC10, G.PIC10, ts)
-    assert d[0] > 1.5 and d[1] <= G.EPS and G.mixing_time(G.PC10, G.PIC10, G.EPS) == 1
+    assert d[0] > 1.5 and d[1] <= G.EPS and G.mixing_time(G.PC10, G.PIC10, G.EPS) == G.TMIXC10 == 1
     a = q + _curve(ax, ts, d, "hot")
     a += F.seg(ax.P(1, d[1]), ax.P(1, 0), color="hot", w=2.6, dash=F.DASH)
     a += F.ring(*ax.P(1, d[1]), size=F.NODE - 12, color="hot", w=3.0, grow=10)
@@ -371,13 +477,13 @@ def f_twoclique():
     q += F.seg(pos[4], pos[5], color="ink", w=F.HEAVY_W)
     q += discs_ink(pos, fills={n: comm_fill(n) for n in pos})
     q += F.ring(*pos[2], size=F.NODE, color="ink", w=3.0, grow=20)
-    ax, a_ = _inset_axes(30, [0, 10, 20, 30])
+    ax, a_ = _inset_axes(20, [0, 5, 10, 15, 20])
     q += a_
-    ts = list(range(0, 31))
+    ts = list(range(0, 21))
     d = G.worst_dist(G.PTC, G.PITC, ts)
     dc = G.worst_dist(G.PC10, G.PIC10, ts)
     tm = G.mixing_time(G.PTC, G.PITC, G.EPS)
-    assert tm == 20 and d[tm] <= G.EPS < d[tm - 1]
+    assert tm == G.TMIXTC and d[tm] <= G.EPS < d[tm - 1]
     a = q
     a += F.polyline([ax.P(t, v) for t, v in zip(ts, dc)], color="muted", w=3.6)
     a += F.text(ax.X(3) + 18, ax.Y(0.8) + 14, "10-clique", color="muted", anchor="west")
@@ -388,30 +494,37 @@ def f_twoclique():
 
 
 # ============================================================================ no-larger
-NL_VALUES = np.array([1, 4, 9, 6, 5, 5, 7])
+NL_NEIGH = {"left": 7, "up": 5, "right": 9, "down": 3}        # the four neighbours of node i; i holds the largest, 9
 
 
 def f_no_larger():
-    A = G.adj(G.RULE, range(7))
-    P = G.trans(A)
-    v0 = NL_VALUES.astype(float)
-    v1 = P @ v0
-    assert np.allclose(v1, np.round(v1)) and v0.max() == 9 and v1.max() < v0.max(), (v0, v1)
-    assert v0.argmax() == 2 and (v1 <= v0.max()).all() and (v1 >= v0.min()).all()
-    sx = lambda x0: {0: (x0 + 175, 240), 1: (x0 + 55, 390), 2: (x0 + 30, 170), 3: (x0 + 330, 370),
-                     4: (x0 + 330, 170), 5: (x0 + 235, 55), 6: (x0 + 105, 55)}
-    edges = [tuple(e) for e in G.RULE.edges()]
-    o = ""
-    for x0, vals in ((20.0, v0), (700.0, v1)):
-        pos = sx(x0)
-        F.assert_planar_drawing(edges, pos, "no-larger")
-        o += edges_ink(edges, pos, color="ink", w=2.4)
-        fills = {n: ("hot" if vals[n] == vals.max() else "white") for n in pos}
-        o += discs_ink(pos, fills=fills, size=F.NODE, labels={n: int(vals[n]) for n in pos})
-        o += F.text(x0 + 190, 445, "largest: %d" % vals.max(), anchor="south", color="hot")
-    o += F.seg((420, 240), (680, 240), color="muted", w=4.4, arrow=ARROW, sketch=False)
-    o += F.text(550, 270, "one step: every\\\\number becomes the\\\\average of its\\\\neighbours", color="muted", anchor="south")
-    F.emit("no-larger", o, container="full", h=520, hmod="b", nodes=True)
+    """One node and its four neighbours, before and after one averaging step."""
+    vals = list(NL_NEIGH.values())
+    f_i = 9
+    avg = sum(vals) / len(vals)
+    assert f_i == max(vals) and avg == 6.0 and avg < f_i              # (7+5+9+3)/4 = 6 <= 9
+    assert all(v <= f_i for v in vals)
+    # a check on a real graph: one step of P never raises the maximum
+    P = G.trans(G.adj(G.RULE, range(7)))
+    f = np.array([1, 4, 9, 6, 5, 5, 7], dtype=float)
+    assert (P @ f).max() <= f.max() + 1e-12
+    cy, dx, dy = 160.0, 118.0, 100.0
+
+    def star(cx, centre):
+        pos = {"i": (cx, cy), "left": (cx - dx, cy), "right": (cx + dx, cy), "up": (cx, cy + dy), "down": (cx, cy - dy)}
+        o = "".join(F.seg(pos["i"], pos[k], color="ink", w=2.8) for k in NL_NEIGH)
+        o += F.disc(*pos["i"], str(centre), fill="white")
+        for k, v in NL_NEIGH.items():
+            o += F.disc(*pos[k], str(v), fill="white")
+        o += F.ring(*pos["i"], size=F.NODE, color="hot", w=3.4, grow=20)
+        o += F.text(cx + 40, cy + 40, "$i$", anchor="west", size=F.FONT_MATH, color="hot")
+        return o
+
+    o = star(190.0, 9) + star(890.0, 6)
+    o += F.seg((380, cy), (700, cy), color="muted", w=4.4, arrow=ARROW, sketch=False)
+    o += F.text(540, cy + 24, "replace by the\\\\average of the\\\\neighbours", color="muted", anchor="south")
+    o += F.text(540, cy - 24, "$(7+5+9+3)\\div 4 = 6$", size=F.FONT_MATH, anchor="north")
+    F.emit("no-larger", o, container="full", h=330, hmod="at", nodes=True)
 
 
 # ============================================================================ detailed-balance
@@ -420,7 +533,7 @@ def f_detailed_balance():
     k_i, k_j, two_m = 3, 2, 10
     pi_i, pi_j = k_i / two_m, k_j / two_m
     assert math.isclose(pi_i / k_i, pi_j / k_j) and math.isclose(pi_i / k_i, 0.1)
-    xi, xj, y = 275.0, 805.0, 210.0
+    xi, xj, y = 270.0, 810.0, 168.0
     o = ""
     for dy in (62, -62):
         o += F.seg((xi, y), (xi - 150, y + dy), color="muted", w=2.8)
@@ -428,12 +541,15 @@ def f_detailed_balance():
     o += F.disc(xi - 150, y + 62, "", fill="pale") + F.disc(xi - 150, y - 62, "", fill="pale")
     o += F.disc(xj + 160, y, "", fill="pale")
     o += F.disc(xi, y, "i", fill="white") + F.disc(xj, y, "j", fill="white")
-    o += (f"\\draw[ink,line width=3.4bp,{ARROW}] ({xi + 30},{y + 16}) to[bend left=20] ({xj - 30},{y + 16});\n")
-    o += (f"\\draw[ink,line width=3.4bp,{ARROW}] ({xj - 30},{y - 16}) to[bend left=20] ({xi + 30},{y - 16});\n")
-    o += F.text((xi + xj) / 2, y + 80, "$\\pi_i\\cdot\\frac{1}{k_i}=0.3\\cdot\\frac{1}{3}=0.1$", size=F.FONT_MATH, anchor="south")
-    o += F.text((xi + xj) / 2, y - 80, "$\\pi_j\\cdot\\frac{1}{k_j}=0.2\\cdot\\frac{1}{2}=0.1$", size=F.FONT_MATH, anchor="north")
-    o += F.text((xi + xj) / 2, y, "the same flow both ways", color="muted", size=F.FONT_HAND, hand=True)
-    F.emit("detailed-balance", o, container="full", h=420, hmod="at", nodes=True)
+    o += (f"\\draw[ink,line width=3.4bp,{ARROW}] ({xi + 30},{y + 14}) to[bend left=14] ({xj - 30},{y + 14});\n")
+    o += (f"\\draw[ink,line width=3.4bp,{ARROW}] ({xj - 30},{y - 14}) to[bend left=14] ({xi + 30},{y - 14});\n")
+    xm = (xi + xj) / 2
+    o += F.text(xm, y + 54, "$\\pi_i\\cdot\\frac{1}{k_i}=0.3\\cdot\\frac{1}{3}=0.1$", size=F.FONT_MATH, anchor="south")
+    o += F.text(xm, y + 104, "at $i$, then a step to $j$", color="muted", size=F.FONT_MATH, anchor="south")
+    o += F.text(xm, y - 54, "$\\pi_j\\cdot\\frac{1}{k_j}=0.2\\cdot\\frac{1}{2}=0.1$", size=F.FONT_MATH, anchor="north")
+    o += F.text(xm, y - 104, "at $j$, then a step to $i$", color="muted", size=F.FONT_MATH, anchor="north")
+    o += F.text(xm, y, "$=$", size=F.FONT_MATH + 14, color="hot", anchor="center")
+    F.emit("detailed-balance", o, container="full", h=340, hmod="at", nodes=True)
 
 
 # ============================================================================ tasks-diamond
@@ -452,7 +568,7 @@ def f_tasks_diamond():
 
 
 FIGURES = [
-    ("pearson-walker", f_pearson_walker), ("pearson-answer", f_pearson_answer), ("fields", f_fields),
+    ("pearson-walker", f_pearson_walker), ("polya", f_polya), ("fields", f_fields),
     ("walk-rule", f_walk_rule), ("two-comm-q", f_two_comm_q), ("two-comm-walk", f_two_comm_walk),
     ("clique", f_clique), ("twoclique", f_twoclique), ("no-larger", f_no_larger),
     ("detailed-balance", f_detailed_balance), ("tasks-diamond", f_tasks_diamond),

@@ -17,10 +17,10 @@ Figures: `figures/BRIEF.md` (who draws what); numbers: `figures/smallgraphs.py`.
 | part | slides | count | minutes |
 |---|---|---|---|
 | A  Intuition: Pearson's walker, then what a blind walker learns (Pen & Paper first) | 1-12 | 12 | 30 |
-| B  Maths: why the start stops mattering (matrices, circles, mixing time, eigenvalue 1) | 13-40 | 28 | 38 |
-| C  Pen & Paper, then debrief | 41-46 | 6 | 30 |
+| B  Maths: why the start stops mattering (matrices, circles, mixing time, eigenvalue 1) | 13-42 | 30 | 38 |
+| C  Pen & Paper, then debrief | 43-46 | 4 | 20 |
 
-Total 98 minutes. The Pen & Paper blocks (10 and 20 minutes) are fixed; the builds take seconds.
+Total 88 minutes. The Pen & Paper blocks (10 and 10 minutes) are fixed; the builds take seconds.
 
 ## Slide list
 
@@ -28,7 +28,7 @@ Total 98 minutes. The Pen & Paper blocks (10 and 20 minutes) are fixed; the buil
 |---|---|---|---|---|
 | 1 | lead | Random Walks | title |  |
 | 2 | L-c | Where is the walker after 100 steps? | hook (story): Pearson's question, 1905 | pearson-walker |
-| 3 | L-g | (no title) | answer: Pearson's walker (the density peaks at the start) | pearson-answer |
+| 3 | L-g | (no title) | story: Polya's recurrence (2D returns, 3D does not) | polya |
 | 4 | L-b | Random walks appear in many fields | hook: the same walk in three fields | fields |
 | 5 | L-f | How does it tell us about a network? | spine 1: the question |  |
 | 6 | L-b | What is a random walk? | mechanism: the rule | walk-rule |
@@ -60,15 +60,15 @@ Total 98 minutes. The Pen & Paper blocks (10 and 20 minutes) are fixed; the buil
 | 32 | L-a | Q: mixing time of a 10-clique? | Q4 (clique) | clique-q |
 | 33 | L-a | A: about 1 step | A4 | clique-a |
 | 34 | L-a | Q: mixing time with one bridge? | Q5 (two cliques) | twoclique-q |
-| 35 | L-a | A: about 20 times longer | A5 | twoclique-a |
-| 36 | L-a | The mixing time follows from $\lambda_2$ | spectral gap (gauge) | gap-gauge |
-| 37 | L-f | One eigenvalue is always 1. Others diminish. | spine 4: the fact |  |
-| 38 | L-b | Why 1? Every row of $P$ sums to 1 | lambda = 1 exists (P 1 = 1) | P1-eq-1 |
-| 39 | L-b | No eigenvalue is larger than 1 | no eigenvalue above 1 | no-larger |
-| 40 | L-a | Detailed balance condition | the eigenvalue 1 gives pi (ties to the simulator's ticks) | detailed-balance |
-| 41 | L-f | Pen & Paper | Pen & Paper: second block |  |
-| 42 | L-c | Tasks | Pen & Paper: instructions | tasks-diamond |
-| 43 | L-a | $x(t)$ = π + decaying terms | debrief Part 2 | diamond-expansion |
-| 44 | L-b | What is the decaying term? | debrief Part 3 (second eigenvector) | eigvec2 |
+| 35 | L-a | A: about 10 times longer | A5 | twoclique-a |
+| 36 | L-a | The relaxation time | relaxation time | relax-curve |
+| 37 | L-a | Small gap, long relaxation time | spectral gap (gauge) | gap-gauge |
+| 38 | L-a | Mixing time is a few $\tau$ | mixing time versus relaxation time | tau-vs-mix |
+| 39 | L-f | One eigenvalue is always 1. Others diminish. | spine 4: the fact |  |
+| 40 | L-b | Why 1? Every row of $P$ sums to 1 | lambda = 1 exists (P 1 = 1) | P1-eq-1 |
+| 41 | L-a | No eigenvalue is larger than 1 | no eigenvalue above 1 | no-larger |
+| 42 | L-a | Detailed balance condition | the eigenvalue 1 gives pi (ties to the simulator's ticks) | detailed-balance |
+| 43 | L-f | Pen & Paper | Pen & Paper: second block |  |
+| 44 | L-b | $x(t) = \pi\,+$ decaying terms | debrief Part 3 (second eigenvector; the expansion) | eigvec2 |
 | 45 | L-a | Early on, the community signal dominates | debrief Part 3 (what dominates early) | comm-curve |
 | 46 | L-g | (no title) | summary (claims with thumbnails) | summary |

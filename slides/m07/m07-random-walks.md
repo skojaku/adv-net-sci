@@ -25,7 +25,7 @@ section .optflag { position: absolute; top: 18px; right: 28px; font-size: 18px; 
 <div class="credit">Sadamori Kojaku · Binghamton University</div>
 <!--
 [#1] beat: title
-About 90 minutes. The Pen & Paper sheet is worked in two blocks: Part 1 right after slide 6 (before any maths, so the room finds the facts first), Parts 2 and 3 after the maths. 1 minute per content slide; builds take seconds.
+About 90 minutes. The Pen & Paper sheet is worked in two blocks: the first right after slide 6 (before any maths, so the room finds the facts first), the second after the maths (the second eigenvector). 1 minute per content slide; builds take seconds.
 -->
 
 ---
@@ -50,6 +50,8 @@ Pearson asked this in *Nature* in 1905.
 </div>
 </div>
 
+<div class="ref">Pub: Jim Osley, CC BY-SA 2.0 (geograph.org.uk)</div>
+
 <div class="cue">
 
 Far from the start, or near it? Tell your neighbour.
@@ -58,7 +60,7 @@ Far from the start, or near it? Tell your neighbour.
 <!--
 [#2] beat: hook (story): Pearson's question, 1905
 source: K. Pearson, The Problem of the Random Walk, Nature 72, 294 (1905), doi:10.1038/072294b0. Check the wording against the original before quoting it.
-Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). A question slide: it never shows the answer.
+Open with the history. In July 1905 the statistician Karl Pearson asked the readers of Nature: a man walks l yards, turns through any angle, walks l yards again, n times; where is he? The problem came from a question about how far mosquitoes spread (Pearson corresponded with Ronald Ross about malaria). A question slide: it never shows the answer. For the record: the typical distance after 100 steps is about 10 yards (the square root of 100); Rayleigh answered the next week that he had solved it in 1880, for waves. The room gets the next story instead.
 -->
 
 ---
@@ -68,20 +70,20 @@ Open with the history. In July 1905 the statistician Karl Pearson asked the read
 
 <div class="fig">
 
-![w:1080](figures/pearson-answer.png)
+![w:1080](figures/polya.png)
 
 </div>
 
 <div class="take">
 
-Rayleigh replied the next week: he had solved it in 1880, for <span class="hot">waves</span>
+2D: the walker always comes home. 3D: only <span class="hot">34%</span> of walkers ever do.
 
 </div>
 
 <!--
-[#3] beat: answer: Pearson's walker (the density peaks at the start)
-source: J. W. Strutt (Lord Rayleigh), Nature 72, 318 (1905); K. Pearson, Nature 72, 342 (1905). Figure: simulation, seed fixed in figures/figs_a.py.
-Pearson's own remark, as quoted in secondary sources (verify in the original): the most probable place to find a drunken man who is at all capable of keeping on his feet is somewhere near his starting point. Careful: per unit area the density is highest at the start, yet the typical distance grows like the square root of n (about 10 yards after 100 steps; the grey ring). A short walk remembers where it began; a long one spreads out. Rayleigh had met the same mathematics in 1880, adding n waves of random phase.
+[#3] beat: story: Polya's recurrence (2D returns, 3D does not)
+source: G. Polya, Math. Annalen 84, 149 (1921). Return probability in 3D on the cubic lattice: 0.3405 (Polya's random walk constant). Figure: seeded walks, chosen for illustration; the numbers are asserted by simulation in figures/figs_a.py. The remark 'a drunk man will find his way home, but a drunk bird may get lost forever' is attributed to S. Kakutani; check before quoting it.
+Start where Pearson stopped. Pearson asked where the walker is. Polya (1921) asked a different question: does the walker ever come back to where it started? On the street grid (2D) it comes back with probability 1, however long it takes. In space (3D) it comes back with probability about 0.34: two out of three drunken birds are lost for good. This is the first surprise about random walks: the answer depends on the dimension. On a network, the same question has an answer that depends on the shape of the network; the lecture's maths answers it for finite networks. (Pearson's answer, for the record: typical distance 10 yards, the square root of 100.)
 -->
 
 ---
@@ -96,6 +98,8 @@ Pearson's own remark, as quoted in secondary sources (verify in the original): t
 ![w:1080](figures/fields.png)
 
 </div>
+
+<div class="ref">Mosquito: CDC / James D. Gathany (public domain) · trajectory: Jean Perrin (public domain)</div>
 
 <!--
 [#4] beat: hook: the same walk in three fields
@@ -289,7 +293,7 @@ The students' ratios scatter (node 11 is noisy: the ratio is a law of large numb
 
 <!--
 [#13] beat: spine 3: part question
-From here: the maths, as pictures of vectors and matrices drawn as in the centrality lecture (circle = eigenvalue, tall bar = vector).
+From here: the maths, as pictures of vectors and matrices drawn as in the centrality lecture (circle = eigenvalue, column = vector).
 -->
 
 ---
@@ -338,7 +342,7 @@ $x = (1, 0, 0, \dots)$: $xP$ is the row of node 0
 
 <!--
 [#15] beat: x P, how to read it (1/3)
-Build 1/3. x = e_0: the walker's distribution is a wide bar (a row vector); one step is the wide bar times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
+Build 1/3. x = e_0: the walker's distribution is a row vector; one step is the row times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
 -->
 
 ---
@@ -368,7 +372,7 @@ $x = (0, 1, 0, \dots)$: $xP$ is the row of node 1
 
 <!--
 [#16] beat: x P, how to read it (2/3)
-Build 2/3. x = e_1: the walker's distribution is a wide bar (a row vector); one step is the wide bar times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
+Build 2/3. x = e_1: the walker's distribution is a row vector; one step is the row times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
 -->
 
 ---
@@ -398,7 +402,7 @@ $x = (0.5, 0.05, \dots)$: $xP$ is a mix of the rows
 
 <!--
 [#17] beat: x P, how to read it (3/3)
-Build 3/3. x = a mix: the walker's distribution is a wide bar (a row vector); one step is the wide bar times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
+Build 3/3. x = a mix: the walker's distribution is a row vector; one step is the row times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.
 -->
 
 ---
@@ -500,7 +504,7 @@ Zoom in on one corner of P^5. Row = where the walker starts; column = where it i
 <!--
 [#22] beat: recap: eigendecomposition (M06, light touch)
 source: slides/m06/figures/decomp-sum.png (reused unchanged)
-Two sentences only: circle = eigenvalue, tall bar = eigenvector, wide bar = its transpose. Do not re-derive; the room saw this for the adjacency matrix.
+Two sentences only: circle = eigenvalue, column = eigenvector, row = its transpose. Do not re-derive; the room saw this for the adjacency matrix.
 -->
 
 ---
@@ -530,7 +534,7 @@ $P^t$ changes only the <span class="hot">eigenvalues</span>
 
 <!--
 [#23] beat: P as a sum of circles and bars
-The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T. For P the tall bar (right eigenvector) and the wide bar (left eigenvector) are two different vectors: each is the other rescaled by degree. Say it once; the appendix of the note has it.
+The bars multiply to 1 or 0 as in M06, so P^t = sum of lambda_k^t phi_k psi_k^T. For P the column (right eigenvector) and the row (left eigenvector) are two different vectors: each is the other rescaled by degree. Say it once; the appendix of the note has it.
 -->
 
 ---
@@ -660,7 +664,7 @@ Same figure as the question, with the answer added.
 
 <!--
 [#29] beat: mixing time (1/3)
-Build 1/3: where you start matters at first; later the second term dominates. One thin line per starting node, a black line for the worst start; epsilon = 0.25 gives t = 13 on this network. The formula appears only at the end, after the diagram has said it.
+Build 1/3: where you start matters at first; later the second term dominates. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.
 -->
 
 ---
@@ -678,7 +682,7 @@ Build 1/3: where you start matters at first; later the second term dominates. On
 
 <!--
 [#30] beat: mixing time (2/3)
-Build 2/3: how close is close enough?. One thin line per starting node, a black line for the worst start; epsilon = 0.25 gives t = 13 on this network. The formula appears only at the end, after the diagram has said it.
+Build 2/3: how close is close enough? epsilon = 1/2 in the 1-norm, which is 1/4 in total variation distance, the usual choice in the Markov chain literature. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.
 -->
 
 ---
@@ -702,7 +706,7 @@ $t_{\mathrm{mix}} = \min\{\,t : \max_{x(0)} \|x(t) - \pi\|_1 \le \epsilon\,\}$
 
 <!--
 [#31] beat: mixing time (3/3)
-Build 3/3: the mixing time: the first t at which every start is within the threshold. One thin line per starting node, a black line for the worst start; epsilon = 0.25 gives t = 13 on this network. The formula appears only at the end, after the diagram has said it.
+Build 3/3: the mixing time: the first t at which every start is within the threshold. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.
 -->
 
 ---
@@ -789,13 +793,13 @@ Two 5-cliques joined by one edge (21 edges)
 
 <div class="cue">
 
-The same, 5 times longer, or 20 times longer?
+The same, 3 times longer, or 10 times longer?
 
 </div>
 
 <!--
 [#34] beat: Q5 (two cliques)
-The graph has fewer edges than the clique, and mixing takes 20 times longer. What matters is the bottleneck.
+The graph has fewer edges than the clique, and mixing takes 10 times longer. What matters is the bottleneck.
 -->
 
 ---
@@ -803,7 +807,7 @@ The graph has fewer edges than the clique, and mixing takes 20 times longer. Wha
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## A: about 20 times longer
+## A: about 10 times longer
 
 <div class="sub">
 
@@ -819,13 +823,13 @@ Two 5-cliques joined by one edge (21 edges)
 
 <div class="take">
 
-$\lambda_2 = 0.93$: mixing takes about <span class="hot">20 steps</span>
+$\lambda_2 = 0.93$: mixing takes about <span class="hot">10 steps</span>
 
 </div>
 
 <!--
 [#35] beat: A5
-At epsilon = 0.25: 1 step for the clique, 20 for the bridged cliques. The relaxation time tau = 1/(1 - 0.927) = 13.8 against 0.9.
+At epsilon = 1/2: 1 step for the clique, 10 for the bridged cliques. The relaxation time tau = 1/(1 - 0.927) = 13.8 against 0.9 (the lecture note's fifteen-fold).
 -->
 
 ---
@@ -833,11 +837,41 @@ At epsilon = 0.25: 1 step for the clique, 20 for the bridged cliques. The relaxa
 <!-- _class: L-a -->
 <!-- _footer: "" -->
 
-## The <span class="hot">mixing time</span> follows from $\lambda_2$
+## The <span class="hot">relaxation time</span>
 
 <div class="sub">
 
 $\tau = \dfrac{1}{1-\lambda_2}$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/relax-curve.png)
+
+</div>
+
+<div class="take">
+
+The slowest term shrinks by a factor of $e$ in <span class="hot">$\tau$ steps</span>
+
+</div>
+
+<!--
+[#36] beat: relaxation time
+The relaxation time is a property of the network alone: the time in which the slowest term, lambda_2^t, shrinks by a factor e (0.889^9 = 0.35, close to 1/e = 0.37). It is NOT the mixing time. The mixing time is the time until every start is within epsilon of pi, and it depends on epsilon.
+-->
+
+---
+
+<!-- _class: L-a -->
+<!-- _footer: "" -->
+
+## Small gap, long <span class="hot">relaxation time</span>
+
+<div class="sub">
+
+$\tau = \dfrac{1}{1-\lambda_2}$, the gap is $1-\lambda_2$
 
 </div>
 
@@ -849,13 +883,43 @@ $\tau = \dfrac{1}{1-\lambda_2}$
 
 <div class="take">
 
-Small gap, <span class="hot">long mixing time</span>
+The closer $\lambda_2$ is to 1, the longer <span class="hot">$\tau$</span>
 
 </div>
 
 <!--
-[#36] beat: spectral gap (gauge)
-'Spectral gap' = 1 - lambda_2. The mixing time is a few tau: the logarithm in the lecture note's bound pays for epsilon and the rarest node. Not derived here.
+[#37] beat: spectral gap (gauge)
+'Spectral gap' = 1 - lambda_2. A bottleneck (two cliques and one edge, a ring) gives lambda_2 near 1 and a long relaxation time. tau is the lecture note's 1/(1 - lambda_2).
+-->
+
+---
+
+<!-- _class: L-a -->
+<!-- _footer: "" -->
+
+## <span class="hot">Mixing time</span> is a few $\tau$
+
+<div class="sub">
+
+A smaller $\epsilon$ costs a few more $\tau$
+
+</div>
+
+<div class="fig">
+
+![w:1080](figures/tau-vs-mix.png)
+
+</div>
+
+<div class="take">
+
+$t_{\mathrm{mix}} < \tau\,\log\bigl(1/(\epsilon\,\pi_{\min})\bigr)$
+
+</div>
+
+<!--
+[#38] beat: mixing time versus relaxation time
+Relaxation time and mixing time are two numbers. tau = 1/(1 - lambda_2) is a time scale of the network. The mixing time t_mix(epsilon) is the first t at which every start is within epsilon of pi. They are of the same order: the table shows t_mix at epsilon = 1/2 and at 0.05 next to tau. The bound in the lecture note pays for epsilon and for the rarest node inside the logarithm; it is an upper bound, not an equality. Do not derive it.
 -->
 
 ---
@@ -866,7 +930,7 @@ Small gap, <span class="hot">long mixing time</span>
 ## One eigenvalue is always <span class="hot">1</span>. Others diminish.
 
 <!--
-[#37] beat: spine 4: the fact
+[#39] beat: spine 4: the fact
 Taught as a fact. The next three slides give a reason, in pictures, not a proof.
 -->
 
@@ -884,16 +948,22 @@ Taught as a fact. The next three slides give a reason, in pictures, not a proof.
 </div>
 
 <!--
-[#38] beat: lambda = 1 exists (P 1 = 1)
+[#40] beat: lambda = 1 exists (P 1 = 1)
 P times the vector of ones is the vector of ones, because each row of P is a list of odds that adds to 1. A vector that P does not change. (The walker's own stationary distribution is the matching LEFT eigenvector; the next slides.)
 -->
 
 ---
 
-<!-- _class: L-b -->
+<!-- _class: L-a -->
 <!-- _footer: "" -->
 
 ## No eigenvalue is <span class="hot">larger</span> than 1
+
+<div class="sub">
+
+$Pf$ gives each node the average of its neighbours' values
+
+</div>
 
 <div class="fig">
 
@@ -901,9 +971,15 @@ P times the vector of ones is the vector of ones, because each row of P is a lis
 
 </div>
 
+<div class="take">
+
+The largest value can only shrink, so $\lambda \le 1$
+
+</div>
+
 <!--
-[#39] beat: no eigenvalue above 1
-P f replaces each entry by the average of the neighbours' entries. An average cannot exceed the largest entry, so |lambda| <= 1.
+[#41] beat: no eigenvalue above 1
+Take a vector f with P f = lambda f, and look at the node i where |f| is largest. P f gives node i the average of its neighbours' values. An average of numbers that are at most f_i in size is at most f_i in size. So |lambda| f_i <= f_i, that is |lambda| <= 1. The drawing uses a node holding the largest number, 9: its new number is the average of its neighbours, 6.
 -->
 
 ---
@@ -915,7 +991,7 @@ P f replaces each entry by the average of the neighbours' entries. An average ca
 
 <div class="sub">
 
-$\pi_i\,P_{ij} = \pi_j\,P_{ji}$
+$\Pr(i \to j) = \Pr(j \to i)$
 
 </div>
 
@@ -932,8 +1008,8 @@ $\pi_i = k_i / 2m$: proportional to <span class="hot">degree</span>
 </div>
 
 <!--
-[#40] beat: the eigenvalue 1 gives pi (ties to the simulator's ticks)
-If walkers are spread as pi, the flow along an edge is the same in both directions: pi_i / k_i = pi_j / k_j, so pi is proportional to the degree. This is why the bars of the simulator settled on their k/2m ticks and why degree ÷ share = 2m on the sheet.
+[#42] beat: the eigenvalue 1 gives pi (ties to the simulator's ticks)
+Detailed balance: when the walkers are spread as pi, the chance that a walker is at i and steps to j equals the chance that a walker is at j and steps to i: pi_i P_ij = pi_j P_ji. Here Pr(i -> j) means that joint event, not the conditional P_ij. With P_ij = 1/k_i and P_ji = 1/k_j this reads pi_i / k_i = pi_j / k_j for every edge, so pi is proportional to the degree k_i, and the total is 2m: pi_i = k_i / 2m. That is why the bars of the simulator settled on their k/2m ticks and why degree ÷ share = 2m on the sheet.
 -->
 
 ---
@@ -945,63 +1021,13 @@ If walkers are spread as pi, the flow along an edge is the same in both directio
 
 <div class="sub">
 
-20 minutes
+10 minutes · plot the second eigenvector
 
 </div>
 
 <!--
-[#41] beat: Pen & Paper: second block
-Everyone has finished Part 1 and crossed the line on the sheet. Parts 2 and 3 follow.
--->
-
----
-
-<!-- _class: L-c -->
-<!-- _footer: "" -->
-
-## Tasks
-
-<div class="cols">
-<div>
-
-2. Four nodes: write $x(t)$ with the eigenvalues, check $t = 2$
-
-3. Twelve nodes: run one cell, plot the second eigenvector
-
-</div>
-<div class="fig">
-
-![w:537](figures/tasks-diamond.png)
-
-</div>
-</div>
-<!--
-[#42] beat: Pen & Paper: instructions
-Part 2 can be done with a pencil only; Part 3 needs a laptop or a phone (the QR code on the slide is a placeholder until the notebook is published). Pair students if there are not enough devices.
--->
-
----
-
-<!-- _class: L-a -->
-<!-- _footer: "" -->
-
-## $x(t)$ = π + <span class="hot">decaying</span> terms
-
-<div class="sub">
-
-Four nodes; eigenvalues $1,\ 0,\ -\tfrac13,\ -\tfrac23$
-
-</div>
-
-<div class="fig">
-
-![w:1080](figures/diamond-expansion.png)
-
-</div>
-
-<!--
-[#43] beat: debrief Part 2
-x(0) = (1, 0, 0, 0) = pi - 0.5 psi_2 + 0.3 psi_4. x(1) = (0, 0, 0.5, 0.5), x(2) = (1/3, 1/3, 1/6, 1/6). The eigenvalue -2/3 alternates the sign: the walker hops between {0, 1} and {2, 3}, then settles. The eigenpairs are on the sheet; the students do not compute them.
+[#43] beat: Pen & Paper: second block
+Everyone has finished the first block and crossed the line on the sheet. This block: twelve nodes, run one cell, plot the second eigenvector (a laptop or a phone; pair students if there are not enough devices). The QR code and link of the notebook come with the sheet. The four-node exercise (the diamond) is not used on the slides any more.
 -->
 
 ---
@@ -1009,18 +1035,26 @@ x(0) = (1, 0, 0, 0) = pi - 0.5 psi_2 + 0.3 psi_4. x(1) = (0, 0, 0.5, 0.5), x(2) 
 <!-- _class: L-b -->
 <!-- _footer: "" -->
 
-## What is the decaying term?
+## $x(t) = \pi\,+$ <span class="hot">decaying</span> terms
 
+<div class="cols" style="gap: 36px;">
 <div class="fig">
 
-![w:1080](figures/eigvec2.png)
+![w:756](figures/eigvec2.png)
 
 </div>
+<div style="flex: 0 0 250px; text-align: left; font-size: 30px; line-height: 1.4;">
 
+The slowest decaying term is the **second eigenvector**.
+
+Positive: one community. Negative: the other.
+
+</div>
+</div>
 <!--
-[#44] beat: debrief Part 3 (second eigenvector)
+[#44] beat: debrief Part 3 (second eigenvector; the expansion)
 source: numpy, the sheet's one-cell code
-The cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The sign gives the community; the sign itself is arbitrary, so the two communities may swap colours on a student's screen.
+x(t) = pi + sum over k >= 2 of c_k lambda_k^t psi_k: the walker's distribution is pi plus terms that decay. The slowest decaying term is the one with lambda_2 = 0.89, and its eigenvector is the plot: nodes 0-5 on one side of zero, nodes 6-11 on the other. The sheet's cell computes np.linalg.eig(P), orders by the real part, and plots column 1. The sign itself is arbitrary, so the two communities may swap colours on a student's screen.
 -->
 
 ---
