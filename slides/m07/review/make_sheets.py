@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Red-pen sheets from review/_r/wf.NNN.png.
 landscape A4: 4 columns x 3 rows (12 per page); portrait A4: 2 columns x 4 rows (8 per page).
-Usage: python3 review/make_sheets.py   (run after: marp deck.md --images png --image-scale 2 -o review/_r/wf.png)"""
+Usage: python3 review/make_sheets.py   (run after: marp m07-random-walks.md --images png --image-scale 2 -o review/_r/s.png)"""
 import glob, os, re
 from PIL import Image, ImageDraw, ImageFont
 
@@ -21,7 +21,7 @@ def font(sz):
 
 def labels():
     """slide number -> short caption (layout / beat) from deck.md notes."""
-    deck = open(os.path.join(ROOT, "deck.md")).read()
+    deck = open(os.path.join(ROOT, "m07-random-walks.md")).read()
     parts = deck.split("\n---\n")
     out = {}
     for blk in parts:
@@ -71,9 +71,9 @@ def sheets(files, cols, rows, landscape, out_pdf, title):
 
 
 if __name__ == "__main__":
-    files = sorted(glob.glob(os.path.join(HERE, "_r", "wf.*.png")))
-    a = sheets(files, 4, 3, True, os.path.join(ROOT, "sheets-landscape.pdf"), "M07 random walks: wireframe v1 (landscape 4x3)")
-    b = sheets(files, 2, 4, False, os.path.join(ROOT, "sheets-portrait.pdf"), "M07 random walks: wireframe v1 (portrait 2x4)")
+    files = sorted(glob.glob(os.path.join(HERE, "_r", "s.*.png")))
+    a = sheets(files, 4, 3, True, os.path.join(ROOT, "sheets-landscape.pdf"), "M07 random walks: deck v2 (landscape 4x3)")
+    b = sheets(files, 2, 4, False, os.path.join(ROOT, "sheets-portrait.pdf"), "M07 random walks: deck v2 (portrait 2x4)")
     print("landscape pages", a, "portrait pages", b)
     # PNG previews of the first page of each, for QA
     import subprocess

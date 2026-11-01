@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.expanduser("~/.claude/skills/slide"))
 from gatelib.check_render import run
 
 run(
-    deck="deck.md",  # your deck's filename
+    deck="m07-random-walks.md",  # your deck's filename
 
     # Only set this if the deck draws circular node-link diagrams (network
     # or graph figures) and you want their disc size checked (26-52px band).
@@ -21,8 +21,9 @@ run(
 
     # Figure height caps by `.fig` modifier class, if you use them
     # (see theme.css: .fig, .fig.tight, .fig.stack, .fig.tall).
-    # fig_h={"": 380, "tight": 320, "stack": 190, "tall": 400},
+    # the theme lets L-b show 480 px and L-g 600 px (L-a stays under 380 by authoring); the gate keys caps by modifier only
+    fig_h={"": 600, "tight": 320, "stack": 190, "tall": 400},
 
     # Filenames to skip measurement on (historical photos, screenshots, etc.)
-    # exempt_figures=["photo.jpg"],
+    exempt_figures=["qr-sim.png"],   # a QR code is shown at a fixed 440 px
 )
