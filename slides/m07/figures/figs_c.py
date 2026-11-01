@@ -5,7 +5,6 @@
     lam-curves-q/-a   |lambda_k|^t against t for the twelve eigenvalues; the answer marks lambda_2
     mix-1/2/3         distance to pi against t (one curve per start, the worst start in black), then epsilon, then t_mix
     gap-gauge         lambda_2 on a gauge with the relaxation time of five networks
-    diamond-expansion x(t) on the 4-node diamond at t = 0, 1, 2, 5, 10 and its eigen-expansion
     eigvec2           the second eigenvector of P, one dot per node
     comm-curve        probability of being in community 1 against the steps
 
@@ -109,7 +108,7 @@ def tick_boxes(ax, gate):
             gate.box(ax.xfmt(v), text_box(ax.X(v), ax.y0 - 17, ax.xfmt(v), "north", ax.size))
     for v in ax.yticks:
         if ax.ylim[0] <= v <= ax.ylim[1]:
-            gate.box(ax.yfmt(v), text_box(ax.x0 - 17, ax.Y(v), ax.yfmt(v), "east", ax.size))
+            gate.box(ax.yfmt(v), text_box(ax.x0 - 17, ax.Y(v), ax.yfmt(v), "east", ax.size, pad=(-3 if ax.ylog else 2)))
 
 
 # --------------------------------------------------------------------------- degree-share
@@ -236,9 +235,26 @@ assert np.isclose(G.worst_dist(G.P12, G.PI12, TS)[TMIX], WORST[TMIX])
 assert abs(WORST[30] / WORST[20] - G.LAM12[1] ** 10) < 0.03
 
 
+# semilog: after t = 2 every start is a straight line of slope ln(lambda_2); the start only moves the line
+_late = np.log(WORST[15:31])
+_fit = np.polyfit(np.arange(15, 31), _late, 1)
+assert abs(_fit[0] - np.log(G.LAM12[1])) < 0.002, _fit                      # the slope is ln(lambda_2)
+assert np.abs(np.exp(np.polyval(_fit, np.arange(15, 31))) / WORST[15:31] - 1).max() < 0.03   # a straight line within 3 %
+REF = lambda t: np.exp(np.polyval(_fit, t))                                  # the reference line
+
+
+# the start nodes fall into classes by the number of friends: 4 and 5 friends give the highest, almost identical lines,
+# the bridge ends (6 friends) the lowest
+_DEG = G.A12.sum(axis=1).astype(int)
+_CLASS_END = {k: DIST[[i for i in range(12) if _DEG[i] == k][0], 30] for k in (4, 5, 6)}
+assert _CLASS_END[6] < _CLASS_END[4] < _CLASS_END[5] and _CLASS_END[5] / _CLASS_END[6] > 1.3, _CLASS_END
+assert abs(_CLASS_END[5] / _CLASS_END[4] - 1) < 0.03          # 4 and 5 friends: one line at this scale
+assert all(np.isclose(DIST[i], DIST[j]).all() for i in range(12) for j in range(12) if _DEG[i] == _DEG[j])
+
+
 def _mix_axes():
-    return F.Axes((110, 125, 1010, 300), (0, MT), (0, 2), xticks=[0, 10, 20, 30], yticks=[0, 1, 2],
-                  yfmt=lambda v: f"{v:g}")
+    return F.Axes((110, 118, 800, 350), (0, MT), (0.01, 2), ylog=True, xticks=[0, 10, 20, 30],
+                  yticks=[0.01, 0.1, 1, 2], yfmt=lambda v: f"{v:g}")
 
 
 def _mix_base(g):
@@ -252,35 +268,44 @@ def _mix_base(g):
             continue
         seen.add(key)
         pts = [ax.P(t, d) for t, d in zip(TS, DIST[i])]
-        o += F.polyline(pts, color="muted!70", w=2.4)
+        o += F.polyline(pts, color="muted!70", w=2.6)
         g.line(pts, "start")
+    # the straight line of slope ln(lambda_2) through the late part of the worst curve, extended back to t = 0
+    rpts = [ax.P(t, REF(t)) for t in np.linspace(0, MT, 31)]
+    o += F.polyline(rpts, color="hot", w=2.6, dash=F.DASH)
+    g.line(rpts, "ref")
     pts = [ax.P(t, d) for t, d in zip(TS, WORST)]
     o += F.polyline(pts, color="ink", w=5.0)
     g.line(pts, "worst")
-    o += g.text(ax.x0 + 8, ax.y1 + 36, "distance to $\\pi$", anchor="west", size=F.FONT_MATH)
-    o += g.text(ax.x1 + 36, ax.y0, "$t$", anchor="west", size=F.FONT_MATH)
+    # the classes, labelled at their right end by the number of friends of the start node
+    yu, yl = ax.Y(_CLASS_END[5]), ax.Y(_CLASS_END[6])
+    o += F.seg((ax.x1 + 8, yu), (ax.x1 + 20, yu + 24), color="muted", w=1.6, sketch=False)
+    o += g.text(ax.x1 + 24, yu + 34, "4 or 5 friends", anchor="west", size=F.FONT, color="muted")
+    o += F.seg((ax.x1 + 8, yl), (ax.x1 + 20, yl - 24), color="muted", w=1.6, sketch=False)
+    o += g.text(ax.x1 + 24, yl - 34, "6 friends", anchor="west", size=F.FONT, color="muted")
+    o += g.text(ax.x1 + 40, ax.y0 - 40, "$t$", anchor="west", size=F.FONT_MATH)
+    o += g.text(ax.x1 - 8, ax.Y(0.235), "distance to $\\pi$", anchor="east", size=F.FONT_MATH)
     return ax, o
 
 
 def _mix_notes(ax, g):
     o = ""
-    # where you start matters at first
-    tx, ty = ax.X(9), ax.Y(1.8)
+    # where you start matters at first (the curves leave the straight line before t = 2)
+    tx, ty = ax.X(8.0), ax.Y(1.25)
     o += g.text(tx, ty, "where you start\\\\matters at first", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
-    o += arrow((tx - 10, ty - 14), (ax.X(2.5), ax.Y(1.27)))
-    # lambda_2 dominates the tail
-    lx, ly = ax.X(12), ax.Y(1.0)
-    o += g.text(lx, ly, "$\\lambda_2$ dominates", anchor="west", size=F.FONT_MATH, color="muted")
-    o += arrow((lx + 100, ly - 30), (lx + 100, ax.Y(WORST[15]) + 14))
+    o += arrow((tx - 10, ty - 8), (ax.X(1.5), ax.Y(1.12)))
+    # lambda_2 dominates the tail: a straight line on this axis
+    lx, ly = ax.X(8.6), ax.Y(0.0215)
+    o += g.text(lx, ly, "$\\lambda_2$ dominates:\\\\a straight line", anchor="west", size=F.FONT_MATH, color="muted")
     return o
 
 
 def _mix_eps(ax, g):
     y = ax.Y(G.EPS)
-    o = dashed((ax.x0, y), (ax.x1, y), color="ink", w=2.0)
+    o = dashed((ax.x0, y), (ax.x1 + 24, y), color="ink", w=2.0)
     # the usual choice: total variation 1/4 is 1/2 in the 1-norm of the lecture note
-    o += g.text(ax.X(MT), y + 56, "$\\epsilon = 1/2$", anchor="east", size=F.FONT_MATH, color="ink")
-    o += g.text(ax.X(MT), y + 112, "the usual choice", anchor="east", size=F.FONT_HAND, hand=True, color="muted")
+    o += g.text(ax.x1 + 34, y, "$\\epsilon = 1/2$", anchor="west", size=F.FONT_MATH, color="ink")
+    o += g.text(ax.x1 - 8, ax.Y(1.15), "the usual\\\\choice", anchor="east", size=F.FONT_HAND, hand=True, color="muted")
     return o, y
 
 
@@ -331,7 +356,6 @@ def f_relax_curve():
     o += F.dot(*p, color=RED, d=22)
     g.dot(*p, r=11, tag="tau")
     o += g.text(p[0], ax.y0 - 66, "$\\tau = 9$", anchor="north", size=F.FONT_MATH, color="hot")
-    o += g.text(ax.x0 + 6, ax.y1 + 40, "the second term, $\\lambda_2^{\\,t}$", anchor="west", size=F.FONT_MATH, color="muted")
     o += g.text(ax.x1 + 40, ax.y0, "$t$", anchor="west", size=F.FONT_MATH)
     ax_, ay_ = ax.X(14), ax.Y(0.80)
     o += g.text(ax_, ay_, "the slowest term shrinks\\\\by a factor of e", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
@@ -383,63 +407,38 @@ def f_gap_gauge():
     for n, l, t in rows:
         want = {"10-clique": 0.9, "karate club": 7.6, "two communities": 9.0, "two 5-cliques + bridge": 14, "ring of 1,000": 50660}[n]
         assert abs(t - want) / want < 0.04, (n, t)
-    GX0, GX1, GY = 130.0, 960.0, 118.0
-    lo, hi = -0.2, 1.0
-    X = lambda v: GX0 + (v - lo) / (hi - lo) * (GX1 - GX0)
+    gaps = {n: 1 - l for n, l, _t in rows}
+    assert abs(gaps["10-clique"] - 1.11) < 0.01 and abs(gaps["karate club"] - 0.132) < 0.001
+    assert abs(gaps["two communities"] - 0.111) < 0.001 and abs(gaps["two 5-cliques + bridge"] - 0.073) < 0.001
+    assert abs(gaps["ring of 1,000"] - 2e-5) < 1e-6
+    # a LOG axis of the gap 1 - lambda_2, large on the left; the ring (2e-5) is off the right end, past a break
+    GX0, GX1, GY = 130.0, 930.0, 118.0
+    hi, lo = 2.0, 0.07
+    X = lambda v: GX0 + (np.log10(hi) - np.log10(v)) / (np.log10(hi) - np.log10(lo)) * (GX1 - GX0)
     g = Gate("gap-gauge")
-    o = ""
-    # track, with the shaded zone past 0.99
-    o += F.seg((GX0, GY), (GX1, GY), color="ink", w=3.0, sketch=False)
-    o += f"\\fill[hot!35] ({X(0.99):.1f},{GY - 9:.1f}) rectangle ({GX1:.1f},{GY + 9:.1f});\n"
-    for v, s in ((-0.2, "−0.2"), (0, "0"), (0.5, "0.5"), (1.0, "1")):
+    o = F.seg((GX0, GY), (GX1, GY), color="ink", w=3.0, sketch=False)
+    for v, s_ in ((1, "1"), (0.1, "0.1")):
         o += F.seg((X(v), GY - 10), (X(v), GY + 10), color="ink", w=2.2, sketch=False)
-        o += g.text(X(v), GY - 22, s, anchor="north")
-    o += g.text(GX0 - 84, GY, "$\\lambda_2$", anchor="east", size=F.FONT_MATH)
-    # five labels in a row, joined to their marker by a thin line that never crosses another
-    cx = [130.0, 330.0, 540.0, 780.0, 975.0]
+        o += g.text(X(v), GY - 22, s_, anchor="north")
+    o += g.text(GX0 - 24, GY, "gap\\\\$1-\\lambda_2$", anchor="east", size=F.FONT_MATH)
+    # the break: two short slashes, then the ring's marker
+    for dx in (0, 14):
+        o += F.seg((GX1 + 24 + dx, GY - 14), (GX1 + 34 + dx, GY + 14), color="ink", w=2.4, sketch=False)
+    RX = GX1 + 74
+    xs = {n: (X(gaps[n]) if n != "ring of 1,000" else RX) for n, _l, _t in rows}
+    xs_sorted = sorted(xs.values())
+    assert min(b - a for a, b in zip(xs_sorted[:-1], xs_sorted[1:-1])) >= 40, xs      # on-scale markers at least 40 px apart
+    assert RX - xs_sorted[-2] >= 40
+    cx = [135.0, 325.0, 535.0, 765.0, 985.0]
     ly = 240.0
     for (n, l, t), c in zip(rows, cx):
-        m = (X(min(l, 0.9999)), GY)
+        m = (xs[n], GY)
         o += F.seg((c, ly - 66), (m[0], m[1] + 12), color="muted", w=1.6, sketch=False)
         o += F.dot(m[0], m[1], color=BLUE if n != "ring of 1,000" else RED, d=20)
         o += g.text(c, ly, names[n], anchor="south", color="ink")
         o += g.text(c, ly - 8, f"$\\tau = {taus[n]}$", anchor="north", size=F.FONT_MATH)
-    # the ring is past the right end: an arrow says so
     g.check()
     F.emit("gap-gauge", o, container="full", h=330, hmod="tight", nodes=False)
-
-
-# --------------------------------------------------------------------------- diamond-expansion
-def f_diamond_expansion():
-    XY = G.DIAMOND_XY
-    panel_w = 216.0
-    ts = [0, 1, 2, 5, 10]
-    X0 = np.array([1.0, 0, 0, 0])
-    assert np.allclose(X0, G.X0D)
-    xt = lambda t: G.PSI[0] - 0.5 * G.LAM_PSI[1] ** t * G.PSI[1] + 0.3 * G.LAM_PSI[3] ** t * G.PSI[3]
-    for t in ts:                          # the expansion is the walk
-        assert np.allclose(xt(t) if t else xt(0), X0 @ np.linalg.matrix_power(G.PD, t)), t
-    assert np.allclose(xt(2), [1 / 3, 1 / 3, 1 / 6, 1 / 6])
-    g = Gate("diamond-expansion")
-    o = ""
-    sx, sy = 50.0, 36.0
-    cy0 = 230.0
-    for i, t in enumerate(ts):
-        cx = panel_w * (i + 0.5)
-        x = X0 @ np.linalg.matrix_power(G.PD, t)
-        pos = {n: (cx + (XY[n][0] - 1.5) * sx, cy0 + (XY[n][1] - 1.6) * sy) for n in range(4)}
-        for a, b in G.DIAMOND.edges():
-            o += F.seg(pos[a], pos[b], color="muted", w=2.4)
-        for n in range(4):
-            v = float(x[n])
-            lab = "1" if abs(v - 1) < 1e-9 else ("0" if abs(v) < 1e-9 else (f"{v:.2f}".rstrip("0") if abs(v * 10 - round(v * 10)) < 1e-9 else f"{v:.2f}").lstrip("0"))
-            o += F.disc(pos[n][0], pos[n][1], lab, fill=F.shade(min(1.0, v * 1.8)), size=52)
-        o += g.text(cx, cy0 - 94, f"$t = {t}$", size=F.FONT_MATH, color="muted")
-    # the expansion
-    o += g.text(540, 76, "$x(t) = \\pi - 0.5\\cdot 0^{t}\\,\\psi_2 + 0.3\\,(-\\tfrac{2}{3})^{t}\\,\\psi_4$", size=F.FONT_MATH)
-    o += g.text(540, 30, "$t = 2:\\quad x(2) = (\\tfrac13,\\,\\tfrac13,\\,\\tfrac16,\\,\\tfrac16)$", size=F.FONT_MATH, color="hot")
-    g.check()
-    F.emit("diamond-expansion", o, container="full", h=330, hmod="", nodes=True)
 
 
 # --------------------------------------------------------------------------- eigvec2
@@ -467,7 +466,6 @@ def f_eigvec2():
     o += g.text(ax.x1, ax.y0 - 92, "node", anchor="east", color="muted")
     ax_, ay_ = ax.X(6.3), ax.Y(0.80)
     o += g.text(ax_, ay_, "the sign gives\\\\the community", anchor="west", size=F.FONT_HAND, hand=True, color="muted")
-    o += arrow((ax_ + 150, ay_ - 52), (ax_ + 150, ax.Y(0) + 12))
     g.check()
     F.emit("eigvec2", o, container="wide", h=470, hmod="w", nodes=False)
 
@@ -509,7 +507,7 @@ def f_comm_curve():
 
 
 FIGURES = [("degree-share", f_degree_share), ("lam-curves-q", f_lam_q), ("lam-curves-a", f_lam_a),
-           ("mix", f_mix), ("relax-curve", f_relax_curve), ("tau-vs-mix", f_tau_vs_mix), ("gap-gauge", f_gap_gauge), ("diamond-expansion", f_diamond_expansion),
+           ("mix", f_mix), ("relax-curve", f_relax_curve), ("tau-vs-mix", f_tau_vs_mix), ("gap-gauge", f_gap_gauge),
            ("eigvec2", f_eigvec2), ("comm-curve", f_comm_curve)]
 
 if __name__ == "__main__":

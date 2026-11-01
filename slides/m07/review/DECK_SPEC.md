@@ -40,9 +40,9 @@ Total 88 minutes. The Pen & Paper blocks (10 and 10 minutes) are fixed; the buil
 | 12 | L-a | Degree ÷ share is constant | debrief Part 1 (degree ÷ share) | degree-share |
 | 13 | L-f | Why does a long walk not depend on the start? | spine 3: part question |  |
 | 14 | L-b | The walk is defined by one matrix | P (the two-community network, the motif of the rest of the lecture) | P-def |
-| 15 | L-a | One step is a multiplication by $P$ | x P, how to read it (1/3) | xP-1 |
-| 16 | L-a | One step is a multiplication by $P$ | x P, how to read it (2/3) | xP-2 |
-| 17 | L-a | One step is a multiplication by $P$ | x P, how to read it (3/3) | xP-3 |
+| 15 | L-b | One step is a multiplication by $P$ | x P, how to read it (1/3) | xP-1 |
+| 16 | L-b | One step is a multiplication by $P$ | x P, how to read it (2/3) | xP-2 |
+| 17 | L-b | One step is a multiplication by $P$ | x P, how to read it (3/3) | xP-3 |
 | 18 | L-a | After $t$ steps | x(0) P^t | xPt |
 | 19 | L-b | Rows of $P^t$ after t steps | P^t as a heat map (slider) | Pt-slider |
 | 20 | L-b | Rows of $P^t$ at $t = 40$ | P^t, the numbers at t = 40 | Pt-40 |

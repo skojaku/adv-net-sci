@@ -110,7 +110,7 @@ for k, (case, tk) in enumerate([
         ("x = e_0", "$x = (1, 0, 0, \\dots)$: $xP$ is the row of {n0}".format(n0="node 0")),
         ("x = e_1", "$x = (0, 1, 0, \\dots)$: $xP$ is the row of node 1"),
         ("x = a mix", "$x = (0.5, 0.05, \\dots)$: $xP$ is a mix of the rows")], 1):
-    S("L-a", title=f"One step is a {hot('multiplication')} by $P$", sub="$x(t+1) = x(t)\\,P$", fig=f"xP-{k}", take=tk,
+    S("L-b", title=f"One step is a {hot('multiplication')} by $P$", fig=f"xP-{k}", take=tk,
       build=(k, 3), beat=f"x P, how to read it ({k}/3)", w=1080,
       note=f"Build {k}/3. {case}: the walker's distribution is a row vector; one step is the row times the square P. A walker certain to be at node 0 moves to the row of node 0 of P; with a mix, the new distribution is the mix of the rows. The same canvas on all three.")
 
@@ -149,7 +149,7 @@ S("L-c", title=f"The {hot('second')} term stays the longest", beat="A3",
   body=two_col("$\\lambda_2 = 0.89$\n\n$0.89^{t}$: 0.56 at $t = 5$, 0.31 at $t = 10$, 0.01 at $t = 40$", "lam-curves-a"),
   figs=["lam-curves-a"], note="Same figure as the question, with the answer added.")
 
-for k, say in enumerate(["where you start matters at first; later the second term dominates",
+for k, say in enumerate(["where you start matters at first (the lower line starts at a node with 6 friends, the upper at a node with 4 or 5); later every start follows the same slope, set by the second term",
                          "how close is close enough? epsilon = 1/2 in the 1-norm, which is 1/4 in total variation distance, the usual choice in the Markov chain literature",
                          "the mixing time: the first t at which every start is within the threshold"], 1):
     S("L-a", title=f"{hot('Mixing time')}",

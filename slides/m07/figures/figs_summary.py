@@ -10,8 +10,8 @@ W, H = 1080, 560
 MESLO = "/Users/skojaku/Library/Fonts/MesloLGSNerdFontPropo-Regular.ttf"
 HOT, INK, MUTED = "#B14434", "#000000", "#6B6B6B"
 ROWS = [
-    ("1", [("The eigenvalue ", INK), ("1", HOT), (" gives the ", INK), ("degree", HOT)], ["degree-share"]),
-    ("2", [("The second eigenvalue gives the ", INK), ("communities", HOT), (" and the ", INK), ("mixing time", HOT)], ["relax-curve", "eigvec2"]),
+    ("1", [("Eigenvalue 1: the ", INK), ("degree", HOT)], ["degree-share"]),
+    ("2", [("Eigenvalue 2: the ", INK), ("communities", HOT), (" and the ", INK), ("relaxation time", HOT)], ["eigvec2", "relax-curve"]),
     ("3", [("Short walks see ", INK), ("communities", HOT), (". Long walks see ", INK), ("degree", HOT), (".", INK)], ["comm-curve"]),
 ]
 
@@ -39,8 +39,8 @@ def main():
     for i, (n, parts, thumbs) in enumerate(ROWS):
         y0 = i * row_h
         d.text((14 * S, (y0 + 28) * S), n, font=num, fill=HOT)
-        runs(d, 70 * S, (y0 + 30) * S, parts, big, 470 * S)
-        x = 580
+        runs(d, 70 * S, (y0 + 30) * S, parts, big, 400 * S)
+        x = 490
         avail = W - 12 - x
         gap = 14
         w_each = (avail - gap * (len(thumbs) - 1)) // len(thumbs)

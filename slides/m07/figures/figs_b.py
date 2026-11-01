@@ -211,11 +211,11 @@ def f_Pdef():
 
 
 # --------------------------------------------------------------------------- xP-1..3
-XC = 20                                            # cell side of the pictogram
-XP_X = 100                                         # left of the x bar
-XP_P = 420                                         # left of P
-XP_R = 740                                         # left of the result
-XP_YTOP = 290
+XC = 26                                            # cell side of the pictogram (the P square is 312 bp)
+XP_X = 20                                          # left of the x bar
+XP_P = 388                                         # left of P
+XP_R = 756                                         # left of the result
+XP_YTOP = 335
 XP_YC = XP_YTOP - N * XC / 2
 
 X_CASES = {
@@ -237,63 +237,66 @@ def f_xP(case):
     assert np.allclose(y, sum(x[i] * P12[i] for i in range(N)))
     nz = [i for i in range(N) if x[i] > 0]
     o = wide(XP_X, XP_YC, x, XC)
-    o += op(XP_X + N * XC + 40, XP_YC, "$\\times$")
+    o += op(XP_X + N * XC + 28, XP_YC, "$\\times$")
     o += heat(XP_P, XP_YTOP, P12, XC)
     o += hot_rows(XP_P, XP_YTOP, nz, N, XC, w=3.0)
-    o += op(XP_P + N * XC + 40, XP_YC, "$=$")
+    o += op(XP_P + N * XC + 28, XP_YC, "$=$")
     o += wide(XP_R, XP_YC, y, XC)
-    o += mtext(XP_X + N * XC / 2, XP_YTOP + 34, "$x$")
+    o += mtext(XP_X + N * XC / 2, XP_YTOP + 34, "$x(t)$")
     o += mtext(XP_P + N * XC / 2, XP_YTOP + 34, "$P$")
-    o += mtext(XP_R + N * XC / 2, XP_YTOP + 34, "$xP$")
+    o += mtext(XP_R + N * XC / 2, XP_YTOP + 34, "$x(t+1)$")
     for i in nz:     # the weight above each non-zero cell of x, the node number beside the row of P it picks
         o += rect(XP_X + i * XC, XP_YC - XC / 2, XP_X + (i + 1) * XC, XP_YC + XC / 2, color="ink", w=3.0)
         o += F.text(XP_X + (i + .5) * XC, XP_YC + XC / 2 + 24, wnum(x[i]), color="hot", size=F.FONT)
         o += F.text(XP_X + (i + .5) * XC, XP_YC - XC / 2 - 22, str(i), color="muted", size=F.FONT)
-        o += F.text(XP_P - 14, XP_YTOP - (i + .5) * XC, str(i), color="hot", anchor="east", size=F.FONT)
+        o += F.text(XP_P - 12, XP_YTOP - (i + .5) * XC, str(i), color="hot", anchor="east", size=F.FONT)
     return o
 
 
 def f_xP_all():
-    F.emit_group([(f"xP-{k}", f_xP(k)) for k in (1, 2, 3)], container="full", h=380, hmod="tight", nodes=False,
+    F.emit_group([(f"xP-{k}", f_xP(k)) for k in (1, 2, 3)], container="full", h=395, hmod="lt", nodes=False,
                  box=None, prefix=False)
 
 
 # --------------------------------------------------------------------------- xPt
 def f_xPt():
-    c = 12
+    c = 16
     side = N * c
     x0 = np.eye(N)[0]
     t = 3
     xt = x0 @ Pt(t)
-    ytop = 250
+    ytop = 270
     yc = ytop - side / 2
-    gap = 46
-    xs = [26]
+    gap = 54
     o = ""
-    o += wide(xs[0], yc, x0, c)
-    xp = xs[0] + side
+    xs = 14
+    o += wide(xs, yc, x0, c)
+    cur = xs + side
     ppos = []
-    cur = xp
-    for k in range(3):
-        if k == 2:
-            o += mtext(cur + gap / 2 + 8, yc, "$\\cdots$")
-            cur += gap + 22
-        o += op(cur + gap / 2, yc, "$\\times$")
-        cur += gap
-        ppos.append(cur)
-        o += heat(cur, ytop, P12, c)
-        cur += side
-    o += op(cur + gap / 2 - 4, yc, "$=$")
-    cur += gap - 8
+    o += op(cur + gap / 2, yc, "$\\times$")
+    cur += gap
+    ppos.append(cur)
+    o += heat(cur, ytop, P12, c)
+    cur += side
+    o += op(cur + 28, yc, "$\\times$")
+    o += mtext(cur + (gap + 100) / 2, yc, "$\\cdots$")
+    o += op(cur + gap + 100 - 28, yc, "$\\times$")
+    cur += gap + 100
+    ppos.append(cur)
+    o += heat(cur, ytop, P12, c)
+    cur += side
+    o += op(cur + gap / 2, yc, "$=$")
+    cur += gap
     o += wide(cur, yc, xt, c)
-    o += mtext(xs[0] + side / 2, ytop + 34, "$x(0)$")
+    o += mtext(xs + side / 2, ytop + 34, "$x(0)$")
     for p in ppos:
         o += mtext(p + side / 2, ytop + 34, "$P$")
     o += mtext(cur + side / 2, ytop + 34, "$x(t)$")
-    # brace under the three squares: "t times"
-    b0, b1, by = ppos[0], ppos[2] + side, ytop - side - 14
+    # brace under the squares: "t times"
+    b0, b1, by = ppos[0], ppos[1] + side, ytop - side - 14
     o += (f"\\draw[hot,line width=2.6bp] ({b0:.1f},{by + 8:.1f}) -- ({b0:.1f},{by:.1f}) -- ({b1:.1f},{by:.1f}) -- ({b1:.1f},{by + 8:.1f});\n")
     o += mtext((b0 + b1) / 2, by - 34, "$t$ times", color="hot")
+    assert cur + side < 1080, cur + side
     F.emit("xPt", o, container="full", h=330, hmod="", nodes=False)
 
 
@@ -351,15 +354,17 @@ def f_Pt40():
 
 # --------------------------------------------------------------------------- Pt-zoom
 def f_zoom():
-    t, z, c = 5, 3, 22
+    """The enlarged patch on the LEFT, the map on the RIGHT: the dashed zoom lines then leave the map at the
+    box and never cross it."""
+    t, z, c = 5, 3, 28
     M = Pt(t)
-    x0, ytop = 70, 440
+    x0, ytop = 690, 436
     o = heat(x0, ytop, M, c)
     o += mtext(x0 + N * c / 2, ytop + 36, "$P^{5}$")
     bx1, by0 = x0 + z * c, ytop - z * c
     o += rect(x0, by0, bx1, ytop, color="ink", w=3.4)
-    big = 90
-    X0, YT = 500, 440
+    big = 100
+    X0, YT = 60, 436
     for i in range(z):
         for j in range(z):
             xl, yt = X0 + j * big, YT - i * big
@@ -369,11 +374,11 @@ def f_zoom():
         o += f"\\draw[white,line width=0.8bp] ({X0 + k * big:.1f},{YT - z * big:.1f}) -- ({X0 + k * big:.1f},{YT:.1f});\n"
         o += f"\\draw[white,line width=0.8bp] ({X0:.1f},{YT - k * big:.1f}) -- ({X0 + z * big:.1f},{YT - k * big:.1f});\n"
     o += rect(X0, YT - z * big, X0 + z * big, YT, color="ink", w=3.4)
-    o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({bx1:.1f},{ytop:.1f}) -- ({X0 - 4:.1f},{YT:.1f});\n"
-    o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({bx1:.1f},{by0:.1f}) -- ({X0 - 4:.1f},{YT - z * big:.1f});\n"
+    o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({x0:.1f},{ytop:.1f}) -- ({X0 + z * big + 4:.1f},{YT:.1f});\n"
+    o += f"\\draw[hot,line width=1.8bp,dash pattern=on 7bp off 6bp] ({x0:.1f},{by0:.1f}) -- ({X0 + z * big + 4:.1f},{YT - z * big:.1f});\n"
     ex, ey = X0 + 2.5 * big, YT - .5 * big
-    o += F.sketch_circle(ex, ey, big * .9, color="ink", w=3.0)
-    a, _ = F.aside("start at 0,\\\\at 2 after\\\\5 steps", (930, YT - 150), (ex + 42, ey - 22), anchor="center", bend=25, gap=8)
+    o += F.sketch_circle(ex, ey, big * .85, color="ink", w=3.0)
+    a, _ = F.aside("start at 0,\\\\at 2 after\\\\5 steps", (468, YT - 120), (ex + 52, ey - 16), anchor="center", bend=-25, gap=8)
     o += a
     o += F.text(X0 + z * big / 2, YT - z * big - 36, "row: where it starts", color="muted", size=F.FONT)
     o += F.text(X0 + z * big / 2, YT - z * big - 76, "column: where it is", color="muted", size=F.FONT)

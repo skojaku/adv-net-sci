@@ -111,11 +111,13 @@ def frame_rect(x0, y0, x1, y1, color="pale", w=3.0):
 
 # ============================================================================ pearson-walker
 def f_pearson_walker():
-    """TOP: the walker on a field, one yard per step.  BELOW it: the pub (photo)."""
-    H, dy = 560.0, 262.0                       # canvas height; the drawing is shifted up by dy
+    """TOP (the main thing): the walker on a field, one yard per step.  BELOW it, smaller: the pub (photo)."""
+    H = 456.0                                   # canvas height
     ox, oy = 186.0, 120.0                       # where the walker stands (screen, before the shift)
-    sh, sy = 0.28, 0.5                          # the field is drawn at an angle: shear and squash
+    dy = (H - 206.0) - oy                       # the drawing is shifted up so the start sits 206 bp under the top
+    sh, sy = 0.28, 0.8                          # the field is drawn at an angle: shear and squash (taller than v2)
     L = 70                                      # one yard, in field units
+    f = 1.35                                    # the stick figure, larger than v2
 
     def S(u, v):
         return (ox + u + sh * v, oy + sy * v)
@@ -136,19 +138,20 @@ def f_pearson_walker():
     for p in sp[1:]:
         o += F.dot(p[0], p[1], color="hot", d=13)
     x, y = sp[0]                                  # the stick figure, standing on the start
-    o += F.sketch_circle(x, y + 118, 30, color="ink", w=3.2)
-    for p, q in [((x, y + 103), (x, y + 50)), ((x, y + 50), (x - 20, y)), ((x, y + 50), (x + 20, y)),
-                 ((x, y + 92), (x - 30, y + 62)), ((x, y + 92), (x + 30, y + 62))]:
-        o += F.seg(p, q, color="ink", w=4.0)
+    o += F.sketch_circle(x, y + 118 * f, 30 * f, color="ink", w=3.4)
+    for p, q in [((x, y + 103 * f), (x, y + 50 * f)), ((x, y + 50 * f), (x - 20 * f, y)), ((x, y + 50 * f), (x + 20 * f, y)),
+                 ((x, y + 92 * f), (x - 30 * f, y + 62 * f)), ((x, y + 92 * f), (x + 30 * f, y + 62 * f))]:
+        o += F.seg(p, q, color="ink", w=4.4)
     mid = ((sp[0][0] + sp[1][0]) / 2, (sp[0][1] + sp[1][1]) / 2)
-    t, _ = F.aside("1 yard", at=(mid[0] + 96, mid[1] - 26), target=(mid[0] + 12, mid[1] - 2), anchor="west", bend=-25)
+    t, _ = F.aside("1 yard", at=(mid[0] + 96, mid[1] - 30), target=(mid[0] + 12, mid[1] - 2), anchor="west", bend=-25)
     o += t
     o += "\\end{scope}\n"
-    # the pub, directly under the drawing: a pale frame, the photo pasted over it
-    px0, pw, ph_ = 18.0, 500.0, 250.0
+    # the pub, smaller, directly under the drawing: a pale frame, the photo pasted over it
+    px0, pw, ph_ = 8.5, 520.0, 165.0
     ptop = H - (oy + sy * -70 + dy) + 14             # just below the lowest grid line
+    assert ptop + ph_ <= H, (ptop, ph_, H)
     o += frame_rect(px0 - 2, H - ptop + 2, px0 + pw + 2, H - ptop - ph_ - 2)
-    pub = _photo("pub.jpg", (90, 520, 1300, 1130), (int(pw * F.PXBP), int(ph_ * F.PXBP)))
+    pub = _photo("pub.jpg", (120, 720, 1220, 1070), (int(pw * F.PXBP), int(ph_ * F.PXBP)))   # the sign and the doorway
     emit_photo("pearson-walker", o, "col", int(H), "c", [(pub, (px0, ptop, pw, ph_))])
 
 
@@ -235,8 +238,11 @@ def f_fields():
     pr = Image.new("RGBA", pr0.size, "white")
     pr.alpha_composite(pr0)
     pr = pr.convert("L")
+    # re-ink: thicken the 3 px lines of the source before it is shrunk (they came out as hairlines), then darken
+    from PIL import ImageFilter
+    pr = pr.filter(ImageFilter.MinFilter(9))
     pr = pr.resize((int(pr.width * (ph_ - 16) / pr.height), int(ph_ - 16)), Image.LANCZOS)
-    pr = pr.point(lambda v: int(255 - (255 - v) * 0.78)).convert("RGB")
+    pr = pr.point(lambda v: int(255 - (255 - v) * 1.25) if v > 130 else int(v * 0.25)).convert("RGB")
     canvas = Image.new("RGB", (int(pw * F.PXBP), int(ph_ * F.PXBP)), "white")
     pr4 = pr.resize((int(pr.width * F.PXBP), int(pr.height * F.PXBP)), Image.LANCZOS)
     canvas.paste(pr4, ((canvas.width - pr4.width) // 2, (canvas.height - pr4.height) // 2))
@@ -276,15 +282,15 @@ def _frac_returning(dim, walkers, steps, seed):
 
 def f_polya():
     steps = 400
-    # a seed for each panel: 2D comes back to the start several times, 3D never does
-    s2 = next(s for s in range(1, 2000) if _returns(_lattice_walk(2, steps, s)) in (4, 5, 6, 7)
-              and np.ptp(_lattice_walk(2, steps, s), axis=0).max() >= 26)
-    s3 = next(s for s in range(1, 2000) if _returns(_lattice_walk(3, steps, s)) == 0
-              and 26 <= np.ptp(_lattice_walk(3, steps, s)[:, :2] + 0.0, axis=0).max() <= 38
-              and np.abs(_lattice_walk(3, steps, s)[-1]).sum() >= 24)
+    # a seed for each panel, found by search (seeds 1..30000): the 2D walk comes back to the start at least four
+    # times and never strays more than 10 steps from it; the 3D walk never comes back and ends far away
+    s2, s3 = 11255, 4804
     p2, p3 = _lattice_walk(2, steps, s2), _lattice_walk(3, steps, s3)
     r2, r3 = _returns(p2), _returns(p3)
     assert r2 >= 4 and r3 <= 1, (r2, r3)
+    reach2 = np.sqrt((p2 ** 2).sum(axis=1)).max()
+    reach3 = np.sqrt((p3 ** 2).sum(axis=1)).max()
+    assert reach2 <= 10 and reach3 >= 45, (reach2, reach3)      # 2D stays close, 3D goes far (in lattice steps)
     # the probabilities behind the picture (Polya 1921): 3D, the chance of ever coming back is 0.34
     f3, f3_400 = _frac_returning(3, 10000, 2000, 7)
     f2, f2_400 = _frac_returning(2, 10000, 2000, 7)
@@ -311,6 +317,10 @@ def f_polya():
         mid = (xy.max(axis=0) + xy.min(axis=0)) / 2
         pts = [(cx + sc * (a - mid[0]), cy + sc * (b - mid[1])) for a, b in xy]
         o += F.polyline(pts, color="muted", w=2.6)
+        if d == 2:                                  # every return: the last step into the start, in hot
+            for i in range(1, len(p)):
+                if not p[i].any():
+                    o += F.polyline([pts[i - 1], pts[i]], color="hot", w=4.4)
         o += F.dot(*pts[-1], color="ink", d=13)
         o += F.ring(*pts[0], size=22, color="hot", w=3.6, grow=8)
         o += F.dot(*pts[0], color="hot", d=14)
@@ -571,7 +581,7 @@ FIGURES = [
     ("pearson-walker", f_pearson_walker), ("polya", f_polya), ("fields", f_fields),
     ("walk-rule", f_walk_rule), ("two-comm-q", f_two_comm_q), ("two-comm-walk", f_two_comm_walk),
     ("clique", f_clique), ("twoclique", f_twoclique), ("no-larger", f_no_larger),
-    ("detailed-balance", f_detailed_balance), ("tasks-diamond", f_tasks_diamond),
+    ("detailed-balance", f_detailed_balance),
 ]
 
 if __name__ == "__main__":

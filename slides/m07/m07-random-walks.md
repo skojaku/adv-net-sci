@@ -317,16 +317,10 @@ Introduce the 12-node two-community network that runs to the end and that the sh
 
 ---
 
-<!-- _class: L-a -->
+<!-- _class: L-b -->
 <!-- _footer: "" -->
 
 ## One step is a <span class="hot">multiplication</span> by $P$
-
-<div class="sub">
-
-$x(t+1) = x(t)\,P$
-
-</div>
 
 <div class="fig">
 
@@ -347,16 +341,10 @@ Build 1/3. x = e_0: the walker's distribution is a row vector; one step is the r
 
 ---
 
-<!-- _class: L-a -->
+<!-- _class: L-b -->
 <!-- _footer: "" -->
 
 ## One step is a <span class="hot">multiplication</span> by $P$
-
-<div class="sub">
-
-$x(t+1) = x(t)\,P$
-
-</div>
 
 <div class="fig">
 
@@ -377,16 +365,10 @@ Build 2/3. x = e_1: the walker's distribution is a row vector; one step is the r
 
 ---
 
-<!-- _class: L-a -->
+<!-- _class: L-b -->
 <!-- _footer: "" -->
 
 ## One step is a <span class="hot">multiplication</span> by $P$
-
-<div class="sub">
-
-$x(t+1) = x(t)\,P$
-
-</div>
 
 <div class="fig">
 
@@ -664,7 +646,7 @@ Same figure as the question, with the answer added.
 
 <!--
 [#29] beat: mixing time (1/3)
-Build 1/3: where you start matters at first; later the second term dominates. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.
+Build 1/3: where you start matters at first (the lower line starts at a node with 6 friends, the upper at a node with 4 or 5); later every start follows the same slope, set by the second term. One thin line per starting node, a black line for the worst start; Epsilon is a free choice; epsilon = 1/2 (1-norm) is the textbook 1/4 in total variation (total variation is half the 1-norm), and it gives t = 7 on this network. A smaller epsilon costs a few more relaxation times: see the table two slides after the clique questions. The formula appears only at the end, after the diagram has said it.
 -->
 
 ---
