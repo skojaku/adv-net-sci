@@ -1,6 +1,8 @@
-# m08 埋め込み(スライド・モック v1)
+# m08 埋め込み(スライド・モック v2)
 
-2026-11-02。`m08-embedding.md`(slide-math スタイル、英語、36枚、1枚1分で約36分)。
+**v2(2026-11-03)の変更**:文字を約1.6倍(本文 34px、図の文字も同率)、2カラム(左に文字、右に図)を基本にし、囲み(box)を減らした。DeepWalk の図(スライド10)、Preferential Attachment との対比図(15)、ラボの出力(12、実データ)、再起ウォークの1ステップ図(13)、$\lambda_k^2$ と誤差の図(26)、緩和の図(31)、空手クラブのネットワーク図(32)を追加した。スライド33と34は Ratio Cut との対応表にまとめた。カラテクラブは**重みなし**の隣接行列に直した(v1 は networkx の重み付き版で計算していた)ため、符号の一致は 34人中 **32人**(3番と9番が不一致)。
+
+2026-11-02(v1)。`m08-embedding.md`(slide-math スタイル、英語、36枚、1枚1分で約36分)。
 図は `python3 figures/make_figures.py` で作ります(PNG/SVG はコミットしません)。チェック:`python3 ~/.claude/skills/slide-math/tools/check.py m08-embedding.md`(エラー0、警告0)。画像:`~/.claude/skills/slide-math/tools/render.sh m08-embedding.md png`。
 
 ## スライド一覧
@@ -37,7 +39,7 @@
 | 29 | Group indicator vector | 指示ベクトル $\mathbf x$ | 式と $\mathbf x$ の点図 | |
 | 30 | Ratio Cut as a quadratic form | RatioCut $=\mathbf x^\top\mathbf L\mathbf x/N$ | 結果と導出(導出は P&P Q2, Q3) | |
 | 31 | Relaxation to real values | 連続緩和で固有値問題、2番目に小さい固有ベクトル | 離散(NP困難)→ 緩和の2つの箱 | |
-| 32 | Second eigenvector of the Laplacian | 符号が派閥を分ける | カラテクラブ、34人中33人が一致(実計算) | |
+| 32 | Second eigenvector of the Laplacian | 符号が派閥を分ける | カラテクラブのネットワーク図 + 固有ベクトルの点図、34人中32人が一致(実計算、重みなし) | |
 | 33 | Normalized Cut | 体積に置き換え | NCut、指示ベクトル、3つの性質(P&P Q4) | 検算済み(NCut 1.02 と 0.09) |
 | 34 | Relaxation of Normalized Cut | $\mathbf L\mathbf x=\lambda\mathbf D\mathbf x\Leftrightarrow\mathbf L_{\mathrm{sym}}\mathbf y=\lambda\mathbf y$ | 2つの箱(P&P Q5) | |
 | 35 | Pen and paper | 5問(10分) | 一覧表 | 下の計画を参照 |
