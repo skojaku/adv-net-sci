@@ -77,9 +77,9 @@ S("L-f", title="Pen & Paper", sub="10 minutes · stop at the line on the sheet",
   note="Hand out the sheet. Part 1 is done now, before the lecture names anything. Students open the simulator (next slide), sketch how the visits correlate with degree over time, run 20,000 steps, read the most and the least visited node, compute degree ÷ share for both, and compute the one-step and three-step probabilities on the small drawn network. The sheet has a printed line: STOP, wait for the lecture. Walk around the room.")
 
 S("L-c", beat="the simulator (QR code and link)",
-  body='<div class="cols">\n<div>\n\n### Random walk simulator\n\n<code>skojaku.github.io/<br>adv-net-sci/assets/vis/<br>random-walks/index.html</code>\n\n</div>\n<div class="fig">\n\n![w:440](figures/qr-sim.png)\n\n</div>\n</div>',
+  body='<div class="cols">\n<div>\n\n### Random walk simulator\n\n<code>go.skojaku.com/m07walk</code>\n\n</div>\n<div class="fig">\n\n![w:440](figures/qr-sim.png)\n\n</div>\n</div>',
   figs=["qr-sim"],
-  note="The simulator is last term's tool, unchanged (lecture-note/assets/vis/random-walks/index.html). Default network: the karate club. ?dataFile=two-cliques.json loads two 5-cliques joined by one edge. No short link yet (go.skojaku.com/m07sim is not created): the QR code points at the full address.")
+  note="The simulator is last term's tool, unchanged (lecture-note/assets/vis/random-walks/index.html). Default network: the karate club. ?dataFile=two-cliques.json loads two 5-cliques joined by one edge. Short link: go.skojaku.com/m07walk (302 to the full address); the QR code encodes the short link.")
 
 S("L-c", title="Two communities joined by one edge", beat="question to the room (Q2)",
   body=two_col("**How many steps**, on average, until the walker crosses to the other community?\n\nA: about 3\n\nB: about 20\n\nC: about 200", "two-comm-q", cue="Take a guess."),

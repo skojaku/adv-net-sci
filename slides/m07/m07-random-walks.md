@@ -172,7 +172,7 @@ Hand out the sheet. Part 1 is done now, before the lecture names anything. Stude
 
 ### Random walk simulator
 
-<code>skojaku.github.io/<br>adv-net-sci/assets/vis/<br>random-walks/index.html</code>
+<code>go.skojaku.com/m07walk</code>
 
 </div>
 <div class="fig">
@@ -183,7 +183,7 @@ Hand out the sheet. Part 1 is done now, before the lecture names anything. Stude
 </div>
 <!--
 [#8] beat: the simulator (QR code and link)
-The simulator is last term's tool, unchanged (lecture-note/assets/vis/random-walks/index.html). Default network: the karate club. ?dataFile=two-cliques.json loads two 5-cliques joined by one edge. No short link yet (go.skojaku.com/m07sim is not created): the QR code points at the full address.
+The simulator is last term's tool, unchanged (lecture-note/assets/vis/random-walks/index.html). Default network: the karate club. ?dataFile=two-cliques.json loads two 5-cliques joined by one edge. Short link: go.skojaku.com/m07walk (302 to the full address); the QR code encodes the short link.
 -->
 
 ---
