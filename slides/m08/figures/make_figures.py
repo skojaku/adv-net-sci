@@ -636,10 +636,105 @@ def fiedler():
     B("karate-net", *parts)
 
 
+def detour():
+    """Where word2vec sits in the story: a detour through text, back to networks at DeepWalk."""
+    parts = [node("g", (150, 260), r"vectors\\for nodes", style="box", w=250, h=110, extra="font=\\fsbody"),
+             node("d", (560, 260), r"DeepWalk", style="box", w=250, h=110, extra="font=\\fsbody, fill=hl"),
+             node("w", (355, 40), r"word2vec\\on text", style="box", w=250, h=110, extra="font=\\fsbody, dashed"),
+             arrow("(g.east)", "(d.west)"),
+             f"\\draw[arr, dashed] (g.south) |- (w.west);",
+             f"\\draw[arr, dashed] (w.east) -| (d.south);",
+             label((355, 190), r"\fslabel direct route", anchor="south"),
+             label((355, -40), r"\fslabel detour: the same method, on text", anchor="north")]
+    B("detour", *parts)
+
+
+def blockmats():
+    """A and x_i - x_j in the node order S | T, for the Ratio Cut indicator and the Normalized Cut indicator."""
+    names, M = eleven()
+    deg = M.sum(1)
+    S_idx, T_idx = list(range(6)), list(range(6, 11))
+    n = 11
+
+    def one(name, xS, xT):
+        parts = []
+        sz, gap = 262, 70
+        c = sz / n
+        for k, x0 in enumerate((0, sz + gap)):
+            y0 = sz
+            if k == 0:
+                for i in range(n):
+                    for j in range(n):
+                        if M[i, j]:
+                            parts.append(f"\\path[fill=ink] {P(x0 + j * c, y0 - (i + 1) * c)} rectangle {P(x0 + (j + 1) * c + 0.3, y0 - i * c + 0.3)};")
+                for (i, j) in ((5, 6), (6, 5)):
+                    parts.append(f"\\draw[draw=sbase, line width=3.5\\px] {P(x0 + j * c, y0 - (i + 1) * c)} rectangle {P(x0 + (j + 1) * c, y0 - i * c)};")
+            else:
+                for i in range(n):
+                    for j in range(n):
+                        if (i < 6) != (j < 6):
+                            v = (xS - xT) if i < 6 else (xT - xS)
+                            col = rgb(diverging(0.45 if v > 0 else -0.45))
+                            parts.append(f"\\path[fill={col}] {P(x0 + j * c, y0 - (i + 1) * c)} rectangle {P(x0 + (j + 1) * c + 0.3, y0 - i * c + 0.3)};")
+                d = xS - xT
+                parts.append(label((x0 + 8.5 * c, y0 - 3 * c), rf"${d:.2f}$", size="fsbody"))
+                parts.append(label((x0 + 2.5 * c, y0 - 8.5 * c), rf"$-{d:.2f}$", size="fsbody"))
+                parts.append(label((x0 + 3 * c, y0 - 3 * c), r"$0$", size="fsbody"))
+                parts.append(label((x0 + 8.5 * c, y0 - 8.5 * c), r"$0$", size="fsbody"))
+            parts.append(f"\\draw[line width=1.4\\px] {P(x0, y0 - sz)} rectangle {P(x0 + sz, y0)};")
+            parts.append(f"\\draw[dash pattern=on 5bp off 4bp, line width=1.3bp, draw=muted] {P(x0 + 6 * c, y0)} -- {P(x0 + 6 * c, y0 - sz)};")
+            parts.append(f"\\draw[dash pattern=on 5bp off 4bp, line width=1.3bp, draw=muted] {P(x0, y0 - 6 * c)} -- {P(x0 + sz, y0 - 6 * c)};")
+            parts.append(label((x0 + 3 * c, y0 + 6), r"$S$", size="fsbody", anchor="south"))
+            parts.append(label((x0 + 8.5 * c, y0 + 6), r"$T$", size="fsbody", anchor="south"))
+            parts.append(label((x0 + sz / 2, -8), r"$\mathbf A$" if k == 0 else r"$x_i-x_j$", size="fsbody", anchor="north"))
+        B(name, *parts)
+
+    volS, volT = deg[S_idx].sum(), deg[T_idx].sum()
+    one("matrices-rc", math.sqrt(5 / 6), -math.sqrt(6 / 5))
+    one("matrices-ncut", math.sqrt(volT / volS), -math.sqrt(volS / volT))
+    print("volumes", volS, volT, "NCut", 1 * (1 / volS + 1 / volT))
+
+
+def indicator_ncut():
+    names, M = eleven()
+    deg = M.sum(1)
+    volS, volT = deg[:6].sum(), deg[6:].sum()
+    xs = [math.sqrt(volT / volS)] * 6 + [-math.sqrt(volS / volT)] * 5
+    labs = ["p"] + [f"a_{i + 1}" for i in range(5)] + [f"b_{i + 1}" for i in range(5)]
+    hl = {i: "hl" for i in range(6)} | {i: "hlc" for i in range(6, 11)}
+    B("indicator-ncut", vecdots(xs, labels=labs, highlight=hl, yticks=[-1, 0, 1], unit=125, step=46, ymin=-1.3, ymax=1.2, r=6))
+
+
+def relax_ncut():
+    """Normalized Cut: indicator (two values) above, relaxed solution x = D^{-1/2} y below, for the 11-node example."""
+    names, M = eleven()
+    deg = M.sum(1)
+    Dm = np.diag(deg ** -0.5)
+    Ls = np.eye(11) - Dm @ M @ Dm
+    w, V = np.linalg.eigh(Ls)
+    y = V[:, 1]
+    x = Dm @ y
+    x = x * math.sqrt(deg.sum() / (x @ (deg * x)))          # x^T D x = vol(G)
+    x = x * (1 if x[0] > 0 else -1)
+    volS, volT = deg[:6].sum(), deg[6:].sum()
+    ind = [math.sqrt(volT / volS)] * 6 + [-math.sqrt(volS / volT)] * 5
+    labs = ["p"] + [f"a_{i + 1}" for i in range(5)] + [f"b_{i + 1}" for i in range(5)]
+    hl = {i: "hl" for i in range(6)} | {i: "hlc" for i in range(6, 11)}
+    B("relax-ncut",
+      vecdots(ind, labels=labs, highlight=hl, yticks=[-1, 0, 1], unit=50, step=46, ymin=-1.4, ymax=1.4, r=6, origin=(0, 300), name="x1"),
+      vecdots([float(v) for v in x], labels=labs, highlight=hl, yticks=[-1, 0, 1], unit=50, step=46, ymin=-1.4, ymax=1.4, r=6, origin=(0, 80), name="x2"),
+      label((290, 412), r"two values", size="fsbody"),
+      label((290, 184), r"any real values", size="fsbody"))
+
+
 if __name__ == "__main__":
-    for f in (feat, pipeline, analogy, sentence, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
+    ALL = (feat, pipeline, analogy, sentence, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
               communities, circumference, tree_disk, tree_plain, compress, layers, recon, spectrum, error_curve, cuts,
-              indicator, relax, fiedler):
+              indicator, relax, fiedler, detour, blockmats, indicator_ncut, relax_ncut)
+    want = sys.argv[1:]
+    for f in ALL:
+        if want and f.__name__ not in want:
+            continue
         print("building", f.__name__)
         f()
     print("figures written to", OUT)

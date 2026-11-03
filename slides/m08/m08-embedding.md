@@ -31,6 +31,12 @@ section .parts { margin: 64px 0 140px; }
 section .part[data-tag]::before { bottom: calc(100% + 10px); }
 section .pin { padding-top: 56px; }
 section .pin::before { height: 44px; }
+section iframe.anim { border: 0; display: block; margin: 0 auto; background: transparent; }
+section .eq-xs .katex-display { font-size: 0.8em; }
+section .parts.tight { margin: 52px 0 120px; }
+section .pin br { display: block; }
+section :not(.katex-display) > .katex { font-size: 1.04em; }
+section .katex .why { font-size: 0.9em; }
 section pre { padding: 14px 26px; line-height: 1.55; flex-shrink: 0; }
 section th, section td { padding: 6px 18px; }
 section table { margin-bottom: 14px; }
@@ -112,6 +118,27 @@ Representation learning trains the node vectors $\vb x_i \in \R^d$ on data inste
 
 ---
 
+## A detour through text
+
+Next is a detour: word2vec is a method for text, and DeepWalk reuses it for networks later in this part.
+
+<div class="cols c11 mid">
+<div>
+
+- word2vec learns a vector for every word of a text
+- a random walk is a sequence of nodes, which can be read as a text
+- <span class="key">we return to networks at DeepWalk</span>
+
+</div>
+<div class="fig">
+
+![w:600](figures/detour.svg)
+
+</div>
+</div>
+
+---
+
 ## word2vec: words as vectors
 
 word2vec (Mikolov et al. 2013) gives every word a vector, so that words used in similar contexts get close vectors.
@@ -181,6 +208,18 @@ A real pair (label 1) is pulled together and a random pair (label 0) is pushed a
 $$\Pr(y=1 \mid i, j) = \sigma(\vb u_i^\top \vb v_j) \quad \ell = -\log \sigma(\vb u_i^\top \vb v_j) - \log \sigma(-\vb u_i^\top \vb v_{j'})$$
 
 </div>
+
+---
+
+## word2vec in motion
+
+A window slides over the text, every position gives pairs, and the pairs move the vectors.
+
+<div class="fig">
+<iframe class="anim" src="anim/skipgram.html" width="1130" height="516"></iframe>
+</div>
+
+<div class="ref">Animation: skip-gram with 2 random pairs per real pair, 12 words, window of one word on each side. Only the query vectors u are drawn.</div>
 
 ---
 
@@ -343,7 +382,7 @@ Papadopoulos et al. (2012) add similarity to preferential attachment.
 
 ## Growth rule of the model
 
-Node $t$ gets a radius from its arrival time and a random angle, and links to the $m$ closest existing nodes.
+Node $t$ gets the radius $\ln t$ and a random angle, and links to its $m$ closest nodes.
 
 <div class="cols c11 mid">
 <div>
@@ -362,14 +401,7 @@ link to the $m$ nodes $s < t$ with the smallest $s\,\theta_{st}$
 
 </div>
 <div class="fig">
-
-![w:450](figures/growth.svg)
-
-<div class="cap">
-
-$m=2$, newest node $t=40$ (animation planned).
-
-</div>
+<iframe class="anim" src="anim/growth.html" width="540" height="506"></iframe>
 </div>
 </div>
 
@@ -377,9 +409,12 @@ $m=2$, newest node $t=40$ (animation planned).
 
 ## Observed degree mixes two effects
 
-Degree is the one quantity that can be observed, and in it popularity and similarity are mixed.
+The observed degree mixes popularity with the size of the community.
 
-<div class="parts eq-lg">
+<div class="cols c11">
+<div>
+
+<div class="parts tight eq-sm">
 <div class="part">
 
 $$k_i \;\propto$$
@@ -391,7 +426,7 @@ $$\hl{\kappa_i}$$
 
 <div class="pin">
 
-hidden degree
+hidden<br>degree
 
 </div>
 </div>
@@ -406,26 +441,13 @@ $$\hlc{n_i}$$
 
 <div class="pin">
 
-community size
+community<br>size
 
 </div>
 </div>
 </div>
 
-- the same $k_i$ can come from a large $\kappa_i$ with few similar nodes, or a small $\kappa_i$ with many
-- $\kappa_i$ cannot be read from $k_i$ alone
-
----
-
-## Same degree, different hidden degree
-
-Two nodes with degree 6 have different hidden degrees when their communities differ in size.
-
-<div class="cols c11 mid">
-<div>
-
-- large community: many similar nodes, so a small $\kappa$ gives $k = 6$
-- small community: few similar nodes, so $k = 6$ needs a large $\kappa$
+- $k = 6$: a small $\kappa$ in the large community, a large $\kappa$ in the small one
 - <span class="key">the node in the small community attracts links more strongly</span>
 
 </div>
@@ -584,42 +606,21 @@ Zachary's karate club: $\mathbf A$ and its first three terms
 
 Keeping the $d$ terms with the largest $|\lambda_k|$ gives the rank-$d$ approximation $\mathbf A_d$.
 
-<div class="cols c32">
-<div>
-
-<div class="box" data-tab="Rank-d approximation">
+<div class="box eq-sm">
 
 $$\mathbf A_d = \sum\nolimits_{k=1}^{d} \lambda_k \, \mathbf u_k \mathbf u_k^{\top}$$
 
-<div class="note">
-
-Eigenvalues are ordered so that $|\lambda_1| \ge |\lambda_2| \ge \cdots$.
-
-</div>
 </div>
 
 <div class="fig">
-
-![](figures/recon.svg)
-
-</div>
-</div>
-<div>
-
-<div class="fig">
-<p class="figtitle">Eigenvalues</p>
-
-![](figures/spectrum.svg)
-
-</div>
-</div>
+<iframe class="anim" src="anim/reconstruct.html" width="1170" height="366"></iframe>
 </div>
 
 ---
 
 ## Optimality of the truncation
 
-Among all matrices of rank at most $d$, $\mathbf A_d$ is the closest to $\mathbf A$ in the Frobenius norm.
+$\mathbf A_d$ is the closest matrix of rank at most $d$ to $\mathbf A$ in the Frobenius norm.
 
 <div class="cols c11">
 <div>
@@ -638,20 +639,39 @@ $$\| \mathbf A - \mathbf A_d \|_F^{\,2} = \sum_{k > d} \lambda_k^2$$
 
 </div>
 
-- <mark>the error is the sum of the squared eigenvalues that are dropped</mark>
+- <span class="key">the error is the sum of the squared eigenvalues that are dropped</span>
 
 </div>
 <div class="fig">
 
-![](figures/error-terms.svg)
-
-![](figures/error.svg)
+![w:540](figures/error-terms.svg)
 
 </div>
 </div>
 
 <div class="ref">Eckart, C., & Young, G. (1936). The approximation of one matrix by another of lower rank. Psychometrika, 1, 211–218.</div>
 
+---
+
+## Derivation of the truncation error
+
+Write $\mathbf B = \sum_{k \le d} \sigma_k \vb q_k \vb q_k^\top$ with orthonormal axes $\vb q_k$; minimize over $\sigma_k$, then over $\vb q_k$.
+
+<div class="box eq-xs">
+
+$$
+\begin{aligned}
+\| \mathbf A - \mathbf B \|_F^{2} &= \| \mathbf A \|_F^{2} - 2 \sum\nolimits_{k \le d} \sigma_k\, \vb q_k^\top \mathbf A \vb q_k + \sum\nolimits_{k \le d} \sigma_k^2 && \why{$\vb q_k^\top \vb q_l = \delta_{kl}$}\\
+\partial / \partial \sigma_k = 0 \ &\Rightarrow\ \sigma_k = \vb q_k^\top \mathbf A \vb q_k && \why{one weight at a time}\\
+\| \mathbf A - \mathbf B \|_F^{2} &= \| \mathbf A \|_F^{2} - \sum\nolimits_{k \le d} (\vb q_k^\top \mathbf A \vb q_k)^2 \\
+\max_{\| \vb q_k \| = 1} (\vb q_k^\top \mathbf A \vb q_k)^2 \ &\Rightarrow\ \mathbf A \vb q_k = \lambda_k \vb q_k && \why{Lagrange multiplier}\\
+\| \mathbf A - \mathbf A_d \|_F^{2} &= \sum\nolimits_{k} \lambda_k^2 - \sum\nolimits_{k \le d} \lambda_k^2 = \sum\nolimits_{k > d} \lambda_k^2 && \why{$\| \mathbf A \|_F^{2} = \sum_k \lambda_k^2$}
+\end{aligned}
+$$
+
+</div>
+
+- the axes are eigenvectors of $\mathbf A$, and $\vb q_k^\top \mathbf A \vb q_k = \lambda_k$; <span class="key">keeping the $d$ largest $\lambda_k^2$ gives the smallest error</span>
 ---
 
 ## Matrices that represent a network
@@ -720,10 +740,6 @@ $$x_i = \begin{cases} \ \ \sqrt{|T|/|S|} & i \in S \\ -\sqrt{|S|/|T|} & i \in T 
 
 </div>
 
-- $N = |S| + |T|$
-- $\sum_i x_i = 0$
-- $\sum_i x_i^2 = N$
-
 </div>
 <div class="fig">
 <div class="figtitle">
@@ -732,37 +748,49 @@ $\vb x$ for the second cut: $|S| = 6$, $|T| = 5$
 
 </div>
 
-![](figures/indicator.svg)
+![w:460](figures/indicator.svg)
 
 </div>
 </div>
+
+- $\sum_i x_i = 0$: shifting $\vb x$ by a constant does not change $\vb x^\top \mathbf L \vb x$, so the mean is fixed (and $\vb x \propto \mathbf 1$ is out)
+- $\sum_i x_i^2 = N$: fixes the scale; without it $\vb x = \mathbf 0$ is the trivial minimum
 
 ---
 
 ## Ratio Cut as a quadratic form
 
-With the indicator $\vb x$, the Ratio Cut is $\vb x^\top \mathbf L \vb x / N$, where $\mathbf L = \mathbf D - \mathbf A$ is the Laplacian.
+With the indicator $\vb x$, the Ratio Cut is $\vb x^\top \mathbf L \vb x / N$, where $\mathbf L = \mathbf D - \mathbf A$.
 
-<div class="box">
+<div class="cols c32">
+<div>
 
-<div class="eq-lg">
-
-$$\mathrm{RatioCut}(S,T) = \frac{1}{N}\, \vb x^\top \mathbf L \vb x$$
-
-</div>
-
-<hr>
-
-<div class="eq-sm">
+<div class="box eq-xs">
 
 $$
 \begin{aligned}
-\vb x^\top \mathbf L \vb x &= \tfrac{1}{2} \sum_{i,j} A_{ij} (x_i - x_j)^2 && \why{(Q2)}\\
-&= \mathrm{cut}(S,T)\,(x_S - x_T)^2 = \mathrm{cut}(S,T)\,\frac{N^2}{|S|\,|T|} && \why{(Q3)}\\
+\vb x^\top \mathbf L \vb x &= \tfrac{1}{2} \sum_{i,j} A_{ij} (x_i - x_j)^2\\
+&= \mathrm{cut}(S,T)\,(x_S - x_T)^2\\
+&= \mathrm{cut}(S,T)\,\frac{N^2}{|S|\,|T|}\\
 &= N \,\mathrm{RatioCut}(S,T)
 \end{aligned}
 $$
 
+</div>
+
+- $x_i - x_j$ is $0$ inside a group, $\pm (x_S - x_T)$ between groups
+- <span class="key">only cut edges give a nonzero term</span>
+
+</div>
+<div class="fig">
+
+![w:450](figures/matrices-rc.svg)
+
+<div class="cap">
+
+$S$ = left clique and $p$; the outlined cells of $\mathbf A$ are the cut edge.
+
+</div>
 </div>
 </div>
 
@@ -770,30 +798,56 @@ $$
 
 ## Relaxation to real values
 
-Dropping the two-value constraint turns an NP-hard problem into an eigenvalue problem.
+Letting $\vb x$ take any real value turns the problem into one that can be solved.
 
-<div class="cols c11">
-<div>
-
-<div class="box eq-sm">
+<div class="box eq-xs" data-tab="Original">
 
 $$
 \begin{aligned}
-& \min_{\vb x \in \R^N} \ \vb x^\top \mathbf L \vb x \\
-& \text{s.t. } \vb x^\top \mathbf 1 = 0, \ \ \vb x^\top \vb x = N \\
-& \Longrightarrow \ \mathbf L \vb x = \lambda \vb x
+& \min_{\vb x} \ \vb x^\top \mathbf L \vb x \\
+& \text{s.t.} \ \ \vb x^\top \mathbf 1 = 0, \ \ \vb x^\top \vb x = N, \ \ \hl{x_i \in \{\sqrt{|T|/|S|},\, -\sqrt{|S|/|T|}\}}
 \end{aligned}
 $$
 
 </div>
 
-- $\lambda = 0$: $\vb x \propto \mathbf 1$, excluded
-- <span class="key">the solution is the eigenvector with the second smallest eigenvalue</span>
+<div class="box eq-xs" data-tab="Relaxed: drop the highlighted constraint">
+
+$$\min_{\vb x \in \R^N} \ \vb x^\top \mathbf L \vb x \quad \text{s.t.} \quad \vb x^\top \mathbf 1 = 0, \ \ \vb x^\top \vb x = N$$
+
+</div>
+
+- the minimum can only decrease; the groups are read from the signs of $\vb x$
+
+---
+
+## Solving the relaxed problem
+
+The Lagrangian turns the constrained minimization into an eigenvalue problem.
+
+<div class="cols c32">
+<div>
+
+<div class="box eq-xs">
+
+$$
+\begin{aligned}
+\mathcal L(\vb x, \lambda) &= \vb x^\top \mathbf L \vb x - \lambda\,(\vb x^\top \vb x - N)\\
+\partial \mathcal L / \partial \vb x &= 2 \mathbf L \vb x - 2 \lambda \vb x = \mathbf 0\\
+&\Longrightarrow \ \mathbf L \vb x = \lambda \vb x, \quad \vb x^\top \mathbf L \vb x = \lambda N
+\end{aligned}
+$$
+
+</div>
+
+- the cost is $\lambda N$, so a small $\lambda$ is better
+- $\lambda = 0$ belongs to $\vb x \propto \mathbf 1$, which $\vb x^\top \mathbf 1 = 0$ excludes
+- <span class="key">the solution is the eigenvector of the second smallest eigenvalue</span>
 
 </div>
 <div class="fig">
 
-![w:520](figures/relax.svg)
+![w:440](figures/relax.svg)
 
 </div>
 </div>
@@ -824,41 +878,158 @@ On Zachary's karate club, the sign of the second eigenvector of $\mathbf L$ give
 
 ## Normalized Cut
 
-Normalized Cut replaces the group sizes with the group volumes, and the same steps apply.
+Normalized Cut divides the cut size by the group volumes.
+
+<div class="cols c11">
+<div>
 
 <div class="def">
 
-Volume: $\mathrm{vol}(S) = \sum_{i \in S} k_i$ <span class="gap"></span> $\mathrm{vol}(G) = \sum_{i} k_i = 2m$
+volume $V_S = \sum_{i \in S} k_i$ counts edge ends, not nodes; $V = V_S + V_T = 2m$
 
 </div>
 
-| | Ratio Cut | Normalized Cut |
-|---|---|---|
-| objective | $\mathrm{cut}\,\bigl(\frac{1}{\lvert S\rvert} + \frac{1}{\lvert T\rvert}\bigr)$ | $\mathrm{cut}\,\bigl(\frac{1}{\mathrm{vol}(S)} + \frac{1}{\mathrm{vol}(T)}\bigr)$ |
-| value on $S$ | $\sqrt{\lvert T\rvert / \lvert S\rvert}$ | $\sqrt{\mathrm{vol}(T) / \mathrm{vol}(S)}$ |
-| value on $T$ | $-\sqrt{\lvert S\rvert / \lvert T\rvert}$ | $-\sqrt{\mathrm{vol}(S) / \mathrm{vol}(T)}$ |
-| constraints | $\vb x^\top \mathbf 1 = 0$, $\vb x^\top \vb x = N$ | $\vb x^\top \mathbf D \mathbf 1 = 0$, $\vb x^\top \mathbf D \vb x = \mathrm{vol}(G)$ |
-| $\vb x^\top \mathbf L \vb x$ | $N \cdot \mathrm{RatioCut}$ | $\mathrm{vol}(G) \cdot \mathrm{NCut}$ |
+<div class="box eq-xs">
+
+$$\mathrm{NCut}(S,T) = \mathrm{cut}(S,T) \left( \frac{1}{V_S} + \frac{1}{V_T} \right)$$
+
+$$x_i = \begin{cases} \ \ \sqrt{V_T / V_S} & i \in S \\ -\sqrt{V_S / V_T} & i \in T \end{cases}$$
+
+</div>
+
+</div>
+<div class="fig">
+<div class="figtitle">
+
+$\vb x$ for the second cut: $V_S = 23$, $V_T = 21$
+
+</div>
+
+![w:520](figures/indicator-ncut.svg)
+
+</div>
+</div>
+
+- $\vb x^\top \mathbf D \mathbf 1 = \sum_i k_i x_i = 0$ and $\vb x^\top \mathbf D \vb x = \sum_i k_i x_i^2 = V$
+- <span class="key">sizes are counted in edge ends, so $\mathbf D$ weights each node by its degree</span>
 
 ---
 
-## Relaxation of Normalized Cut
+## Normalized Cut as a quadratic form
 
-Relaxing $\vb x$ to real values gives $\mathbf L \vb x = \lambda \mathbf D \vb x$, an eigenvalue problem of the normalized Laplacian.
+The same expansion gives $\vb x^\top \mathbf L \vb x = V \, \mathrm{NCut}(S,T)$.
 
-<div class="box">
+<div class="cols c32">
+<div>
+
+<div class="box eq-xs">
 
 $$
 \begin{aligned}
-& \min_{\vb x \in \R^N} \ \vb x^\top \mathbf L \vb x \quad \text{s.t. } \vb x^\top \mathbf D \mathbf 1 = 0, \ \ \vb x^\top \mathbf D \vb x = \mathrm{vol}(G) \\
-& \Longrightarrow \ \mathbf L \vb x = \lambda \mathbf D \vb x \ \ \overset{\vb y = \mathbf D^{1/2} \vb x}{\Longleftrightarrow} \ \ \mathbf L_{\mathrm{sym}} \vb y = \lambda \vb y
+\vb x^\top \mathbf L \vb x &= \tfrac{1}{2} \sum_{i,j} A_{ij} (x_i - x_j)^2\\
+&= \mathrm{cut}(S,T)\,(x_S - x_T)^2\\
+&= \mathrm{cut}(S,T)\,\frac{V^2}{V_S\,V_T}\\
+&= V \,\mathrm{NCut}(S,T)
 \end{aligned}
 $$
 
 </div>
 
-- $\mathbf L_{\mathrm{sym}} = \mathbf I - \mathbf D^{-1/2} \mathbf A \mathbf D^{-1/2}$; the change of variable is pen and paper Q5
-- the solution is the eigenvector with the second smallest eigenvalue, as for Ratio Cut
+- $x_S - x_T = \sqrt{V_T / V_S} + \sqrt{V_S / V_T} = V / \sqrt{V_S V_T}$
+- <span class="key">same blocks as Ratio Cut, other values</span>
+
+</div>
+<div class="fig">
+
+![w:450](figures/matrices-ncut.svg)
+
+<div class="cap">
+
+Same cut, with $V_S = 23$ and $V_T = 21$.
+
+</div>
+</div>
+</div>
+
+---
+
+## Relaxation of Normalized Cut
+
+The relaxation is the one used for Ratio Cut, with $\mathbf D$ in the constraints.
+
+<div class="box eq-xs" data-tab="Original">
+
+$$
+\begin{aligned}
+& \min_{\vb x} \ \vb x^\top \mathbf L \vb x \\
+& \text{s.t.} \ \ \vb x^\top \mathbf D \mathbf 1 = 0, \ \ \vb x^\top \mathbf D \vb x = V, \ \ \hl{x_i \in \{\sqrt{V_T / V_S},\, -\sqrt{V_S / V_T}\}}
+\end{aligned}
+$$
+
+</div>
+
+<div class="box eq-xs" data-tab="Relaxed: drop the highlighted constraint">
+
+$$\min_{\vb x \in \R^N} \ \vb x^\top \mathbf L \vb x \quad \text{s.t.} \quad \vb x^\top \mathbf D \mathbf 1 = 0, \ \ \vb x^\top \mathbf D \vb x = V$$
+
+</div>
+
+- the original minimum is $V \cdot \mathrm{NCut}$; the groups are read from the signs of $\vb x$
+
+---
+
+## Solving the relaxed problem for Normalized Cut
+
+The Lagrangian gives a generalized eigenvalue problem, $\mathbf L \vb x = \lambda \mathbf D \vb x$.
+
+<div class="cols c32">
+<div>
+
+<div class="box eq-xs">
+
+$$
+\begin{aligned}
+\mathcal L(\vb x, \lambda) &= \vb x^\top \mathbf L \vb x - \lambda\,(\vb x^\top \mathbf D \vb x - V)\\
+\partial \mathcal L / \partial \vb x &= 2 \mathbf L \vb x - 2 \lambda \mathbf D \vb x = \mathbf 0\\
+&\Longrightarrow \ \mathbf L \vb x = \lambda \mathbf D \vb x, \quad \vb x^\top \mathbf L \vb x = \lambda V
+\end{aligned}
+$$
+
+</div>
+
+- the cost is $\lambda V$, so a small $\lambda$ is better
+- $\lambda = 0$ belongs to $\vb x \propto \mathbf 1$, which $\vb x^\top \mathbf D \mathbf 1 = 0$ excludes
+- <span class="key">the solution is the eigenvector of the second smallest eigenvalue</span>
+
+</div>
+<div class="fig">
+
+![w:440](figures/relax-ncut.svg)
+
+</div>
+</div>
+
+---
+
+## From $\mathbf L \vb x = \lambda \mathbf D \vb x$ to the normalized Laplacian
+
+The change of variable $\vb y = \mathbf D^{1/2} \vb x$ gives an ordinary eigenvalue problem.
+
+<div class="box eq-xs">
+
+$$
+\begin{aligned}
+\mathbf L \vb x = \lambda \mathbf D \vb x \ \ &\overset{\vb x = \mathbf D^{-1/2} \vb y}{\Longleftrightarrow} \ \ \mathbf L \mathbf D^{-1/2} \vb y = \lambda \mathbf D^{1/2} \vb y\\
+&\Longleftrightarrow \ \ \mathbf D^{-1/2} \mathbf L \mathbf D^{-1/2} \vb y = \lambda \vb y && \why{multiply by $\mathbf D^{-1/2}$}\\
+&\Longleftrightarrow \ \ \mathbf L_{\mathrm{sym}} \vb y = \lambda \vb y && \why{$\mathbf D^{-1/2} \mathbf L \mathbf D^{-1/2} = \mathbf I - \mathbf D^{-1/2} \mathbf A \mathbf D^{-1/2}$}
+\end{aligned}
+$$
+
+</div>
+
+- $\vb x^\top \mathbf D \vb x = V$ becomes $\vb y^\top \vb y = V$: the length of $\vb y$
+- $\vb x^\top \mathbf D \mathbf 1 = 0$ becomes $\vb y^\top \mathbf D^{1/2} \mathbf 1 = 0$, and $\mathbf D^{1/2} \mathbf 1$ is the eigenvector of $\lambda = 0$, since $\mathbf L_{\mathrm{sym}} \mathbf D^{1/2} \mathbf 1 = \mathbf D^{-1/2} \mathbf L \mathbf 1 = \mathbf 0$
+- <span class="key">$\vb y$ is the eigenvector with the second smallest eigenvalue, and $\vb x = \mathbf D^{-1/2} \vb y$</span>
 
 ---
 
