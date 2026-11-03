@@ -1,0 +1,337 @@
+% Standard pen-and-paper worksheet preamble, in the form m01 and m02 use.
+% Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+%
+% 14pt, not 12pt: the sheet is read with a pencil in hand. There are no blanks
+% and no ruled answer gaps anywhere on it -- questions are asked in words and
+% answered on the back -- so the paper those would have cost goes to the text
+% and to the drawings.
+\documentclass[a4paper, 14pt]{extarticle}
+\usepackage[top=0.75in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
+\definecolor{pltblue}{HTML}{1F77B4}
+
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
+%
+% Naming a font that is not installed is a hard error, not a fallback, which is
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The lab the sheet hands off to, if it has one. Both the QR code and the
+% printed address are the course's own short link, never the notebook's: paper
+% outlives any one upload, so re-uploading a lab is a line on the server
+% (/etc/caddy/Caddyfile, block go.skojaku.com) and not a reprint.
+%
+%   uvx --from segno segno --output=m07lab-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/m07lab"
+%
+% --border=4 is the quiet zone the QR spec asks for and is not optional: at
+% --border=1 some codes run to the edge of the PNG and OpenCV reads nothing.
+\newcommand{\molablink}{https://go.skojaku.com/m07lab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/m07lab}}}
+% The simulator, in the view the sheet needs (?sheet=1: the degree law hidden,
+% the most and the least visited node named). Same Caddy block as the lab.
+\newcommand{\simlink}{https://go.skojaku.com/m07sim}
+\newcommand{\simurl}{\href{\simlink}{\texttt{go.skojaku.com/m07sim}}}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
+\makeatletter
+\pgfset{
+  /pgf/decoration/randomness/.initial=2,
+  /pgf/decoration/wavelength/.initial=100
+}
+\pgfdeclaredecoration{sketch}{init}{
+  \state{init}[width=0pt,next state=draw,persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t0
+  }]{}
+  \state{draw}[width=\pgfdecorationsegmentlength,
+  auto corner on length=\pgfdecorationsegmentlength,
+  persistent precomputation={
+    \pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}
+  }]{
+    \pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}
+    \pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}
+  }
+  \state{final}{}
+}
+\tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
+\makeatother
+\definecolor{pltrust}{HTML}{B14434}
+\usetikzlibrary{calc}
+\input{walkkit}
+
+
+% An answer, set apart from the question it belongs to.
+\newcommand{\ans}[1]{\textbf{\textcolor{pltblue!75!black}{#1}}}
+\newcommand{\arrow}{\textcolor{pltblue!75!black}{$\Rightarrow$}\;}
+\newcommand{\mans}[1]{{\color{pltblue!75!black}#1}}
+
+\begin{document}
+
+\begin{center}
+{\ppfont\LARGE Answers}
+\end{center}
+
+{\small The sheet with its answers, \ans{in blue}. Parts 1 and 2 are done
+before the lecture, Part 3 after it.}
+
+\parthead{1}{A walker with no map}
+
+Four friends: A, B, C and D. A walker starts at A and at every step moves to
+one friend of the person it is standing on, each with the same chance.
+
+\begin{center}
+\resizebox{0.5\textwidth}{!}{\fournet{%
+  \node[text=pltblue!75!black, font=\bfseries] at (bA) {3/8};
+  \node[text=pltblue!75!black, font=\bfseries] at (bB) {2/8};
+  \node[text=pltblue!75!black, font=\bfseries] at (bC) {2/8};
+  \node[text=pltblue!75!black, font=\bfseries] at (bD) {1/8};}}\\[0.2em]
+{\small the boxes are filled in Question 6}
+\end{center}
+
+{\bf Question 1}: Before you compute anything, guess. After a very long walk,
+at which of the four people is the walker found most often? Why?
+
+\arrow Any guess is fine; Question 6 checks it. The answer is \ans{A}, the
+person with the most friends. A common wrong guess is D, because every walk
+that reaches D has to come straight back through A.
+
+{\bf Question 2}: In each cell of the table, write the chance that the walker
+moves from the person of that row to the person of that column in one step.
+Then add up each row.
+
+\begin{center}
+{\setlength{\tabcolsep}{6pt}
+\begin{tabular}{|C{2.4cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+\small from \textbackslash{} to & \bfseries A & \bfseries B & \bfseries C & \bfseries D & \small sum \\
+\hline
+\bfseries A & \mans{0} & \mans{$\frac13$} & \mans{$\frac13$} & \mans{$\frac13$} & \mans{1} \\[0.12cm] \hline
+\bfseries B & \mans{$\frac12$} & \mans{0} & \mans{$\frac12$} & \mans{0} & \mans{1} \\[0.12cm] \hline
+\bfseries C & \mans{$\frac12$} & \mans{$\frac12$} & \mans{0} & \mans{0} & \mans{1} \\[0.12cm] \hline
+\bfseries D & \mans{1} & \mans{0} & \mans{0} & \mans{0} & \mans{1} \\[0.12cm] \hline
+\end{tabular}}
+\end{center}
+
+\arrow Each row is one over the number of friends of that row's person, in
+the columns of those friends. \ans{Every row adds up to 1}: the walker has to
+go somewhere. This table is the matrix $P$ of the lecture (slide 14), one row
+per starting person.
+
+{\bf Question 3}: The walker starts at A. What is the chance that it is at B
+after exactly three steps?
+
+\begin{center}
+{\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|C{5.0cm}|C{5.0cm}|}
+\hline
+\bfseries route & \bfseries chance \\ \hline
+A\,$\to$\,D\,$\to$\,A\,$\to$\,B & $\frac13 \times 1 \times \frac13 = \frac19$ \\[0.08cm] \hline
+\mans{A\,$\to$\,B\,$\to$\,A\,$\to$\,B} & \mans{$\frac13 \times \frac12 \times \frac13 = \frac1{18}$} \\[0.08cm] \hline
+\mans{A\,$\to$\,C\,$\to$\,A\,$\to$\,B} & \mans{$\frac13 \times \frac12 \times \frac13 = \frac1{18}$} \\[0.08cm] \hline
+\mans{A\,$\to$\,B\,$\to$\,C\,$\to$\,B} & \mans{$\frac13 \times \frac12 \times \frac12 = \frac1{12}$} \\[0.08cm] \hline
+& \\[0.3cm] \hline
+\end{tabular}}
+\end{center}
+
+\arrow Four routes, and the last row stays empty.
+$\frac19 + \frac1{18} + \frac1{18} + \frac1{12} = \frac{4+2+2+3}{36} =$
+\ans{$\frac{11}{36} \approx 0.31$}. The routes that go back to A are the ones
+people miss: the walker has no memory, so it may undo its own step.
+
+\parthead{2}{Drunk at the karate club}
+
+A university karate club in the 1970s, with 34 members and 78 friendships. The
+simulator (\simurl) runs the same walker on it.
+
+{\bf Question 4}: Press \textbf{Run 5,000 steps} four times: 20,000 steps.
+Write the most and the least visited node in the table, with its edges and its
+share. Then divide the edges by the share.
+
+\begin{center}
+{\setlength{\tabcolsep}{6pt}
+\begin{tabular}{|C{3.2cm}|C{1.7cm}|C{1.7cm}|C{2.0cm}|C{2.6cm}|}
+\hline
+& \bfseries node & \bfseries edges & \bfseries share & \bfseries edges $\div$ share \\ \hline
+\bfseries most visits & \mans{33} & \mans{17} & \mans{0.109} & \mans{156} \\[0.08cm] \hline
+\bfseries fewest visits & \mans{11} & \mans{1} & \mans{0.0064} & \mans{156} \\[0.08cm] \hline
+\end{tabular}}
+\end{center}
+
+\arrow These are the long-run values. One run of 20,000 steps gives numbers
+near them, not equal to them: the ratio for node 33 usually lands between
+about 145 and 165, and for node 11 it can be 10\% off. The most visited node
+is node 33 in about three runs out of four and node 0 (16 edges, share 0.103)
+in the others. Both give 156.
+
+{\bf Question 5}: Are the two numbers in the last column the same? How are
+they related to the 78 friendships?
+
+\arrow \ans{Nearly the same, and the same for everybody in the room: about 156 =
+2 $\times$ 78.} The gaps between neighbours are the luck of one run, and they
+shrink if you run longer. So the share of time at a node is its number of
+friends divided by twice the number of friendships:
+\[
+\text{share} = \frac{\text{edges}}{2 \times \text{friendships}} = \frac{k}{2m}.
+\]
+It is twice, not once, because every friendship has two ends, and the walker
+can arrive through either one.
+
+{\bf Question 6}: The four friends in Part 1 have 4 friendships. Work out the
+share of time at A, B, C and D. Was your guess in Question 1 right?
+
+\arrow $2m = 8$: \ans{A $= \frac38$, B $= \frac28$, C $= \frac28$, D $=
+\frac18$} (the boxes on the drawing at the top). A gets most because it has the
+most friends. D gets least even though every visit to D is followed by a visit
+to A: D has one friend, and one friend is all that counts.
+
+\parthead{3}{Two rooms}
+
+Twelve members and 30 friendships. The notebook (\molaburl) runs the cell
+printed on the sheet and prints
+\begin{center}
+{\small\begin{tabular}{@{}l@{\;}l@{}}
+\texttt{eigenvalues:} & \texttt{[1, 0.889, 0, 0, 0, -0.088, -0.2, -0.2, -0.266, -0.333, -0.379, -0.423]}\\
+\texttt{second eigenvector:} & \texttt{[0.98, 1, 0.74, 0.98, 1, 0.74, -1, -0.98, -0.74, -1, -0.98, -0.74]}
+\end{tabular}}
+\end{center}
+(shortened here). On some machines every sign of the second eigenvector is the
+other way round. That is fine: an eigenvector times $-1$ is still an
+eigenvector, and the answers below only swap the two groups.
+
+{\bf Question 7}: Mark the twelve numbers of the second eigenvector as dots on
+the axes.
+
+\begin{center}
+\resizebox{0.78\textwidth}{!}{\eigaxes{%
+  \foreach \x/\y in {0/0.98, 1/1, 2/0.74, 3/0.98, 4/1, 5/0.74,
+                     6/-1, 7/-0.98, 8/-0.74, 9/-1, 10/-0.98, 11/-0.74}
+    \node[dot] at (\x, \y) {};}}
+\end{center}
+
+{\bf Question 8}: On the drawing, darken every member whose number is above
+zero. What do the darkened members have in common?
+
+\begin{center}
+\resizebox{0.62\textwidth}{!}{\tworooms{fill=pltblue!45}{}}
+\end{center}
+
+\arrow \ans{Members 0 to 5: one of the two groups.} Inside each group almost
+everybody is friends with everybody, and only two friendships cross between
+them. The sign of the second eigenvector names the group, which is why it is
+called a community signal (slide 44).
+
+{\bf Question 9}: Which four members have the numbers closest to zero? Where
+are they on the drawing?
+
+\arrow \ans{Members 2, 5, 8 and 11 ($\pm$0.74): the ends of the two friendships
+that cross between the groups.} A walker at one of them is a single step from
+the other group, so it belongs to its own group a little less firmly.
+
+{\bf Question 10}: Work out 0.889\textsuperscript{5}, 0.889\textsuperscript{40}
+and 0.423\textsuperscript{5}. After 5 steps, which eigenvalues still have a
+term in the walk? And after 40 steps?
+
+\arrow \ans{0.889\textsuperscript{5} $\approx$ 0.56,
+0.889\textsuperscript{40} $\approx$ 0.009, 0.423\textsuperscript{5} $\approx$
+0.013.} Every other eigenvalue is smaller in size than 0.423, so its term is
+even smaller. \ans{After 5 steps two terms are left: the eigenvalue 1, which
+never shrinks, and 0.889. After 40 steps only the eigenvalue 1 is left.}
+
+{\bf Question 11}: The lecture asked: short walks show communities, long walks
+show degree. Why? Answer in two sentences.
+
+\arrow \ans{Long walk: every term except the eigenvalue 1 has died, and that
+term is the share of time from Part 2, edges $\div$ 2m, so all that is left is
+degree. Short walk: the second term, 0.889\textsuperscript{t}, is still large
+for the first ten or so steps, and its eigenvector has one sign in each group
+(Part 3), so the walker still remembers which group it started in.} The ten
+steps are the relaxation time of the lecture, $\tau = 1/(1-0.889) = 9$.
+
+{\bf Question 12} (finished early): Delete the friendship 2--8 and run the cell
+again. Is the second eigenvalue closer to 1, or further from 1? Does a walker
+that starts at member 0 stay among members 0 to 5 for longer?
+
+\arrow \ans{Closer: 0.946. Longer.} The term 0.946\textsuperscript{t} shrinks
+more slowly than 0.889\textsuperscript{t} (0.76 against 0.56 after 5 steps),
+so the walker remembers its group for longer: with one way across instead of
+two, it takes longer to find the way out. The relaxation time grows from 9 to
+$1/(1-0.946) \approx 19$ steps. This is the bottleneck of slides 34--37.
+
+\end{document}

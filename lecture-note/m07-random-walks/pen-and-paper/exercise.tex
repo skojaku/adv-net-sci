@@ -1,33 +1,116 @@
+% Standard pen-and-paper worksheet preamble, in the form m01 and m02 use.
+% Compile with: xelatex -interaction=nonstopmode exercise.tex   (run twice)
+%
+% 14pt, not 12pt: the sheet is read with a pencil in hand. There are no blanks
+% and no ruled answer gaps anywhere on it -- questions are asked in words and
+% answered on the back -- so the paper those would have cost goes to the text
+% and to the drawings.
 \documentclass[a4paper, 14pt]{extarticle}
-\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage[top=0.75in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{array}
 \usepackage{graphicx}
-\usepackage{fontspec}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}   % hidelinks, or the print carries colour boxes
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{etoolbox}
 \usepackage{tikz}
 \usepackage{fontspec}
-%\usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing,positioning}
 \definecolor{pltblue}{HTML}{1F77B4}
-% Handwriting font, resolved once into \ppfont and \ppfontname.
-%
-% "Pretty Neat" (xkcd-style) is the house face and is installed on almost
-% nothing. Excalifont is vendored in tools/fonts/ and installed by CI, so it is
-% the one face that is always present; Latin Modern is the last resort.
+
+% Body face: Charter, and the four ways to get it. XCharter *is* Charter and
+% ships with a full TeX Live, so it is asked for first and by file -- a CI
+% runner answers yes to \IfFontExistsTF{Charter}, then cannot typeset it, which
+% is how these sheets stopped building there.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Iowan Old Style}{\setmainfont{Iowan Old Style}}{
+      \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}}
+
+% Handwriting face, resolved once into \ppfont. Used for a heading or two (the
+% answer key's "Answers"), not for the body and not for the drawings: the
+% figures are read closely and want the text face.
 %
 % Naming a font that is not installed is a hard error, not a fallback, which is
-% why this is a chain and not a line: seven sheets used to name one outright
-% and stopped building the day it was uninstalled.
-\def\ppfontname{Latin Modern Roman}
-\IfFontExistsTF{Pretty Neat}{\def\ppfontname{Pretty Neat}}{%
-  \IfFontExistsTF{Humor Sans}{\def\ppfontname{Humor Sans}}{%
-    \IfFontExistsTF{Excalifont}{\def\ppfontname{Excalifont}}{}}}
-\expandafter\newfontfamily\expandafter\ppfont\expandafter{\ppfontname}
-\expandafter\setmainfont\expandafter{\ppfontname}
-\tikzset{every picture/.style={/utils/exec={\ppfont}}}
+% why this is a chain and not a line: seven sheets used to name one outright and
+% stopped building the day it was uninstalled. Write \ppfont, never
+% \fontspec{<a name>}. Excalifont is vendored in tools/fonts/ and installed by
+% CI, so it is the one face that is always present.
+\newcommand{\ppfont}{}
+\IfFontExistsTF{Pretty Neat}{\renewcommand{\ppfont}{\fontspec{Pretty Neat}}}{
+  \IfFontExistsTF{Humor Sans}{\renewcommand{\ppfont}{\fontspec{Humor Sans}}}{
+    \IfFontExistsTF{Excalifont}{\renewcommand{\ppfont}{\fontspec{Excalifont}}}{
+      \renewcommand{\ppfont}{}}}}
 
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
 
+% Break the page unless #1 of it is left.
+%
+% This is needspace's glue trick, written out because needspace.sty lives in
+% texlive-latex-extra and not in a BasicTeX install. Do NOT rewrite it as a test
+% on \pagegoal minus \pagetotal: the page builder has not necessarily run when
+% the macro expands, so those numbers can still be the previous page's, the test
+% says "no room" on a page that is empty, and the \newpage throws that page
+% away. m02 shipped a blank page 3 that way, and it is invisible in the source.
+\newcommand{\needroom}[1]{%
+  \par
+  \begingroup
+    \setlength{\dimen0}{#1}%
+    \vskip 0pt plus \dimen0
+    \penalty -100%
+    \vskip 0pt plus -\dimen0
+  \endgroup}
+
+% A part heading. The sheet has no title: it opens on Part 1. The heading
+% carries the break test, because a heading printed at the foot of a page with
+% nothing under it is worse than a short page.
+\newcommand{\parthead}[2]{%
+  \needroom{6\baselineskip}%
+  \partheadhere{#1}{#2}}
+
+% The same heading with no break test, for one already inside a minipage --
+% \newpage means nothing in there.
+\newcommand{\partheadhere}[2]{%
+  \vspace{0.5em}
+  {\large\bfseries Part #1 --- #2}\par
+  \vspace{-0.4em}\rule{\textwidth}{0.8pt}\par
+  \vspace{0.1em}}
+
+% Centred fixed-width cell, for tables the student writes into.
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The lab the sheet hands off to, if it has one. Both the QR code and the
+% printed address are the course's own short link, never the notebook's: paper
+% outlives any one upload, so re-uploading a lab is a line on the server
+% (/etc/caddy/Caddyfile, block go.skojaku.com) and not a reprint.
+%
+%   uvx --from segno segno --output=m07lab-qr.png --scale=20 --border=4 \
+%       --error=m "https://go.skojaku.com/m07lab"
+%
+% --border=4 is the quiet zone the QR spec asks for and is not optional: at
+% --border=1 some codes run to the edge of the PNG and OpenCV reads nothing.
+\newcommand{\molablink}{https://go.skojaku.com/m07lab}
+\newcommand{\molaburl}{\href{\molablink}{\texttt{go.skojaku.com/m07lab}}}
+% The simulator, in the view the sheet needs (?sheet=1: the degree law hidden,
+% the most and the least visited node named). Same Caddy block as the lab.
+\newcommand{\simlink}{https://go.skojaku.com/m07sim}
+\newcommand{\simurl}{\href{\simlink}{\texttt{go.skojaku.com/m07sim}}}
+
+% xkcd-style hand-drawn line decoration.
+% WARNING: applying [xkcd] to many nodes can throw "Dimension too large".
+% Use it on a handful of \draw lines only, never on every node.
 \makeatletter
 \pgfset{
   /pgf/decoration/randomness/.initial=2,
@@ -49,149 +132,231 @@
 }
 \tikzset{xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}}
 \makeatother
-
-\usepackage{etoolbox}
-\AtBeginEnvironment{tabular}{\ppfont}
-
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.5em}
-\usepackage{fancyhdr}
-\usepackage{geometry}
-\usepackage{adjustbox}
-\usepackage{titling}
-
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{tikz}
-\usepackage{fontspec}
-\usetikzlibrary{calc,decorations,patterns,arrows,decorations.pathmorphing}
-\definecolor{pltblue}{HTML}{1F77B4}
-
-\usepackage{amsmath}
-\usepackage{tikz}
-\usepackage{enumitem}
-
-\title{Where Does the Drunkard Sleep?}
-\author{}
-\date{}
+\definecolor{pltrust}{HTML}{B14434}
+\usetikzlibrary{calc}
+\input{walkkit}
 
 \begin{document}
 
-\section*{Where Does the Drunkard Sleep?}
+\parthead{1}{A walker with no map}
 
-A walker with no map is dropped on a tiny network. At every intersection it
-picks one of the streets in front of it at random and takes a step. It never
-remembers where it came from.
+\begin{minipage}[c]{0.5\textwidth}
+\setlength{\parskip}{0.38em}
+Four friends: A, B, C and D. A line joins two people who are friends.
 
-{\bf Question 1}:
-Before you compute anything, guess. After a very long time, which node do you
-think the walker is found at most often, and why? \underline{\hspace{4cm}}
+A walker starts at A. At every step it picks one friend of the person it is
+standing on, each friend with the same chance, and moves there. It has no map
+and no memory of where it came from.
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.46\textwidth}
+\begin{center}
+\resizebox{0.95\textwidth}{!}{\fournet{}}
+\end{center}
+\end{minipage}
 
-\underline{\hspace{\textwidth}}
+\vspace{0.4em}
 
-The rest of this sheet checks your guess with a pencil.
+{\bf Question 1}: Before you compute anything, guess. After a very long walk,
+at which of the four people is the walker found most often? Why?
 
-\clearpage
-
-\section*{Part 1: Transition Probabilities}
-
-\begin{enumerate}
-\item Consider the following undirected network. Represent the network with an adjacency matrix $\mathbf{A}$.
+{\bf Question 2}: In each cell of the table, write the chance that the walker
+moves from the person of that row to the person of that column in one step.
 
 \begin{center}
-\begin{tikzpicture}[node distance=2cm]
-\node (A) {A};
-\node (B) [above right of=A] {B};
-\node (C) [right of=A] {C};
-\node (D) [below right of=A] {D};
-\draw (A) -- (B);
-\draw (A) -- (C);
-\draw (B) -- (C);
-\draw (A) -- (D);
-\end{tikzpicture}
+{\setlength{\tabcolsep}{6pt}
+\begin{tabular}{|C{2.4cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|C{1.7cm}|}
+\hline
+\small from \textbackslash{} to & \bfseries A & \bfseries B & \bfseries C & \bfseries D \\
+\hline
+\bfseries A & & & & \\[0.3cm] \hline
+\bfseries B & & & & \\[0.3cm] \hline
+\bfseries C & & & & \\[0.3cm] \hline
+\bfseries D & & & & \\[0.3cm] \hline
+\end{tabular}}
 \end{center}
 
-\vspace{3cm}
+Then add up each row. What do you get?
 
-\item A random walk traverses the network by randomly moving from one node to another. Fill the following table with the transition probabilities.
+{\bf Question 3}: The walker starts at A. What is the chance that it is at B
+after exactly three steps?
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{c|c|c|c|c}
-$P$ & To A & To B & To C & To D \\
-\hline
-From A   & & & & \\[0.5cm]
-\hline
-From B   & & & & \\[0.5cm]
-\hline
-From C   & & & & \\[0.5cm]
-\hline
-From D   & & & & \\[0.5cm]
-\hline
-\end{tabular}
-\label{tab:transition_matrix}
-\end{table}
+A route is the list of people the walker stands on, for example
+A\,$\to$\,D\,$\to$\,A\,$\to$\,B. The chance of a route is the chances of its
+three steps multiplied together: $\frac13 \times 1 \times \frac13 = \frac19$.
 
-\end{enumerate}
-
-\clearpage
-
-\section*{Part 2: Multiple Steps}
-
-\begin{enumerate}[resume]
-\item If we start at node A, what is the probability of being at node C after exactly two steps? Show your calculation. Hint: First, calculate the probability $P(j \vert t = 1)$ of being at each node $j$ after one step. Then, multiply the probability of moving from each node $j$ to node $i$, and sum up the probabilities. Namely,
-
-$$P(i \vert t = 2) = \sum_{j} \underbrace{P(i \vert j)}_{\substack{\text{Transition probability} \\ \text{from node } j \text{to node } i}} \underbrace{P(j \vert t = 1)}_{\substack{\text{Probability of being at} \\ \text{node } j \text{ after 1 step}}}$$
-
-\vspace{3cm}
-
-\item If we start at node A, what is the probability of being at node B after exactly three? Show your calculation.
-\vspace{3cm}
-
-\item How would you calculate the probability of being at any node after T steps, starting from node A? (You don't need to do the calculation, just describe the process using matrix multiplication.)
-
-\vspace{3cm}
-
-\end{enumerate}
-
-\clearpage
-
-\section*{Part 3: Stationary Distribution}
-
-\begin{enumerate}[resume]
-\item Starting from node A, work out the probability of being at each node after 1 step, 2 steps, 3 steps, and so on --- keep going until you can see that the numbers have stopped changing. Shade each cell so that darker means higher probability. Twelve columns is plenty; if you need fewer, stop earlier and say why.
+Write every three-step route from A to B in the table, with its chance. Then
+add up the chances.
 
 \begin{center}
-\scalebox{0.9}{
-\begin{tabular}{|c|*{12}{c|}}
+{\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|C{5.0cm}|C{5.0cm}|}
 \hline
-step & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+\bfseries route & \bfseries chance \\ \hline
+A\,$\to$\,D\,$\to$\,A\,$\to$\,B & $\frac13 \times 1 \times \frac13 = \frac19$ \\[0.08cm] \hline
+& \\[0.3cm] \hline
+& \\[0.3cm] \hline
+& \\[0.3cm] \hline
+& \\[0.3cm] \hline
+\end{tabular}}
+\end{center}
+
+\parthead{2}{Drunk at the karate club}
+
+Now a real network: a university karate club in the 1970s, with 34 members and
+78 friendships between them. The same walker walks on it.
+
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.24\textwidth}
+\begin{center}
+\includegraphics[width=2.7cm]{m07sim-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.72\textwidth}
+\textbf{Open the simulator}: point a camera at the square, or type \simurl.
+
+On the screen, a member is a \textbf{node} and a friendship is an
+\textbf{edge}.
+\end{minipage}
+\end{tcolorbox}
+
+{\bf Question 4}: Press \textbf{Run 5,000 steps} four times: 20,000 steps.
+
+Under the buttons, two boxes name the node with the most visits and the node
+with the fewest. Each box gives the node's number of edges and its share of all
+the visits. Write them in the table.
+
+Then divide the edges by the share.
+
+\begin{center}
+{\setlength{\tabcolsep}{6pt}
+\begin{tabular}{|C{3.2cm}|C{1.7cm}|C{1.7cm}|C{2.0cm}|C{2.6cm}|}
 \hline
-A & & & & & & & & & & & & \\[0.5cm]
-\hline
-B & & & & & & & & & & & & \\[0.5cm]
-\hline
-C & & & & & & & & & & & & \\[0.5cm]
-\hline
-D & & & & & & & & & & & & \\[0.5cm]
-\hline
-\end{tabular}
+& \bfseries node & \bfseries edges & \bfseries share & \bfseries edges $\div$ share \\ \hline
+\bfseries most visits & & & & \\[0.42cm] \hline
+\bfseries fewest visits & & & & \\[0.42cm] \hline
+\end{tabular}}
+\end{center}
+
+\needroom{5\baselineskip}%
+{\bf Question 5}: Look at the two numbers in the last column of the table. Are
+they the same? Compare them with your neighbour's.
+
+The club has 78 friendships. How are your numbers related to 78?
+
+\needroom{5\baselineskip}%
+{\bf Question 6}: Go back to the four friends in Part 1. They have 4
+friendships.
+
+Use what you found in Question 5 to work out the share of time the walker
+spends at A, B, C and D after a very long walk. Write the four shares in the
+boxes on the drawing in Part 1.
+
+Was your guess in Question 1 right?
+
+\vfill
+\begin{center}
+\rule{\textwidth}{2pt}\\[0.3em]
+{\large\bfseries STOP here. Wait for the lecture before you turn the page.}\\[0.1em]
+\rule{\textwidth}{2pt}
+\end{center}
+
+\newpage
+
+\parthead{3}{Two rooms}
+
+Twelve members and 30 friendships. The walker is the same as in Part 1.
+
+\begin{center}
+\resizebox{0.92\textwidth}{!}{\tworooms{}{}}
+\end{center}
+
+\begin{tcolorbox}[colback=white, boxsep=1pt, top=4pt, bottom=4pt]
+\begin{minipage}[c]{0.24\textwidth}
+\begin{center}
+\includegraphics[width=2.7cm]{m07lab-qr.png}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.72\textwidth}
+\textbf{Open the notebook}: point a camera at the square, or type \molaburl.
+A laptop or a phone will do; if you have neither, pair up.
+
+It has one cell, printed below. Run it. The matrix \texttt{P} in it is the
+table you wrote in Question 2, for these twelve members.
+\end{minipage}
+\end{tcolorbox}
+
+\vspace{-0.3em}
+{\small
+\begin{verbatim}
+import numpy as np
+
+A = np.zeros((12, 12))                       # who is friends with whom
+for group in [range(0, 6), range(6, 12)]:
+    for i in group:
+        for j in group:
+            if i != j:
+                A[i, j] = 1
+for i, j in [(0, 3), (7, 10)]:
+    A[i, j] = A[j, i] = 0
+for i, j in [(2, 8), (5, 11)]:
+    A[i, j] = A[j, i] = 1
+
+P = A / A.sum(axis=1, keepdims=True)         # row i: the chances of leaving i
+values, vectors = np.linalg.eig(P)
+order = np.argsort(-values.real)             # largest eigenvalue first
+
+print("eigenvalues:", np.round(values.real[order], 3) + 0.0)
+v = vectors[:, order[1]].real                # the second eigenvector
+print("second eigenvector:", np.round(v / np.abs(v).max(), 2) + 0.0)
+\end{verbatim}
 }
+
+\needroom{14\baselineskip}%
+{\bf Question 7}: The cell prints two lines: the twelve eigenvalues of
+\texttt{P}, largest first, and the second eigenvector, one number per member.
+
+Mark the twelve numbers of the second eigenvector as dots on the axes.
+
+\begin{center}
+\resizebox{0.9\textwidth}{!}{\eigaxes{}}
 \end{center}
 
-\item Let's create another heatmap using a random walk starting from node D.
+\needroom{4\baselineskip}%
+{\bf Question 8}: On the drawing in Part 3, darken every member whose number is
+above zero. What do the darkened members have in common?
 
-\vspace{3cm}
+\needroom{3\baselineskip}%
+{\bf Question 9}: Which four members have the numbers closest to zero? Where
+are they on the drawing?
 
-\item Based on your heatmap, what observations can you make about how the probabilities change as the number of steps increases?
+\needroom{6\baselineskip}%
+{\bf Question 10}: The second eigenvalue is 0.889. Work out
+0.889\textsuperscript{5} and 0.889\textsuperscript{40}. A phone calculator is
+fine.
 
-\vspace{3cm}
+Of the other eigenvalues, the one furthest from zero is $-$0.423. Work out
+0.423\textsuperscript{5}.
 
-\item What makes the stationary probability higher for some nodes than others?
+After 5 steps, which eigenvalues still have a term in the walk? And after 40
+steps?
 
-\vspace{3cm}
+\needroom{4\baselineskip}%
+{\bf Question 11}: The lecture asked: short walks show communities, long walks
+show degree. Why?
 
-\end{enumerate}
+Answer in two sentences: one for the long walk, using Part 2, and one for the
+short walk, using Part 3.
+
+\needroom{6\baselineskip}%
+{\bf Question 12} (finished early): Members 2 and 8 stop being friends. In the
+code, delete \texttt{(2, 8),} from the last list and run the cell again.
+
+Is the second eigenvalue now closer to 1, or further from 1?
+
+Does a walker that starts at member 0 stay among members 0 to 5 for longer, or
+for less long? Why?
+
 \end{document}
