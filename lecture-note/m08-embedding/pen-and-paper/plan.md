@@ -14,7 +14,7 @@
 |---|---|---|
 | Q1 | $S$ = {$p$}、$|T|=10$ について、指示ベクトルの値 $\sqrt{|T|/|S|}$ と $-\sqrt{|S|/|T|}$ を書き、$\sum_i x_i=0$ と $\sum_i x_i^2=N$ を確かめる(一般の $S,T$ でも示す) | $\sqrt{10}$ と $-1/\sqrt{10}$。$\sqrt{|S||T|}-\sqrt{|S||T|}=0$、$|S|\frac{|T|}{|S|}+|T|\frac{|S|}{|T|}=N$ |
 | Q2 | $\mathbf x^\top\mathbf L\mathbf x=\sum_i k_ix_i^2-\sum_{ij}A_{ij}x_ix_j=\frac12\sum_{ij}A_{ij}(x_i-x_j)^2$ を示す | $k_i=\sum_jA_{ij}$ を使って $\frac12\sum_{ij}A_{ij}(x_i^2+x_j^2)=\sum_ik_ix_i^2$ |
-| Q3 | $\frac12\sum_{ij}A_{ij}(x_i-x_j)^2=\mathrm{cut}(S,T)(x_S-x_T)^2=N\,\mathrm{RatioCut}$ を示す。11人の例で両側を計算する | $S$ 内、$T$ 内の項は 0。$(x_S-x_T)^2=N^2/(|S||T|)=N(1/|S|+1/|T|)$。例:1.10(= 11 × 1.10 / 11)と 0.37 |
+| Q3 | $\frac12\sum_{ij}A_{ij}(x_i-x_j)^2=\mathrm{cut}(S,T)(x_S-x_T)^2=N\,\mathrm{RatioCut}$ を示す。11人の例で両側を計算する | $S$ 内、$T$ 内の項は 0。$(x_S-x_T)^2=N^2/(|S||T|)=N(1/|S|+1/|T|)$。例:$\mathbf x^\top\mathbf L\mathbf x/N$ は 1.10 と 0.37(スライド 28 の RatioCut と一致) |
 | Q4 | 同じ手順を Normalized Cut で行う:$x_S=\sqrt{\mathrm{vol}(T)/\mathrm{vol}(S)}$、$x_T=-\sqrt{\mathrm{vol}(S)/\mathrm{vol}(T)}$ について $\mathbf x^\top\mathbf D\mathbf 1=0$、$\mathbf x^\top\mathbf D\mathbf x=\mathrm{vol}(G)$、$\mathbf x^\top\mathbf L\mathbf x=\mathrm{vol}(G)\,\mathrm{NCut}$ | $\mathrm{vol}(S)\sqrt{\mathrm{vol}(T)/\mathrm{vol}(S)}-\mathrm{vol}(T)\sqrt{\mathrm{vol}(S)/\mathrm{vol}(T)}=0$ など。例:NCut = 1.02($S$={$p$})と 0.091(左のクリーク+$p$)、$\mathrm{vol}(G)=44$ |
 | Q5 | 緩和した問題の解が $\mathbf L\mathbf x=\lambda\mathbf D\mathbf x$ を満たすことと、$\mathbf y=\mathbf D^{1/2}\mathbf x$ で $\mathbf L_{\mathrm{sym}}\mathbf y=\lambda\mathbf y$ になることを示す。最小の固有値 0 の固有ベクトルは何か | 両辺に $\mathbf D^{-1/2}$ を掛ける。固有値 0 の $\mathbf y\propto\mathbf D^{1/2}\mathbf 1$ は制約 $\mathbf x^\top\mathbf D\mathbf 1=0$(= $\mathbf y\perp\mathbf D^{1/2}\mathbf 1$)で除かれ、答えは2番目に小さい固有値 |
 
