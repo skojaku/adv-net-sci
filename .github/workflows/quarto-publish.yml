@@ -74,25 +74,26 @@ jobs:
           kpsewhich XCharter-Roman.otf || echo "no XCharter under that name"
           kpsewhich pzdr.tfm || echo "no ZapfDingbats"
 
-      # M01-M03 and M07 are the modules whose sheets are published and linked
+      # M01-M03, M05 and M07 are the modules whose sheets are published and linked
       # from the lecture note, so they are the ones whose build may fail the
-      # run. M01, M02 and M07 have both halves; M03 has the exercise only, so
-      # far. `resources:` in _quarto.yml copies whatever is on disk.
-      - name: Build the published worksheets (m01, m02, m03, m07)
+      # run. M01, M02 and M07 have both halves; M03 and M05 have the exercise
+      # only, so far. `resources:` in _quarto.yml copies whatever is on disk.
+      - name: Build the published worksheets (m01, m02, m03, m05, m07)
         run: |
           bash tools/build_worksheets.sh lecture-note/m01-euler_tour/pen-and-paper
           bash tools/build_worksheets.sh lecture-note/m02-small-world/pen-and-paper
           bash tools/build_worksheets.sh lecture-note/m03-robustness/pen-and-paper
+          bash tools/build_worksheets.sh lecture-note/m05-clustering/pen-and-paper
           bash tools/build_worksheets.sh lecture-note/m07-random-walks/pen-and-paper
 
-      # M04-M06, M08 and M09 are being reviewed and rewritten. They are still built, so a
+      # M04, M06, M08 and M09 are being reviewed and rewritten. They are still built, so a
       # sheet that stops compiling is visible in the log and its PDF can be
       # pulled from the artifact for proofreading — but a half-rewritten sheet
       # must not be able to block a publish.
-      - name: Build the sheets under revision (m04-m06, m08, m09)
+      - name: Build the sheets under revision (m04, m06, m08, m09)
         continue-on-error: true
         run: |
-          bash tools/build_worksheets.sh lecture-note/m0[4-6]*/pen-and-paper
+          bash tools/build_worksheets.sh lecture-note/m04*/pen-and-paper lecture-note/m06*/pen-and-paper
           bash tools/build_worksheets.sh lecture-note/m08*/pen-and-paper lecture-note/m09*/pen-and-paper
 
       - name: Collect every worksheet, published or not
@@ -104,12 +105,13 @@ jobs:
 
       # Everything else stays in the artifact and off the site: a sheet still
       # under revision must not be reachable from a link somebody found.
-      - name: Publish the m01-m03 and m07 sheets only
+      - name: Publish the m01-m03, m05 and m07 sheets only
         run: |
           find lecture-note -path '*/pen-and-paper/*.pdf' \
                -not -path '*m01-euler_tour*' \
                -not -path '*m02-small-world*' \
                -not -path '*m03-robustness*' \
+               -not -path '*m05-clustering*' \
                -not -path '*m07-random-walks*' -print -delete
 
       - name: Render and Publish
