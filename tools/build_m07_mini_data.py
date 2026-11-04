@@ -8,15 +8,16 @@
 #     "python-igraph",
 # ]
 # ///
-"""Build the three networks of the M07 mini-project and write them into the notebook.
+"""Build the three networks of the M07 mini-project and write them into the m07mini package.
 
-    uv run tools/build_m07_mini_data.py                 # rewrite the BUILT-DATA block
+    uv run tools/build_m07_mini_data.py                 # rewrite m07mini/_data.py
     uv run tools/build_m07_mini_data.py --csv-dir /tmp/m07   # also dump the CSVs
     uv run tools/build_m07_mini_data.py --summary        # print numbers, write nothing
 
-The notebook (notebooks/m07-randomwalks/mini-project.py) travels alone to molab,
-so the data is a literal between BUILT-DATA-BEGIN / BUILT-DATA-END, one
-zlib+base64 CSV per table. Nothing is fetched when a student runs it.
+The notebook (notebooks/m07-randomwalks/mini-project.py) imports the package
+m07mini (notebooks/m07-randomwalks/m07mini), which holds the data and the scoring
+function. The data is a literal in src/m07mini/_data.py, one zlib+base64 CSV per
+table, so nothing is fetched when a student runs it.
 
   net1  degree-corrected stochastic block model, assortative, 5 groups
   net2  core-periphery, 2 groups
@@ -26,15 +27,14 @@ Node ids are shuffled and group names are replaced by 0..K-1 in random order, so
 neither the airport order nor a region name gives the origin away. Each network is
 its largest connected component, unweighted, undirected.
 
-BASELINE is modularity maximisation (Leiden), mean NMI over 10 seeds, because the
-notebook should not need igraph.
+BASELINE is modularity maximisation (Leiden), mean NMI over 10 seeds. It is printed
+here for the handout (hint.tex); the package does not show it to students.
 """
 
 import argparse
 import base64
 import io
 import random
-import re
 import urllib.request
 import zlib
 from pathlib import Path
@@ -45,12 +45,11 @@ import pandas as pd
 from sklearn.metrics import normalized_mutual_info_score
 
 ROOT = Path(__file__).resolve().parent.parent
-NOTEBOOK = ROOT / "notebooks" / "m07-randomwalks" / "mini-project.py"
+DATA_MODULE = ROOT / "notebooks" / "m07-randomwalks" / "m07mini" / "src" / "m07mini" / "_data.py"
 CACHE = Path.home() / ".cache" / "adv-net-sci" / "openflights"
 OPENFLIGHTS = "https://raw.githubusercontent.com/jpatokal/openflights/master/data/"
 
 N_BASELINE_RUNS = 10
-INDENT = "    "  # the block lives inside `with app.setup`
 
 
 # ---------------------------------------------------------------- generators
@@ -165,22 +164,20 @@ def build():
     return out
 
 
-def block(nets):
+def module_text(nets):
     lines = [
-        f"{INDENT}# BUILT-DATA-BEGIN",
-        f"{INDENT}# Written by tools/build_m07_mini_data.py. One zlib+base64 CSV per table.",
-        f"{INDENT}NETWORKS = {{",
+        "# Written by tools/build_m07_mini_data.py. Do not edit.",
+        "# One zlib+base64 CSV per table.",
+        "NETWORKS = {",
     ]
     for name, d in nets.items():
         lines += [
-            f"{INDENT}    {name!r}: {{",
-            f"{INDENT}        'edges': {pack(d['edges'])!r},",
-            f"{INDENT}        'groups': {pack(d['groups'])!r},",
-            f"{INDENT}    }},",
+            f"    {name!r}: {{",
+            f"        'edges': {pack(d['edges'])!r},",
+            f"        'groups': {pack(d['groups'])!r},",
+            "    },",
         ]
-    lines += [f"{INDENT}}}"]
-    lines += [f"{INDENT}BASELINE = {{{', '.join(f'{k!r}: {round(v['baseline'], 2)}' for k, v in nets.items())}}}"]
-    lines += [f"{INDENT}# BUILT-DATA-END"]
+    lines += ["}", ""]
     return "\n".join(lines)
 
 
@@ -200,14 +197,8 @@ def main():
             d["groups"].to_csv(args.csv_dir / f"{name}_groups.csv", index=False)
     if args.summary:
         return
-    if not NOTEBOOK.exists():
-        raise SystemExit(f"{NOTEBOOK} does not exist yet; nothing written")
-    text = NOTEBOOK.read_text()
-    pattern = re.compile(rf"^{INDENT}# BUILT-DATA-BEGIN.*?^{INDENT}# BUILT-DATA-END", re.S | re.M)
-    if not pattern.search(text):
-        raise SystemExit("BUILT-DATA markers not found in the notebook")
-    NOTEBOOK.write_text(pattern.sub(lambda _: block(nets), text, count=1))
-    print(f"wrote {NOTEBOOK.relative_to(ROOT)}")
+    DATA_MODULE.write_text(module_text(nets))
+    print(f"wrote {DATA_MODULE.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

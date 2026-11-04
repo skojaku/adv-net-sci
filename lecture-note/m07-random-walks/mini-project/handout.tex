@@ -1,0 +1,120 @@
+% Handout for the M07 mini-project: the task, the requirements, the targets, and the
+% two helpers printed from walk_kit.py so the paper and the file cannot disagree.
+% The notebook carries none of this text.
+% Targets are the Leiden means printed by tools/build_m07_mini_data.py.
+% Compile with: xelatex -interaction=nonstopmode handout.tex   (or tools/build_worksheets.sh)
+\documentclass[a4paper, 12pt]{extarticle}
+\usepackage[top=0.8in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
+\usepackage{fontspec}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+% Body face: Charter by file (XCharter), then the system fallbacks the other sheets use.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}
+
+% Code face, resolved once: Menlo on a Mac, otherwise the TeX default mono.
+\IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.88]}{\setmonofont{Latin Modern Mono}[Scale=0.95]}
+
+\definecolor{rule}{HTML}{D8D4CC}
+\definecolor{muted}{HTML}{6B6B6B}
+\definecolor{rust}{HTML}{B5482F}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  commentstyle=\color{muted},
+  keywordstyle=\bfseries,
+  stringstyle=\color{rust},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  rulecolor=\color{rule},
+  framesep=7pt,
+  xleftmargin=7pt,
+  xrightmargin=7pt,
+  aboveskip=0.6em,
+  belowskip=0.4em,
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\pagestyle{empty}
+
+\begin{document}
+
+{\Large\bfseries M07 Mini project: community detection with a random walk}
+
+\textbf{Task.} Design a community detection algorithm that uses a random walk, and
+test it on three networks, \texttt{net1}, \texttt{net2} and \texttt{net3}. You are
+not told what they are; working that out from the data is part of the task. Each
+comes with a ground-truth grouping of its nodes.
+
+\textbf{Requirements}
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.2em, topsep=0.2em]
+  \item The algorithm uses a random walk: a function that simulates walks, or the
+        transition matrix $P$ of the walk.
+  \item It is a community detection algorithm: from the edge table it returns one
+        group label per node. The number of groups is not given.
+  \item It is one algorithm. You may set parameters separately for each network, but
+        only parameters that change how the walk behaves, for example its length, a
+        restart probability, or the probability of stepping back. A parameter that
+        switches between algorithms, or that sets the number of groups, is not allowed.
+  \item No library community detection: no \texttt{community\_*} in igraph, no
+        community functions in networkx, no \texttt{SpectralClustering}. Linear
+        algebra, $k$-means, hierarchical clustering and mixture models are allowed.
+  \item The algorithm does not read the ground truth.
+\end{enumerate}
+
+\textbf{Notebook.} It loads the three edge tables and the ground truth as pandas
+tables. Write your code in the empty cell. Put the result in \texttt{answer}: a
+dictionary from the network name to a list with one group label per node, in node
+order. Run that cell; it prints one score per network.
+
+\textbf{Score and targets.} Each network is scored by the normalized mutual
+information (NMI) between your groups and the ground truth: 1 if they agree exactly,
+near 0 if they share no information. The targets are the scores of modularity
+maximisation (Leiden), averaged over 10 runs.
+
+\begin{center}
+\begin{tabular}{lcc}
+  \hline
+  network & target & \\
+  \hline
+  \texttt{net1} & 0.78 & \\
+  \texttt{net2} & 0.00 & any score above 0 \\
+  \texttt{net3} & 0.68 & \\
+  \hline
+\end{tabular}
+\end{center}
+
+Beating the targets is the goal. Submit the notebook through the Google Form linked
+from the Brightspace assignment, whatever the scores are.
+
+\newpage
+
+\textbf{Two helpers.} Use them, change them, or ignore them. They work on an edge
+table \texttt{edges} with columns \texttt{source} and \texttt{target}, for example
+\texttt{edges["net1"]}. Both need only \texttt{numpy} and \texttt{scipy}.
+
+\lstinputlisting[firstline=3]{walk_kit.py}
+
+\textbf{Using them}
+\begin{lstlisting}
+A = to_adjacency(edges["net1"])  # sparse adjacency matrix, n x n
+P = transition_matrix(A)         # P[i, j]: probability of moving from i to j
+walk = random_walk(A, 0, 10)     # a list of 11 nodes, starting at node 0
+\end{lstlisting}
+
+\end{document}

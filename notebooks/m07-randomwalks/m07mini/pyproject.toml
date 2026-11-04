@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "m07mini"
+version = "0.1.0"
+description = "Data and scoring for the M07 mini-project of the advanced network science course."
+requires-python = ">=3.11"
+dependencies = ["numpy", "pandas", "scikit-learn"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/m07mini"]
