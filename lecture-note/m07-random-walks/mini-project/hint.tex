@@ -1,0 +1,69 @@
+% Hint handout for the M07 mini-project: the two helpers, printed from walk_kit.py
+% so the paper and the file cannot disagree.
+% Compile with: xelatex -interaction=nonstopmode hint.tex   (or tools/build_worksheets.sh)
+\documentclass[a4paper, 12pt]{extarticle}
+\usepackage[top=0.8in, bottom=0.7in, left=0.85in, right=0.85in]{geometry}
+\usepackage{fontspec}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+% Body face: Charter by file (XCharter), then the system fallbacks the other sheets use.
+\IfFontExistsTF{XCharter-Roman.otf}{
+  \setmainfont{XCharter}[
+    Extension      = .otf,
+    UprightFont    = *-Roman,
+    BoldFont       = *-Bold,
+    ItalicFont     = *-Italic,
+    BoldItalicFont = *-BoldItalic]
+}{
+  \IfFontExistsTF{Charter}{\setmainfont{Charter}}{
+    \IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{}}}
+
+% Code face, resolved once: Menlo on a Mac, otherwise the TeX default mono.
+\IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=0.88]}{\setmonofont{Latin Modern Mono}[Scale=0.95]}
+
+\definecolor{rule}{HTML}{D8D4CC}
+\definecolor{muted}{HTML}{6B6B6B}
+\definecolor{rust}{HTML}{B5482F}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  commentstyle=\color{muted},
+  keywordstyle=\bfseries,
+  stringstyle=\color{rust},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  rulecolor=\color{rule},
+  framesep=7pt,
+  xleftmargin=7pt,
+  xrightmargin=7pt,
+  aboveskip=0.6em,
+  belowskip=0.4em,
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\pagestyle{empty}
+
+\begin{document}
+
+{\Large\bfseries M07 Mini project: two helpers}
+
+Use them, change them, or ignore them. They work on the edge table \texttt{edges}
+that the notebook loads (columns \texttt{source} and \texttt{target}). Both need only
+\texttt{numpy} and \texttt{scipy}, which the notebook has.
+
+\lstinputlisting[firstline=3]{walk_kit.py}
+
+\textbf{Using them}
+\begin{lstlisting}
+A = to_adjacency(edges)         # sparse adjacency matrix, n x n
+P = transition_matrix(A)        # P[i, j]: probability of moving from i to j
+walk = random_walk(A, 0, 10)    # a list of 11 nodes, starting at node 0
+\end{lstlisting}
+
+\end{document}
