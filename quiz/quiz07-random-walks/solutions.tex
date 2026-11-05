@@ -1,0 +1,95 @@
+% Quiz 07 --- answer key with marking notes. DO NOT HAND OUT.
+%
+% Every number was checked with numpy: the five-person chain (opinions after one,
+% two, three rounds; the limit by P^200; the eigenvalues) and the knight on
+% 8 x 8 (64 x 64 matrix, 336 = sum of degrees, eigenvalue range, the +-1 vector,
+% the probability of the start colour at steps 1..4, the lazy matrix).
+%
+% Compile with: xelatex -interaction=nonstopmode solutions.tex   (run twice)
+\documentclass[a4paper, 11pt]{extarticle}
+\input{quizkit}
+\newgeometry{top=0.4in, bottom=0.4in, left=0.75in, right=0.75in}
+
+\renewcommand{\question}[3]{\vspace{0.3em}
+  {\large\bfseries Question #1 \quad\normalsize\mdseries (#2 points) --- #3}\par
+  \vspace{-0.3em}{\color{rulegrey}\rule{\textwidth}{0.6pt}}\par\vspace{0.1em}}
+\newcommand{\ans}[1]{{\color{pltblue}#1}}
+
+\begin{document}
+
+\quizhead{Quiz 7 \; --- \; Answer key}
+        {Instructor copy \quad$\cdot$\quad do not hand out}
+        {Fall 2026}
+
+\question{1}{6}{Opinions on a network.}
+
+Degrees: $k=(2,2,3,2,1)$, so $2m=10$. $P$ has rows
+A: $(0,\tfrac12,\tfrac12,0,0)$, B: $(\tfrac12,0,\tfrac12,0,0)$,
+C: $(\tfrac13,\tfrac13,0,\tfrac13,0)$, D: $(0,0,\tfrac12,0,\tfrac12)$,
+E: $(0,0,0,1,0)$.
+
+\textbf{(a) [1]} One round:
+A $=(0.2+0.6)/2=\ans{0.4}$, B $=(0.8+0.6)/2=\ans{0.7}$,
+C $=(0.8+0.2+0.4)/3=\ans{0.467}$, D $=(0.6+1.0)/2=\ans{0.8}$, E $=\ans{0.4}$.
+The sum is $2.767$, not the starting $3.0$: \ans{no}. (1 point for the five
+numbers and the answer to the question; $\tfrac12$ if the numbers are right and
+the question is not answered.)
+
+\textbf{(b) [2]} $w_i=\ans{k_i}$, or any multiple: $\ans{(0.2,\,0.2,\,0.3,\,0.2,\,0.1)}$.
+Proof (1 point for the numbers, 1 for the proof):
+\[
+  \sum_i k_i\,x_i(t+1)=\sum_i k_i\sum_j \frac{A_{ij}}{k_i}\,x_j(t)
+  =\sum_j\Bigl(\sum_i A_{ij}\Bigr)x_j(t)=\sum_j k_j\,x_j(t).
+\]
+In vector form: $\pi^\top P=\pi^\top$ for $\pi_i=k_i/2m$, so $\pi^\top x(t+1)=\pi^\top P\,x(t)=\pi^\top x(t)$.
+\textbf{This is the left eigenvector} of $P$ for eigenvalue 1; $P$ acts on opinions
+from the right, and the conserved quantity is the one that $P$ acts on from the
+left. Check: after one round $0.2\cdot0.4+0.2\cdot0.7+0.3\cdot0.467+0.2\cdot0.8+0.1\cdot0.4=0.56$.
+Full credit for an answer that finds the weights by guessing a pattern and
+verifies the identity above; $\tfrac12$ for weights found and checked on the one
+round of (a) only.
+
+\textbf{(c) [1]} Everyone ends at the same $x^*$, so $\sum_i w_i x_i=x^*$, and
+$x^*=\pi^\top x(0)=0.2\cdot0.8+0.2\cdot0.2+0.3\cdot0.6+0.2\cdot0.4+0.1\cdot1.0=\ans{0.56}$.
+The plain mean of the starting opinions, $0.6$, is the common wrong answer: it
+treats E, who has one friend and whom nobody but D listens to, like C, who has
+three. $0.6$ gets 0.
+
+\textbf{(d) [2]} \ans{$-0.857$} (1 point), so the factor is about \ans{0.857} per round
+(the error also changes sign each round). It is the eigenvalue with the largest
+\emph{absolute value} below 1, not the second largest eigenvalue $0.654$ (1 point
+for the reason: $x(t)-x^*\mathbf 1$ is a sum of terms $\lambda_j^t\,v_j$ over the
+other eigenvalues, and the term with the largest $|\lambda_j|$ decays last).
+$0.654$: 0 for the pair. Check: the largest error after 5, 10, 20 rounds is
+$0.108$, $0.055$, $0.011$.
+
+% ---------------------------------------------------------------------------
+\question{2}{4}{A knight on a chessboard.}
+
+\textbf{(a) [1]} A jump changes column $+$ row by $\pm1\pm2$ or $\pm2\pm1$, an odd
+number, so every jump changes the colour of the square. Start on a1 (dark):
+dark with probability $\ans{0,\,1,\,0,\,1}$ for $t=1,2,3,4$. This does not
+approach $\tfrac12$, so $p(t)$ \ans{does not converge} to $\pi$. (Both parts for the point.)
+
+\textbf{(b) [2]} The vector $s$ with $s_i=+1$ on dark squares and $-1$ on light
+squares (1 point). Every square the knight can reach from $i$ has the other
+colour, so
+\[
+  (Ps)_i=\frac1{k_i}\sum_{j\sim i}s_j=\frac1{k_i}\,k_i\,(-s_i)=-s_i
+\]
+(1 point). So $-1$ is an eigenvalue. (A student who proves it as ``the graph is
+bipartite, hence $-1$'' without the vector gets 1.)
+
+\textbf{(c) [1]} The eigenvalues of $\tfrac12(I+P)$ are $\tfrac12(1+\lambda)$, so
+$-1$ becomes \ans{$0$}, and every eigenvalue lies in $[0,1]$. Yes, $p(t)$ now
+converges to $\pi$ (the stationary distribution of $\tfrac12(I+P)$ is the same
+$\pi$). The convergence factor is then the second largest eigenvalue, which is
+$\tfrac12(1+0.720)=0.860$ for the knight (not asked).
+
+\vspace{0.5em}
+\textbf{Facts, for the lecturer.} The knight's graph has 168 edges, so
+$2m=336$; the dark and light squares each have total degree 168, which is why
+$\pi$ gives $\tfrac12$ to each colour. A corner has 2 moves, a central square 8.
+Degrees: 2 (4 squares), 3 (8), 4 (20), 6 (16), 8 (16).
+
+\end{document}
