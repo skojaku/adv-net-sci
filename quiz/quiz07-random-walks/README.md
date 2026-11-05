@@ -43,8 +43,10 @@ xelatex -interaction=nonstopmode quiz07.tex
 xelatex -interaction=nonstopmode solutions.tex
 ```
 
-## Not done
+## Form and links (2026-11-05)
 
-The Google Form (copy Quiz 6's `build_form.py`), the Caddy short link
-`go.skojaku.com/ans-quiz07` (the QR square already points at it), and the
-Brightspace quiz entry.
+- Form: id in `build_form.py`; made by `--create` (the first attempt failed with a Drive storage quota error, the second worked). Two upload questions, "Question 1" and "Question 2".
+- Responder URL: https://docs.google.com/forms/d/e/1FAIpQLScbLLq5eW3iuSQdGj-AbdgFJBKO_IRvU50Gc8bDbvNfgiztVA/viewform
+- `go.skojaku.com/ans-quiz07` redirects to it (Caddy on `ssh digitalocean`).
+
+Not done: the Brightspace quiz entry.
