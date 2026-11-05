@@ -12,8 +12,9 @@ per question to a Google Form (QR square on the sheet).
    weighted sum is conserved (2) and the value (1).
 2. **A knight on a chessboard** (4 pts). Two small boards show the knight's jumps
    (from d4, from a1) and the dark and light squares. (a) From a1 the probability of a
-   dark square is 0, 1, 0, 1 for t = 1..4, so p(t) does not converge to π (1). (b) −1 is
-   an eigenvalue; the eigenvector is +1 on dark squares and −1 on light squares (3).
+   dark square is 0, 1, 0, 1 for t = 1..4, so p(t) does not converge to π (1). (b) why p(t) does not converge, from the
+   spectrum and the structure of P (not numerically): with the squares ordered by colour,
+   P = [[0, B], [C, 0]], so −1 is an eigenvalue (eigenvector +1 on dark, −1 on light) (3).
 
 The sheet was cut down on 2026-11-05: the first version had four parts in Question 1
 and three in Question 2, and the lecturer reduced them to one and two. The speed of
