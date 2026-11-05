@@ -20,15 +20,11 @@ and three in Question 2, and the lecturer reduced them to one and two. The speed
 convergence (eigenvalue −0.857, not the second eigenvalue 0.654) and the lazy walk
 are in the key as "not asked".
 
-**The point of the pair.** The two questions are about the lecture's two claims, the
-stationary distribution (the left eigenvector of eigenvalue 1) and the speed of
-convergence. Both are used in a setting where the textbook sentence needs a
-second look: in DeGroot the weights act on opinions from the other side, and in both
-questions the speed is set by the eigenvalue with the largest absolute value, which is
-not the second largest eigenvalue when a negative eigenvalue is bigger in size.
-The lecturer walks through the model and this difference before the quiz.
-
-Every number in the key was computed with numpy (see the header of `solutions.tex`).
+**What the pair tests.** Question 1 uses the stationary distribution (the left
+eigenvector of eigenvalue 1) as the weights of the final opinion. Question 2 shows a
+walk whose eigenvalue −1 stops p(t) from converging. In both, the speed of
+convergence depends on the eigenvalue with the largest absolute value, which can be a
+negative one and not the second largest. The lecturer explains the model before the quiz.
 
 ## Files
 
