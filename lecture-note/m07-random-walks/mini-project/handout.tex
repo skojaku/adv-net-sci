@@ -57,15 +57,14 @@
 {\Large\bfseries M07 Mini project: community detection with a random walk}
 
 \textbf{Task.} Design a community detection algorithm that uses a random walk, and
-test it on three networks, \texttt{net1}, \texttt{net2} and \texttt{net3}. You are
-not told what they are; working that out from the data is part of the task. Each
+test it on three networks, \texttt{net1}, \texttt{net2} and \texttt{net3}. Each
 comes with a ground-truth grouping of its nodes.
 
 \textbf{Requirements}
 \begin{enumerate}[leftmargin=1.6em, itemsep=0.2em, topsep=0.2em]
-  \item The algorithm uses a random walk: a function that simulates walks, or the
+  \item Your algorithm must use a random walk: a function that simulates walks or the
         transition matrix $P$ of the walk.
-  \item It is a community detection algorithm: from the edge table it returns one
+  \item It is a community detection algorithm. It takes the edge table and returns one
         group label per node. The number of groups is not given.
   \item It is one algorithm. You may set parameters separately for each network, but
         only parameters that change how the walk behaves, for example its length, a
@@ -77,10 +76,7 @@ comes with a ground-truth grouping of its nodes.
   \item The algorithm does not read the ground truth.
 \end{enumerate}
 
-\textbf{Notebook.} It loads the three edge tables and the ground truth as pandas
-tables. Write your code in the empty cell. Put the result in \texttt{answer}: a
-dictionary from the network name to a list with one group label per node, in node
-order. Run that cell; it prints one score per network.
+Once the community assignment is computed, place the results as a 1d list or numpy array in each item in the dictionary in the network. Run that cell; it prints one score per network.
 
 \textbf{Score and targets.} Each network is scored by the normalized mutual
 information (NMI) between your groups and the ground truth: 1 if they agree exactly,
@@ -93,18 +89,20 @@ maximisation (Leiden), averaged over 10 runs.
   network & target & \\
   \hline
   \texttt{net1} & 0.78 & \\
-  \texttt{net2} & 0.00 & any score above 0 \\
+  \texttt{net2} & 0.40 & \\
   \texttt{net3} & 0.68 & \\
   \hline
 \end{tabular}
 \end{center}
 
-Beating the targets is the goal. Submit the notebook through the Google Form linked
-from the Brightspace assignment, whatever the scores are.
+\textbf{Links.} Notebook: \texttt{go.skojaku.com/m07comm}. Open it, fork it into your
+own molab notebook and work there. Submission form: \texttt{go.skojaku.com/m07mini}
+(also linked from the Brightspace assignment). Submit the URL of your notebook
+through the form.
 
 \newpage
 
-\textbf{Two helpers.} Use them, change them, or ignore them. They work on an edge
+\textbf{Some helper functions.} They work on an edge
 table \texttt{edges} with columns \texttt{source} and \texttt{target}, for example
 \texttt{edges["net1"]}. Both need only \texttt{numpy} and \texttt{scipy}.
 
