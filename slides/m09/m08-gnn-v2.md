@@ -576,6 +576,45 @@ Averaging over neighbors makes connected nodes similar and removes features that
 
 ---
 
+## Smoothing grows with the number of layers
+
+Each multiplication by $\hat A$ moves every node's value toward the mean of its neighbors.
+
+<div class="cols fill" style="grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 12px 20px; align-items: stretch;">
+<div class="ph" data-tag="FIG 15a · Layer 0" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>ランダムな値(色)。隣り合うノードの色はばらばら。</p>
+
+</div>
+<div class="ph" data-tag="FIG 15b · Layer 1" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>Â を1回かけた後。隣り合う色が少し近づく。</p>
+
+</div>
+<div class="ph" data-tag="FIG 15c · Layer 2" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>2回後。同じクラブの色がまとまり始める。</p>
+
+</div>
+<div class="ph" data-tag="FIG 15d · Layer 3" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>3回後。クラブごとの色の違いが見える。</p>
+
+</div>
+<div class="ph" data-tag="FIG 15e · Layer 5" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>5回後。ほぼクラブごとに1色。</p>
+
+</div>
+<div class="ph" data-tag="FIG 15f · Layer 20" style="min-height: 0; margin: 0; padding: 6px 12px;">
+
+<p>20回後。全ノードがほぼ同じ色(over-smoothing)。</p>
+
+</div>
+</div>
+
+---
+
 ## Exercise: one layer by hand
 
 On paper: compute $\hat A$ and $H^{(1)}$ for the 3-node path $1 - 2 - 3$ with $H^{(0)} = [1, 0, 0]^\top$, $W = 1$, no $\sigma$.
