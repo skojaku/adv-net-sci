@@ -76,13 +76,15 @@ def T(at, text, anchor="center", extra=""):
 
 # ---- c01 ----------------------------------------------------------------------------------------
 def c01_sampling_tree():
+    sx = 0.85
     pos = {"t": (105, 298), "a": (52, 192), "b": (157, 192), "c": (45, 390), "d": (165, 390),
            "e": (25, 80), "f": (78, 80), "g": (20, 247), "h": (130, 80), "i": (183, 80),
            "j": (190, 247), "k": (45, 496)}
+    pos = {k: (17 + x * sx, y + 20) for k, (x, y) in pos.items()}
     solid = [("t", "a"), ("t", "b"), ("a", "e"), ("a", "f"), ("b", "h"), ("b", "i")]
     dashed = [("t", "c"), ("t", "d"), ("a", "g"), ("b", "j"), ("c", "k")]
     fills = {"t": "hl", "a": "hopa", "b": "hopa", "e": "hopb", "f": "hopb", "h": "hopb", "i": "hopb"}
-    ns = 34
+    ns = 36
     p = [COLORS, r"\begin{scope}[on background layer]"]
     for u, v in dashed:
         p.append(line(pos[u], pos[v], 2, "muted", dash=True))
@@ -94,11 +96,9 @@ def c01_sampling_tree():
             p.append(N(f"g{k}", xy, "", ns, fills[k]))
         else:
             p.append(N(f"g{k}", xy, "", ns, "white", extra="draw=muted"))
-    p.append(rf"\node[tag, anchor=north] at {P(95, 42)} {{uniform sample}};")
     # tree
-    rows = {"target": 500, "hop 1": 290, "hop 2": 80}
-    tx = {"t": 403, "a": 353, "b": 453, "e": 328, "f": 378, "h": 428, "i": 478}
-    ty = {"t": 500, "a": 290, "b": 290, "e": 80, "f": 80, "h": 80, "i": 80}
+    tx = {"t": 312, "a": 260, "b": 364, "e": 234, "f": 286, "h": 338, "i": 390}
+    ty = {"t": 520, "a": 300, "b": 300, "e": 100, "f": 100, "h": 100, "i": 100}
     ts = 40
     tedges = [("t", "a"), ("t", "b"), ("a", "e"), ("a", "f"), ("b", "h"), ("b", "i")]
     p.append(r"\begin{scope}[on background layer]")
@@ -107,78 +107,69 @@ def c01_sampling_tree():
     p.append(r"\end{scope}")
     for k in tx:
         p.append(N(f"r{k}", (tx[k], ty[k]), "", ts, fills[k]))
-    for nm, y in rows.items():
-        p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=west] at {P(206, y)} {{{nm}}};")
-    for y0, y1 in ((80, 290), (290, 500)):
-        ym = (y0 + y1) / 2
-        p.append(rf"\draw[arr] {P(504, y0 + 25)} -- {P(504, y1 - 25)};")
-        p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=west] at {P(516, ym)} {{aggregate}};")
+    p.append(rf"\draw[arr] {P(440, 100)} -- {P(440, 520)};")
+    p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=west] at {P(458, 310)} {{aggregate}};")
     B("c01_sampling_tree", *p)
 
 
 # ---- c02 ----------------------------------------------------------------------------------------
 def c02_sage_concat():
-    s = 50
-    cy = 200
+    s = 44
+    R = 552                     # right edge of every row
     a = vec_values(4, 1)
     b = vec_values(4, 2)
+    xm = R - 4 * s              # centre line of the arrows (centre of the 8-square row)
     p = [COLORS]
-    p.append(vec_col(30, cy + 2 * s, a, "snew", s))
-    p.append(vec_col(185, cy + 2 * s, b, "sbase", s))
-    for dx in (-7, 7):
-        p.append(rf"\draw[ink, line width=3\px] {P(107 + dx, cy - 32)} -- {P(107 + dx, cy + 32)};")
-    p.append(T((30, cy - 2 * s - 38), "self"))
-    p.append(T((185, cy - 2 * s - 55), r"neighbours\\(mean)"))
-    p.append(vec_col(310, cy + 4 * s, a, "snew", s))
-    p.append(vec_col(310, cy, b, "sbase", s))
-    p.append(rf"\draw[arr] {P(220, cy)} -- {P(275, cy)};")
-    p.append(rf"\node[smallbox, minimum width=66\px, minimum height=66\px, font=\fslarge] (W) at {P(410, cy)} {{$W$}};")
-    p.append(rf"\draw[arr] {P(340, cy)} -- {P(373, cy)};")
+    yself, ynbr, ycat, yW, ynew = 540, 410, 275, 170, 50
+    p.append(vec_row(R - 4 * s, yself, a, "snew", s))
+    p.append(vec_row(R - 4 * s, ynbr, b, "sbase", s))
+    p.append(T((0, yself), "self", anchor="west"))
+    p.append(T((0, ynbr), "neighbours", anchor="west"))
+    for dx in (-8, 8):
+        p.append(rf"\draw[ink, line width=3\px] {P(R - 2 * s + dx, yself - 44)} -- {P(R - 2 * s + dx, ynbr + 44)};")
+    p.append(vec_row(R - 8 * s, ycat, a, "snew", s))
+    p.append(vec_row(R - 4 * s, ycat, b, "sbase", s))
+    p.append(rf"\draw[arr] {P(xm, ynbr - 34)} -- {P(xm, ycat + 34)};")
+    p.append(rf"\draw[arr] {P(xm, ycat - 34)} -- {P(xm, yW + 42)};")
+    p.append(rf"\node[smallbox, minimum width=90\px, minimum height=80\px, font=\fslarge] (W) at {P(xm, yW)} {{$W$}};")
+    p.append(rf"\draw[arr] {P(xm, yW - 42)} -- {P(xm, ynew + 34)};")
     c = vec_values(4, 3)
-    p.append(rf"\draw[arr] {P(448, cy)} -- {P(490, cy)};")
-    for i, v in enumerate(c):
-        p.append(square(520, cy + 2 * s - s / 2 - i * s, s, "hlink", v))
-    p.append(T((520, cy - 2 * s - 38), "new"))
+    p.append(vec_row(xm - 2 * s, ynew, c, "hlink", s))
+    p.append(T((0, ynew), "new", anchor="west"))
     B("c02_sage_concat", *p)
 
 
 # ---- c03 ----------------------------------------------------------------------------------------
 def c03_concat_vs_sum():
-    s = 30
+    s = 50
     a = vec_values(3, 11)
     b = vec_values(3, 12)
-    centres = (113.5, 486.5)
-    ny, fy = 400, 480
+    gap = 20
+    xv = 600 - 118 - 6                       # centre of the right slot (the word "neighbour" is 235 px wide)
+    xu = xv - 3 * s - gap
+    lc = xu - 1.5 * s
+    ny = 510
     p = []
-    for k, c in enumerate(centres):
-        xu, xv = c - 65, c + 65
-        va, vb = (a, b) if k == 0 else (b, a)
-        ca, cb = ("snew", "sbase") if k == 0 else ("sbase", "snew")
-        p.append(line((xu, ny), (xv, ny), 3))
-        p.append(N(f"u{k}", (xu, ny), "$u$", 56, "hl"))
-        p.append(N(f"v{k}", (xv, ny), "$v$", 56))
-        p.append(vec_row(xu - 45, fy, va, ca, s))
-        p.append(vec_row(xv - 45, fy, vb, cb, s))
-        # sum: three squares, each half blue half vermillion
-        for i in range(3):
-            x = c - 45 + s / 2 + i * s
-            ys = 255
-            p.append(rf"\fill[snew] {P(x - s / 2, ys)} rectangle {P(x + s / 2, ys + s / 2)};")
-            p.append(rf"\fill[sbase] {P(x - s / 2, ys - s / 2)} rectangle {P(x + s / 2, ys)};")
-            p.append(rf"\draw[ink, line width=2\px] {P(x - s / 2, ys - s / 2)} rectangle {P(x + s / 2, ys + s / 2)};")
-        # concat [a | b] or [b | a]
-        first = (va, ca) if k == 0 else (vb, cb)
-        second = (vb, cb) if k == 0 else (va, ca)
-        # same vectors as above: case 1 -> [a | b], case 2 -> [b | a]
-        left = c - 100
-        p.append(vec_row(left, 80, first[0], first[1], s))
-        p.append(vec_row(left + 3 * s + 14, 80, second[0], second[1], s))
-        p.append(rf"\draw[ink, line width=2\px] {P(left + 3 * s + 7, 80 - 21)} -- {P(left + 3 * s + 7, 80 + 21)};")
-    # middle column
-    p.append(T((300, 280), "sum"))
-    p.append(rf"\node[tag] at {P(300, 230)} {{same}};")
-    p.append(T((300, 105), "concat"))
-    p.append(rf"\node[tag] at {P(300, 55)} {{different}};")
+    p.append(line((xu, ny), (xv, ny), 3))
+    p.append(N("u", (xu, ny), "$u$", 66, "hl"))
+    p.append(N("v", (xv, ny), "$v$", 66))
+    p.append(vec_row(xu - 1.5 * s, ny - 75, a, "snew", s))
+    p.append(vec_row(xv - 1.5 * s, ny - 75, b, "sbase", s))
+    # sum: each cell half blue, half vermillion (a diagonal split): mixed, cannot tell who is who
+    ys = 290
+    p.append(T((0, ys), "sum", anchor="west"))
+    for i in range(3):
+        x0 = lc + (3 * s + gap) / 2 + i * s
+        p.append(rf"\fill[snew] {P(x0, ys - s / 2)} -- {P(x0 + s, ys - s / 2)} -- {P(x0, ys + s / 2)} -- cycle;")
+        p.append(rf"\fill[sbase] {P(x0 + s, ys - s / 2)} -- {P(x0 + s, ys + s / 2)} -- {P(x0, ys + s / 2)} -- cycle;")
+        p.append(rf"\draw[ink, line width=2\px] {P(x0, ys - s / 2)} rectangle {P(x0 + s, ys + s / 2)};")
+    # concat: [a | b]
+    yc = 160
+    p.append(T((0, yc), "concat", anchor="west"))
+    p.append(vec_row(lc, yc, a, "snew", s))
+    p.append(vec_row(lc + 3 * s + gap, yc, b, "sbase", s))
+    p.append(T((xu, yc - 68), "self"))
+    p.append(T((xv, yc - 68), "neighbour"))
     B("c03_concat_vs_sum", *p)
 
 
@@ -190,10 +181,10 @@ def c04_gcn_vs_gat():
     gat = [0.45, 0.25, 0.15, 0.10, 0.05]
     k = 31.0
     cols = ["snew", "sbase", "sthree", "sfour", "sfive"]
-    rx, ry = 124, 175
+    rx, ry = 125, 170
     p = []
-    for name, cx, ws in (("GCN", 170, gcn), ("GAT", 530, gat)):
-        cy = 195
+    for name, cx, ws in (("GCN", 175, gcn), ("GAT", 525, gat)):
+        cy = 190
         p.append(rf"\node[font=\fslarge, inner sep=2\px] at {P(cx, 470)} {{{name}}};")
         pts = []
         for i in range(5):
@@ -201,7 +192,7 @@ def c04_gcn_vs_gat():
             pts.append((cx + rx * math.cos(ang), cy + ry * math.sin(ang)))
         for (x, y), w in zip(pts, ws):
             p.append(line((cx, cy), (x, y), max(2, w * k)))
-        p.append(N(f"c{name}", (cx, cy), "$i$", 56, "hl"))
+        p.append(N(f"c{name}", (cx, cy), "$i$", 60, "hl"))
         for (x, y), c in zip(pts, cols):
             p.append(N(f"n{name}{x:.0f}", (x, y), "", 46, c))
     B("c04_gcn_vs_gat", *p)
@@ -211,98 +202,58 @@ def c04_gcn_vs_gat():
 def c05_attention_visual():
     e = np.array([1.2, 0.1, -0.5])
     alpha = np.exp(e) / np.exp(e).sum()
-    ys = [350, 215, 80]
-    cols = ["snew", "sbase", "sthree"]
+    ys = [200, 105, 10]
     p = [rf"\begin{{scope}}[on background layer]"]
     for y, al in zip(ys, alpha):
-        p.append(line((35, 215), (190, y), al * 20))
+        p.append(line((36, 105), (195, y), al * 20))
     p.append(r"\end{scope}")
-    p.append(N("ci", (35, 215), "$i$", 52, "hl"))
-    # softmax box
-    p.append(rf"\node[draw=ink, line width=2\px, fill=white, minimum width=124\px, minimum height=390\px, "
-             rf"font=\fssmall] at {P(467, 215)} {{softmax}};")
-    for j, (y, ej, al, c) in enumerate(zip(ys, e, alpha, cols), start=1):
-        p.append(N(f"cj{j}", (190, y), f"$j_{j}$", 52))
-        vals = vec_values(3, 20 + j)
-        p.append(vec_col(250, y + 45, vals, c, 30))
+    p.append(N("ci", (36, 105), "$i$", 66, "hl"))
+    # softmax box (text rotated)
+    p.append(rf"\node[draw=ink, line width=2\px, fill=white, minimum width=290\px, minimum height=66\px, "
+             rf"font=\fssmall, rotate=90, inner sep=0pt] at {P(431, 105)} {{softmax}};")
+    for j, (y, ej, al) in enumerate(zip(ys, e, alpha), start=1):
+        p.append(N(f"cj{j}", (195, y), f"$j_{j}$", 76))
         txt = f"${ej:.1f}$".replace("-", "{-}")
-        p.append(T((345, y), txt))
-        p.append(rf"\draw[arr] {P(380, y)} -- {P(403, y)};")
-        p.append(rf"\draw[arr] {P(533, y)} -- {P(561, y)};")
-        p.append(T((600, y), f"${al:.2f}$"))
-    p.append(rf"\node[tag, align=center] at {P(345, 462)} {{scores\\$e_{{ij}}$}};")
-    p.append(rf"\node[tag, align=center] at {P(595, 462)} {{weights $\alpha_{{ij}}$\\(sum to 1)}};")
+        p.append(T((304, y), txt))
+        p.append(rf"\draw[arr] {P(374, y)} -- {P(396, y)};")
+        p.append(rf"\draw[arr] {P(467, y)} -- {P(489, y)};")
+        p.append(T((556, y), f"${al:.2f}$"))
+    p.append(T((304, 290), "scores"))
+    p.append(T((548, 290), "weights"))
     B("c05_attention_visual", *p)
 
 
 # ---- c06 ----------------------------------------------------------------------------------------
 def c06_mp_flow():
-    bx, bw, bh = 340, 290, 82
+    bx, bw, bh = 360, 340, 82
     ys = [445, 290, 135]
-    names = [r"message $\varphi$", r"aggregate $\bigoplus$", r"update $\psi$"]
+    names = [r"message $\varphi$", r"aggregate \raisebox{-12\px}{\scalebox{2.4}{$\bigoplus$}}", r"update $\psi$"]
     p = []
-    # neighbours (left, top) and i (left, bottom)
-    js = [(40, 490), (40, 415), (40, 340)]
+    js = [(44, 495), (44, 410), (44, 325)]
     for n, (x, y) in enumerate(js, start=1):
-        p.append(N(f"j{n}", (x, y), f"$j_{n}$", 56))
-    p.append(N("ni", (40, 135), "$i$", 56, "hl"))
+        p.append(N(f"j{n}", (x, y), f"$j_{n}$", 76))
+    p.append(N("ni", (44, 135), "$i$", 76, "hl"))
     for n, y in enumerate(ys):
         p.append(rf"\node[draw=ink, line width=2\px, fill=white, minimum width={bw}\px, minimum height={bh}\px, "
                  rf"font=\fssmall] (b{n}) at {P(bx, y)} {{{names[n]}}};")
     for n, (x, y) in enumerate(js, start=1):
-        p.append(rf"\draw[arr] {P(x + 30, y)} -- {P(bx - bw / 2 - 2, 445 + (2 - n) * 25)};")
-    p.append(rf"\draw[arr] {P(70, 135)} -- {P(bx - bw / 2 - 2, 135)};")
+        p.append(rf"\draw[arr] {P(x + 40, y)} -- {P(bx - bw / 2 - 2, 445 + (2 - n) * 25)};")
+    p.append(rf"\draw[arr] {P(86, 135)} -- {P(bx - bw / 2 - 2, 135)};")
     p.append(rf"\draw[arr] {P(bx, ys[0] - bh / 2)} -- {P(bx, ys[1] + bh / 2)};")
     p.append(rf"\draw[arr] {P(bx, ys[1] - bh / 2)} -- {P(bx, ys[2] + bh / 2)};")
     p.append(rf"\draw[arr] {P(bx, ys[2] - bh / 2)} -- {P(bx, 70)};")
-    p.append(N("nh", (bx, 40), "$h_i'$", 56, "hl"))
-    p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=west] at {P(bx + 45, 40)} {{new feature}};")
+    p.append(N("nh", (bx, 30), "$h_i'$", 76, "hl"))
+    p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=east] at {P(bx - 46, 30)} {{new feature}};")
     for n, y in enumerate(ys, start=1):
-        p.append(rf"\node[circle, fill=ink, text=white, minimum size=46\px, inner sep=0pt, font=\fssmall] "
-                 rf"at {P(bx - bw / 2, y + bh / 2)} {{{n}}};")
+        p.append(rf"\node[circle, fill=ink, text=white, minimum size=56\px, inner sep=0pt, font=\fssmall] "
+                 rf"at {P(bx + bw / 2, y + bh / 2)} {{{n}}};")
     B("c06_mp_flow", *p)
-
-
-# ---- c07 ----------------------------------------------------------------------------------------
-def c07_three_models_mini():
-    k = 24.0
-    ns, cs = 40, 48
-    d_i = 4
-    deg_j = [2, 3, 3, 4]
-    gcn = [1 / math.sqrt((d_i + 1) * (d + 1)) for d in deg_j]
-    gat = [0.50, 0.25, 0.15, 0.10]
-    offs = [(-85, 52), (85, 52), (-85, -52), (85, -52)]
-    names = ["GCN", "GraphSAGE", "GAT"]
-    p = []
-    for idx, nm in enumerate(names):
-        y0 = 538 - 168 * (idx + 1) - 15 * idx     # bottom of the panel
-        cx, cy = 315, y0 + 84
-        p.append(rf"\draw[ink, line width=2\px] {P(3, y0)} rectangle {P(437, y0 + 168)};")
-        p.append(rf"\node[font=\fssmall, inner sep=2\px, anchor=west] at {P(12, cy)} {{{nm}}};")
-        if nm == "GCN":
-            ws, dash = gcn, [False] * 4
-        elif nm == "GAT":
-            ws, dash = gat, [False] * 4
-        else:
-            ws, dash = [0.5, 0.5, 0.5, 0.5], [False, False, True, True]
-        for (dx, dy), w, d in zip(offs, ws, dash):
-            if d:
-                p.append(line((cx, cy), (cx + dx, cy + dy), 2, "muted", dash=True))
-            else:
-                p.append(line((cx, cy), (cx + dx, cy + dy), max(2, w * k)))
-        p.append(N(f"m{idx}c", (cx, cy), "", cs, "hl"))
-        for n, ((dx, dy), d) in enumerate(zip(offs, dash)):
-            if d:
-                p.append(N(f"m{idx}n{n}", (cx + dx, cy + dy), "", ns, "white", extra="draw=muted"))
-            else:
-                p.append(N(f"m{idx}n{n}", (cx + dx, cy + dy), "", ns, "white"))
-    B("c07_three_models_mini", *p)
 
 
 # ---- c08 ----------------------------------------------------------------------------------------
 def c08_readout():
-    s = 22
-    nodes = {1: (40, 360), 2: (170, 390), 3: (175, 270), 4: (40, 240), 5: (110, 130)}
+    s = 24
+    nodes = {1: (40, 400), 2: (170, 430), 3: (175, 310), 4: (40, 280), 5: (110, 170)}
     edges = [(1, 2), (2, 3), (3, 4), (4, 1), (4, 5), (3, 5), (1, 3)]
     p = [COLORS, r"\begin{scope}[on background layer]"]
     for u, v in edges:
@@ -310,22 +261,21 @@ def c08_readout():
     p.append(r"\end{scope}")
     for i, (x, y) in nodes.items():
         p.append(N(f"v{i}", (x, y), "", 40, "white"))
-        p.append(vec_row(x - 33, y - 38, vec_values(3, 30 + i), "snew", s))
-    p.append(rf"\draw[ink, line width=2\px, fill=white] {P(290, 300)} circle ({0.75 * 30}bp);")
-    p.append(rf"\draw[ink, line width=2\px] {P(260, 300)} -- {P(320, 300)};")
-    p.append(rf"\draw[ink, line width=2\px] {P(290, 270)} -- {P(290, 330)};")
-    p.append(rf"\draw[arr] {P(215, 300)} -- {P(252, 300)};")
-    p.append(T((290, 205), r"sum\\mean\\max"))
+        p.append(vec_row(x - 36, y - 38, vec_values(3, 30 + i), "snew", s))
+    p.append(rf"\draw[ink, line width=2\px, fill=white] {P(310, 340)} circle ({0.75 * 34}bp);")
+    p.append(rf"\draw[ink, line width=2\px] {P(276, 340)} -- {P(344, 340)};")
+    p.append(rf"\draw[ink, line width=2\px] {P(310, 306)} -- {P(310, 374)};")
+    p.append(rf"\draw[arr] {P(235, 340)} -- {P(268, 340)};")
     # graph vector
     gv = vec_values(4, 40)
     for i, v in enumerate(gv):
-        p.append(square(480, 372 - 18 - i * 36, 36, "hlink", v))
-    p.append(rf"\draw[arr] {P(328, 300)} -- {P(448, 300)};")
-    p.append(rf"\node[draw=ink, line width=2\px, fill=white, minimum width=160\px, minimum height=60\px, font=\fssmall] "
-             rf"(cl) at {P(480, 150)} {{classifier}};")
-    p.append(rf"\draw[arr] {P(480, 224)} -- {P(480, 182)};")
-    p.append(rf"\draw[arr] {P(480, 118)} -- {P(480, 70)};")
-    p.append(T((480, 40), "class"))
+        p.append(square(490, 450 - 20 - i * 40, 40, "hlink", v))
+    p.append(rf"\draw[arr] {P(352, 340)} -- {P(458, 340)};")
+    p.append(rf"\node[draw=ink, line width=2\px, fill=white, minimum width=250\px, minimum height=70\px, font=\fssmall] "
+             rf"(cl) at {P(430, 190)} {{classifier}};")
+    p.append(rf"\draw[arr] {P(490, 282)} -- {P(490, 230)};")
+    p.append(rf"\draw[arr] {P(430, 154)} -- {P(430, 90)};")
+    p.append(T((430, 50), "class"))
     B("c08_readout", *p)
 
 
@@ -336,5 +286,4 @@ if __name__ == "__main__":
     c04_gcn_vs_gat()
     c05_attention_visual()
     c06_mp_flow()
-    c07_three_models_mini()
     c08_readout()

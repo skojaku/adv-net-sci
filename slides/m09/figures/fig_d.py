@@ -18,6 +18,8 @@ EXTRA = r"""
 \definecolor{gry}{HTML}{B5B5B5}
 \definecolor{brn}{HTML}{8B5A2B}
 \definecolor{dgy}{HTML}{4A4A4A}
+\definecolor{lav}{HTML}{B79AE0}
+\definecolor{gblue}{HTML}{7F93AD}
 """
 
 
@@ -54,9 +56,9 @@ def ngraph(prefix, pos, edges, fills, size=52):
     return "\n".join(out)
 
 
-def ring(cx, cy, r, n=6, start=0.0):
+def ring(cx, cy, r, n=6, start=0.0, sy=1.0):
     return {i: (cx + r * math.cos(math.radians(start + 360 * i / n)),
-                cy + r * math.sin(math.radians(start + 360 * i / n))) for i in range(n)}
+                cy + sy * r * math.sin(math.radians(start + 360 * i / n))) for i in range(n)}
 
 
 def triangle(cx, cy, side):
@@ -79,63 +81,113 @@ def txt(at, text, anchor="center", size="fssmall", extra=""):
 
 
 # ---------------------------------------------------------------- d01 -------------------------------
-def d01():
-    cy = 215
-    hexp = ring(167, cy, 115, 6, start=0)
-    t1 = triangle(421, cy + 8, 110)
-    t2 = triangle(601, cy + 8, 110)
-    # keys must be unique over the whole picture
-    pos = {}
-    for i, p in hexp.items():
-        pos[f"h{i}"] = p
-    for i, p in t1.items():
-        pos[f"a{i}"] = p
-    for i, p in t2.items():
-        pos[f"b{i}"] = p
+def three_graphs(cy, rh, rt, th, hx, tx1, tx2, sy=1.0):
+    """6-cycle at hx, two triangles at tx1 and tx2.  Returns (pos, edges)."""
+    hexp = ring(hx, cy, rh, 6, start=0, sy=sy)
+    t1 = triangle(tx1, cy + th, rt)
+    t2 = triangle(tx2, cy + th, rt)
+    pos = {f"h{i}": p for i, p in hexp.items()}
+    pos.update({f"a{i}": p for i, p in t1.items()})
+    pos.update({f"b{i}": p for i, p in t2.items()})
     edges = ([(f"h{u}", f"h{v}") for u, v in cycle_edges(range(6))]
              + [(f"a{u}", f"a{v}") for u, v in cycle_edges(range(3))]
              + [(f"b{u}", f"b{v}") for u, v in cycle_edges(range(3))])
+    return pos, edges
+
+
+def d01():
+    cy = 190
+    pos, edges = three_graphs(cy, 100, 150, 10, 150, 640, 900)
     fills = {k: "gry" for k in pos}
     B("d01_cycle_vs_triangles",
-      ngraph("n", pos, edges, fills, 52),
-      txt((167, 28), "6-cycle", size="fsbody", extra="font=\\fslarge"),
-      txt((511, 28), "two triangles", size="fsbody", extra="font=\\fslarge"))
+      ngraph("n", pos, edges, fills, 48),
+      txt((150, 28), "6-cycle", size="fsbody"),
+      txt((770, 28), "two triangles", size="fsbody"))
 
 
 # ---------------------------------------------------------------- d02 -------------------------------
-def d02():
-    adj = {1: [2], 2: [1, 3], 3: [2, 4, 5], 4: [3], 5: [3]}
-    edges = [(1, 2), (2, 3), (3, 4), (3, 5)]
-    init = {1: "R", 2: "B", 3: "Y", 4: "R", 5: "R"}
-    cname = {"R": "sbase", "B": "snew", "Y": "sthree"}
-    sigs = wl_step(adj, init)
+D2_ADJ = {1: [2], 2: [1, 3], 3: [2, 4, 5], 4: [3], 5: [3]}
+D2_EDGES = [(1, 2), (2, 3), (3, 4), (3, 5)]
+D2_INIT = {1: "R", 2: "B", 3: "Y", 4: "R", 5: "R"}
+D2_CNAME = {"R": "sbase", "B": "snew", "Y": "sthree"}
+D2_NEW = ["sfour", "sfive", "lav", "gblue"]
+
+
+def wl_graph_pos(cx, cy, sp):
+    """The 5-node graph: path 1-2-3-4 and node 5 above node 3, centred on cx."""
+    p = {i + 1: (cx + (i - 1.5) * sp, cy) for i in range(4)}
+    p[5] = (p[3][0], cy + 0.8 * sp)
+    return p
+
+
+def wl_graph(prefix, pos, fills, size, hl_edges=(), ringed=None):
+    out = []
+    if ringed is not None:
+        x, y = pos[ringed]
+        out.append(rf"\draw[line width=5\px, draw=hlink, fill=hl] {P(x, y)} circle ({(size / 2 + 12) * 0.75:.2f}bp);")
+    out += [vertex(f"{prefix}{v}", p, "", size=size, extra=f"fill={fills[v]}") for v, p in pos.items()]
+    out.append(r"\begin{scope}[on background layer]")
+    for u, v in D2_EDGES:
+        st = "draw=hlink, line width=6\\px" if (u, v) in hl_edges else "line width=2\\px"
+        out.append(edge(f"{prefix}{u}", f"{prefix}{v}", style=st))
+    out.append(r"\end{scope}")
+    return "\n".join(out)
+
+
+def d02_data():
+    sigs = wl_step(D2_ADJ, D2_INIT)
     (new,), table = relabel([sigs])
-    newcol = ["sfive", "sfour", "brn", "dgy"]
-    assert len(table) <= len(newcol)
-    parts = []
-    # before graph
-    pos0 = {1: (45, 490), 2: (140, 490), 3: (235, 490), 4: (330, 490), 5: (235, 396)}
-    parts.append(ngraph("p", pos0, edges, {v: cname[init[v]] for v in adj}, 52))
-    parts.append(txt((395, 490), "iteration 0", anchor="west"))
-    # after graph (smaller)
-    pos1 = {1: (440, 190), 2: (493, 190), 3: (546, 190), 4: (599, 190), 5: (546, 137)}
-    # (scaled to 38 px nodes)
-    parts.append(ngraph("q", pos1, edges, {v: newcol[new[v]] for v in adj}, 42))
-    parts.append(txt((520, 262), "iteration 1", size="fssmall"))
-    # table: one row per distinct signature, in order of new label
+    assert len(table) <= len(D2_NEW)
+    return sigs, new, table
+
+
+def mset(x0, y, colours, s=48, gap=62):
+    """'{ sq sq sq }' starting at x0 (left edge of the opening brace)."""
+    out = [txt((x0 + 14, y), r"$\{$", size="fslarge")]
+    xs = x0 + 40
+    for j, c in enumerate(colours):
+        out.append(sq((xs + 24 + gap * j, y), c, s))
+    xe = xs + 24 + gap * (len(colours) - 1) + 24 + 8
+    out.append(txt((xe + 14, y), r"$\}$", size="fslarge"))
+    return "\n".join(out), xe + 28
+
+
+def d02():
+    sigs, new, table = d02_data()
+    cx, cyb, sp, nsz = 255, 250, 140, 72
+    pos = wl_graph_pos(cx, cyb, sp)
+    # a: iteration 0, node 3 and its neighbour colours
+    nb = [D2_CNAME[c] for c in sigs[3][1]]
+    m, xe = mset(0, 500, nb)
+    w = xe
+    m, xe = mset(cx - w / 2 + 0, 500, nb)
+    B("d02a_wl_collect",
+      wl_graph("p", pos, {v: D2_CNAME[D2_INIT[v]] for v in pos}, nsz,
+               hl_edges={(2, 3), (3, 4), (3, 5)}, ringed=3),
+      m,
+      txt((cx, 140), "iteration 0"))
+    # b: the table
     rows = sorted(table.items(), key=lambda kv: kv[1])
-    y0 = 300
+    parts = []
+    pitch = 112
+    y0 = 3 * pitch + 20
     for k, (sig, lab) in enumerate(rows):
-        y = y0 - k * 78
-        own, nb = sig
-        parts.append(sq((30, y), cname[own], 40))
-        parts.append(txt((78, y), r"$\{$", size="fslarge"))
-        for j, c in enumerate(nb):
-            parts.append(sq((120 + 46 * j, y), cname[c], 38, "line width=1.5\\px"))
-        parts.append(txt((120 + 46 * (len(nb) - 1) + 24, y), r"$\}$", size="fslarge", anchor="west"))
-        parts.append(rf"\draw[arr] {P(290, y)} -- {P(335, y)};")
-        parts.append(sq((375, y), newcol[lab], 40, "draw=hlink, line width=5\\px"))
-    B("d02_wl_iteration", *parts)
+        y = y0 - k * pitch
+        own, nbs = sig
+        parts.append(sq((40, y), D2_CNAME[own], 56))
+        mm, xe = mset(80, y, [D2_CNAME[c] for c in nbs], s=56, gap=68)
+        parts.append(mm)
+        parts.append(rf"\draw[arr] {P(385, y)} -- {P(450, y)};")
+        parts.append(sq((510, y), D2_NEW[lab], 56, "draw=hlink, line width=5\\px"))
+    parts.append(txt((510, y0 + 80), "new"))
+    B("d02b_wl_table", *parts)
+    # c: iteration 1, with iteration 0 small above
+    ps = wl_graph_pos(cx, 500, 64)
+    B("d02c_wl_result",
+      wl_graph("s", ps, {v: D2_CNAME[D2_INIT[v]] for v in ps}, 40),
+      rf"\draw[arr] {P(cx, 440)} -- {P(cx, 395)};",
+      wl_graph("q", pos, {v: D2_NEW[new[v]] for v in pos}, nsz),
+      txt((cx, 140), "iteration 1"))
 
 
 # ---------------------------------------------------------------- d03 -------------------------------
@@ -149,29 +201,30 @@ def d03():
     cols = ["sfour", "sfive", "sthree"]
     nlab = len(table)
     assert nlab == 3
-    xs = [244, 310, 376, 442]
-    ppos = {v: (xs[v], 0) for v in padj}
-    cx = 585
-    spos = {0: (cx, 0), 1: (cx, 62), 2: (cx - 54, -31), 3: (cx + 54, -31)}
+    px0, psp = 40, 72
+    ppos = {v: (px0 + psp * v, 0) for v in padj}
+    cx = 440
+    spos = {0: (cx, 0), 1: (cx, 70), 2: (cx - 62, -35), 3: (cx + 62, -35)}
     parts = []
     for row, (yc, fills_p, fills_s) in enumerate([
-            (450, {v: "gry" for v in padj}, {v: "gry" for v in sadj}),
-            (295, {v: cols[pn[v]] for v in padj}, {v: cols[sn[v]] for v in sadj})]):
+            (455, {v: "gry" for v in padj}, {v: "gry" for v in sadj}),
+            (265, {v: cols[pn[v]] for v in padj}, {v: cols[sn[v]] for v in sadj})]):
         pp = {f"p{v}": (x, yc) for v, (x, y) in ppos.items()}
-        sp = {f"s{v}": (x, yc - 14 + y) for v, (x, y) in spos.items()}
+        sp = {f"s{v}": (x, yc - 15 + y) for v, (x, y) in spos.items()}
         pos = {**pp, **sp}
         edges = [(f"p{u}", f"p{v}") for u, v in pedges] + [(f"s{u}", f"s{v}") for u, v in sedges]
         fills = {**{f"p{v}": c for v, c in fills_p.items()}, **{f"s{v}": c for v, c in fills_s.items()}}
-        parts.append(ngraph(f"r{row}", pos, edges, fills, 52))
-        parts.append(txt((0, yc), f"iteration {row}", anchor="west"))
+        parts.append(ngraph(f"r{row}", pos, edges, fills, 48))
+        parts.append(txt((0, yc + 78), f"iteration {row}", anchor="west"))
     # histogram
-    parts.append(txt((0, 80), "histogram", anchor="west"))
-    ys = 55
-    for gx, counts in [(343, [list(pn.values()).count(k) for k in range(nlab)]),
+    yl = 148
+    parts.append(txt((0, yl), "histogram", anchor="west"))
+    ys = 28
+    for gx, counts in [(px0 + 1.5 * psp, [list(pn.values()).count(k) for k in range(nlab)]),
                        (cx, [list(sn.values()).count(k) for k in range(nlab)])]:
         for k in range(nlab):
-            x = gx + (k - 1) * 58
-            parts.append(sq((x, ys), cols[k], 40))
+            x = gx + (k - 1) * 62
+            parts.append(sq((x, ys), cols[k], 44))
             for d in range(counts[k]):
                 parts.append(rf"\draw[line width=1.5\px, fill=ink] {P(x, ys + 44 + 30 * d)} circle (12\px);")
     B("d03_path_star", *parts)
@@ -180,46 +233,37 @@ def d03():
 # ---------------------------------------------------------------- d04 -------------------------------
 def d04():
     parts = []
-    hx = 285
-    rows_y = [440, 290, 140]
-    r = 58
-    nsz = 36
+    hx, t1x, t2x = 520, 860, 1040
+    rows_y = [515, 355, 195]
     for i, yc in enumerate(rows_y):
-        hexp = ring(hx, yc, r, 6, 0)
-        t1 = triangle(482, yc + 4, 68)
-        t2 = triangle(604, yc + 4, 68)
-        pos = {f"h{k}": p for k, p in hexp.items()}
-        pos.update({f"a{k}": p for k, p in t1.items()})
-        pos.update({f"b{k}": p for k, p in t2.items()})
-        edges = ([(f"h{u}", f"h{v}") for u, v in cycle_edges(range(6))]
-                 + [(f"a{u}", f"a{v}") for u, v in cycle_edges(range(3))]
-                 + [(f"b{u}", f"b{v}") for u, v in cycle_edges(range(3))])
-        parts.append(ngraph(f"r{i}", pos, edges, {k: "gry" for k in pos}, nsz))
+        pos, edges = three_graphs(yc, 100, 110, 4, hx, t1x, t2x, sy=0.5)
+        parts.append(ngraph(f"r{i}", pos, edges, {k: "gry" for k in pos}, 40))
         parts.append(txt((0, yc), f"iteration {i}", anchor="west"))
-        parts.append(txt((393, yc + 2), "=", size="fslarge", extra="font=\\fslarge"))
-    yh = 30
-    for x in (hx, 543):
+        parts.append(txt((712, yc), "$=$", size="fslarge"))
+    yh = 45
+    for x in (hx, (t1x + t2x) / 2):
         parts.append(txt((x - 22, yh), r"$6\times$", anchor="east"))
-        parts.append(rf"\draw[line width=1.5\px, fill=gry] {P(x - 4, yh)} circle (15\px);")
-    parts.append(txt((393, yh), "=", size="fslarge", extra="font=\\fslarge"))
+        parts.append(rf"\draw[line width=1.5\px, fill=gry] {P(x + 8, yh)} circle (17\px);")
+    parts.append(txt((712, yh), "$=$", size="fslarge"))
+    parts.append(txt((0, yh), "same histogram", anchor="west"))
     B("d04_wl_fail", *parts)
 
 
 # ---------------------------------------------------------------- d05 -------------------------------
 def d05():
-    xl, xr = 142, 556
-    w, h = 280, 100
-    ys = [370, 225, 80]
-    rows = [(r"label $c_i$", r"feature $h_i$"),
-            (r"multiset of\\neighbour labels", r"aggregated\\message $m_i$"),
-            (r"HASH", r"update $\psi$")]
-    parts = [txt((xl, 478), "WL", size="fslarge", extra="font=\\fslarge"),
-             txt((xr, 478), "GNN", size="fslarge", extra="font=\\fslarge")]
-    for k, (y, (a, b)) in enumerate(zip(ys, rows)):
+    xl, xr = 140, 520
+    w = 280
+    rows = [(r"label $c_i$", r"feature $h_i$", 84),
+            (r"neighbour\\labels", r"message $m_i$", 130),
+            (r"HASH", r"update $\psi$", 84)]
+    ys = [380, 230, 80]
+    parts = [txt((xl, 490), "WL", size="fslarge"),
+             txt((xr, 490), "GNN", size="fslarge")]
+    for k, (y, (a, b, h)) in enumerate(zip(ys, rows)):
         st = "box, fill=hl" if k == 1 else "box"
-        parts.append(node(f"l{k}", (xl, y), a, style=st, w=w, h=h, extra="font=\\fssmall"))
-        parts.append(node(f"r{k}", (xr, y), b, style=st, w=w, h=h, extra="font=\\fssmall"))
-        parts.append(rf"\draw[line width=2\px] ({'l'}{k}.east) -- ({'r'}{k}.west);")
+        parts.append(node(f"l{k}", (xl, y), a, style=st, w=w, h=h, extra="font=\\fssmall, align=center"))
+        parts.append(node(f"r{k}", (xr, y), b, style=st, w=w, h=h, extra="font=\\fssmall, align=center"))
+        parts.append(rf"\draw[line width=2\px] (l{k}.east) -- (r{k}.west);")
     for k in range(2):
         parts.append(rf"\draw[arr] (l{k}.south) -- (l{k + 1}.north);")
         parts.append(rf"\draw[arr] (r{k}.south) -- (r{k + 1}.north);")
@@ -228,20 +272,13 @@ def d05():
 
 # ---------------------------------------------------------------- d06 -------------------------------
 def d06():
-    cy = 305
-    hexp = ring(115, cy, 90, 6, 0)
-    t1 = triangle(465, cy + 6, 74)
-    t2 = triangle(585, cy + 6, 74)
-    pos = {f"h{k}": p for k, p in hexp.items()}
-    pos.update({f"a{k}": p for k, p in t1.items()})
-    pos.update({f"b{k}": p for k, p in t2.items()})
-    edges = ([(f"h{u}", f"h{v}") for u, v in cycle_edges(range(6))]
-             + [(f"a{u}", f"a{v}") for u, v in cycle_edges(range(3))]
-             + [(f"b{u}", f"b{v}") for u, v in cycle_edges(range(3))])
+    cy = 360
+    pos, edges = three_graphs(cy, 70, 90, 6, 90, 330, 475)
+    mid = 225
     parts = [ngraph("g", pos, edges, {k: "gry" for k in pos}, 40),
-             raw(rf"\draw[line width=4\px] {P(262, cy + 12)} -- {P(318, cy + 12)}; \draw[line width=4\px] {P(262, cy - 12)} -- {P(318, cy - 12)}; \draw[line width=4\px] {P(283, cy - 32)} -- {P(297, cy + 32)};"),
-             node("wl", (350, 140), "WL colours: equal", w=400, h=62, extra="font=\\fssmall"),
-             node("gn", (350, 38), "GNN output: equal", style="box, fill=hl", w=400, h=62, extra="font=\\fssmall"),
+             raw(rf"\draw[line width=4\px] {P(mid - 24, cy + 14)} -- {P(mid + 24, cy + 14)}; \draw[line width=4\px] {P(mid - 24, cy - 14)} -- {P(mid + 24, cy - 14)}; \draw[line width=4\px] {P(mid - 10, cy - 36)} -- {P(mid + 10, cy + 36)};"),
+             node("wl", (265, 190), "WL: equal", w=360, h=72),
+             node("gn", (265, 60), "GNN: equal", style="box, fill=hl", w=360, h=72),
              r"\draw[arr] (wl.south) -- (gn.north);"]
     B("d06_theorem", *parts)
 
@@ -249,7 +286,6 @@ def d06():
 # ---------------------------------------------------------------- d07 -------------------------------
 def d07():
     import numpy as np
-    # neighbour multisets: colour 0 = R (vermillion), 1 = B (blue); one-hot vectors
     A = [0, 0, 1, 1]
     Bm = [0, 1]
     onehot = lambda ms: np.eye(2)[ms]  # noqa: E731
@@ -263,32 +299,29 @@ def d07():
         return rf"$(\textcolor{{sbase}}{{{fmt(v[0])}}},\textcolor{{snew}}{{{fmt(v[1])}}})$"
 
     aggs = {"sum": lambda M: M.sum(0), "mean": lambda M: M.mean(0), "max": lambda M: M.max(0)}
-    xa, xb, xm = 235, 560, 398
+    xa, xb, xm = 275, 540, 410
     parts = []
-    # multisets in boxes
-    yt = 470
+    yt = 345
     for x, ms in ((xa, A), (xb, Bm)):
         n = len(ms)
-        wbox = 36 * n + 40 + 2 * 28
-        parts.append(rf"\draw[line width=2\px, fill=white] {P(x - wbox / 2, yt - 36)} rectangle {P(x + wbox / 2, yt + 36)};")
-        parts.append(txt((x - wbox / 2 + 14, yt), r"$\{\!\{$", anchor="west"))
-        parts.append(txt((x + wbox / 2 - 14, yt), r"$\}\!\}$", anchor="east"))
-        x0 = x - 36 * (n - 1) / 2
+        wbox = 34 * n + 28 + 2 * 40
+        parts.append(rf"\draw[line width=2\px, fill=white] {P(x - wbox / 2, yt - 38)} rectangle {P(x + wbox / 2, yt + 38)};")
+        parts.append(txt((x - wbox / 2 + 6, yt), r"$\{\!\{$", anchor="west"))
+        parts.append(txt((x + wbox / 2 - 6, yt), r"$\}\!\}$", anchor="east"))
+        x0 = x - 34 * (n - 1) / 2
         for i, c in enumerate(ms):
-            parts.append(rf"\draw[line width=1.5\px, fill={cols[c]}] {P(x0 + 36 * i, yt)} circle (14\px);")
-    y = 350
+            parts.append(rf"\draw[line width=1.5\px, fill={cols[c]}] {P(x0 + 34 * i, yt)} circle (14\px);")
+    y = 235
     for name, f in aggs.items():
         va, vb = f(onehot(A)), f(onehot(Bm))
         same = bool(np.allclose(va, vb))
+        if not same:
+            parts.append(rf"\fill[hl] {P(0, y - 45)} rectangle {P(620, y + 45)};")
         parts.append(txt((0, y), name, anchor="west"))
         parts.append(txt((xa, y), vec(va)))
         parts.append(txt((xb, y), vec(vb)))
-        parts.append(txt((xm, y), "same" if same else "different",
-                         extra=("font=\\fssmall\\bfseries" if not same else "")))
-        y -= 135
-    # thin separators
-    for yy in (410, 282, 147):
-        parts.append(rf"\draw[rule, line width=1.5\px] {P(0, yy)} -- {P(690, yy)};")
+        parts.append(txt((xm, y), "$=$" if same else r"$\neq$", size="fslarge"))
+        y -= 100
     B("d07_aggregators", *parts)
 
 

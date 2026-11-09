@@ -1,8 +1,8 @@
 """Shared setup for the m08-gnn v3 figures.  Import with:  from common import *
 
-Rule of this deck: every word and number in a figure is at least 26 pt = 35 px on the 1280 x 720
-slide (the user's rule, 2026-11-08).  figkit's sizes (13 to 26 px) are raised here through a LaTeX
-preamble; one figure unit is still one slide pixel.
+Rule of this deck (v4): every word and number in a figure is at least 39 pt = 52 px on the 1280 x 720
+slide (the user's rule, 2026-11-09: 1.5 x the earlier 26 pt).  figkit's sizes (13 to 26 px) are raised here
+through a LaTeX preamble; one figure unit is still one slide pixel.
 
 Run any figure script with:
     cd slides/m09 && uv run --quiet --with numpy --with scipy --with networkx --with pillow \
@@ -22,25 +22,36 @@ HERE = Path(__file__).resolve().parent          # slides/m09/figures
 IMG = HERE / "img"                               # PNGs that TikZ includes
 IMG.mkdir(exist_ok=True)
 
-# ---- type sizes: all >= 35 px -------------------------------------------------------------
+# ---- type sizes: all >= 52 px -------------------------------------------------------------
 PRE = r"""
-\renewcommand\fstick{\fontsize{35\px}{40\px}\selectfont}
-\renewcommand\fssmall{\fontsize{35\px}{40\px}\selectfont}
-\renewcommand\fslabel{\fontsize{35\px}{40\px}\selectfont}
-\renewcommand\fsbody{\fontsize{35\px}{40\px}\selectfont}
-\renewcommand\fslarge{\fontsize{40\px}{46\px}\selectfont}
+\renewcommand\fstick{\fontsize{52\px}{58\px}\selectfont}
+\renewcommand\fssmall{\fontsize{52\px}{58\px}\selectfont}
+\renewcommand\fslabel{\fontsize{52\px}{58\px}\selectfont}
+\renewcommand\fsbody{\fontsize{52\px}{58\px}\selectfont}
+\renewcommand\fslarge{\fontsize{56\px}{62\px}\selectfont}
 \usepackage{graphicx}
+% math at full size: \fontsize does not scale math and the CM fonts are not scalable (they fall back to 24.88 pt)
+\makeatletter
+\let\keeprm\rmdefault \let\keepsf\sfdefault \let\keeptt\ttdefault
+\usepackage{lmodern}
+\let\rmdefault\keeprm \let\sfdefault\keepsf \let\ttdefault\keeptt
+\newdimen\tmpd
+\tmpd=52\px \edef\mszA{\strip@pt\tmpd}
+\tmpd=56\px \edef\mszB{\strip@pt\tmpd}
+\DeclareMathSizes{\mszA}{\mszA}{27}{20}
+\DeclareMathSizes{\mszB}{\mszB}{29}{21}
+\makeatother
 \tikzset{
-  vertex/.style={circle, draw=ink, line width=2\px, fill=white, minimum size=52\px, inner sep=0pt, font=\fssmall},
+  vertex/.style={circle, draw=ink, line width=2\px, fill=white, minimum size=66\px, inner sep=0pt, font=\fssmall},
   vertex hl/.style={vertex, fill=hl}, vertex hlc/.style={vertex, fill=hlc}, vertex grey/.style={vertex, fill=fillgrey},
-  smallbox/.style={draw=ink, line width=2\px, fill=white, inner sep=5\px, font=\fssmall, minimum width=52\px, minimum height=52\px},
+  smallbox/.style={draw=ink, line width=2\px, fill=white, inner sep=5\px, font=\fssmall, minimum width=64\px, minimum height=64\px},
   tag/.style={draw=ink, line width=2\px, fill=white, inner xsep=8\px, inner ysep=4\px, font=\fssmall},
   note/.style={font=\fssmall, align=left, inner sep=3\px},
   arr/.style={-{Stealth[length=9bp, width=7bp]}, line width=1.5bp},
 }
 """
 
-MIN_PX = 35  # nothing in a figure may be set smaller than this
+MIN_PX = 52  # nothing in a figure may be set smaller than this
 
 # ---- colours (hex, same as the theme) --------------------------------------------------------
 HL = "#F4E6FF"      # lavender: the thing the slide is about

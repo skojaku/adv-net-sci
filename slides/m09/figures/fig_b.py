@@ -13,6 +13,7 @@ import numpy as np  # noqa: E402
 
 from common import *  # noqa: E402,F401,F403
 
+
 HOPS = ["#D9B8F5", "#B88AE0", "#9B6BC9"]          # hop 1, 2, 3 (lavender step scale)
 RULE = "#C9C9C9"
 
@@ -78,7 +79,7 @@ def b01_grid_to_graph():
     pix = img.reshape(4, 128, 4, 128).mean(axis=(1, 3))        # real 4 x 4 gray values (whole photo pooled)
     lo, hi = pix.min(), pix.max()
     pix = (pix - lo) / (hi - lo) * 215 + 20                    # stretch to 20..235 so every cell is distinct
-    c = 50
+    c = 70
     parts = []
     grid = {(r, k): (k * c + c / 2, (3 - r) * c + c / 2) for r in range(4) for k in range(4)}
     gedges = [((r, k), (r, k + 1)) for r in range(4) for k in range(3)] + \
@@ -87,29 +88,29 @@ def b01_grid_to_graph():
     for (r, k), (x, y) in grid.items():
         parts.append(rect(x - c / 2, y - c / 2, x + c / 2, y + c / 2, gray(pix[r, k]), lw=2))
     # stage 2: grid graph
-    x2 = 242
+    x2 = 405
     for a, b in gedges:
         parts.append(line((grid[a][0] + x2, grid[a][1]), (grid[b][0] + x2, grid[b][1])))
     for (r, k), (x, y) in grid.items():
-        parts.append(circ(f"g{r}{k}", (x + x2, y), gray(pix[r, k]), size=30))
+        parts.append(circ(f"g{r}{k}", (x + x2, y), gray(pix[r, k]), size=40))
     # stage 3: same nodes, irregular positions
     rng = np.random.default_rng(3)
-    x3 = 484
+    x3 = 810
     irr = {}
     for (r, k), (x, y) in grid.items():
         jx, jy = rng.uniform(-1, 1, 2)
-        ux = x + 16 * math.sin(y / 38.0) + 11 * jx
-        uy = y * 1.10 + 16 * math.sin(x / 45.0 + 1.0) + 11 * jy - 6
+        ux = x + 22 * math.sin(y / 53.0) + 15 * jx
+        uy = y * 1.10 + 22 * math.sin(x / 63.0 + 1.0) + 15 * jy - 8
         irr[(r, k)] = (ux + x3, uy)
     for a, b in gedges:
         parts.append(line(irr[a], irr[b]))
     for key, (x, y) in irr.items():
-        parts.append(circ(f"h{key[0]}{key[1]}", (x, y), gray(pix[key]), size=30))
+        parts.append(circ(f"h{key[0]}{key[1]}", (x, y), gray(pix[key]), size=40))
     # triangles and labels
-    parts.append(triangle(221, 100))
-    parts.append(triangle(463, 100))
-    for xc, t in ((100, "pixels"), (342, "edges"), (584, "graph")):
-        parts.append(label((xc, -28), t, anchor="center"))
+    parts.append(triangle(342, 140, w=30, h=42))
+    parts.append(triangle(747, 140, w=30, h=42))
+    for xc, t in ((140, "pixels"), (545, "edges"), (950, "graph")):
+        parts.append(label((xc, -36), t, anchor="center"))
     return B("b01_grid_to_graph", *parts)
 
 
@@ -118,8 +119,7 @@ def b02_pixel_vs_node():
     c = 80
     parts = []
     cols = [col(YEL), col(SKY), col(PINK), col(BLUE), col(VERM), gray(110), gray(175), gray(225)]
-    ox, oy = 0, 140            # grid origin (bottom-left)
-    order = [(r, k) for r in range(3) for k in range(3) if (r, k) != (1, 1)]
+    ox, oy = 0, 130            # grid origin (bottom-left)
     ci = 0
     for r in range(3):
         for k in range(3):
@@ -130,16 +130,16 @@ def b02_pixel_vs_node():
                 parts.append(rect(x0, y0, x0 + c, y0 + c, cols[ci]))
                 ci += 1
     # node with 4 neighbours
-    cx, cy = 3 * c + 55 + 100, oy + 1.5 * c
-    d = 100
+    cx, cy = 3 * c + 70 + 85, oy + 1.5 * c
+    d = 85
     nbr = [(cx, cy + d), (cx + d, cy), (cx, cy - d), (cx - d, cy)]
-    for i, p in enumerate(nbr):
+    for p in nbr:
         parts.append(line((cx, cy), p, lw=3))
     for i, p in enumerate(nbr):
-        parts.append(circ(f"n{i}", p, gray(175), size=52))
-    parts.append(circ("ctr", (cx, cy), col(HL), size=60))
-    parts.append(label((1.5 * c, 100), r"weight per\\position", anchor="north", extra="align=center"))
-    parts.append(label((cx, 100), r"weight per\\edge", anchor="north", extra="align=center"))
+        parts.append(circ(f"n{i}", p, gray(175), size=44))
+    parts.append(circ("ctr", (cx, cy), col(HL), size=52))
+    parts.append(label((1.5 * c, 100), "by position", anchor="north"))
+    parts.append(label((cx, 100), "by edge", anchor="north"))
     return B("b02_pixel_vs_node", *parts)
 
 
@@ -179,28 +179,29 @@ def pick_seed():
 def b03_untrained_gcn():
     seed = pick_seed()
     print("b03 seed", seed)
-    W, Hh = 330, 290
-    pos, edges, club = karate_layout(W, Hh, margin=18)
+    W, Hh = 530, 440
+    pos, edges, club = karate_layout(W, Hh, margin=30)
     ccol = {0: col(BLUE), 1: col(VERM)}
     parts = []
+    parts.append(f"\\draw[line width=1.5\\px, ink] {P(0, 0)} rectangle {P(W, Hh)};")
     for u, v in edges:
         parts.append(line(pos[u], pos[v], color=col(RULE), lw=2))
     for i, p in pos.items():
-        parts.append(circ(f"k{i}", p, ccol[club[i]], size=22))
+        parts.append(circ(f"k{i}", p, ccol[club[i]], size=30, lw=1.5))
     # right panel
-    ox = 370
+    ox = W + 90
     o = gcn_out(seed)
     o = o - o.mean(0)
-    s = min((W - 50) / (o[:, 0].max() - o[:, 0].min()), (Hh - 50) / (o[:, 1].max() - o[:, 1].min()))
+    s = min((W - 80) / (o[:, 0].max() - o[:, 0].min()), (Hh - 80) / (o[:, 1].max() - o[:, 1].min()))
     cx, cy = ox + W / 2, Hh / 2
     mid = (o.max(0) + o.min(0)) / 2
     parts.append(f"\\draw[line width=1.5\\px, ink] {P(ox, 0)} rectangle {P(ox + W, Hh)};")
     for i in range(34):
         x = cx + (o[i, 0] - mid[0]) * s
         y = cy + (o[i, 1] - mid[1]) * s
-        parts.append(circ(f"o{i}", (x, y), ccol[club[i + 1]], size=22))
-    parts.append(label((W / 2, -12), r"karate club", anchor="north"))
-    parts.append(label((ox + W / 2, -12), r"GCN output\\(no training)", anchor="north", extra="align=center"))
+        parts.append(circ(f"o{i}", (x, y), ccol[club[i + 1]], size=30, lw=1.5))
+    parts.append(label((W / 2, -12), "karate club", anchor="north"))
+    parts.append(label((ox + W / 2, -12), "GCN output", anchor="north"))
     return B("b03_untrained_gcn", *parts)
 
 
@@ -216,8 +217,8 @@ def b04_gcn_layer_node():
     s = sum(w[k] * feat[k] for k in names)
     Wm = rng.standard_normal((3, 3)) * 1.2
     new = 1 / (1 + np.exp(-(s @ Wm)))
-    ys = {"j1": 400, "j2": 280, "j3": 160, "i": 40}
-    sx, sy = 285, 220         # Sigma centre
+    ys = {"j1": 480, "j2": 330, "j3": 180, "i": 30}
+    sx, sy = 305, 255         # Sigma centre
     parts = []
     labs = {"j1": r"j_1", "j2": r"j_2", "j3": r"j_3", "i": r"i"}
     wl = {"j1": r"\hat A_{ij_1}", "j2": r"\hat A_{ij_2}", "j3": r"\hat A_{ij_3}", "i": r"\hat A_{ii}"}
@@ -232,30 +233,31 @@ def b04_gcn_layer_node():
             out.append(rect(x, yy, x + q, yy + q, seq(v), lw=1.5))
         return out
 
+    parts.append(circ("sig", (sx, sy), "white", size=66, text=r"$\Sigma$"))
+    bend = 246
     for k in names:
         y = ys[k]
-        fx = 78
-        parts.append(circ(f"c{k}", (30, y), col(HL) if k == "i" else "white", size=52, text=f"${labs[k]}$"))
+        fx = 80
+        parts.append(circ(f"c{k}", (33, y), col(HL) if k == "i" else "white", size=66, text=f"${labs[k]}$"))
         parts += vec(fx, y, feat[k])
-        a = (fx + q + 8, y)
-        parts.append(f"\\draw[arr] {P(*a)} -- {P(sx - 26, sy)} node[pos=0.3, fill=white, inner sep=2\\px, "
-                     f"font=\\fssmall] {{${wl[k]}$}};")
-    parts.append(circ("sig", (sx, sy), "white", size=52, text=r"$\sum$"))
-    bx = [360, 440]
-    parts.append(f"\\draw[arr] {P(sx + 26, sy)} -- {P(bx[0] - 28, sy)};")
+        parts.append(f"\\draw[line width=1.5bp] {P(fx + q + 8, y)} -- {P(bend, y)};")
+        parts.append(f"\\draw[arr] {P(bend, y)} -- (sig);")
+        parts.append(label(((fx + q + 8 + bend) / 2, y + 2), f"${wl[k]}$", anchor="south"))
+    bx = [398, 488]
+    parts.append(f"\\draw[arr] {P(sx + 33, sy)} -- {P(bx[0] - 32, sy)};")
     parts.append(node("W", (bx[0], sy), "$W$", style="smallbox"))
-    parts.append(f"\\draw[arr] {P(bx[0] + 28, sy)} -- {P(bx[1] - 28, sy)};")
+    parts.append(f"\\draw[arr] {P(bx[0] + 32, sy)} -- {P(bx[1] - 32, sy)};")
     parts.append(node("sg", (bx[1], sy), r"$\sigma$", style="smallbox"))
-    parts.append(f"\\draw[arr] {P(bx[1] + 28, sy)} -- {P(bx[1] + 56, sy)};")
-    parts += vec(bx[1] + 64, sy, new, bg=True)
-    parts.append(label((bx[1] + 64 + q / 2, sy - 62), r"$h_i'$", anchor="north"))
+    parts.append(f"\\draw[arr] {P(bx[1] + 32, sy)} -- {P(bx[1] + 58, sy)};")
+    parts += vec(bx[1] + 66, sy, new, bg=True)
+    parts.append(label((bx[1] + 66 + q / 2, sy - 62), r"$h_i'$", anchor="north"))
     return B("b04_gcn_layer_node", *parts)
 
 
 # ================================================================= b05
 def b05_norm_weights():
     G = nx.Graph([(0, 1), (0, 2), (0, 3), (0, 4), (1, 2)])
-    pos = {0: (310, 235), 1: (95, 370), 2: (95, 100), 3: (525, 370), 4: (525, 100)}
+    pos = {0: (320, 270), 1: (90, 440), 2: (90, 100), 3: (550, 440), 4: (550, 100)}
     dt = {v: G.degree(v) + 1 for v in G}
     parts = []
     # self loops (out/in angles point away from the hub)
@@ -270,12 +272,9 @@ def b05_norm_weights():
         hub = 0 in (u, v)
         w = 1 / math.sqrt(dt[u] * dt[v])
         mx, my = (pos[u][0] + pos[v][0]) / 2, (pos[u][1] + pos[v][1]) / 2
-        if (u, v) == (1, 2):
-            mx -= 0
         parts.append(f"\\node[fill={'hl' if hub else 'white'}, inner sep=3\\px, font=\\fssmall] at {P(mx, my)} {{${w:.2f}$}};")
     for v, p in pos.items():
-        parts.append(circ(f"v{v}", p, col(HL) if v == 0 else "white", size=62, text=f"${dt[v]}$"))
-    parts.append(label((310, 15), r"node $=\tilde d$", anchor="center"))
+        parts.append(circ(f"v{v}", p, col(HL) if v == 0 else "white", size=66, text=f"${dt[v]}$"))
     return B("b05_norm_weights", *parts)
 
 
@@ -291,9 +290,9 @@ def b06_matrix_picture():
     W = rng.standard_normal((d, d2))
     H2 = Ah @ H @ W
     LIM = max(abs(W).max(), abs(H2).max())
-    c = 29
+    c = 30
     hl_row = 3
-    gap = 44
+    gap = 58
     parts = []
     top = 240   # y of the top edge of the blocks
 
@@ -327,7 +326,7 @@ def b06_matrix_picture():
         out.append(f"\\draw[ink, line width=2\\px] {P(x0, top)} rectangle {P(x0 + k * c, top - r * c)};")
         return out
 
-    x = 34
+    x = 40
     parts += block(x, Ah, "A", "A", dots=True)
     xA = x
     x += n * c + gap
@@ -373,14 +372,12 @@ def b07_receptive_graph():
             6: (92, 78), 7: (118, -30), 8: (55, -90), 9: (-110, 5), 10: (130, 28), 11: (0, -95), 12: (110, -90)}
     xs = [p[0] for p in base.values()]; ys = [p[1] for p in base.values()]
     cxg, cyg = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
-    sc = 0.88
-    pitch = 252
+    sc = 1.4
+    pitch = 380
     parts = []
-    gy = 375           # graph row centre
-    py = 125           # grid row centre
-    cell = 32
+    gy = 190           # graph row centre
     for ci, L in enumerate((1, 2, 3)):
-        cx = 125 + ci * pitch
+        cx = 170 + ci * pitch
         P_ = {v: (cx + (p[0] - cxg) * sc, gy + (p[1] - cyg) * sc) for v, p in base.items()}
         for u, v in edges:
             parts.append(line(P_[u], P_[v], lw=2))
@@ -391,85 +388,74 @@ def b07_receptive_graph():
                 f = col(HOPS[dist[v] - 1])
             else:
                 f = "white"
-            parts.append(circ(f"g{ci}_{v}", p, f, size=30))
-        # grid
-        for r in range(7):
-            for k in range(7):
-                dd = max(abs(r - 3), abs(k - 3))
-                if dd == 0:
-                    f = "ink"
-                elif dd <= L:
-                    f = col(HOPS[dd - 1])
-                else:
-                    f = "white"
-                x0, y0 = cx - 3.5 * cell + k * cell, py - 3.5 * cell + (6 - r) * cell
-                parts.append(rect(x0, y0, x0 + cell, y0 + cell, f, lw=2))
-        parts.append(label((cx, 520), f"{L} layer" + ("s" if L > 1 else ""), anchor="north"))
+            parts.append(circ(f"g{ci}_{v}", p, f, size=40))
+        parts.append(label((cx, 0), f"{L} layer" + ("s" if L > 1 else ""), anchor="north"))
     return B("b07_receptive_graph", *parts)
 
 
 # ================================================================= b08
-def b08_smoothing_6():
+def b08_smoothing_4():
     G = nx.karate_club_graph()
     _, Ah = norm_adj(G)
     x0 = np.random.default_rng(0).uniform(0, 1, 34)
-    pw, ph = 262, 168
-    pos, edges, _ = karate_layout(pw, ph, margin=14)
-    layers = [0, 1, 2, 3, 5, 20]
+    pw, ph = 316, 290
+    strip = 62          # label strip at the top of each panel
+    pos, edges, _ = karate_layout(pw, ph - strip, margin=20)
+    layers = [0, 1, 3, 20]
     parts = []
     # one colour scale for all panels (0 .. largest value of any panel), so that the change over layers is visible
     xmax = max((np.linalg.matrix_power(Ah, L) @ x0).max() for L in layers)
     for idx, L in enumerate(layers):
         r, k = divmod(idx, 2)
-        ox = k * 345 + 80
-        oy = (2 - r) * 186 + 6
+        ox = k * (pw + 20)
+        oy = (1 - r) * (ph + 20)
         x = np.linalg.matrix_power(Ah, L) @ x0
         t = x / xmax
+        parts.append(f"\\draw[line width=1.5\\px, ink] {P(ox, oy)} rectangle {P(ox + pw, oy + ph)};")
         for u, v in edges:
             parts.append(line((pos[u][0] + ox, pos[u][1] + oy), (pos[v][0] + ox, pos[v][1] + oy), color=col(RULE), lw=2))
         for i, p in pos.items():
-            parts.append(circ(f"p{idx}_{i}", (p[0] + ox, p[1] + oy), seq(t[i - 1]), size=22, lw=1.5))
-        parts.append(label((ox - 8, oy + ph / 2), f"layer\\\\{L}", anchor="east", extra="align=center"))
-    return B("b08_smoothing_6", *parts)
+            parts.append(circ(f"p{idx}_{i}", (p[0] + ox, p[1] + oy), seq(t[i - 1]), size=30, lw=1.5))
+        parts.append(f"\\node[inner sep=3\\px, anchor=north west, font=\\fssmall] at {P(ox + 6, oy + ph - 6)} {{layer ${L}$}};")
+    return B("b08_smoothing_4", *parts)
 
 
 # ================================================================= b09
 def b09_explosion():
     parts = []
-    ys = [445, 310, 175, 40]
-    l1 = [146 + i * 112 for i in range(5)]
-    root = (l1[2], ys[0])
-    off = 38
-    for x in l1:
+    ys = [500, 350, 200, 50]
+    pitch = 86
+    xs = [172 + i * pitch for i in range(5)]
+    root = (xs[2], ys[0])
+    for x in xs:
         parts.append(line(root, (x, ys[1])))
-        for dx in (-off, off):
-            parts.append(line((x, ys[1]), (x + dx, ys[2])))
-    p0 = (l1[2] + off, ys[2])
-    kids = [(p0[0] - 22, ys[3]), (p0[0] + 22, ys[3])]
-    for q in kids:
-        parts.append(line(p0, q))
-    parts.append(circ("root", root, col(HL), size=44))
-    for i, x in enumerate(l1):
-        parts.append(circ(f"c{i}", (x, ys[1]), "white", size=40))
-        for j, dx in enumerate((-off, off)):
-            parts.append(circ(f"d{i}{j}", (x + dx, ys[2]), "white", size=26))
-        parts.append(label((x, ys[2] - 2), r"$\cdots$", anchor="center"))
-    for j, q in enumerate(kids):
-        parts.append(circ(f"e{j}", q, "white", size=20, lw=1.5))
-    parts.append(label((p0[0] + 50, ys[3] - 2), r"$\cdots$", anchor="center"))
-    for i, x in enumerate(l1):
-        for j, dx in enumerate((-off, off)):
-            if (i, j) not in ((2, 1), (3, 0)):
-                parts.append(label((x + dx, ys[3] + 4), r"$\vdots$", anchor="center"))
+    # middle child: 3 grandchildren drawn in full; the other children continue with a vertical ellipsis
+    mid = xs[2]
+    gk = [mid - 52, mid, mid + 52]
+    for g in gk:
+        parts.append(line((mid, ys[1]), (g, ys[2])))
+    for q in (gk[0] - 21, gk[0] + 21):
+        parts.append(line((gk[0], ys[2]), (q, ys[3])))
+    parts.append(circ("root", root, col(HL), size=48))
+    for i, x in enumerate(xs):
+        parts.append(circ(f"c{i}", (x, ys[1]), "white", size=38))
+        if i != 2:
+            parts.append(label((x, ys[2]), r"$\vdots$", anchor="center"))
+    for j, g in enumerate(gk):
+        parts.append(circ(f"d{j}", (g, ys[2]), "white", size=36))
+    for j, q in enumerate((gk[0] - 21, gk[0] + 21)):
+        parts.append(circ(f"e{j}", (q, ys[3]), "white", size=36))
+    for g in gk[1:]:
+        parts.append(label((g, ys[3]), r"$\vdots$", anchor="center"))
     for y, h, n in zip(ys, range(4), (1, 5, 25, 125)):
         parts.append(label((0, y), f"hop {h}", anchor="west"))
-        parts.append(label((692, y), f"${n}$", anchor="east"))
+        parts.append(label((636, y), f"${n}$", anchor="east"))
     return B("b09_explosion", *parts)
 
 
 if __name__ == "__main__":
     for f in (b01_grid_to_graph, b02_pixel_vs_node, b03_untrained_gcn, b04_gcn_layer_node, b05_norm_weights,
-              b06_matrix_picture, b07_receptive_graph, b08_smoothing_6, b09_explosion):
+              b06_matrix_picture, b07_receptive_graph, b08_smoothing_4, b09_explosion):
         try:
             f()
             print("built", f.__name__)

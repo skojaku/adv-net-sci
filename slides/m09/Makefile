@@ -1,11 +1,11 @@
 # Build the slide-math decks in this directory.
-#   make              v3 -> html + pdf
-#   make check        check.py on v3 (0 errors expected)
+#   make              v4 -> html + pdf
+#   make check        check.py on v4 (0 errors expected)
 #   make png          one PNG per slide + contact sheets (review/)
 #   make all          html + pdf + png
 #   make DECK=m08-gnn ...   build another deck
 #   make clean        remove generated files
-DECK  ?= m08-gnn-v3
+DECK  ?= m08-gnn-v4
 SKILL ?= $(HOME)/.claude/skills/slide-math
 RENDER = $(SKILL)/tools/render.sh
 CHECK  = $(SKILL)/tools/check.py
