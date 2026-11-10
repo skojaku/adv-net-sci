@@ -876,9 +876,11 @@ In the lab notebook, walkers run on the Les Misérables co-appearance network an
 - choose a character and list the closest vectors
 - plot the 77 characters in two dimensions
 
-<div class="box grey">
+<div style="display:flex;align-items:center;gap:24px;margin-top:4px">
 
-QR code and short link <span class="tag">placeholder</span>
+![w:104](../../lecture-note/m08-embedding/pen-and-paper/m08lab-qr.png)
+
+`go.skojaku.com/m08lab`
 
 </div>
 </div>
