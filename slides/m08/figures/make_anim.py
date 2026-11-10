@@ -57,11 +57,12 @@ BAR = ("<div class='bar'><button id='play'>Pause</button><button id='step'>Step<
 # --------------------------------------------------------------------------------------- skip-gram
 
 def skipgram():
-    sents = ["king wears royal crown", "queen wears royal crown", "dog chews old bone", "cat chases old mouse"]
+    sents = ["the king wears the royal crown", "the queen wears the royal crown", "the dog chews the old bone",
+             "the cat chases the old mouse", "the king and the queen rule", "the dog and the cat sleep"]
     S = [s.split() for s in sents]
     vocab = sorted({w for s in S for w in s})
     ix = {w: i for i, w in enumerate(vocab)}
-    lr, epochs, seed, K = 0.4, 10, 73, 2
+    lr, epochs, seed, K = 0.6, 6, 59, 2
     rng = np.random.default_rng(seed)
     X = rng.normal(0, 0.3, (len(vocab), 2))          # query vectors u (shown)
     Y = rng.normal(0, 0.3, (len(vocab), 2))          # key vectors v (hidden)
@@ -104,26 +105,26 @@ function E(tag,attrs,parent,text){var e=document.createElementNS(NS,tag);for(var
 var INK='#000',HL='#F4E6FF',HLC='#E5FDFF',RED='#D55E00',MUT='#969696';
 // panel titles
 E('text',{x:0,y:26,'font-size':24,'font-weight':700,fill:INK},0,'1  Window over the text');
-E('text',{x:0,y:296,'font-size':24,'font-weight':700,fill:INK},0,'2  Sampled pairs');
-E('text',{x:640,y:26,'font-size':24,'font-weight':700,fill:INK},0,'3  Query vectors u in 2D');
+E('text',{x:0,y:334,'font-size':24,'font-weight':700,fill:INK},0,'2  Sampled pairs');
+E('text',{x:650,y:26,'font-size':24,'font-weight':700,fill:INK},0,'3  Query vectors u in 2D');
 // arrows between panels
-E('path',{d:'M 575 250 L 612 250',stroke:INK,'stroke-width':3,fill:'none'});
-E('path',{d:'M 612 250 l -12 -9 M 612 250 l -12 9',stroke:INK,'stroke-width':3,fill:'none'});
+E('path',{d:'M 598 250 L 634 250',stroke:INK,'stroke-width':3,fill:'none'});
+E('path',{d:'M 634 250 l -12 -9 M 634 250 l -12 9',stroke:INK,'stroke-width':3,fill:'none'});
 // text panel
-var CW=134,CH=42,X0=2,Y0=44,GAP=52,cells=[];
+var CW=98,CH=38,X0=2,Y0=44,GAP=44,cells=[];
 var win=E('rect',{rx:10,ry:10,fill:HL,stroke:INK,'stroke-width':2.5,height:CH+12,width:3*CW,x:X0-6,y:Y0-6,style:'transition:all .35s ease'});
 D.sents.forEach(function(s,si){var row=[];s.forEach(function(w,c){
   var g=E('g',{transform:'translate('+(X0+c*CW)+','+(Y0+si*GAP)+')'});
   var r=E('rect',{width:CW-10,height:CH,rx:8,fill:'#fff',stroke:MUT,'stroke-width':1.5},g);
-  var t=E('text',{x:(CW-10)/2,y:CH/2+11,'text-anchor':'middle','font-size':32,fill:INK},g,D.vocab[w]);
+  var t=E('text',{x:(CW-10)/2,y:CH/2+10,'text-anchor':'middle','font-size':28,fill:INK},g,D.vocab[w]);
   row.push({g:g,r:r,t:t})});cells.push(row)});
 // pairs panel
-E('text',{x:380,y:346,'font-size':24,fill:INK},0,'label 1: pull together');
-E('text',{x:380,y:392,'font-size':24,fill:RED},0,'label 0: push apart');
-var posT=E('text',{x:0,y:348,'font-size':34,'font-weight':700,fill:INK},0,'');
-var negT=[0,1].map(function(i){return E('text',{x:0,y:392+i*40,'font-size':34,fill:RED},0,'')});
+E('text',{x:380,y:380,'font-size':24,fill:INK},0,'label 1: pull together');
+E('text',{x:380,y:438,'font-size':24,fill:RED},0,'label 0: push apart');
+var posT=E('text',{x:0,y:382,'font-size':34,'font-weight':700,fill:INK},0,'');
+var negT=[0,1].map(function(i){return E('text',{x:0,y:424+i*40,'font-size':34,fill:RED},0,'')});
 // scatter panel
-var PX=640,PY=44,PW=530,PH=420;
+var PX=650,PY=44,PW=520,PH=420;
 E('rect',{x:PX,y:PY,width:PW,height:PH,fill:'#fff',stroke:INK,'stroke-width':2,rx:6});
 var bb=D.bbox,pad=0.25,sx=(PW-60)/(bb[1]-bb[0]+2*pad),sy=(PH-60)/(bb[3]-bb[2]+2*pad),sc=Math.min(sx,sy);
 var cx=PX+PW/2-sc*(bb[0]+bb[1])/2, cy=PY+PH/2+sc*(bb[2]+bb[3])/2;
@@ -167,7 +168,7 @@ function show(k){
   mv.setAttribute('x1',a[0]);mv.setAttribute('y1',a[1]);mv.setAttribute('x2',b[0]);mv.setAttribute('y2',b[1]);mv.setAttribute('opacity',1);
   document.getElementById('status').textContent='pair '+(k+1)+' of '+N+'   (pass '+(Math.floor(k/D.perEpoch)+1)+' over the text)';
 }
-function dwell(k){var e=Math.floor(Math.max(k,0)/D.perEpoch);return [1000,520,260,110][Math.min(e,3)]}
+function dwell(k){var e=Math.floor(Math.max(k,0)/D.perEpoch);return [700,320,140,70][Math.min(e,3)]}
 function tick(){if(!playing)return;if(K+1>=N){playing=false;document.getElementById('play').textContent='Play';timer=setTimeout(function(){api.restart()},4000);return}
   show(K+1);timer=setTimeout(tick,dwell(K))}
 var api={toggle:function(){if(playing){api.pause()}else{if(K+1>=N)K=-1;playing=true;document.getElementById('play').textContent='Pause';clearTimeout(timer);tick()}},

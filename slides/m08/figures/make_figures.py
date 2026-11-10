@@ -282,6 +282,67 @@ def ppr_step():
     B("ppr-step", *parts)
 
 
+
+def g2e():
+    """A graph, a neural network, an embedding: three pictures in a row."""
+    grp = {1: "hl", 2: "hl", 3: "hl", 8: "hl", 4: "hlc", 5: "hlc", 6: "hlc", 7: "hlc"}
+    pos = {k: (x * 0.74 + 12, y * 0.74 + 60) for k, (x, y) in WALK_POS.items()}
+    parts = [graph(pos, WALK_E, highlight=grp, labels={k: "" for k in pos}, size=30)]
+    xs, counts, cy = [470, 560, 650, 740], [3, 5, 5, 3], 150
+    ys = lambda n: [cy + (i - (n - 1) / 2) * 56 for i in range(n)]
+    for l in range(3):
+        for ya in ys(counts[l]):
+            for yb in ys(counts[l + 1]):
+                parts.append(f"\\draw[draw=muted, line width=1.2\\px] {P(xs[l], ya)} -- {P(xs[l + 1], yb)};")
+    for x, n in zip(xs, counts):
+        for k, y in enumerate(ys(n)):
+            parts.append(vertex(f"nn{x}_{k}", (x, y), "", size=34))
+    ox, oy = 905, 20
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox + 255, oy)};")
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox, oy + 265)};")
+    for k, p in enumerate([(965, 215), (1010, 255), (1040, 195), (975, 160)]):
+        parts.append(vertex(f"ea{k}", p, "", style="vertex hl", size=30))
+    for k, p in enumerate([(1060, 110), (1110, 150), (1120, 80), (1050, 55)]):
+        parts.append(vertex(f"eb{k}", p, "", style="vertex hlc", size=30))
+    parts.append(arrow((335, 150), (430, 150)))
+    parts.append(arrow((790, 150), (880, 150)))
+    for x, t in ((165, "graph"), (605, "neural network"), (1030, "embedding")):
+        parts.append(label((x, -16), t, anchor="north", size="fsbody"))
+    B("g2e", *parts)
+
+
+def vecpoint():
+    """A vector of two numbers drawn as one point on the plane."""
+    ox, oy, u = 330, 40, 80
+    parts = [label((70, 232), r"$\mathbf x$", size="fsbody")]
+    for name, y, v in (("a", 170, "2"), ("b", 100, "1")):
+        parts.append(node(name, (70, y), f"${v}$", style="box", w=84, h=66, extra="font=\\fsbody"))
+    parts.append(arrow((130, 135), (250, 135)))
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox + 3.2 * u, oy)};")
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox, oy + 2.6 * u)};")
+    px, py = ox + 2 * u, oy + 1 * u
+    parts.append(f"\\draw[dash pattern=on 5bp off 4bp, line width=1.3bp] {P(px, oy)} -- {P(px, py)} -- {P(ox, py)};")
+    parts.append(vertex("pt", (px, py), "", style="vertex hl", size=34))
+    parts.append(label((px, oy - 8), "$2$", anchor="north", size="fslabel"))
+    parts.append(label((ox - 10, py), "$1$", anchor="east", size="fslabel"))
+    parts.append(label((ox + 3.2 * u + 8, oy), r"$x_1$", anchor="west", size="fslabel"))
+    parts.append(label((ox, oy + 2.6 * u + 8), r"$x_2$", anchor="south", size="fslabel"))
+    B("vecpoint", *parts)
+
+
+def space():
+    """Words as points in one space; related words are close."""
+    ox, oy = 20, 20
+    parts = [f"\\draw[arr] {P(ox, oy)} -- {P(ox + 540, oy)};", f"\\draw[arr] {P(ox, oy)} -- {P(ox, oy + 290)};"]
+    pts = {"king": (95, 235), "queen": (95, 170), "crown": (255, 205), "dog": (330, 120), "cat": (420, 175), "mouse": (445, 75), "bone": (240, 65)}
+    for w, p in pts.items():
+        parts.append(vertex(f"p{w}", p, "", style="vertex hl" if w == "king" else "vertex", size=30))
+        parts.append(label((p[0] + 24, p[1]), w, anchor="west", size="fsbody"))
+    parts.append(label((ox + 540 + 8, oy), r"$x_1$", anchor="west", size="fslabel"))
+    parts.append(label((ox, oy + 290 + 8), r"$x_2$", anchor="south", size="fslabel"))
+    B("space", *parts)
+
+
 # ------------------------------------------------------------------ lab output
 
 def lesmis():
@@ -320,7 +381,7 @@ def pa_vs_ps():
         for name, (hx, hy, hs, nleaf) in hubs.items():
             out.append(vertex(f"{name}_{ox}", (ox + hx, hy), "", size=hs))
             for i in range(nleaf):
-                a = 2 * math.pi * i / nleaf + (0.9 if name == "h1" else 0.2)
+                a = 2 * math.pi * i / nleaf + (0.9 if name == "h1" else 0.83)
                 r = 78 if name == "h1" else 66
                 lx, ly = ox + hx + r * math.cos(a), hy + r * math.sin(a)
                 out.append(vertex(f"{name}l{i}_{ox}", (lx, ly), "", size=20))
@@ -330,14 +391,14 @@ def pa_vs_ps():
             out.append(f"\\draw[arr, line width=3.4bp, draw=hlink, shorten >=4bp] (new_{ox}) -- (h1_{ox});")
         else:
             out.append(f"\\draw[arr, line width=3.4bp, draw=hlink, shorten >=4bp] (new_{ox}) -- (h2_{ox});")
-            out.append(f"\\draw[arr, line width=3.4bp, draw=hlink, shorten >=4bp] (new_{ox}) -- (h2l3_{ox});")
-            out.append(f"\\draw[zoom] {P(ox + 232, -2)} rectangle {P(ox + 548, 292)};")
+            out.append(f"\\draw[arr, line width=3.4bp, draw=hlink, shorten >=4bp] (new_{ox}) -- (h2l2_{ox});")
+            out.append(f"\\draw[zoom] {P(ox + 232, -6)} rectangle {P(ox + 548, 318)};")
         return "\n".join(out)
     parts = [panel(0, False), panel(606, True)]
     for ox in (0, 606):
         parts.append(label((ox + 110, 190 + 78 + 30), "popular", anchor="south", size="fssmall"))
         parts.append(label((ox + 420, 175 + 66 + 26), "less popular", anchor="south", size="fssmall"))
-        parts.append(label((ox + 300 - 24, 62), "new node", anchor="east", size="fssmall"))
+        parts.append(label((ox + 300, 62 - 24), "new node", anchor="north", size="fssmall"))
     parts.append(label((280, 372), r"\textbf{preferential attachment}", size="fsbody"))
     parts.append(label((886, 372), r"\textbf{popularity and similarity}", size="fsbody"))
     parts.append(label((280, -24), "links to the most popular node", anchor="north", size="fssmall"))
@@ -382,21 +443,24 @@ def growth():
 
 
 def communities():
-    def ring(ox, n, k, tag, R):
-        cx, cy = ox, 150
-        parts = [f"\\draw[draw=muted, dash pattern=on 5bp off 4bp, line width=1.6bp] {P(cx, cy)} circle ({(R + 28) * 0.75}bp);"]
+    """Two communities side by side across the slide, each with its caption on the right; the same node (6 links)."""
+    def ring(cx, n, k, R, tag, capx):
+        cy = 126
+        parts = [f"\\draw[draw=muted, dash pattern=on 5bp off 4bp, line width=1.6bp] {P(cx, cy)} circle ({(R + 34) * 0.75}bp);"]
         pts = [(cx + R * math.cos(2 * math.pi * i / n + 0.3), cy + R * math.sin(2 * math.pi * i / n + 0.3)) for i in range(n)]
         for i, p in enumerate(pts):
-            parts.append(vertex(f"c{ox}_{i}", p, "", style="vertex hl" if i == 0 else "vertex", size=22))
+            parts.append(vertex(f"c{cx}_{i}", p, "", style="vertex hl" if i == 0 else "vertex", size=30))
         parts.append("\\begin{scope}[on background layer]")
         targets = [int(round(1 + i * (n - 2) / (k - 1))) if n - 1 > k else i + 1 for i in range(k)]
         targets = sorted(set(targets))[:k] if n - 1 > k else list(range(1, n))
         for j in targets:
-            parts.append(f"\\draw[line width=3.2\\px, hlink] (c{ox}_0) -- (c{ox}_{j});")
+            parts.append(f"\\draw[line width=3.6\\px, hlink] (c{cx}_0) -- (c{cx}_{j});")
         parts.append("\\end{scope}")
-        parts.append(label((cx, -(R + 28) + 150 - 10), tag, anchor="north", size="fssmall"))
+        parts.append(label((capx, cy), tag, anchor="west", size="fsbody", extra="align=left"))
         return "\n".join(parts)
-    B("communities", ring(135, 16, 6, r"large community: 16 nodes", 98), ring(435, 8, 6, r"small community: 8 nodes", 64))
+    B("communities",
+      ring(130, 16, 6, 88, r"large community\\16 nodes\\$k=6$: small $\kappa$", 275),
+      ring(720, 8, 6, 62, r"small community\\8 nodes\\$k=6$: large $\kappa$", 845))
 
 
 def circumference():
@@ -728,7 +792,7 @@ def relax_ncut():
 
 
 if __name__ == "__main__":
-    ALL = (feat, pipeline, analogy, sentence, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
+    ALL = (feat, pipeline, analogy, sentence, g2e, vecpoint, space, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
               communities, circumference, tree_disk, tree_plain, compress, layers, recon, spectrum, error_curve, cuts,
               indicator, relax, fiedler, detour, blockmats, indicator_ncut, relax_ncut)
     want = sys.argv[1:]

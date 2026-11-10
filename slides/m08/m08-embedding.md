@@ -57,7 +57,7 @@ section.agenda ol > li { font-size: 52px; }
 
 ## from words to <span class="hot">networks</span>
 
-Module 8: word2vec, hyperbolic and spectral embeddings
+Module 8: spectral, neural and hyperbolic embeddings
 
 <p class="by">Sadamori Kojaku</p>
 
@@ -67,476 +67,9 @@ Module 8: word2vec, hyperbolic and spectral embeddings
 
 ## Outline
 
-1. From words to nodes
-2. Hyperbolic embedding
-3. Spectral embedding
-
----
-
-<!-- _class: divider -->
-
-<p class="crumb">Embedding</p>
-
-## From words to nodes
-
----
-
-## Hand-made node features
-
-Prediction models need a vector of numbers for every node, and for networks these numbers have been designed by hand.
-
-<div class="cols c11 mid">
-<div>
-
-- degree $k_i$
-- number of triangles $t_i$
-- return probability $(\mathbf P^t)_{ii}$ of a random walk
-- <span class="key">each task needs a new choice of features</span>
-
-</div>
-<div class="fig">
-
-![w:569](figures/feat.svg)
-
-</div>
-</div>
-
----
-
-## Representation learning
-
-Representation learning trains the node vectors $\vb x_i \in \R^d$ on data instead of designing them by hand.
-
-<div class="fig">
-
-![](figures/pipeline.svg)
-
-</div>
-
-- the vectors feed any model: a classifier, a clustering method, a link predictor
-- the training signal comes from the network itself, without labels
-
----
-
-## A detour through text
-
-Next is a detour: word2vec is a method for text, and DeepWalk reuses it for networks later in this part.
-
-<div class="cols c11 mid">
-<div>
-
-- word2vec learns a vector for every word of a text
-- a random walk is a sequence of nodes, which can be read as a text
-- <span class="key">we return to networks at DeepWalk</span>
-
-</div>
-<div class="fig">
-
-![w:600](figures/detour.svg)
-
-</div>
-</div>
-
----
-
-## word2vec: words as vectors
-
-word2vec (Mikolov et al. 2013) gives every word a vector, so that words used in similar contexts get close vectors.
-
-<div class="cols c11 mid">
-<div>
-
-<div class="box eq-sm">
-
-$$\begin{aligned} & \vb x_{\text{king}} - \vb x_{\text{man}} + \vb x_{\text{woman}} \\ & \approx \vb x_{\text{queen}} \end{aligned}$$
-
-</div>
-
-- a relation between words is a direction
-- meaning is compared by linear algebra
-
-</div>
-<div class="fig">
-
-![w:569](figures/analogy.svg)
-
-</div>
-</div>
-
-<div class="ref">Mikolov, T., Chen, K., Corrado, G., & Dean, J. (2013). Efficient estimation of word representations in vector space. arXiv:1301.3781.</div>
-
----
-
-## Prediction from context
-
-word2vec predicts a word from a nearby word; every word has a query vector $\vb u$ and a key vector $\vb v$.
-
-<div class="fig">
-
-![](figures/sentence.svg)
-
-</div>
-
-- a pair $(i, j)$ that appears in the text gets a high score $\vb u_i^\top \vb v_j$
-
----
-
-## Training by contrast
-
-A real pair (label 1) is pulled together and a random pair (label 0) is pushed apart.
-
-<div class="cols c11 mid">
-<div>
-
-| input $i$ | other $j$ | label $y$ |
-|---|---|---|
-| <mark>favors</mark> | <mark>prepared</mark> | 1 |
-| favors | water | 0 |
-| only | mind | 1 |
-| only | stone | 0 |
-
-</div>
-<div class="fig">
-
-![](figures/contrast.svg)
-
-</div>
-</div>
-
-<div class="box eq-sm">
-
-$$\Pr(y=1 \mid i, j) = \sigma(\vb u_i^\top \vb v_j) \quad \ell = -\log \sigma(\vb u_i^\top \vb v_j) - \log \sigma(-\vb u_i^\top \vb v_{j'})$$
-
-</div>
-
----
-
-## word2vec in motion
-
-A window slides over the text, every position gives pairs, and the pairs move the vectors.
-
-<div class="fig">
-<iframe class="anim" src="anim/skipgram.html" width="1130" height="516"></iframe>
-</div>
-
-<div class="ref">Animation: skip-gram with 2 random pairs per real pair, 12 words, window of one word on each side. Only the query vectors u are drawn.</div>
-
----
-
-## Walks as sentences
-
-A random walk on a network is a sequence of nodes, in the same way that a sentence is a sequence of words.
-
-<div class="cols c11 mid">
-<div>
-
-| text | network |
-|---|---|
-| word | node |
-| sentence | random walk |
-| nearby words | nodes close together in a walk |
-
-</div>
-<div class="fig">
-
-![](figures/walkgraph.svg)
-
-</div>
-</div>
-
----
-
-## DeepWalk (Perozzi et al. 2014)
-
-DeepWalk trains word2vec on random walks, with nodes in place of words.
-
-<div class="fig">
-
-![](figures/deepwalk.svg)
-
-</div>
-
-- every node $i$ gets a query vector $\vb u_i$ and a key vector $\vb v_i$; $\vb u_i$ is its embedding
-- settings: walks per node, walk length, window size; node2vec biases the walk with $p$ and $q$
-
-<div class="ref">Perozzi, B., Al-Rfou, R., & Skiena, S. (2014). DeepWalk: online learning of social representations. KDD.</div>
-
----
-
-## The walk rule sets what is close
-
-Nodes that appear together in walks get close vectors, so a different walk rule gives a different embedding.
-
-<div class="cols c32">
-<div>
-
-<div class="box">
-
-**Plain walk**: move to a random neighbor
-
-$$\Pr(i \to j) = A_{ij} / k_i$$
-
-</div>
-
-Another rule is a **walk with restart** (personalized PageRank): return to the start node $s$ with probability $\alpha$.
-
-<div class="eq-sm">
-
-$$\Pr(i \to j) = \alpha\,[\,j = s\,] + (1-\alpha)\,A_{ij} / k_i$$
-
-</div>
-
-</div>
-<div class="fig">
-
-![](figures/walks-compare.svg)
-
-</div>
-</div>
-
----
-
-## Lab: character embeddings
-
-In the lab notebook, walkers run on the Les Misérables co-appearance network and word2vec embeds the characters.
-
-<div class="cols c11">
-<div>
-
-- the walk simulator and the word2vec call are given
-- choose a character and list the closest vectors
-- plot the 77 characters in two dimensions
-
-<div class="box grey">
-
-QR code and short link <span class="tag">placeholder</span>
-
-</div>
-</div>
-<div class="fig">
-
-![w:520](figures/lesmis.svg)
-
-<div class="cap">
-
-Valjean (lavender) and his 10 closest characters (cyan).
-
-</div>
-</div>
-</div>
-
----
-
-## Lab task: personalized PageRank walk
-
-Implement a walk that restarts at the start node with probability $\alpha$.
-
-```python
-def ppr_walk(G, start, length, alpha, rng):
-    walk = [start]
-    # TODO: with probability alpha, go back to `start`;
-    #       otherwise move to a random neighbor
-    return walk
-```
-
-<div class="cols c11 mid">
-<div>
-
-- closest characters to $s$ for $\alpha = 0.05$ and $\alpha = 0.5$?
-- how do they differ from the plain walk?
-
-</div>
-<div class="fig">
-
-![](figures/ppr-step.svg)
-
-</div>
-</div>
-
----
-
-<!-- _class: divider -->
-
-<p class="crumb">Embedding</p>
-
-## Hyperbolic embedding
-
----
-
-## Popularity and similarity
-
-Papadopoulos et al. (2012) add similarity to preferential attachment.
-
-<div class="fig">
-
-![w:960](figures/pa-vs-ps.svg)
-
-</div>
-
-- popularity: an earlier node has had more time to collect links
-- similarity: nodes that are alike are placed close to each other
-
-<div class="ref">Papadopoulos, F. et al. (2012). Popularity versus similarity in growing networks. Nature, 489, 537–540.</div>
-
----
-
-## Growth rule of the model
-
-Node $t$ gets the radius $\ln t$ and a random angle, and links to its $m$ closest nodes.
-
-<div class="cols c11 mid">
-<div>
-
-<div class="box eq-sm">
-
-$$r_t = \ln t$$
-
-$$\theta_t \sim \mathrm{Uniform}[0, 2\pi)$$
-
-link to the $m$ nodes $s < t$ with the smallest $s\,\theta_{st}$
-
-</div>
-
-- $\theta_{st}$: angle between $s$ and $t$
-
-</div>
-<div class="fig">
-<iframe class="anim" src="anim/growth.html" width="540" height="506"></iframe>
-</div>
-</div>
-
----
-
-## Observed degree mixes two effects
-
-The observed degree mixes popularity with the size of the community.
-
-<div class="cols c11">
-<div>
-
-<div class="parts tight eq-sm">
-<div class="part">
-
-$$k_i \;\propto$$
-
-</div>
-<div class="part" data-tag="popularity">
-
-$$\hl{\kappa_i}$$
-
-<div class="pin">
-
-hidden<br>degree
-
-</div>
-</div>
-<div class="part">
-
-$$\times$$
-
-</div>
-<div class="part" data-tag="similarity">
-
-$$\hlc{n_i}$$
-
-<div class="pin">
-
-community<br>size
-
-</div>
-</div>
-</div>
-
-- $k = 6$: a small $\kappa$ in the large community, a large $\kappa$ in the small one
-- <span class="key">the node in the small community attracts links more strongly</span>
-
-</div>
-<div class="fig">
-
-![](figures/communities.svg)
-
-</div>
-</div>
-
----
-
-## Exponential growth of hyperbolic space
-
-In the hyperbolic plane of curvature $-1$, the circumference of a circle grows exponentially with its radius.
-
-<div class="cols c11 mid">
-<div>
-
-<div class="box eq-sm">
-
-$$C_{\text{hyp}}(r) = 2\pi \sinh r \approx \pi e^{r}$$
-
-$$C_{\text{Euclid}}(r) = 2\pi r$$
-
-</div>
-
-- the area $2\pi(\cosh r - 1)$ also grows as $e^{r}$
-- the radius is the logarithm of the number of nodes that fit
-
-</div>
-<div class="fig">
-
-![w:569](figures/circumference.svg)
-
-</div>
-</div>
-
----
-
-## Hyperbolic space as a continuous tree
-
-Hyperbolic space is the continuous version of a tree.
-
-<div class="cols flow c11 mid">
-<div class="fig">
-
-![w:460](figures/tree-plain.svg)
-
-</div>
-
-<span class="tri"></span>
-
-<div class="fig">
-
-![w:370](figures/tree-disk.svg)
-
-<div class="cap">
-
-Poincaré disk, depth $d$ at distance $0.9\,d$.
-
-</div>
-</div>
-</div>
-
-- depth $d$ of a tree holds $b^d$ nodes; hyperbolic space grows in the same way
-
----
-
-## WordNet in the Poincaré disk
-
-General words lie near the center and specific words near the boundary.
-
-<div class="cols c11 mid">
-<div>
-
-- center: general words
-- boundary: specific words
-- the hierarchy of 80,000 nouns fits in a disk of two dimensions
-
-</div>
-<div class="fig">
-
-![h:505](../legacy/m08/figs/wordnet-hyperbolic-embedding.png)
-
-</div>
-</div>
-
-<div class="ref">Image: Poincaré embedding of WordNet nouns (Nickel & Kiela 2017; source to be confirmed).</div>
+1. Spectral embedding
+2. Neural embedding
+3. Hyperbolic embedding
 
 ---
 
@@ -1058,11 +591,485 @@ Derive the Ratio Cut result and the Normalized Cut counterpart on paper (10 minu
 
 ---
 
+<!-- _class: divider -->
+
+<p class="crumb">Embedding</p>
+
+## Neural embedding
+
+---
+
+## Hand-made node features
+
+Prediction models need a vector of numbers for every node, and for networks these numbers have been designed by hand.
+
+<div class="cols c11 mid">
+<div>
+
+- degree $k_i$
+- number of triangles $t_i$
+- return probability $(\mathbf P^t)_{ii}$ of a random walk
+- <span class="key">each task needs a new choice of features</span>
+
+</div>
+<div class="fig">
+
+![w:569](figures/feat.svg)
+
+</div>
+</div>
+
+---
+
+## Representation learning
+
+The node vectors $\vb x_i \in \R^d$ are trained on data, not designed by hand.
+
+<div class="fig" style="margin-top: 70px">
+
+![](figures/pipeline.svg)
+
+</div>
+
+---
+
+## A neural network turns a graph into vectors
+
+<div class="fig" style="margin-top: 110px">
+
+![](figures/g2e.svg)
+
+</div>
+
+---
+
+## word2vec: words as vectors
+
+word2vec (Mikolov et al. 2013) gives every word a vector, so that words used in similar contexts get close vectors.
+
+<div class="cols c11 mid">
+<div>
+
+<div class="box eq-sm">
+
+$$\begin{aligned} & \vb x_{\text{king}} - \vb x_{\text{man}} + \vb x_{\text{woman}} \\ & \approx \vb x_{\text{queen}} \end{aligned}$$
+
+</div>
+
+- a relation between words is a direction
+- meaning is compared by linear algebra
+
+</div>
+<div class="fig">
+
+![w:569](figures/analogy.svg)
+
+</div>
+</div>
+
+<div class="ref">Mikolov, T., Chen, K., Corrado, G., & Dean, J. (2013). Efficient estimation of word representations in vector space. arXiv:1301.3781.</div>
+
+---
+
+## Prediction from context
+
+word2vec predicts a word from a nearby word; every word has a query vector $\vb u$ and a key vector $\vb v$.
+
+<div class="fig">
+
+![](figures/sentence.svg)
+
+</div>
+
+- a pair $(i, j)$ that appears in the text gets a high score $\vb u_i^\top \vb v_j$
+
+---
+
+## A vector is a point in space
+
+A vector of $d$ numbers is one point in a $d$-dimensional space.
+
+<div class="cols c11 mid">
+<div class="fig">
+
+![w:560](figures/vecpoint.svg)
+
+<div class="cap">
+
+one vector, one point
+
+</div>
+</div>
+<div class="fig">
+
+![w:560](figures/space.svg)
+
+<div class="cap">
+
+all words, points in one space
+
+</div>
+</div>
+</div>
+
+---
+
+## Training by contrast
+
+A real pair (label 1) is pulled together and a random pair (label 0) is pushed apart.
+
+<div class="cols c11 mid">
+<div>
+
+| input $i$ | other $j$ | label $y$ |
+|---|---|---|
+| <mark>favors</mark> | <mark>prepared</mark> | 1 |
+| favors | water | 0 |
+| only | mind | 1 |
+| only | stone | 0 |
+
+</div>
+<div class="fig">
+
+![](figures/contrast.svg)
+
+</div>
+</div>
+
+<div class="box eq-sm">
+
+$$\Pr(y=1 \mid i, j) = \sigma(\vb u_i^\top \vb v_j) \quad \ell = -\log \sigma(\vb u_i^\top \vb v_j) - \log \sigma(-\vb u_i^\top \vb v_{j'})$$
+
+</div>
+
+---
+
+## word2vec in motion
+
+A window slides over the text, every position gives pairs, and the pairs move the vectors.
+
+<div class="fig">
+<iframe class="anim" src="anim/skipgram.html" width="1130" height="516"></iframe>
+</div>
+
+<div class="ref">Animation: skip-gram with 2 random pairs per real pair, 36 words in 6 sentences, window of one word on each side. Only the query vectors u are drawn.</div>
+
+---
+
+## Walks as sentences
+
+A random walk on a network is a sequence of nodes, in the same way that a sentence is a sequence of words.
+
+<div class="cols c11 mid">
+<div>
+
+| text | network |
+|---|---|
+| word | node |
+| sentence | random walk |
+| nearby words | nodes close together in a walk |
+
+</div>
+<div class="fig">
+
+![](figures/walkgraph.svg)
+
+</div>
+</div>
+
+---
+
+## DeepWalk (Perozzi et al. 2014)
+
+DeepWalk trains word2vec on random walks, with nodes in place of words.
+
+<div class="fig">
+
+![](figures/deepwalk.svg)
+
+</div>
+
+- every node $i$ gets a query vector $\vb u_i$ and a key vector $\vb v_i$; $\vb u_i$ is its embedding
+- settings: walks per node, walk length, window size; node2vec biases the walk with $p$ and $q$
+
+<div class="ref">Perozzi, B., Al-Rfou, R., & Skiena, S. (2014). DeepWalk: online learning of social representations. KDD.</div>
+
+---
+
+## The walk rule sets what is close
+
+Nodes that appear together in walks get close vectors, so a different walk rule gives a different embedding.
+
+<div class="cols c32">
+<div>
+
+<div class="box">
+
+**Plain walk**: move to a random neighbor
+
+$$\Pr(i \to j) = A_{ij} / k_i$$
+
+</div>
+
+Another rule is a **walk with restart** (personalized PageRank): return to the start node $s$ with probability $\alpha$.
+
+<div class="eq-sm">
+
+$$\Pr(i \to j) = \alpha\,[\,j = s\,] + (1-\alpha)\,A_{ij} / k_i$$
+
+</div>
+
+</div>
+<div class="fig">
+
+![](figures/walks-compare.svg)
+
+</div>
+</div>
+
+---
+
+## Lab: character embeddings
+
+In the lab notebook, walkers run on the Les Misérables co-appearance network and word2vec embeds the characters.
+
+<div class="cols c11">
+<div>
+
+- the walk simulator and the word2vec call are given
+- choose a character and list the closest vectors
+- plot the 77 characters in two dimensions
+
+<div class="box grey">
+
+QR code and short link <span class="tag">placeholder</span>
+
+</div>
+</div>
+<div class="fig">
+
+![w:520](figures/lesmis.svg)
+
+<div class="cap">
+
+Valjean (lavender) and his 10 closest characters (cyan).
+
+</div>
+</div>
+</div>
+
+---
+
+## Lab task: personalized PageRank walk
+
+The lab uses personalized PageRank: restart at the start node with probability $\alpha$.
+
+```python
+def ppr_walk(G, start, length, alpha, rng):
+    walk = [start]
+    # TODO: with probability alpha, go back to `start`;
+    #       otherwise move to a random neighbor
+    return walk
+```
+
+<div class="cols c11 mid">
+<div>
+
+- closest characters to $s$ for $\alpha = 0.05$ and $\alpha = 0.5$?
+- how do they differ from the plain walk?
+
+</div>
+<div class="fig">
+
+![](figures/ppr-step.svg)
+
+</div>
+</div>
+
+---
+
+<!-- _class: divider -->
+
+<p class="crumb">Embedding</p>
+
+## Hyperbolic embedding
+
+---
+
+## Popularity and similarity
+
+Papadopoulos et al. (2012) add similarity to preferential attachment.
+
+<div class="fig">
+
+![w:960](figures/pa-vs-ps.svg)
+
+</div>
+
+- popularity: an earlier node has had more time to collect links
+- similarity: nodes that are alike are placed close to each other
+
+<div class="ref">Papadopoulos, F. et al. (2012). Popularity versus similarity in growing networks. Nature, 489, 537–540.</div>
+
+---
+
+## Growth rule of the model
+
+Node $t$ gets the radius $\ln t$ and a random angle, and links to its $m$ closest nodes.
+
+<div class="cols c11 mid">
+<div>
+
+<div class="box eq-sm">
+
+$$r_t = \ln t$$
+
+$$\theta_t \sim \mathrm{Uniform}[0, 2\pi)$$
+
+link to the $m$ nodes $s < t$ with the smallest $s\,\theta_{st}$
+
+</div>
+
+- $\theta_{st}$: angle between $s$ and $t$
+
+</div>
+<div class="fig">
+<iframe class="anim" src="anim/growth.html" width="540" height="506"></iframe>
+</div>
+</div>
+
+---
+
+## Observed degree mixes two effects
+
+The observed degree mixes popularity with the size of the community.
+
+<div class="parts tight eq-lg">
+<div class="part">
+
+$$k_i \;\propto$$
+
+</div>
+<div class="part" data-tag="popularity">
+
+$$\hl{\kappa_i}$$
+
+<div class="pin">
+
+hidden degree
+
+</div>
+</div>
+<div class="part">
+
+$$\times$$
+
+</div>
+<div class="part" data-tag="similarity">
+
+$$\hlc{n_i}$$
+
+<div class="pin">
+
+community size
+
+</div>
+</div>
+</div>
+
+<div class="fig">
+
+![](figures/communities.svg)
+
+</div>
+
+---
+
+## Exponential growth of hyperbolic space
+
+In the hyperbolic plane of curvature $-1$, the circumference of a circle grows exponentially with its radius.
+
+<div class="cols c11 mid">
+<div>
+
+<div class="box eq-sm">
+
+$$C_{\text{hyp}}(r) = 2\pi \sinh r \approx \pi e^{r}$$
+
+$$C_{\text{Euclid}}(r) = 2\pi r$$
+
+</div>
+
+- the area $2\pi(\cosh r - 1)$ also grows as $e^{r}$
+- the radius is the logarithm of the number of nodes that fit
+
+</div>
+<div class="fig">
+
+![w:569](figures/circumference.svg)
+
+</div>
+</div>
+
+---
+
+## Hyperbolic space as a continuous tree
+
+Hyperbolic space is the continuous version of a tree.
+
+<div class="cols flow c11 mid">
+<div class="fig">
+
+![w:460](figures/tree-plain.svg)
+
+</div>
+
+<span class="tri"></span>
+
+<div class="fig">
+
+![w:370](figures/tree-disk.svg)
+
+<div class="cap">
+
+Poincaré disk, depth $d$ at distance $0.9\,d$.
+
+</div>
+</div>
+</div>
+
+- depth $d$ of a tree holds $b^d$ nodes; hyperbolic space grows in the same way
+
+---
+
+## WordNet in the Poincaré disk
+
+General words lie near the center and specific words near the boundary.
+
+<div class="cols c11 mid">
+<div>
+
+- center: general words
+- boundary: specific words
+- the hierarchy of 80,000 nouns fits in a disk of two dimensions
+
+</div>
+<div class="fig">
+
+![h:505](../legacy/m08/figs/wordnet-hyperbolic-embedding.png)
+
+</div>
+</div>
+
+<div class="ref">Image: Poincaré embedding of WordNet nouns (Nickel & Kiela 2017; source to be confirmed).</div>
+
+---
+
 ## Summary
 
+- spectral embedding keeps the eigenvectors with the largest terms of $\mathbf A$
+  - the Laplacian comes from the continuous relaxation of Ratio Cut; the normalized Laplacian, from Normalized Cut
 - word2vec learns a vector per word from word pairs; DeepWalk applies it to random walks
   - the walk rule decides which nodes are close
 - hyperbolic embedding places nodes by popularity (radius) and similarity (angle)
   - the space grows exponentially, as a tree does
-- spectral embedding keeps the eigenvectors with the largest terms of $\mathbf A$
-  - the Laplacian comes from the continuous relaxation of Ratio Cut; the normalized Laplacian, from Normalized Cut

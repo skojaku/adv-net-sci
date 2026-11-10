@@ -12,7 +12,7 @@ python3 - "$here" "$tmp" "$CH" <<'PY'
 import re, subprocess, sys
 here, tmp, ch = sys.argv[1:4]
 s = open("m08-embedding.md").read()
-still = {"skipgram": "?still=240", "growth": "?still=60", "reconstruct": ""}
+still = {"skipgram": "?still=339", "growth": "?still=60", "reconstruct": ""}
 def shot(m):
     name, w, h = m.group(1), int(m.group(2)), int(m.group(3))
     out = f"{here}/figures/still-{name}.png"
