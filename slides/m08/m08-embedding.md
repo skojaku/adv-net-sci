@@ -61,6 +61,14 @@ Module 8: spectral, neural and hyperbolic embeddings
 
 <p class="by">Sadamori Kojaku</p>
 
+<div style="position: absolute; right: 56px; bottom: 48px; display: flex; align-items: center; gap: 24px">
+
+![w:130](m08slides-qr.png)
+
+`go.skojaku.com/m08slides`
+
+</div>
+
 ---
 
 ## What is an embedding?
