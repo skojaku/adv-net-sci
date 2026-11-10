@@ -217,6 +217,9 @@ resources:
   # PDF copying otherwise depends on link-discovery heuristics, and the M02
   # worksheets 404 in production even though the files are on disk.
   - "m0*/pen-and-paper/*.pdf"
+  # Lecture decks as one self-contained HTML file (slides/mNN/make_standalone.py),
+  # committed because CI cannot build a Marp deck.
+  - "m0*/slides/*.html"
 
 # Add a bibtex file so that we can create citations
 bibliography: references.bib
