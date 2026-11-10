@@ -138,6 +138,14 @@ def create():
     if len(upload_at) != 2:
         sys.exit(f"expected 2 upload questions in the copy, found {len(upload_at)}")
     batch_update(form_id, info_requests())
+    # A Drive copy comes out unpublished: the responder URL answers 401 until
+    # the form is published and accepting responses.
+    gws(
+        "forms", "forms", "setPublishSettings",
+        "--params", json.dumps({"formId": form_id}),
+        "--json", json.dumps({"publishSettings": {"publishState": {
+            "isPublished": True, "isAcceptingResponses": True}}}),
+    )
     form = gws("forms", "forms", "get", "--params", json.dumps({"formId": form_id}))
     print("form id:  ", form_id)
     print("responder:", form["responderUri"])
