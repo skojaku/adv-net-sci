@@ -23,7 +23,8 @@
 # The Module 8 lab: character embeddings (the two lab slides of
 # slides/m08/m08-embedding.md). Les Miserables from CSV, random walks in NumPy,
 # word2vec, a picture of the embedding and the network in the same colours,
-# then the walk with restart (the one blank) into the same word2vec.
+# then the walk with restart into the same word2vec. Two blanks, coded in class
+# with the lecturer: random_walk and random_walk_with_restart.
 #
 #   * The stylesheet travels inside the file (molab ignores css_file). Refresh
 #     it with `python tools/build_lab_notebooks.py m08-embedding`, which also
@@ -241,6 +242,8 @@ def _(names):
 def _():
     mo.md(r"""
     ## 2 · Random walks
+
+    At every step, move to a random neighbour.
     """)
     return
 
@@ -257,8 +260,9 @@ def _(edges, names):
 @app.function
 def random_walk(A, start, length, rng):
     walk = [start]
+    # ✍️ your code here
     while len(walk) < length:
-        walk.append(rng.choice(np.flatnonzero(A[walk[-1]])))
+        walk.append(rng.choice(np.flatnonzero(A[walk[-1]])))  # a random neighbour
     return walk
 
 

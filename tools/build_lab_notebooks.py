@@ -297,14 +297,29 @@ M05 = [
 ]
 
 # ---------------------------------------------------------------------------
-# Module 8 -- character embeddings. One blank: the random walk with restart.
+# Module 8 -- character embeddings. Two blanks, coded in class: the random
+# walk and the random walk with restart.
 # ---------------------------------------------------------------------------
 M08 = [
     (
-        """    walk = [start]
+        """def random_walk(A, start, length, rng):
+    walk = [start]
     # ✍️ your code here
     return walk""",
-        """    walk = [start]
+        """def random_walk(A, start, length, rng):
+    walk = [start]
+    # ✍️ your code here
+    while len(walk) < length:
+        walk.append(rng.choice(np.flatnonzero(A[walk[-1]])))  # a random neighbour
+    return walk""",
+    ),
+    (
+        """def random_walk_with_restart(A, start, length, alpha, rng):
+    walk = [start]
+    # ✍️ your code here
+    return walk""",
+        """def random_walk_with_restart(A, start, length, alpha, rng):
+    walk = [start]
     # ✍️ your code here
     while len(walk) < length:
         if rng.random() < alpha:
