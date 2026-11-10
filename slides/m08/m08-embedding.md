@@ -63,6 +63,30 @@ Module 8: spectral, neural and hyperbolic embeddings
 
 ---
 
+## Why embed a network?
+
+An embedding places every node at a point of a vector space, for three reasons.
+
+<div class="cols c111" style="align-items: stretch">
+<div class="box" data-tab="1  Machine learning">
+
+Machine learning takes vectors; a graph is discrete data.
+
+</div>
+<div class="box" data-tab="2  Linear algebra">
+
+Graph computation becomes linear algebra, with tools made for vector spaces.
+
+</div>
+<div class="box" data-tab="3  Compression">
+
+A network follows a few low-dimensional principles, so it can be compressed.
+
+</div>
+</div>
+
+---
+
 ## Hand-made node features
 
 Prediction models need a vector of numbers for every node, and for networks these numbers have been designed by hand.
