@@ -63,6 +63,40 @@ Module 8: spectral, neural and hyperbolic embeddings
 
 ---
 
+## Hand-made node features
+
+Prediction models need a vector of numbers for every node, and for networks these numbers have been designed by hand.
+
+<div class="cols c11 mid">
+<div>
+
+- degree $k_i$
+- number of triangles $t_i$
+- return probability $(\mathbf P^t)_{ii}$ of a random walk
+- <span class="key">each task needs a new choice of features</span>
+
+</div>
+<div class="fig">
+
+![w:569](figures/feat.svg)
+
+</div>
+</div>
+
+---
+
+## Representation learning
+
+The node vectors $\vb x_i \in \R^d$ are trained on data, not designed by hand.
+
+<div class="fig" style="margin-top: 70px">
+
+![](figures/pipeline.svg)
+
+</div>
+
+---
+
 <!-- _class: agenda -->
 
 ## Outline
@@ -596,40 +630,6 @@ Derive the Ratio Cut result and the Normalized Cut counterpart on paper (10 minu
 <p class="crumb">Embedding</p>
 
 ## Neural embedding
-
----
-
-## Hand-made node features
-
-Prediction models need a vector of numbers for every node, and for networks these numbers have been designed by hand.
-
-<div class="cols c11 mid">
-<div>
-
-- degree $k_i$
-- number of triangles $t_i$
-- return probability $(\mathbf P^t)_{ii}$ of a random walk
-- <span class="key">each task needs a new choice of features</span>
-
-</div>
-<div class="fig">
-
-![w:569](figures/feat.svg)
-
-</div>
-</div>
-
----
-
-## Representation learning
-
-The node vectors $\vb x_i \in \R^d$ are trained on data, not designed by hand.
-
-<div class="fig" style="margin-top: 70px">
-
-![](figures/pipeline.svg)
-
-</div>
 
 ---
 
