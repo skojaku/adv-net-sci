@@ -235,36 +235,41 @@ draws before class, because that is what the students see.
 
 ## A lab that trains word2vec (m08)
 
-`m08-embedding/pen-and-paper/lab.py` follows slides "Lab: character
-embeddings" and "Lab task: personalized PageRank walk" of the m08 deck: walks
-on Les Misérables (`nx.les_miserables_graph()`, so no data file), gensim's
-`Word2Vec`, and three blanks (`cosine`, `closest`, `ppr_walk`). Found while
-building it:
+`m08-embedding/pen-and-paper/lab.py` follows the two lab slides of the m08
+deck. It is the minimal shape the lecturer asked for (2026-11-09): no checks,
+no waiting cards, raw outputs (the edge table, the walks as a DataFrame of
+names, the vectors as a DataFrame), one blank (`random_walk_with_restart`).
+The data is read with pandas from `lecture-note/assets/data/lesmis/` on the
+`main` branch on GitHub, the walks are NumPy (`rng.choice(np.flatnonzero(A[i]))`),
+and the picture puts the embedding (PCA) next to the network (igraph layout,
+drawn with Altair so names show on hover), both coloured by the node's place
+in the embedding: left to right blue, grey, red; top to bottom dark, grey,
+light. Found while building it:
 
+- **Sections start folded, by script.** marimo keeps the folded state of a
+  section in the browser, not in the file (`CellConfig` has no such field), so
+  the last cell is an anywidget (`FoldSections`) that clicks marimo's fold
+  toggle of every `h2` cell once per page load, then scrolls to the top. The
+  toggle is `div.absolute.top-5.-left-7 > button` inside the cell and the folded
+  band is `div.h-9.bg-muted.rounded-b.cursor-pointer`; `FOLD_CSS` (a raw
+  string, because of `\-left-7`) makes both larger and rust-coloured. These are
+  marimo 0.25 class names: check them after a marimo upgrade.
 - **gensim prints a line that looks like an error.** gensim 4.4.0's compiled
   code now and then writes `Exception ignored in:
   'gensim.models.word2vec_inner.our_dot_float'` with no exception set (seen with
   numpy 1.26 and 2.x alike). The training is fine. `embed()` wraps the call in
-  `quiet()`, which sends stderr to a buffer, so it does not land on the page.
+  `quiet()`, which sends stderr to a buffer.
 - **numpy 2 on macOS warns about `@`.** With Accelerate, a float64 matmul on
   finite input raises `RuntimeWarning: divide by zero encountered in matmul`.
-  The kit computes its cosines and its PCA with sums, not `@`. A student's
-  `x @ y` may still warn on a Mac; molab runs Linux.
-- **Student loops run under a step limit.** `run_limited` counts trace events
-  with `sys.settrace` and raises after three million, so a `ppr_walk` that
-  empties the walk on a restart (`walk = [start]`) gives a sentence instead of
-  a hung kernel. A thread with a timeout cannot do this: the loop keeps running.
-- **No `mo.stop` above a display cell.** A cell downstream of `mo.stop` shows
-  an "ancestor was stopped" error. The cell that builds the restart embeddings
-  instead leaves `ppr_walks` empty until `walk_ready(ppr_walk)` is true, and the
-  cells below show the waiting card while it is empty.
-- **The closest lists move with the seed.** With 20 walks of 40 nodes per
-  character, the 10 characters closest to Valjean share only about half their
-  names between seeds. What is stable is the distance between the two
-  characters of a training pair: with α = 0.5 about 31% of pairs are the same
-  character twice (7% for the plain walk), and the mean distance falls from
-  1.27 to 0.87 links. The lab therefore plots those distances next to the
-  closest lists, and no sentence names a character.
+  The kit's PCA uses sums, not `@`.
+- **marimo warns about integer column names** when it shows
+  `pd.DataFrame(sentences)` or the vectors; the kit filters that warning.
+- **The plain walk is already local on Les Misérables.** With 20 walks of 40
+  nodes per character, the characters closest to Valjean share only about half
+  their names between seeds, and the restart walk changes them little. The
+  training pairs change clearly: with α = 0.5 about 31% of pairs are the same
+  character twice (7% for the plain walk), and the mean distance between the
+  two characters of a pair falls from 1.27 to 0.87 links.
 
 ## Checking a notebook before calling it done
 
