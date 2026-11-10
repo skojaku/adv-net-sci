@@ -49,4 +49,6 @@ xelatex -interaction=nonstopmode solutions.tex
 - Responder URL: https://docs.google.com/forms/d/e/1FAIpQLScbLLq5eW3iuSQdGj-AbdgFJBKO_IRvU50Gc8bDbvNfgiztVA/viewform
 - `go.skojaku.com/ans-quiz07` redirects to it (Caddy on `ssh digitalocean`).
 
+On 2026-11-10 the link did not work: the Drive copy was unpublished (`publishState` empty). Fixed with `setPublishSettings` (published, accepting responses); `build_form.py --create` now does this.
+
 Not done: the Brightspace quiz entry.
