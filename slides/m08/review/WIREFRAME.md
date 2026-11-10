@@ -75,4 +75,4 @@
 
 ## ノートブック(ラボ)
 
-`notebooks/m08-network-embedding/lab-walks.py`(学生用)、`lab-walks-solution.py`(解答つき)。marimo、約13セル。内容は、レ・ミゼラブルの読み込み、`random_walk` と `simulate_walks`、`embed`(gensim の Word2Vec)、キャラクターのドロップダウンと PCA の散布図、最近傍表、`ppr_walk`(学生の課題、スタブは通常のウォークを返す)、$\alpha$ のスライダー、通常のウォークとの比較です。Python は `>=3.10,<3.14` に固定。molab へのアップロード、短縮リンク、QR は未作業です(スライド 12 はプレースホルダ)。
+`lecture-note/m08-embedding/pen-and-paper/lab.py`(学生用)と `lab-solutions.py`(`tools/build_lab_notebooks.py m08-embedding` が生成)。レ・ミゼラブル(`nx.les_miserables_graph()`)、`random_walk` と gensim の Word2Vec は渡し済み。✍️ は `cosine`、`closest`、`ppr_walk` の3つ。最後に通常のウォークと α = 0.05、0.5 の比較(最も近い10人の表、ネットワーク図、学習ペアの距離の点図)。QR は `m08lab-qr.png`(go.skojaku.com/m08lab)。molab へのアップロードと短縮リンクの設定はまだ。旧モック `notebooks/m08-network-embedding/lab-walks*.py` は削除。

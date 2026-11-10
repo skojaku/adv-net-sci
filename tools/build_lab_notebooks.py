@@ -296,10 +296,49 @@ M05 = [
     ),
 ]
 
+# ---------------------------------------------------------------------------
+# Module 8 -- character embeddings. Three blanks: the cosine similarity, the
+# k closest characters, and the walk with restart of slide 15.
+# ---------------------------------------------------------------------------
+M08 = [
+    (
+        "    return ...  # ✍️ one line",
+        "    return x @ y / (np.linalg.norm(x) * np.linalg.norm(y))",
+    ),
+    (
+        """    # ✍️ your code here: score every other character with cosine(), then sort
+    return ...""",
+        """    # ✍️ your code here: score every other character with cosine(), then sort
+    scores = {other: cosine(vectors[name], v) for other, v in vectors.items() if other != name}
+    return sorted(scores, key=scores.get, reverse=True)[:k]""",
+    ),
+    (
+        """    walk = [start]
+    # ✍️ your code here: with probability alpha, go back to `start`;
+    #    otherwise move to a random neighbour of the last node
+    ...
+    return walk""",
+        """    walk = [start]
+    # ✍️ your code here: with probability alpha, go back to `start`;
+    #    otherwise move to a random neighbour of the last node
+    while len(walk) < length:
+        if rng.random() < alpha:
+            walk.append(start)  # restart
+        else:
+            walk.append(rng.choice(list(G[walk[-1]])))  # a random neighbour
+    return walk""",
+    ),
+    (
+        "    # Lab · Character embeddings\n",
+        "    # Lab · Character embeddings — worked copy\n",
+    ),
+]
+
 MODULES = {
     "m01-euler_tour": M01,
     "m02-small-world": M02,
     "m05-clustering": M05,
+    "m08-embedding": M08,
 }
 
 

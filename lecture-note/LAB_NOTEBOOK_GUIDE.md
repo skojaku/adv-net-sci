@@ -6,11 +6,13 @@ is `.claude/skills/pen-and-paper/SKILL.md`; this file is the notebook half of
 the same deliverable.
 
 A sheet's last part sends the student to a marimo notebook that runs, by
-machine, the thing they have just done in pencil. Three of them exist, under
+machine, the thing they have just done in pencil. Four of them exist, under
 `lecture-note/m01-euler_tour/pen-and-paper/`,
-`lecture-note/m02-small-world/pen-and-paper/` and
-`lecture-note/m05-clustering/pen-and-paper/` (the last is not tied to a sheet;
-see [the graph-tool lab](#a-lab-that-needs-graph-tool-m05)), and each directory
+`lecture-note/m02-small-world/pen-and-paper/`,
+`lecture-note/m05-clustering/pen-and-paper/` and
+`lecture-note/m08-embedding/pen-and-paper/` (the last two are not tied to a
+sheet; see [the graph-tool lab](#a-lab-that-needs-graph-tool-m05) and
+[the gensim lab](#a-lab-that-trains-word2vec-m08)), and each directory
 holds:
 
 - `lab.py` — the student's copy
@@ -230,6 +232,39 @@ are or which block is which. Every sentence under a figure is computed from the
 fit (`pct(...)`, `argmax`, counts), and the "which block holds Alaska" question
 is marked against the fit that was drawn. Keep it that way, and look at what molab
 draws before class, because that is what the students see.
+
+## A lab that trains word2vec (m08)
+
+`m08-embedding/pen-and-paper/lab.py` follows slides "Lab: character
+embeddings" and "Lab task: personalized PageRank walk" of the m08 deck: walks
+on Les Misérables (`nx.les_miserables_graph()`, so no data file), gensim's
+`Word2Vec`, and three blanks (`cosine`, `closest`, `ppr_walk`). Found while
+building it:
+
+- **gensim prints a line that looks like an error.** gensim 4.4.0's compiled
+  code now and then writes `Exception ignored in:
+  'gensim.models.word2vec_inner.our_dot_float'` with no exception set (seen with
+  numpy 1.26 and 2.x alike). The training is fine. `embed()` wraps the call in
+  `quiet()`, which sends stderr to a buffer, so it does not land on the page.
+- **numpy 2 on macOS warns about `@`.** With Accelerate, a float64 matmul on
+  finite input raises `RuntimeWarning: divide by zero encountered in matmul`.
+  The kit computes its cosines and its PCA with sums, not `@`. A student's
+  `x @ y` may still warn on a Mac; molab runs Linux.
+- **Student loops run under a step limit.** `run_limited` counts trace events
+  with `sys.settrace` and raises after three million, so a `ppr_walk` that
+  empties the walk on a restart (`walk = [start]`) gives a sentence instead of
+  a hung kernel. A thread with a timeout cannot do this: the loop keeps running.
+- **No `mo.stop` above a display cell.** A cell downstream of `mo.stop` shows
+  an "ancestor was stopped" error. The cell that builds the restart embeddings
+  instead leaves `ppr_walks` empty until `walk_ready(ppr_walk)` is true, and the
+  cells below show the waiting card while it is empty.
+- **The closest lists move with the seed.** With 20 walks of 40 nodes per
+  character, the 10 characters closest to Valjean share only about half their
+  names between seeds. What is stable is the distance between the two
+  characters of a training pair: with α = 0.5 about 31% of pairs are the same
+  character twice (7% for the plain walk), and the mean distance falls from
+  1.27 to 0.87 links. The lab therefore plots those distances next to the
+  closest lists, and no sentence names a character.
 
 ## Checking a notebook before calling it done
 
