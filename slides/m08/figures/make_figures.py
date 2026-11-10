@@ -343,6 +343,25 @@ def space():
     B("space", *parts)
 
 
+
+def embed_map():
+    """A graph on the left, a vector space on the right, an arrow f between them."""
+    grp = {1: "hl", 2: "hl", 3: "hl", 8: "hl", 4: "hlc", 5: "hlc", 6: "hlc", 7: "hlc"}
+    pos = {k: (x * 0.95 + 10, y * 0.95 + 50) for k, (x, y) in WALK_POS.items()}
+    parts = [graph(pos, WALK_E, highlight=grp, size=40)]
+    ox, oy = 700, 30
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox + 440, oy)};")
+    parts.append(f"\\draw[arr] {P(ox, oy)} -- {P(ox, oy + 330)};")
+    pts = {1: (770, 250), 2: (830, 300), 3: (880, 225), 8: (800, 175), 4: (980, 130), 5: (1070, 175), 6: (1090, 95), 7: (1010, 70)}
+    for k, p in pts.items():
+        parts.append(vertex(f"q{k}", p, f"${k}$", style="vertex " + grp[k], size=40))
+    parts.append(arrow((500, 190), (660, 190)))
+    parts.append(label((580, 214), r"$f$", anchor="south", size="fslarge"))
+    parts.append(label((220, -4), "graph", anchor="north", size="fsbody"))
+    parts.append(label((ox + 220, oy - 8), r"vector space $\mathbb{R}^d$", anchor="north", size="fsbody"))
+    B("embed-map", *parts)
+
+
 # ------------------------------------------------------------------ lab output
 
 def lesmis():
@@ -792,7 +811,7 @@ def relax_ncut():
 
 
 if __name__ == "__main__":
-    ALL = (feat, pipeline, analogy, sentence, g2e, vecpoint, space, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
+    ALL = (feat, pipeline, analogy, sentence, embed_map, g2e, vecpoint, space, contrast, walkgraph, deepwalk, walks_compare, ppr_step, lesmis, pa_vs_ps, growth,
               communities, circumference, tree_disk, tree_plain, compress, layers, recon, spectrum, error_curve, cuts,
               indicator, relax, fiedler, detour, blockmats, indicator_ncut, relax_ncut)
     want = sys.argv[1:]

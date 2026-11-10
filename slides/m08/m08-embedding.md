@@ -63,6 +63,18 @@ Module 8: spectral, neural and hyperbolic embeddings
 
 ---
 
+## What is an embedding?
+
+An embedding is a method that places a graph in a continuous space.
+
+<div class="fig" style="margin-top: 40px">
+
+![](figures/embed-map.svg)
+
+</div>
+
+---
+
 ## Why embed a network?
 
 An embedding places every node at a point of a vector space, for three reasons.
