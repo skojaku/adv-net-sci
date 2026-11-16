@@ -51,4 +51,6 @@ xelatex -interaction=nonstopmode solutions.tex
 
 On 2026-11-10 the link did not work: the Drive copy was unpublished (`publishState` empty). Fixed with `setPublishSettings` (published, accepting responses); `build_form.py --create` now does this.
 
+Checked 2026-11-16: the redirect resolves to the form's responder URI, and the form is published and accepting responses. An unauthenticated request to the responder URL answers 401 because the form requires a verified sign-in; that is expected, students open it signed in with their @binghamton.edu account.
+
 Not done: the Brightspace quiz entry.
