@@ -53,4 +53,6 @@ On 2026-11-10 the link did not work: the Drive copy was unpublished (`publishSta
 
 Checked 2026-11-16: the redirect resolves to the form's responder URI, and the form is published and accepting responses. An unauthenticated request to the responder URL answers 401 because the form requires a verified sign-in; that is expected, students open it signed in with their @binghamton.edu account.
 
+The sheet link `go.skojaku.com/quiz07` was a 404 until 2026-11-17: Caddy had only `/ans-quiz07*`. Now `/quiz07*` redirects to the Drive copy of `quiz07.pdf` (file id `1ESL5K6-e1rPoTzE8A0QycsmyHSkEoBKC`, anyone with the link can read; work account). If `quiz07.pdf` is rebuilt, replace it with `hq drive update <id> --file quiz07.pdf` so the link stays.
+
 Not done: the Brightspace quiz entry.
