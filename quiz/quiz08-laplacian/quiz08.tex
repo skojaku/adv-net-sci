@@ -111,15 +111,17 @@ center pixel even though $x_i = 1$?
 \vspace{0.3em}
 \question{2}{5}{Network surgery.}
 
-In the undirected network below ($N = 8$ nodes, edge set $E$), the number beside
-each node $i$ is $u_i$, the $i$-th entry of the Fiedler vector
-$u = (u_1,\dots,u_N)^\top$. Here $u$ is the unit eigenvector
-($\sum_{i=1}^N u_i^2 = 1$) for the second smallest eigenvalue $\lambda_2 = 0.29$
-of the Laplacian $L$, so
+In the undirected network below ($N = 8$ nodes, edge set $E$), let
+$u = (u_1,\dots,u_N)^\top$ be the unit eigenvector ($\sum_{i=1}^N u_i^2 = 1$,
+$\sum_{i=1}^N u_i = 0$) for the second smallest eigenvalue $\lambda_2 = 0.29$ of
+the Laplacian $L$ (often called the \emph{Fiedler vector}, the relaxed Ratio Cut
+solution). The number beside each node $i$ is $u_i$, and
 \[
   \lambda_2 \;=\; u^\top L u \;=\; \sum_{(i,j)\in E} (u_i - u_j)^2 ,
 \]
-where each undirected edge $(i,j) \in E$ is summed once.
+where each undirected edge $(i,j) \in E$ is summed once. (The network is
+disconnected if and only if $\lambda_2 = 0$; a larger $\lambda_2$ means it is
+harder to cut in two.)
 
 \begin{center}
 \vspace{-0.3em}
