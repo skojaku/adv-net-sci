@@ -69,7 +69,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-a0addcd269d742dbfb5bcd2be139ffc6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-6d0a18bf6bfa72d61f7b2322e172cd34.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a93cf34412077529a539e0ceaebe4c31.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -749,6 +749,19 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p><strong>The big question of this module.</strong> What is a community in a network, and how would you know if the one you found is real?</p>
 </blockquote>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Quiz 5 — Cores and blocks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://go.skojaku.com/quiz05" target="_blank">Question sheet (PDF)</a> (<code>go.skojaku.com/quiz05</code>) · <a href="https://go.skojaku.com/ans-quiz05" target="_blank">Submit answers</a> (<code>go.skojaku.com/ans-quiz05</code>).</p>
+</div>
+</div>
 <section id="what-you-will-be-able-to-do-and-what-you-will-learn-to-distrust" class="level2">
 <h2 class="anchored" data-anchor-id="what-you-will-be-able-to-do-and-what-you-will-learn-to-distrust">What you will be able to do — and what you will learn to distrust</h2>
 <p>Community detection is the most widely used technique in network analysis and the most argued-about. By the end of this module you will be able to:</p>
@@ -1453,7 +1466,7 @@ Figure&nbsp;4: Staying inside the group, <span class="math inline">b</span> reac
 </div>
 </div>
 <div class="callout callout-style-simple callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1462,7 +1475,7 @@ Figure&nbsp;4: Staying inside the group, <span class="math inline">b</span> reac
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The missing element is a constraint: each community must contain at least one node. Without this, the trivial solution of placing all nodes in a single community would always yield a cut of zero.</p>
 </div>
@@ -2124,7 +2137,7 @@ Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \ri
 </script>
 <p>At four triangles, keeping them apart wins by <span class="math inline">0.500</span> to <span class="math inline">0.375</span>. At eight it is an exact dead heat. At ten, merging wins — and your two triangles have not changed by one node or one edge. This is the <strong>resolution limit</strong> <span class="citation" data-cites="fortunato2007resolution">(<a href="#ref-fortunato2007resolution" role="doc-biblioref">Fortunato and Barthelemy 2007</a>)</span>: modularity’s verdict about a small group depends on how big the rest of the network is.</p>
 <div class="callout callout-style-simple callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2133,7 +2146,7 @@ Q =\frac{1}{2m} \sum_{i=1}^n \sum_{j=1}^n \left[ A_{ij} -  \frac{k_ik_j}{2m} \ri
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The ring has <span class="math inline">n</span> triangles. Each one carries <span class="math inline">3</span> internal edges and one bridge to its neighbour, so the whole ring has <span class="math inline">m = 4n</span> edges and <span class="math inline">2m = 8n</span> edge-ends.</p>
 <p><strong>Keep every triangle apart.</strong> <span class="math inline">3n</span> of the <span class="math inline">4n</span> edges have both ends in the same community, so the observed term is <span class="math inline">3n/4n = 3/4</span>. A triangle’s volume is <span class="math inline">6</span> edge-ends inside plus <span class="math inline">2</span> bridge ends <span class="math inline">= 8</span>, so each community contributes <span class="math inline">(8/8n)^2 = 1/n^2</span> to the chance term, and <span class="math inline">n</span> of those add up to <span class="math inline">1/n</span>:</p>
@@ -2160,7 +2173,7 @@ Q_{\text{pairs}} - Q_{\text{apart}} = \left(\frac{7}{8} - \frac{3}{4}\right) - \
 <h3 class="anchored" data-anchor-id="it-finds-communities-in-pure-noise">It finds communities in pure noise</h3>
 <p>What if the network has no communities at all? Take a random network — every pair of nodes connected with the same probability, no structure of any kind — and maximize modularity on it. <a href="../assets/vis/community-detection/partition-game.html?scoreType=modularity&amp;numCommunities=3&amp;randomness=0.8&amp;dataFile=random-net.json">Random network, three colors</a></p>
 <div class="callout callout-style-simple callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2169,7 +2182,7 @@ Q_{\text{pairs}} - Q_{\text{apart}} = \left(\frac{7}{8} - \frac{3}{4}\right) - \
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Modularity finds communities anyway, and scores them well — often <em>higher</em> than the score it gives the two-clique network, which does have real communities.</p>
 <p>Nothing is broken. In a finite random network, some groups will by chance have a few more internal edges than average, and modularity maximization is very good at hunting for exactly those. It is finding shapes in clouds.</p>
@@ -2195,7 +2208,7 @@ Q_{\text{pairs}} - Q_{\text{apart}} = \left(\frac{7}{8} - \frac{3}{4}\right) - \
 P(A_{ij}=1|c_i, c_j) = p_{c_i,c_j}
 </span></p>
 <p>where <span class="math inline">p_{c_i,c_j}</span> is the probability of an edge between nodes in community <span class="math inline">c_i</span> and <span class="math inline">c_j</span>, respectively. Importantly, the probability <span class="math inline">p_{c_i,c_j}</span> is specified by the community membership of the nodes, <span class="math inline">c_i</span> and <span class="math inline">c_j</span>. As a result, when plotting the adjacency matrix of one realization of SBM, we observe “blocks” of different edge densities — see <a href="#fig-sbm-adjacency-matrix" class="quarto-xref">Figure&nbsp;5</a> — which is why we say that SBM is a “block model”.</p>
-<div id="fig-sbm-adjacency-matrix" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A 900 by 900 adjacency matrix with three dark square blocks along the diagonal and sparser off-diagonal regions" data-fig-align="center">
+<div id="fig-sbm-adjacency-matrix" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A 900 by 900 adjacency matrix with three dark square blocks along the diagonal and sparser off-diagonal regions">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sbm-adjacency-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figs/sbm-adjacency-matrix.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A 900 by 900 adjacency matrix with three dark square blocks along the diagonal and sparser off-diagonal regions">
